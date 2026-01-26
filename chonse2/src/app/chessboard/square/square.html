@@ -1,4 +1,13 @@
 
-<div class="squareContainer">
-    <p>{{coordinate}} - {{piece}}</p>
+<div class="squareContainer" [style]="{'background-color': getColor()}">
+
+    @if(showFile && coordinate != "")
+    {
+        <p class="fileLabel" [style]="{ 'color': getReverseColor()}">{{coordinate[0]}}</p>
+    }
+
+    @if (showRank && coordinate != "")
+    {
+        <p class="rankLabel" [style]="{ 'color': getReverseColor()}">{{coordinate[1]}}</p>
+    }
 </div>

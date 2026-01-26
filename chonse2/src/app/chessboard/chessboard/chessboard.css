@@ -6,4 +6,5 @@
     width: 80vmin; /* scale board to viewport, always square */
     height: 80vmin;
     gap: 0;
+    border: 1px solid;
 }
