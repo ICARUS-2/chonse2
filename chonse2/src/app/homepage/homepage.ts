@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Chessboard } from "../chessboard/chessboard";
+import { Chessboard } from "../chessboard/chessboard/chessboard";
 
 @Component({
   selector: 'app-homepage',

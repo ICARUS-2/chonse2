@@ -1,0 +1,11 @@
+<div class="boardContainer">
+    @for( rank of pieceState; let rankIndex = $index; track rankIndex)
+    {
+        <ng-container>
+            @for ( piece of rank; let fileIndex = $index; track fileIndex )
+            {
+                <app-square [coordinate]="this.COORDS[rankIndex][fileIndex]" [piece]="pieceState[rankIndex][fileIndex]"></app-square>
+            }
+        </ng-container>
+    }
+</div>

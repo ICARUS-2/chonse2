@@ -1,0 +1,9 @@
+.boardContainer 
+{
+    display: grid;
+    grid-template-rows: repeat(8, 1fr);
+    grid-template-columns: repeat(8, 1fr);
+    width: 80vmin; /* scale board to viewport, always square */
+    height: 80vmin;
+    gap: 0;
+}
