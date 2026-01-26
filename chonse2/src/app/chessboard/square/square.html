@@ -1,5 +1,8 @@
 
-<div class="squareContainer" [style]="{'background-color': getColor()}">
+<div class="squareContainer" 
+    [style]="{'background-color': getColor()}" 
+    (mousedown)="handleMouseDown()"
+    (mouseup)="handleMouseUp()">
 
     @if(showFile && coordinate != "")
     {
@@ -9,5 +12,11 @@
     @if (showRank && coordinate != "")
     {
         <p class="rankLabel" [style]="{ 'color': getReverseColor()}">{{coordinate[1]}}</p>
+    }
+
+    
+    @if (piece != "")
+    {
+        <img [src]="`piece/merida/${piece}.svg`" class="w-100" draggable="false">
     }
 </div>

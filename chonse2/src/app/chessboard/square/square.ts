@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PieceType } from '../piece-type';
 
 @Component({
@@ -15,6 +15,9 @@ export class Square {
   @Input() showRank: boolean = false;
   @Input() showFile: boolean = true;
 
+  @Output() mouseDown = new EventEmitter<{coordinate: string, piece: string}>();
+  @Output() mouseUp = new EventEmitter<{coordinate: string, piece: string}>();
+
   darkColor = "rgb(85,150,242)";
 
   constructor()
@@ -30,5 +33,15 @@ export class Square {
   getReverseColor(): string 
   {
     return this.isDark ? "white" : this.darkColor;
+  }
+
+  handleMouseDown()
+  {
+    this.mouseDown.emit( {coordinate: this.coordinate, piece: this.piece} );
+  }
+
+  handleMouseUp()
+  {
+    this.mouseUp.emit( {coordinate: this.coordinate, piece: this.piece} );
   }
 }

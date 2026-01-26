@@ -7,4 +7,5 @@
     height: 80vmin;
     gap: 0;
     border: 1px solid;
+    user-select: none;
 }

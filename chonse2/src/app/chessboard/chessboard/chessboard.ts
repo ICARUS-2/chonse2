@@ -35,6 +35,9 @@ export class Chessboard implements OnInit {
 
   @Input() pieceState: Array<Array<string>> = Chessboard.DEFAULT_PIECE_STATE;
 
+  mouseUpField: string = "";
+  mouseDownField: string = "";
+
   constructor()
   {
 
@@ -55,5 +58,34 @@ export class Chessboard implements OnInit {
         throw("BOARD SHOULD BE OF SIZE " + Chessboard.SIZE);
       }
     });
+  }
+
+  onSquareMouseDown(event: { coordinate: string, piece: string })
+  {
+    this.mouseDownField = event.coordinate + " " + event.piece;
+  }
+
+  onSquareMouseUp(event: { coordinate: string, piece: string })
+  {
+    this.mouseUpField = event.coordinate + " " + event.piece;
+  }
+
+  getLegalMoves(coordinate: string)
+  {
+    const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
+  }
+
+  findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
+  {
+    const rIdx = this.COORDS.findIndex( row => row.includes(coordinate) );
+
+    if (rIdx === -1)
+    {
+      return { rowIndex: -1, colIndex: -1 };
+    }
+
+    const cIdx = this.COORDS[rIdx].findIndex( col => col === coordinate );
+
+    return {rowIndex: rIdx, colIndex: cIdx};
   }
 }

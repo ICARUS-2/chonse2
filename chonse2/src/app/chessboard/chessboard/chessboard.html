@@ -9,9 +9,17 @@
                     [piece]="pieceState[rankIndex][fileIndex]"
                     [isDark]="(rankIndex + fileIndex) % 2 == 1"
                     [showFile]="rankIndex == rank.length - 1"
-                    [showRank]="fileIndex == 0">
+                    [showRank]="fileIndex == 0"
+                    (mouseDown)="onSquareMouseDown($event)"
+                    (mouseUp)="onSquareMouseUp($event)">
                 </app-square>
             }
         </ng-container>
     }
+</div>
+
+
+<div class="testingPurposes">
+    <p>MOUSE DOWN: {{mouseDownField}}</p>
+    <p>MOUSE UP: {{mouseUpField}}</p>
 </div>
