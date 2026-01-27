@@ -101,6 +101,8 @@ export class Chessboard implements OnInit {
     this.currentLegalMoves = [];
   }
 
+  //MOUSE LOGIC
+  //#region 
   handleDragImage(mouse: MouseEvent)
   {
     this.mouseX = mouse.clientX;
@@ -123,6 +125,7 @@ export class Chessboard implements OnInit {
     this.mouseX = 0;
     this.mouseY = 0;
   }
+  //#endregion
 
   getLegalMoves(coordinate: string, piece: string): Array<string>
   {
@@ -239,22 +242,22 @@ export class Chessboard implements OnInit {
             //if this column is not the leftmost one, then it can potentially capture a piece left-diagonally.
             if (colIndex != 0)
             {
-              const leftCaptureSquare = rankAbove.at(colIndex + 1);
+              const leftCaptureSquare = rankAbove.at(colIndex - 1);
 
               if (leftCaptureSquare?.startsWith(PieceColor.WHITE))
               {
-                legalMoves.push(this.COORDS[rowIndex + 1][colIndex + 1]);
+                legalMoves.push(this.COORDS[rowIndex + 1][colIndex - 1]);
               }
             }
 
             //if this column is not the rightmost one, then it can potentially capture a piece right-diagonally.
             if (colIndex != rankAbove.length - 1)
             {
-              const rightCaptureSquare = rankAbove.at(colIndex - 1);
+              const rightCaptureSquare = rankAbove.at(colIndex + 1);
 
               if (rightCaptureSquare?.startsWith(PieceColor.WHITE))
               {
-                legalMoves.push(this.COORDS[rowIndex + 1][colIndex - 1]);
+                legalMoves.push(this.COORDS[rowIndex + 1][colIndex + 1]);
               }
             }
 
