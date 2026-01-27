@@ -1,0 +1,10 @@
+<div class="d-flex justify-content-center align-items-center flex-column">
+    <h2 class="text-primary">Promotion - Select Piece</h2>
+
+    <div>
+        <img class="squarePieceButton" [src]="getSrc(getQueen())" (click)="confirmSelection(getQueen())"/>
+        <img class="squarePieceButton" [src]="getSrc(getRook())" (click)="confirmSelection(getRook())"/>
+        <img class="squarePieceButton" [src]="getSrc(getBishop())" (click)="confirmSelection(getBishop())"/>
+        <img class="squarePieceButton" [src]="getSrc(getKnight())" (click)="confirmSelection(getKnight())"/>
+    </div>
+</div>

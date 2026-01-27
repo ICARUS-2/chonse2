@@ -1,28 +1,28 @@
 <ng-container>
-<app-captured-pieces for="b" [capturedPieces]="piecesBlackCaptured" [advantage]="getMaterialAdvantage()"></app-captured-pieces>
-<div class="boardContainer">
-    @for( rank of pieceState; let rankIndex = $index; track rankIndex)
-    {
-        <ng-container>
-            @for ( piece of rank; let fileIndex = $index; track fileIndex )
-            {
-                <app-square 
-                    [coordinate]="this.COORDS[rankIndex][fileIndex]" 
-                    [piece]="pieceState[rankIndex][fileIndex]"
-                    [isDark]="(rankIndex + fileIndex) % 2 == 1"
-                    [showFile]="rankIndex == rank.length - 1"
-                    [showRank]="fileIndex == 0"
-                    [showPiece]="this.COORDS[rankIndex][fileIndex] != fromSquare"
-                    [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
-                    (mouseDown)="onSquareMouseDown($event)"
-                    (mouseUp)="onSquareMouseUp($event)">
-                </app-square>
-            }
-        </ng-container>
-    }
-</div>
+    <app-captured-pieces for="b" [capturedPieces]="piecesBlackCaptured" [advantage]="getMaterialAdvantage()"></app-captured-pieces>
+    <div class="boardContainer">
+        @for( rank of pieceState; let rankIndex = $index; track rankIndex)
+        {
+            <ng-container>
+                @for ( piece of rank; let fileIndex = $index; track fileIndex )
+                {
+                    <app-square 
+                        [coordinate]="this.COORDS[rankIndex][fileIndex]" 
+                        [piece]="pieceState[rankIndex][fileIndex]"
+                        [isDark]="(rankIndex + fileIndex) % 2 == 1"
+                        [showFile]="rankIndex == rank.length - 1"
+                        [showRank]="fileIndex == 0"
+                        [showPiece]="this.COORDS[rankIndex][fileIndex] != fromSquare"
+                        [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
+                        (mouseDown)="onSquareMouseDown($event)"
+                        (mouseUp)="onSquareMouseUp($event)">
+                    </app-square>
+                }
+            </ng-container>
+        }
+    </div>
 
-<app-captured-pieces for="w" [capturedPieces]="piecesWhiteCaptured" [advantage]="getMaterialAdvantage()"></app-captured-pieces>
+    <app-captured-pieces for="w" [capturedPieces]="piecesWhiteCaptured" [advantage]="getMaterialAdvantage()"></app-captured-pieces>
 
     @if(currentlyHeldPiece != "")
     {
@@ -31,6 +31,10 @@
             [style.left.px]="mouseX"
             [style.top.px]="mouseY">
     }
+
+    <ng-container>
+        
+    </ng-container>
 
 </ng-container>
 <div class="testingPurposes">

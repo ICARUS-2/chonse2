@@ -3,12 +3,13 @@ import { PieceType } from '../piece-type';
 import { Square } from '../square/square';
 import { PieceColor } from '../piece-color';
 import { CapturedPieces } from "../captured-pieces/captured-pieces";
-import { ɵEmptyOutletComponent } from "@angular/router";
 import PieceMaterial from '../piece-material';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { PromotionModal } from '../../promotion-modal/promotion-modal';
 
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, CapturedPieces, ɵEmptyOutletComponent],
+  imports: [Square, CapturedPieces],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
 })
@@ -54,12 +55,13 @@ export class Chessboard implements OnInit {
   //CAPTURE PROPERTIES
   piecesWhiteCaptured: string[] = [];
   piecesBlackCaptured: string[] = [];
+  promotionalMaterialDifference: number = 0;
 
   //COSMETIC
   mouseX: number = 0;
   mouseY: number = 0;
 
-  constructor()
+  constructor(private modalService: NgbModal)
   {
 
   }
@@ -345,9 +347,37 @@ export class Chessboard implements OnInit {
     }
 
     //Handle promotion
-    if (piece == PieceType.WHITE_PAWN && toCordinate)
+    if (
+      piece == PieceType.WHITE_PAWN && toCordinate.includes(Chessboard.WHITE_PAWN_PROMOTE_RANK.toString()) ||
+      piece == PieceType.BLACK_PAWN && toCordinate.includes(Chessboard.BLACK_PAWN_PROMOTE_RANK.toString()))
     {
+      const modalRef = this.modalService.open(PromotionModal);
+      const promotionPieceColor = piece == PieceType.WHITE_PAWN ? PieceColor.WHITE : PieceColor.BLACK;
+      modalRef.componentInstance.color = promotionPieceColor;
 
+      modalRef.result.then( (result) =>
+      {
+        //If the user manually selected something, promote to that piece.
+        piece = result;
+      } )
+      .catch( (err) =>
+      {
+        //If the user closed the modal, auto-promote to queen.
+        piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_QUEEN : PieceType.BLACK_QUEEN;
+      } )
+      .finally( () => 
+        {    
+          //Change the piece for the promoted one and update material difference.
+          if (piece.startsWith(PieceColor.WHITE))
+          {
+            this.promotionalMaterialDifference += PieceMaterial.getMaterialFromPiece(piece) - 1; //+1 accounts for the loss of pawn.
+          }
+          else
+          {
+            this.promotionalMaterialDifference -= PieceMaterial.getMaterialFromPiece(piece) + 1;
+          }
+          this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;} 
+        )
     }
 
     //Clear the old piece position.
@@ -356,7 +386,6 @@ export class Chessboard implements OnInit {
     //Replace it in the new position.
     this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
     
-
     return true;
   }
 
@@ -395,6 +424,6 @@ export class Chessboard implements OnInit {
     }
     )
 
-    return whiteMaterialCaptured - blackMaterialCaptured;
+    return whiteMaterialCaptured - blackMaterialCaptured + this.promotionalMaterialDifference;
   }
 }
