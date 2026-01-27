@@ -1,5 +1,3 @@
-<p>{{mouseX}} {{mouseY}}</p>
-
 <div class="boardContainer">
     @for( rank of pieceState; let rankIndex = $index; track rankIndex)
     {
@@ -31,8 +29,6 @@
     }
 
 <div class="testingPurposes">
-    <p>TO: {{toSquare}}</p>
-    <p>FROM: {{fromSquare}}</p>
     <p>CURRENT PIECE: {{currentlyHeldPiece}}</p>
     <p>LEGAL MOVES: {{ currentLegalMoves.toString() }}</p>
 

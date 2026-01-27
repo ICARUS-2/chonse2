@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PieceType } from '../piece-type';
 import { Square } from '../square/square';
+import { PieceColor } from '../piece-color';
 
 @Component({
   selector: 'app-chessboard',
@@ -140,32 +141,61 @@ export class Chessboard implements OnInit {
       
       //WHITE PIECES=======================
       case PieceType.WHITE_PAWN:
+      {
+          //rank ahead of this one
+          const rankAbove = this.pieceState.at(rowIndex - 1);
 
-        //if a pawn is on its starting position, it can move either one or two squares.
-        if (rankNumber === Chessboard.WHITE_PAWN_RANK)
-        {
-          const rankAbove = this.pieceState.at(Chessboard.WHITE_PAWN_RANK + 1);
-          const twoRanksAbove = this.pieceState.at(Chessboard.WHITE_PAWN_RANK + 2);
-
-          if (rankAbove && twoRanksAbove)
+          //if the rank above this one exists, there might be a legal move
+          if (rankAbove)
           {
-            const squareAbove = rankAbove.at(colIndex);
-            const twoSquaresAbove = twoRanksAbove.at(colIndex);
+            const squareInFront = rankAbove.at(colIndex);
 
-            if (squareAbove == "")
+            //if the square directly in front of it has nothing in it, then it can be moved to.
+            if (squareInFront == "")
             {
               legalMoves.push(this.COORDS[rowIndex - 1][colIndex]);
+            }
 
-              if (twoSquaresAbove == "")
+            //if this column is not the leftmost one, then it can potentially capture a piece left-diagonally.
+            if (colIndex != 0)
+            {
+              const leftCaptureSquare = rankAbove.at(colIndex - 1);
+
+              if (leftCaptureSquare?.startsWith(PieceColor.BLACK))
               {
-                legalMoves.push(this.COORDS[rowIndex - 2][colIndex]);
+                legalMoves.push(this.COORDS[rowIndex - 1][colIndex - 1]);
+              }
+            }
+
+            //if this column is not the rightmost one, then it can potentially capture a piece right-diagonally.
+            if (colIndex != rankAbove.length - 1)
+            {
+              const rightCaptureSquare = rankAbove.at(colIndex + 1);
+
+              if (rightCaptureSquare?.startsWith(PieceColor.BLACK))
+              {
+                legalMoves.push(this.COORDS[rowIndex - 1][colIndex + 1]);
+              }
+            }
+
+            if (rankNumber === Chessboard.WHITE_PAWN_RANK)
+            {
+              //two ranks ahead of where the pawn is.
+              const twoRanksAbove = this.pieceState.at(rowIndex - 2);
+
+              //the two squares above it can potentially be legal moves.
+              if (twoRanksAbove)
+              {
+                const twoSquaresAbove = twoRanksAbove.at(colIndex);
+
+                //two squares up is only legal if one square up is.
+                if (twoSquaresAbove == "")
+                {
+                  legalMoves.push(this.COORDS[rowIndex - 2][colIndex]);
+                }
               }
             }
           }
-        }
-        else
-        {
-
         }
         break;
 
@@ -191,7 +221,63 @@ export class Chessboard implements OnInit {
 
       //BLACK PIECES
       case PieceType.BLACK_PAWN:
-        //
+          {
+          //rank ahead of this one
+          const rankAbove = this.pieceState.at(rowIndex + 1);
+
+          //if the rank above this one exists, there might be a legal move
+          if (rankAbove)
+          {
+            const squareInFront = rankAbove.at(colIndex);
+
+            //if the square directly in front of it has nothing in it, then it can be moved to.
+            if (squareInFront == "")
+            {
+              legalMoves.push(this.COORDS[rowIndex + 1][colIndex]);
+            }
+            
+            //if this column is not the leftmost one, then it can potentially capture a piece left-diagonally.
+            if (colIndex != 0)
+            {
+              const leftCaptureSquare = rankAbove.at(colIndex + 1);
+
+              if (leftCaptureSquare?.startsWith(PieceColor.WHITE))
+              {
+                legalMoves.push(this.COORDS[rowIndex + 1][colIndex + 1]);
+              }
+            }
+
+            //if this column is not the rightmost one, then it can potentially capture a piece right-diagonally.
+            if (colIndex != rankAbove.length - 1)
+            {
+              const rightCaptureSquare = rankAbove.at(colIndex - 1);
+
+              if (rightCaptureSquare?.startsWith(PieceColor.WHITE))
+              {
+                legalMoves.push(this.COORDS[rowIndex + 1][colIndex - 1]);
+              }
+            }
+
+
+            if (rankNumber === Chessboard.BLACK_PAWN_RANK)
+            {
+              //two ranks ahead of where the pawn is.
+              const twoRanksAbove = this.pieceState.at(rowIndex + 2);
+
+              //the two squares above it can potentially be legal moves.
+              if (twoRanksAbove)
+              {
+                const twoSquaresAbove = twoRanksAbove.at(colIndex);
+
+                //two squares up is only legal if one square up is.
+                if (twoSquaresAbove == "")
+                {
+                  legalMoves.push(this.COORDS[rowIndex + 2][colIndex]);
+                }
+              }
+            }
+          }
+        }
         break;
 
       case PieceType.BLACK_ROOK:
