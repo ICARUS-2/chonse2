@@ -9,3 +9,12 @@
     border: 1px solid;
     user-select: none;
 }
+
+.currentlyHeldPiece
+{
+    width: 10vmin;
+    height: 10vmin;
+    position: fixed;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+}

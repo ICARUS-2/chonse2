@@ -1,3 +1,5 @@
+<p>{{mouseX}} {{mouseY}}</p>
+
 <div class="boardContainer">
     @for( rank of pieceState; let rankIndex = $index; track rankIndex)
     {
@@ -10,6 +12,7 @@
                     [isDark]="(rankIndex + fileIndex) % 2 == 1"
                     [showFile]="rankIndex == rank.length - 1"
                     [showRank]="fileIndex == 0"
+                    [showPiece]="this.COORDS[rankIndex][fileIndex] != fromSquare"
                     [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
                     (mouseDown)="onSquareMouseDown($event)"
                     (mouseUp)="onSquareMouseUp($event)">
@@ -19,6 +22,13 @@
     }
 </div>
 
+    @if(currentlyHeldPiece != "")
+    {
+        <img class="currentlyHeldPiece"
+            [src]="`piece/merida/${currentlyHeldPiece}.svg`"
+            [style.left.px]="mouseX"
+            [style.top.px]="mouseY">
+    }
 
 <div class="testingPurposes">
     <p>TO: {{toSquare}}</p>

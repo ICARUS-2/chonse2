@@ -36,6 +36,7 @@ export class Chessboard implements OnInit {
   static WHITE_PAWN_RANK = 2;
   static BLACK_PAWN_RANK = 7;
 
+  //PIECES ON THE BOARD CURRENTLY
   @Input() pieceState: Array<Array<string>> = Chessboard.DEFAULT_PIECE_STATE;
   
   //MOVE PROPERTIES
@@ -47,6 +48,10 @@ export class Chessboard implements OnInit {
   //CAPTURE PROPERTIES
   piecesWhiteCaptured: string[] = [];
   piecesBlackCaptured: string[] = [];
+
+  //COSMETIC
+  mouseX: number = 0;
+  mouseY: number = 0;
 
   constructor()
   {
@@ -70,10 +75,17 @@ export class Chessboard implements OnInit {
     });
   }
 
-  onSquareMouseDown(event: { coordinate: string, piece: string })
+  onSquareMouseDown(event: { coordinate: string, piece: string, mouse: MouseEvent })
   {
+    //update the square that the piece is dragged from
     this.fromSquare = event.coordinate;
     this.currentlyHeldPiece = event.piece;
+
+    if (event.piece != "")
+    {
+      this.handleDragImage(event.mouse);
+    }    
+
     this.currentLegalMoves = this.getLegalMoves(event.coordinate, event.piece);
   }
 
@@ -83,7 +95,32 @@ export class Chessboard implements OnInit {
 
     this.completeMove(this.fromSquare, this.toSquare, this.currentlyHeldPiece);
 
+    this.fromSquare = "";
+    this.toSquare = "";
     this.currentLegalMoves = [];
+  }
+
+  handleDragImage(mouse: MouseEvent)
+  {
+    this.mouseX = mouse.clientX;
+    this.mouseY = mouse.clientY;
+    document.addEventListener('mousemove', this.onMouseMove);
+    document.addEventListener('mouseup', this.onMouseUp)
+  }
+
+  onMouseMove = (event: MouseEvent) => 
+  {
+    this.mouseX = event.clientX; 
+    this.mouseY = event.clientY;
+  }
+
+  onMouseUp = (event: MouseEvent) => 
+  {
+    document.removeEventListener('mousemove', this.onMouseMove);
+    document.removeEventListener('mouseup', this.onMouseUp);
+    this.currentlyHeldPiece = "";
+    this.mouseX = 0;
+    this.mouseY = 0;
   }
 
   getLegalMoves(coordinate: string, piece: string): Array<string>
@@ -112,8 +149,8 @@ export class Chessboard implements OnInit {
 
           if (rankAbove && twoRanksAbove)
           {
-            const squareAbove = rankAbove.at(rowIndex - 1);
-            const twoSquaresAbove = twoRanksAbove.at(rowIndex - 2);
+            const squareAbove = rankAbove.at(colIndex);
+            const twoSquaresAbove = twoRanksAbove.at(colIndex);
 
             if (squareAbove == "")
             {
