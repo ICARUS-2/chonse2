@@ -1,0 +1,11 @@
+<div class="capturedPieceContainer d-flex">
+    @for(piece of capturedPieces; track $index)
+    {
+        <img class="capturedPieceImg" [src]="`piece/merida/${piece}.svg`" [alt]="piece" />
+    }
+
+    @if(getAbsoluteAdvantage() > 0)
+    {
+        <p class="text-primary">+{{getAbsoluteAdvantage()}}</p>
+    }    
+</div>

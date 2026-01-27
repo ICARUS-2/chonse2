@@ -2,15 +2,17 @@ import { Component, Input, OnInit } from '@angular/core';
 import { PieceType } from '../piece-type';
 import { Square } from '../square/square';
 import { PieceColor } from '../piece-color';
+import { CapturedPieces } from "../captured-pieces/captured-pieces";
+import { ɵEmptyOutletComponent } from "@angular/router";
+import PieceMaterial from '../piece-material';
 
 @Component({
   selector: 'app-chessboard',
-  imports: [Square],
+  imports: [Square, CapturedPieces, ɵEmptyOutletComponent],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
 })
 export class Chessboard implements OnInit {
-  static SIZE: number = 8;
   static DEFAULT_PIECE_STATE: Array<Array<string>> = [
       [ PieceType.BLACK_ROOK, PieceType.BLACK_KNIGHT, PieceType.BLACK_BISHOP, PieceType.BLACK_QUEEN, PieceType.BLACK_KING, PieceType.BLACK_BISHOP,PieceType.BLACK_KNIGHT, PieceType.BLACK_ROOK],
       [ PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN],
@@ -33,9 +35,12 @@ export class Chessboard implements OnInit {
     ["a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"]
   ];
 
-  //LEGAL MOVE INFO
+  //CONSTANTS
   static WHITE_PAWN_RANK = 2;
   static BLACK_PAWN_RANK = 7;
+  static WHITE_PAWN_PROMOTE_RANK = 8;
+  static BLACK_PAWN_PROMOTE_RANK = 1;
+  static SIZE: number = 8;
 
   //PIECES ON THE BOARD CURRENTLY
   @Input() pieceState: Array<Array<string>> = Chessboard.DEFAULT_PIECE_STATE;
@@ -326,15 +331,23 @@ export class Chessboard implements OnInit {
     //handle capture
     if (pieceInToSquare != "")
     {
-      if (piece.startsWith("w"))
+      //if there was already a piece in the TO square, and the current piece is a black one, then black must be capturing a white piece.
+      if (piece.startsWith(PieceColor.BLACK))
       {
         this.piecesBlackCaptured.push(pieceInToSquare);
       }
       
-      if (piece.startsWith("b"))
+      //vice versa
+      if (piece.startsWith(PieceColor.WHITE))
       {
         this.piecesWhiteCaptured.push(pieceInToSquare);
       }
+    }
+
+    //Handle promotion
+    if (piece == PieceType.WHITE_PAWN && toCordinate)
+    {
+
     }
 
     //Clear the old piece position.
@@ -349,15 +362,39 @@ export class Chessboard implements OnInit {
 
   findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
   {
+    //Finds the row that includes this coordinate.
     const rIdx = this.COORDS.findIndex( row => row.includes(coordinate) );
 
+    //If it doesn't exist, it should return -1.
     if (rIdx === -1)
     {
       return { rowIndex: -1, colIndex: -1 };
     }
 
+    //The column index is the place in the rank where that exact coordinate is found.
     const cIdx = this.COORDS[rIdx].findIndex( col => col === coordinate );
 
+    //Both row and column indeces are returned.
     return {rowIndex: rIdx, colIndex: cIdx};
+  }
+
+  //Positive number signifies that white is up, negative signifies black is up.
+  getMaterialAdvantage()
+  {
+    let whiteMaterialCaptured: number = 0;
+    let blackMaterialCaptured: number = 0;
+
+    this.piecesWhiteCaptured.forEach( piece =>
+    {
+      whiteMaterialCaptured += PieceMaterial.getMaterialFromPiece(piece);
+    })
+
+    this.piecesBlackCaptured.forEach(piece =>
+    {
+      blackMaterialCaptured += PieceMaterial.getMaterialFromPiece(piece);
+    }
+    )
+
+    return whiteMaterialCaptured - blackMaterialCaptured;
   }
 }

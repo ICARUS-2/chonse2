@@ -1,3 +1,5 @@
+<ng-container>
+<app-captured-pieces for="b" [capturedPieces]="piecesBlackCaptured" [advantage]="getMaterialAdvantage()"></app-captured-pieces>
 <div class="boardContainer">
     @for( rank of pieceState; let rankIndex = $index; track rankIndex)
     {
@@ -20,6 +22,8 @@
     }
 </div>
 
+<app-captured-pieces for="w" [capturedPieces]="piecesWhiteCaptured" [advantage]="getMaterialAdvantage()"></app-captured-pieces>
+
     @if(currentlyHeldPiece != "")
     {
         <img class="currentlyHeldPiece"
@@ -28,10 +32,8 @@
             [style.top.px]="mouseY">
     }
 
+</ng-container>
 <div class="testingPurposes">
     <p>CURRENT PIECE: {{currentlyHeldPiece}}</p>
     <p>LEGAL MOVES: {{ currentLegalMoves.toString() }}</p>
-
-    <p>WHITE CAPTURES: {{piecesWhiteCaptured.toString()}}</p>
-    <p>BLACK CAPTURES: {{piecesBlackCaptured.toString()}}</p>
 </div>
