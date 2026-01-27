@@ -14,9 +14,13 @@
         <p class="rankLabel" [style]="{ 'color': getReverseColor()}">{{coordinate[1]}}</p>
     }
 
-    
     @if (piece != "")
     {
-        <img [src]="`piece/merida/${piece}.svg`" class="w-100" draggable="false">
+        <img class="pieceImage" [src]="`piece/merida/${piece}.svg`" class="w-100" draggable="false">
+    }
+
+    @if (isLegalMove)
+    {
+        <div class="legalMoveCircle"></div>
     }
 </div>

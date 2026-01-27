@@ -24,3 +24,15 @@
     right: 5px;
     margin: 0;
 }
+
+.legalMoveCircle {
+    position: absolute;     /* position inside square */
+    width: 30px;            /* size of the circle */
+    height: 30px;
+    border-radius: 50%;     /* makes it circular */
+    background-color: rgba(0, 0, 0, 0.4); /* semi-transparent dark circle */
+    top: 50%;               /* center vertically */
+    left: 50%;              /* center horizontally */
+    transform: translate(-50%, -50%); /* truly center it */
+    pointer-events: none;   /* so it doesn't block clicks */
+}

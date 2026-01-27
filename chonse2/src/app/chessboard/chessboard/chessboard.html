@@ -10,6 +10,7 @@
                     [isDark]="(rankIndex + fileIndex) % 2 == 1"
                     [showFile]="rankIndex == rank.length - 1"
                     [showRank]="fileIndex == 0"
+                    [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
                     (mouseDown)="onSquareMouseDown($event)"
                     (mouseUp)="onSquareMouseUp($event)">
                 </app-square>
@@ -20,6 +21,11 @@
 
 
 <div class="testingPurposes">
-    <p>MOUSE DOWN: {{mouseDownField}}</p>
-    <p>MOUSE UP: {{mouseUpField}}</p>
+    <p>TO: {{toSquare}}</p>
+    <p>FROM: {{fromSquare}}</p>
+    <p>CURRENT PIECE: {{currentlyHeldPiece}}</p>
+    <p>LEGAL MOVES: {{ currentLegalMoves.toString() }}</p>
+
+    <p>WHITE CAPTURES: {{piecesWhiteCaptured.toString()}}</p>
+    <p>BLACK CAPTURES: {{piecesBlackCaptured.toString()}}</p>
 </div>

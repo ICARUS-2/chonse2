@@ -14,9 +14,10 @@ export class Square {
   @Input() isDark: boolean = false;
   @Input() showRank: boolean = false;
   @Input() showFile: boolean = true;
+  @Input() isLegalMove: boolean = false;
 
   @Output() mouseDown = new EventEmitter<{coordinate: string, piece: string}>();
-  @Output() mouseUp = new EventEmitter<{coordinate: string, piece: string}>();
+  @Output() mouseUp = new EventEmitter<{coordinate: string}>();
 
   darkColor = "rgb(85,150,242)";
 
@@ -42,6 +43,6 @@ export class Square {
 
   handleMouseUp()
   {
-    this.mouseUp.emit( {coordinate: this.coordinate, piece: this.piece} );
+    this.mouseUp.emit( {coordinate: this.coordinate} );
   }
 }
