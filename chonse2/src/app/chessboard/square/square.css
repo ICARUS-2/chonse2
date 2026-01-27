@@ -27,10 +27,24 @@
 
 .legalMoveCircle {
     position: absolute;     /* position inside square */
-    width: 30px;            /* size of the circle */
-    height: 30px;
+    width: 4vh;            /* size of the circle */
+    height: 4vh;
     border-radius: 50%;     /* makes it circular */
     background-color: rgba(0, 0, 0, 0.4); /* semi-transparent dark circle */
+    top: 50%;               /* center vertically */
+    left: 50%;              /* center horizontally */
+    transform: translate(-50%, -50%); /* truly center it */
+    pointer-events: none;   /* so it doesn't block clicks */
+}
+
+.legalMoveCaptureCircle
+{
+    position: absolute;     /* position inside square */
+    width: 9vh;            /* size of the circle */
+    height: 9vh;
+    border-radius: 50%;     /* makes it circular */
+    border: 5px solid rgba(0, 0, 0, 0.4);
+    background-color: transparent;
     top: 50%;               /* center vertically */
     left: 50%;              /* center horizontally */
     transform: translate(-50%, -50%); /* truly center it */

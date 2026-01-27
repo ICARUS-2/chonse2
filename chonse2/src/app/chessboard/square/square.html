@@ -19,8 +19,13 @@
         <img class="pieceImage" [src]="`piece/merida/${piece}.svg`" class="w-100" draggable="false">
     }
 
-    @if (isLegalMove)
+    @if (isLegalMove && piece == "")
     {
         <div class="legalMoveCircle"></div>
+    }
+
+    @if (isLegalMove && piece != "")
+    {
+        <div class="legalMoveCaptureCircle"></div>
     }
 </div>
