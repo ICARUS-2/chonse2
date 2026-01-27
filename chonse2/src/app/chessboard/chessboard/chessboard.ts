@@ -351,7 +351,10 @@ export class Chessboard implements OnInit {
       piece == PieceType.WHITE_PAWN && toCordinate.includes(Chessboard.WHITE_PAWN_PROMOTE_RANK.toString()) ||
       piece == PieceType.BLACK_PAWN && toCordinate.includes(Chessboard.BLACK_PAWN_PROMOTE_RANK.toString()))
     {
-      const modalRef = this.modalService.open(PromotionModal);
+      //Opens the promotion window.
+      const modalRef = this.modalService.open(PromotionModal, {size: "xl"});
+
+      //Passes the correct color into it.
       const promotionPieceColor = piece == PieceType.WHITE_PAWN ? PieceColor.WHITE : PieceColor.BLACK;
       modalRef.componentInstance.color = promotionPieceColor;
 
@@ -360,7 +363,7 @@ export class Chessboard implements OnInit {
         //If the user manually selected something, promote to that piece.
         piece = result;
       } )
-      .catch( (err) =>
+      .catch( () =>
       {
         //If the user closed the modal, auto-promote to queen.
         piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_QUEEN : PieceType.BLACK_QUEEN;
