@@ -142,7 +142,7 @@ export class Chessboard implements OnInit {
     const fileLetter = coordinate[0];
     const rankNumber = Number(coordinate[1]);
 
-    const legalMoves = [];
+    let legalMoves: Array<string> = [];
 
     switch(piece)
     {
@@ -152,65 +152,119 @@ export class Chessboard implements OnInit {
       //WHITE PIECES=======================
       case PieceType.WHITE_PAWN:
       {
-          //rank ahead of this one
-          const rankAbove = this.pieceState.at(rowIndex - 1);
+        legalMoves = this._getLegalPawnMoves(coordinate, piece);
+        break;
+      }
 
-          //if the rank above this one exists, there might be a legal move
-          if (rankAbove)
+      case PieceType.WHITE_ROOK:
+        {
+          //a rook can move left or right on its current rank
+          const currentRank = this.pieceState.at(rowIndex);
+
+          if (currentRank)
           {
-            const squareInFront = rankAbove.at(colIndex);
-
-            //if the square directly in front of it has nothing in it, then it can be moved to.
-            if (squareInFront == "")
+            //checks for moves to the right.
+            for(let i = colIndex + 1; i < Chessboard.SIZE; i++)
             {
-              legalMoves.push(this.COORDS[rowIndex - 1][colIndex]);
-            }
+              //A possible rook move can have three cases: The square is empty, the square has an enemy piece, or an ally piece.
+              const potentialMove = this.pieceState[rowIndex][i];
 
-            //if this column is not the leftmost one, then it can potentially capture a piece left-diagonally.
-            if (colIndex != 0)
-            {
-              const leftCaptureSquare = rankAbove.at(colIndex - 1);
-
-              if (leftCaptureSquare?.startsWith(PieceColor.BLACK))
+              //If the square is empty, it can move there.
+              if (potentialMove == "")
               {
-                legalMoves.push(this.COORDS[rowIndex - 1][colIndex - 1]);
+                legalMoves.push(this.COORDS[rowIndex][i]);
+              }
+
+              //If the square has an enemy on it, this is the last place it can go in that direction (and capture)
+              if (potentialMove.startsWith(PieceColor.BLACK))
+              {
+                legalMoves.push(this.COORDS[rowIndex][i]);
+                break;
+              }
+
+              //If the square has an ally piece, it can move no further.
+              if (potentialMove.startsWith(PieceColor.WHITE))
+              {
+                break;
               }
             }
 
-            //if this column is not the rightmost one, then it can potentially capture a piece right-diagonally.
-            if (colIndex != rankAbove.length - 1)
+            for (let i = colIndex - 1; i >= 0; i--)
             {
-              const rightCaptureSquare = rankAbove.at(colIndex + 1);
+              //A possible rook move can have three cases: The square is empty, the square has an enemy piece, or an ally piece.
+              const potentialMove = this.pieceState[rowIndex][i];
 
-              if (rightCaptureSquare?.startsWith(PieceColor.BLACK))
+              //If the square is empty, it can move there.
+              if (potentialMove == "")
               {
-                legalMoves.push(this.COORDS[rowIndex - 1][colIndex + 1]);
+                legalMoves.push(this.COORDS[rowIndex][i]);
               }
-            }
 
-            if (rankNumber === Chessboard.WHITE_PAWN_RANK)
-            {
-              //two ranks ahead of where the pawn is.
-              const twoRanksAbove = this.pieceState.at(rowIndex - 2);
-
-              //the two squares above it can potentially be legal moves.
-              if (twoRanksAbove)
+              //If the square has an enemy on it, this is the last place it can go in that direction (and capture)
+              if (potentialMove.startsWith(PieceColor.BLACK))
               {
-                const twoSquaresAbove = twoRanksAbove.at(colIndex);
+                legalMoves.push(this.COORDS[rowIndex][i]);
+                break;
+              }
 
-                //two squares up is only legal if one square up is.
-                if (twoSquaresAbove == "")
-                {
-                  legalMoves.push(this.COORDS[rowIndex - 2][colIndex]);
-                }
+              //If the square has an ally piece, it can move no further.
+              if (potentialMove.startsWith(PieceColor.WHITE))
+              {
+                break;
               }
             }
           }
-        }
-        break;
 
-      case PieceType.WHITE_ROOK:
-        //
+          for (let i = rowIndex + 1; i < Chessboard.SIZE; i++)
+          {
+            //A possible rook move can have three cases: The square is empty, the square has an enemy piece, or an ally piece.
+            const potentialMove = this.pieceState[i][colIndex];
+
+            //If the square is empty, it can move there.
+            if (potentialMove == "")
+            {
+              legalMoves.push(this.COORDS[i][colIndex]);
+            }
+
+            //If the square has an enemy on it, this is the last place it can go in that direction (and capture)
+            if (potentialMove.startsWith(PieceColor.BLACK))
+            {
+              legalMoves.push(this.COORDS[i][colIndex]);
+              break;
+            }
+
+            //If the square has an ally piece, it can move no further.
+            if (potentialMove.startsWith(PieceColor.WHITE))
+            {
+              break;
+            }
+          }
+
+          for (let i = rowIndex - 1; i >=0; i--)
+          {
+            //A possible rook move can have three cases: The square is empty, the square has an enemy piece, or an ally piece.
+            const potentialMove = this.pieceState[i][colIndex];
+
+            //If the square is empty, it can move there.
+            if (potentialMove == "")
+            {
+              legalMoves.push(this.COORDS[i][colIndex]);
+            }
+
+            //If the square has an enemy on it, this is the last place it can go in that direction (and capture)
+            if (potentialMove.startsWith(PieceColor.BLACK))
+            {
+              legalMoves.push(this.COORDS[i][colIndex]);
+              break;
+            }
+
+            //If the square has an ally piece, it can move no further.
+            if (potentialMove.startsWith(PieceColor.WHITE))
+            {
+              break;
+            }
+          }
+        }
         break;
 
       case PieceType.WHITE_KNIGHT:
@@ -232,66 +286,12 @@ export class Chessboard implements OnInit {
       //BLACK PIECES
       case PieceType.BLACK_PAWN:
           {
-          //rank ahead of this one
-          const rankAbove = this.pieceState.at(rowIndex + 1);
-
-          //if the rank above this one exists, there might be a legal move
-          if (rankAbove)
-          {
-            const squareInFront = rankAbove.at(colIndex);
-
-            //if the square directly in front of it has nothing in it, then it can be moved to.
-            if (squareInFront == "")
-            {
-              legalMoves.push(this.COORDS[rowIndex + 1][colIndex]);
-            }
-            
-            //if this column is not the leftmost one, then it can potentially capture a piece left-diagonally.
-            if (colIndex != 0)
-            {
-              const leftCaptureSquare = rankAbove.at(colIndex - 1);
-
-              if (leftCaptureSquare?.startsWith(PieceColor.WHITE))
-              {
-                legalMoves.push(this.COORDS[rowIndex + 1][colIndex - 1]);
-              }
-            }
-
-            //if this column is not the rightmost one, then it can potentially capture a piece right-diagonally.
-            if (colIndex != rankAbove.length - 1)
-            {
-              const rightCaptureSquare = rankAbove.at(colIndex + 1);
-
-              if (rightCaptureSquare?.startsWith(PieceColor.WHITE))
-              {
-                legalMoves.push(this.COORDS[rowIndex + 1][colIndex + 1]);
-              }
-            }
-
-
-            if (rankNumber === Chessboard.BLACK_PAWN_RANK)
-            {
-              //two ranks ahead of where the pawn is.
-              const twoRanksAbove = this.pieceState.at(rowIndex + 2);
-
-              //the two squares above it can potentially be legal moves.
-              if (twoRanksAbove)
-              {
-                const twoSquaresAbove = twoRanksAbove.at(colIndex);
-
-                //two squares up is only legal if one square up is.
-                if (twoSquaresAbove == "")
-                {
-                  legalMoves.push(this.COORDS[rowIndex + 2][colIndex]);
-                }
-              }
-            }
-          }
+            legalMoves = this._getLegalPawnMoves(coordinate, piece)
         }
         break;
 
       case PieceType.BLACK_ROOK:
-        //
+        
         break;
 
       case PieceType.BLACK_KNIGHT:
@@ -311,6 +311,73 @@ export class Chessboard implements OnInit {
         break;
     }
 
+    return legalMoves;
+  }
+
+  _getLegalPawnMoves(coordinate: string, piece: string) 
+  {
+    if (piece != PieceType.WHITE_PAWN && piece != PieceType.BLACK_PAWN)
+    {
+      return [];
+    }
+    const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
+    const legalMoves = [];
+
+    //rank ahead of this one
+    const rankAbove = piece == PieceType.WHITE_PAWN ? this.pieceState.at(rowIndex - 1) : this.pieceState.at(rowIndex + 1);
+    const rankNumber = Number(coordinate[1]);
+
+    //if the rank above this one exists, there might be a legal move
+    if (rankAbove)
+    {
+      const squareInFront = rankAbove.at(colIndex);
+
+      //if the square directly in front of it has nothing in it, then it can be moved to.
+      if (squareInFront == "")
+      {
+        piece == PieceType.WHITE_PAWN ? legalMoves.push(this.COORDS[rowIndex - 1][colIndex]) : legalMoves.push(this.COORDS[rowIndex + 1][colIndex]);
+      }
+
+      //if this column is not the leftmost one, then it can potentially capture a piece left-diagonally.
+      if (colIndex != 0)
+      {
+        const leftCaptureSquare = rankAbove.at(colIndex - 1);
+
+        if (leftCaptureSquare?.startsWith(piece == PieceType.WHITE_PAWN ? PieceColor.BLACK : PieceColor.WHITE))
+        {
+          piece == PieceType.WHITE_PAWN ? legalMoves.push(this.COORDS[rowIndex - 1][colIndex - 1]) : legalMoves.push(this.COORDS[rowIndex + 1][colIndex - 1]);
+        }
+      }
+
+      //if this column is not the rightmost one, then it can potentially capture a piece right-diagonally.
+      if (colIndex != rankAbove.length - 1)
+      {
+        const rightCaptureSquare = rankAbove.at(colIndex + 1);
+
+        if (rightCaptureSquare?.startsWith(piece == PieceType.WHITE_PAWN ? PieceColor.BLACK : PieceColor.WHITE))
+        {
+          piece == PieceType.WHITE_PAWN ? legalMoves.push(this.COORDS[rowIndex - 1][colIndex + 1]) : legalMoves.push(this.COORDS[rowIndex + 1][colIndex + 1]);;
+        }
+      }
+
+      if (piece == PieceType.WHITE_PAWN ? rankNumber == Chessboard.WHITE_PAWN_RANK : rankNumber === Chessboard.BLACK_PAWN_RANK)
+      {
+        //two ranks ahead of where the pawn is.
+        const twoRanksAbove = piece == PieceType.WHITE_PAWN ? this.pieceState.at(rowIndex - 2) : this.pieceState.at(rowIndex + 2);
+
+        //the two squares above it can potentially be legal moves.
+        if (twoRanksAbove)
+        {
+          const twoSquaresAbove = twoRanksAbove.at(colIndex);
+
+          //two squares up is only legal if one square up is.
+          if (twoSquaresAbove == "")
+          {
+            piece == PieceType.WHITE_PAWN ? legalMoves.push(this.COORDS[rowIndex - 2][colIndex]) : legalMoves.push(this.COORDS[rowIndex + 2][colIndex]);;
+          }
+        }
+      }
+    }
     return legalMoves;
   }
 

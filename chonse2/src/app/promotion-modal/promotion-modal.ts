@@ -6,7 +6,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-promotion-modal',
-  imports: [Square],
+  imports: [],
   templateUrl: './promotion-modal.html',
   styleUrl: './promotion-modal.css',
 })
