@@ -160,6 +160,7 @@ export class Chessboard implements OnInit {
       potentiallyLegalMoves = this._getPotentiallyLegalKnightMoves(coordinate, piece);
     }
 
+    //handle bishop
     if (piece == PieceType.WHITE_BISHOP || piece == PieceType.BLACK_BISHOP)
     {
       potentiallyLegalMoves = this._getPotentiallyLegalBishopMoves(coordinate, piece);
@@ -364,7 +365,7 @@ export class Chessboard implements OnInit {
         runCount < Chessboard.SIZE;  
         currentXOffset += dx, currentYOffset += dy, runCount ++)
         {
-          //row of the square the bishop will move to.
+          //row of the square the piece will move to.
           const rowInQuestion = this.pieceState[rowIndex + currentXOffset];
 
           //if it indeed exists within the board, get the square.
