@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
-import { PieceType } from '../chessboard/piece-type';
+import { PieceType } from '../../lib/piece-type';
 
 @Component({
   selector: 'app-homepage',

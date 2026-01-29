@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { PieceType } from '../piece-type';
+import { PieceType } from '../../../lib/piece-type';
 
 @Component({
   selector: 'app-square',

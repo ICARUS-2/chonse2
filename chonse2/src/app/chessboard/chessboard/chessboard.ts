@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { PieceType } from '../piece-type';
+import { PieceType } from '../../../lib/piece-type';
 import { Square } from '../square/square';
-import { PieceColor } from '../piece-color';
+import { PieceColor } from '../../../lib/piece-color';
 import { CapturedPieces } from "../captured-pieces/captured-pieces";
-import PieceMaterial from '../piece-material';
+import PieceMaterial from '../../../lib/piece-material';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PromotionModal } from '../../promotion-modal/promotion-modal';
 
