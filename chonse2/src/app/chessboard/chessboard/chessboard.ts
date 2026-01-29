@@ -152,7 +152,7 @@ export class Chessboard implements OnInit {
 
     if (piece == PieceType.WHITE_BISHOP || piece == PieceType.BLACK_BISHOP)
     {
-      //
+      legalMoves = this._getLegalBishopMoves(coordinate, piece);
     }
 
     //handle rook
@@ -290,6 +290,73 @@ export class Chessboard implements OnInit {
     return legalMoves;
   }
   
+  _getLegalBishopMoves(coordinate: string, piece: string): Array<string>
+  {
+    if (piece != PieceType.WHITE_BISHOP && piece != PieceType.BLACK_BISHOP)
+    {
+      return [];
+    }
+
+    const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
+    const legalMoves: Array<string> = [];
+
+    //Bishops move diagonally, these correspond to up-left, up-right, down-left and down-right.
+    let xDirections = [-1, -1, 1, 1];
+    let yDirections = [-1, 1, -1, 1];
+
+    //Loop through each of the four directions a bishop can go in.
+    for(let offsetIndex = 0; offsetIndex < xDirections.length; offsetIndex++)
+    {
+      //The current directions.
+      let dx = xDirections[offsetIndex];
+      let dy = yDirections[offsetIndex];
+
+      //Ensures that the loop does not run longer than necessary (ie, not exceeding the board size).
+      let runCount = 0;
+
+      for(
+        //set the offsets to their starting values and repeatedly adding that value in each direction until the end is reached.
+        let currentXOffset = dx, currentYOffset = dy; 
+        runCount < Chessboard.SIZE;  
+        currentXOffset += dx, currentYOffset += dy, runCount ++)
+        {
+          //row of the square the bishop will move to.
+          const rowInQuestion = this.pieceState[rowIndex + currentXOffset];
+
+          //if it indeed exists within the board, get the square.
+          if (rowInQuestion)
+          {
+            const potentialMoveSquare = rowInQuestion[colIndex + currentYOffset];
+
+            //If the square exists, there are three cases:
+            if (potentialMoveSquare != undefined)
+            {
+              //If there is a piece in that square and it is an opposite colored piece, add it to the list of legal moves and break out (cannot go through pieces).
+              if (piece == PieceType.WHITE_BISHOP ? potentialMoveSquare.startsWith(PieceColor.BLACK) : potentialMoveSquare.startsWith(PieceColor.WHITE))
+              {
+                legalMoves.push(this.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset]);
+                break;
+              }
+
+              //If the square is empty, that is a legal move, and the one after it could be.
+              if (potentialMoveSquare == "")
+              {
+                legalMoves.push(this.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset]);
+              }
+
+              //If the square has an ally piece, that can't be a legal move, nor can anything after it. 
+              if (piece == PieceType.WHITE_BISHOP ? potentialMoveSquare.startsWith(PieceColor.WHITE) : potentialMoveSquare.startsWith(PieceColor.BLACK))
+              {
+                break;
+              }
+            }
+          }
+        }
+    }
+
+    return legalMoves;
+  }
+
   _getLegalRookMoves(coordinate: string, piece: string): Array<string>
   {
     if (piece != PieceType.WHITE_ROOK && piece != PieceType.BLACK_ROOK)
