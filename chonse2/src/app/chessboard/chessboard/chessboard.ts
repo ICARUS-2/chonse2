@@ -139,182 +139,22 @@ export class Chessboard implements OnInit {
     //rowIndex is the rank, colIndex is the file.
     const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
 
-    const fileLetter = coordinate[0];
-    const rankNumber = Number(coordinate[1]);
-
     let legalMoves: Array<string> = [];
 
-    switch(piece)
+    if (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN)
     {
-      case PieceType.NONE:
-        return [];
-      
-      //WHITE PIECES=======================
-      case PieceType.WHITE_PAWN:
-      {
-        legalMoves = this._getLegalPawnMoves(coordinate, piece);
-        break;
-      }
+      legalMoves = this._getLegalPawnMoves(coordinate, piece);
+    }
 
-      case PieceType.WHITE_ROOK:
-        {
-          //a rook can move left or right on its current rank
-          const currentRank = this.pieceState.at(rowIndex);
-
-          if (currentRank)
-          {
-            //checks for moves to the right.
-            for(let i = colIndex + 1; i < Chessboard.SIZE; i++)
-            {
-              //A possible rook move can have three cases: The square is empty, the square has an enemy piece, or an ally piece.
-              const potentialMove = this.pieceState[rowIndex][i];
-
-              //If the square is empty, it can move there.
-              if (potentialMove == "")
-              {
-                legalMoves.push(this.COORDS[rowIndex][i]);
-              }
-
-              //If the square has an enemy on it, this is the last place it can go in that direction (and capture)
-              if (potentialMove.startsWith(PieceColor.BLACK))
-              {
-                legalMoves.push(this.COORDS[rowIndex][i]);
-                break;
-              }
-
-              //If the square has an ally piece, it can move no further.
-              if (potentialMove.startsWith(PieceColor.WHITE))
-              {
-                break;
-              }
-            }
-
-            for (let i = colIndex - 1; i >= 0; i--)
-            {
-              //A possible rook move can have three cases: The square is empty, the square has an enemy piece, or an ally piece.
-              const potentialMove = this.pieceState[rowIndex][i];
-
-              //If the square is empty, it can move there.
-              if (potentialMove == "")
-              {
-                legalMoves.push(this.COORDS[rowIndex][i]);
-              }
-
-              //If the square has an enemy on it, this is the last place it can go in that direction (and capture)
-              if (potentialMove.startsWith(PieceColor.BLACK))
-              {
-                legalMoves.push(this.COORDS[rowIndex][i]);
-                break;
-              }
-
-              //If the square has an ally piece, it can move no further.
-              if (potentialMove.startsWith(PieceColor.WHITE))
-              {
-                break;
-              }
-            }
-          }
-
-          for (let i = rowIndex + 1; i < Chessboard.SIZE; i++)
-          {
-            //A possible rook move can have three cases: The square is empty, the square has an enemy piece, or an ally piece.
-            const potentialMove = this.pieceState[i][colIndex];
-
-            //If the square is empty, it can move there.
-            if (potentialMove == "")
-            {
-              legalMoves.push(this.COORDS[i][colIndex]);
-            }
-
-            //If the square has an enemy on it, this is the last place it can go in that direction (and capture)
-            if (potentialMove.startsWith(PieceColor.BLACK))
-            {
-              legalMoves.push(this.COORDS[i][colIndex]);
-              break;
-            }
-
-            //If the square has an ally piece, it can move no further.
-            if (potentialMove.startsWith(PieceColor.WHITE))
-            {
-              break;
-            }
-          }
-
-          for (let i = rowIndex - 1; i >=0; i--)
-          {
-            //A possible rook move can have three cases: The square is empty, the square has an enemy piece, or an ally piece.
-            const potentialMove = this.pieceState[i][colIndex];
-
-            //If the square is empty, it can move there.
-            if (potentialMove == "")
-            {
-              legalMoves.push(this.COORDS[i][colIndex]);
-            }
-
-            //If the square has an enemy on it, this is the last place it can go in that direction (and capture)
-            if (potentialMove.startsWith(PieceColor.BLACK))
-            {
-              legalMoves.push(this.COORDS[i][colIndex]);
-              break;
-            }
-
-            //If the square has an ally piece, it can move no further.
-            if (potentialMove.startsWith(PieceColor.WHITE))
-            {
-              break;
-            }
-          }
-        }
-        break;
-
-      case PieceType.WHITE_KNIGHT:
-        //
-        break;
-
-      case PieceType.WHITE_BISHOP:
-        //
-        break;
-
-      case PieceType.WHITE_QUEEN:
-        //
-        break;
-
-      case PieceType.WHITE_KING:
-        //
-        break;
-
-      //BLACK PIECES
-      case PieceType.BLACK_PAWN:
-          {
-            legalMoves = this._getLegalPawnMoves(coordinate, piece)
-        }
-        break;
-
-      case PieceType.BLACK_ROOK:
-        
-        break;
-
-      case PieceType.BLACK_KNIGHT:
-        //
-        break;
-
-      case PieceType.BLACK_BISHOP:
-        //
-        break;
-
-      case PieceType.BLACK_QUEEN:
-        //
-        break;
-
-      case PieceType.BLACK_KING:
-        //
-        break;
+    if (piece == PieceType.WHITE_ROOK || piece == PieceType.BLACK_ROOK)
+    {
+      legalMoves = this._getLegalRookMoves(coordinate, piece);
     }
 
     return legalMoves;
   }
 
-  _getLegalPawnMoves(coordinate: string, piece: string) 
+  _getLegalPawnMoves(coordinate: string, piece: string): Array<string>
   {
     if (piece != PieceType.WHITE_PAWN && piece != PieceType.BLACK_PAWN)
     {
@@ -378,6 +218,126 @@ export class Chessboard implements OnInit {
         }
       }
     }
+    return legalMoves;
+  }
+
+  _getLegalRookMoves(coordinate: string, piece: string): Array<string>
+  {
+    if (piece != PieceType.WHITE_ROOK && piece != PieceType.BLACK_ROOK)
+    {
+      return [];
+    }
+
+    const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
+    const legalMoves = [];
+
+    //a rook can move left or right on its current rank
+    const currentRank = this.pieceState.at(rowIndex);
+
+    if (currentRank)
+    {
+      //checks for moves to the right.
+      for(let i = colIndex + 1; i < Chessboard.SIZE; i++)
+      {
+        //A possible rook move can have three cases: The square is empty, the square has an enemy piece, or an ally piece.
+        const potentialMove = this.pieceState[rowIndex][i];
+
+        //If the square is empty, it can move there.
+        if (potentialMove == "")
+        {
+          legalMoves.push(this.COORDS[rowIndex][i]);
+        }
+
+        //If the square has an enemy on it, this is the last place it can go in that direction (and capture)
+        if (potentialMove.startsWith(piece == PieceType.WHITE_ROOK ? PieceColor.BLACK : PieceColor.WHITE))
+        {
+          legalMoves.push(this.COORDS[rowIndex][i]);
+          break;
+        }
+
+        //If the square has an ally piece, it can move no further.
+        if (potentialMove.startsWith(piece == PieceType.WHITE_ROOK ? PieceColor.WHITE : PieceColor.BLACK))
+        {
+          break;
+        }
+      }
+
+      for (let i = colIndex - 1; i >= 0; i--)
+      {
+        //A possible rook move can have three cases: The square is empty, the square has an enemy piece, or an ally piece.
+        const potentialMove = this.pieceState[rowIndex][i];
+
+        //If the square is empty, it can move there.
+        if (potentialMove == "")
+        {
+          legalMoves.push(this.COORDS[rowIndex][i]);
+        }
+
+        //If the square has an enemy on it, this is the last place it can go in that direction (and capture)
+        if (potentialMove.startsWith(piece == PieceType.WHITE_ROOK ? PieceColor.BLACK : PieceColor.WHITE))
+        {
+          legalMoves.push(this.COORDS[rowIndex][i]);
+          break;
+        }
+
+        //If the square has an ally piece, it can move no further.
+        if (potentialMove.startsWith(piece == PieceType.WHITE_ROOK ? PieceColor.WHITE : PieceColor.BLACK))
+        {
+          break;
+        }
+      }
+    }
+
+    for (let i = rowIndex + 1; i < Chessboard.SIZE; i++)
+    {
+      //A possible rook move can have three cases: The square is empty, the square has an enemy piece, or an ally piece.
+      const potentialMove = this.pieceState[i][colIndex];
+
+      //If the square is empty, it can move there.
+      if (potentialMove == "")
+      {
+        legalMoves.push(this.COORDS[i][colIndex]);
+      }
+
+      //If the square has an enemy on it, this is the last place it can go in that direction (and capture)
+      if (potentialMove.startsWith(piece == PieceType.WHITE_ROOK ? PieceColor.BLACK : PieceColor.WHITE))
+      {
+        legalMoves.push(this.COORDS[i][colIndex]);
+        break;
+      }
+
+      //If the square has an ally piece, it can move no further.
+      if (potentialMove.startsWith(piece == PieceType.WHITE_ROOK ? PieceColor.WHITE : PieceColor.BLACK))
+      {
+        break;
+      }
+    }
+
+    for (let i = rowIndex - 1; i >=0; i--)
+    {
+      //A possible rook move can have three cases: The square is empty, the square has an enemy piece, or an ally piece.
+      const potentialMove = this.pieceState[i][colIndex];
+
+      //If the square is empty, it can move there.
+      if (potentialMove == "")
+      {
+        legalMoves.push(this.COORDS[i][colIndex]);
+      }
+
+      //If the square has an enemy on it, this is the last place it can go in that direction (and capture)
+      if (potentialMove.startsWith(piece == PieceType.WHITE_ROOK ? PieceColor.BLACK : PieceColor.WHITE))
+      {
+        legalMoves.push(this.COORDS[i][colIndex]);
+        break;
+      }
+
+      //If the square has an ally piece, it can move no further.
+      if (potentialMove.startsWith(piece == PieceType.WHITE_ROOK ? PieceColor.WHITE : PieceColor.BLACK))
+      {
+        break;
+      }
+    }
+
     return legalMoves;
   }
 
