@@ -136,19 +136,41 @@ export class Chessboard implements OnInit {
 
   getLegalMoves(coordinate: string, piece: string): Array<string>
   {
-    //rowIndex is the rank, colIndex is the file.
-    const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
-
     let legalMoves: Array<string> = [];
 
+    //handle pawn
     if (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN)
     {
       legalMoves = this._getLegalPawnMoves(coordinate, piece);
     }
 
+    //handle knight
+    if (piece == PieceType.WHITE_KNIGHT || piece == PieceType.BLACK_KNIGHT)
+    {
+      legalMoves = this._getLegalKnightMoves(coordinate, piece);
+    }
+
+    if (piece == PieceType.WHITE_BISHOP || piece == PieceType.BLACK_BISHOP)
+    {
+      //
+    }
+
+    //handle rook
     if (piece == PieceType.WHITE_ROOK || piece == PieceType.BLACK_ROOK)
     {
       legalMoves = this._getLegalRookMoves(coordinate, piece);
+    }
+
+    //handle queen
+    if (piece == PieceType.WHITE_QUEEN || piece == PieceType.BLACK_QUEEN)
+    {
+      //
+    }
+
+    //handle king
+    if (piece == PieceType.WHITE_QUEEN || piece == PieceType.BLACK_KING)
+    {
+      //
     }
 
     return legalMoves;
@@ -161,7 +183,7 @@ export class Chessboard implements OnInit {
       return [];
     }
     const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
-    const legalMoves = [];
+    const legalMoves:Array<string> = [];
 
     //rank ahead of this one
     const rankAbove = piece == PieceType.WHITE_PAWN ? this.pieceState.at(rowIndex - 1) : this.pieceState.at(rowIndex + 1);
@@ -221,6 +243,53 @@ export class Chessboard implements OnInit {
     return legalMoves;
   }
 
+  _getLegalKnightMoves(coordinate: string, piece: string) : Array<string>
+  {
+    if (piece != PieceType.WHITE_KNIGHT && piece != PieceType.BLACK_KNIGHT)
+    {
+      return [];
+    }
+
+    const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
+    const legalMoves: Array<string> = [];
+
+    //A knight can only move two ahead and one to the side. These are the offsets for the eight possible squares a knight can go to relative to its current position
+    const dRow: Array<number> = [2, 1, 2, 1, -1, -2, -1, -2];
+    const dCol: Array<number> = [-1, -2, +1, +2, -2, -1, +2, +1];
+
+    //Loop over each of the potential differences.
+    for(let i = 0; i < dRow.length; i++)
+    {
+      //The rank that the knight will move to.
+      const rankInQuestion = this.pieceState[rowIndex + dRow[i]];      
+
+      //If the rank does in fact exist, find its square.
+      if (rankInQuestion)
+      {
+        //The square that might be able to be moved to.
+        const potentialMoveSquare = rankInQuestion[colIndex + dCol[i]];
+
+        //It can also be undefined if the offset exists outside the board, check for this.
+        if (potentialMoveSquare != undefined)
+        {
+          //Two cases: Either there's nothing there and the knight can move there, or there is a piece of the opposite color that can be captured.
+          if (
+            (piece == PieceType.WHITE_KNIGHT ? potentialMoveSquare.startsWith(PieceColor.BLACK) : potentialMoveSquare.startsWith(PieceColor.WHITE)) 
+            || potentialMoveSquare == "")
+          {
+            //Legal move in either case is the current square with the 2 straight/1 side offset applied.
+            legalMoves.push(this.COORDS[rowIndex + dRow[i]][colIndex + dCol[i]]);
+          }
+        }
+      }
+
+    }
+
+    
+
+    return legalMoves;
+  }
+  
   _getLegalRookMoves(coordinate: string, piece: string): Array<string>
   {
     if (piece != PieceType.WHITE_ROOK && piece != PieceType.BLACK_ROOK)
