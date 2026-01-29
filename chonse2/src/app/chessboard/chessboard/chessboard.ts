@@ -42,6 +42,12 @@ export class Chessboard implements OnInit {
   static WHITE_PAWN_PROMOTE_RANK = 8;
   static BLACK_PAWN_PROMOTE_RANK = 1;
   static SIZE: number = 8;
+  static BISHOP_VECTOR_X = [-1, -1, 1, 1];
+  static BISHOP_VECTOR_Y = [-1, 1, -1, 1];
+  static ROOK_VECTOR_X = [-1, 1, 0, 0];
+  static ROOK_VECTOR_Y = [0, 0, -1, 1];
+  static QUEEN_VECTOR_X = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
+  static QUEEN_VECTOR_Y = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
 
   //PIECES ON THE BOARD CURRENTLY
   @Input() pieceState: Array<Array<string>> = Chessboard.DEFAULT_PIECE_STATE;
@@ -301,64 +307,7 @@ export class Chessboard implements OnInit {
       return [];
     }
 
-    const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
-    const legalMoves: Array<string> = [];
-
-    //Bishops move diagonally, these correspond to up-left, up-right, down-left and down-right.
-    let xDirections = [-1, -1, 1, 1];
-    let yDirections = [-1, 1, -1, 1];
-
-    //Loop through each of the four directions a bishop can go in.
-    for(let offsetIndex = 0; offsetIndex < xDirections.length; offsetIndex++)
-    {
-      //The current directions.
-      let dx = xDirections[offsetIndex];
-      let dy = yDirections[offsetIndex];
-
-      //Ensures that the loop does not run longer than necessary (ie, not exceeding the board size).
-      let runCount = 0;
-
-      for(
-        //set the offsets to their starting values and repeatedly adding that value in each direction until the end is reached.
-        let currentXOffset = dx, currentYOffset = dy; 
-        runCount < Chessboard.SIZE;  
-        currentXOffset += dx, currentYOffset += dy, runCount ++)
-        {
-          //row of the square the bishop will move to.
-          const rowInQuestion = this.pieceState[rowIndex + currentXOffset];
-
-          //if it indeed exists within the board, get the square.
-          if (rowInQuestion)
-          {
-            const potentialMoveSquare = rowInQuestion[colIndex + currentYOffset];
-
-            //If the square exists, there are three cases:
-            if (potentialMoveSquare != undefined)
-            {
-              //If there is a piece in that square and it is an opposite colored piece, add it to the list of legal moves and break out (cannot go through pieces).
-              if (piece == PieceType.WHITE_BISHOP ? potentialMoveSquare.startsWith(PieceColor.BLACK) : potentialMoveSquare.startsWith(PieceColor.WHITE))
-              {
-                legalMoves.push(this.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset]);
-                break;
-              }
-
-              //If the square is empty, that is a legal move, and the one after it could be.
-              if (potentialMoveSquare == "")
-              {
-                legalMoves.push(this.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset]);
-              }
-
-              //If the square has an ally piece, that can't be a legal move, nor can anything after it. 
-              if (piece == PieceType.WHITE_BISHOP ? potentialMoveSquare.startsWith(PieceColor.WHITE) : potentialMoveSquare.startsWith(PieceColor.BLACK))
-              {
-                break;
-              }
-            }
-          }
-        }
-    }
-
-    return legalMoves;
+    return this._getVectorMoves(coordinate, piece, Chessboard.BISHOP_VECTOR_X, Chessboard.BISHOP_VECTOR_Y);
   }
 
   _getPotentiallyLegalRookMoves(coordinate: string, piece: string): Array<string>
@@ -368,64 +317,7 @@ export class Chessboard implements OnInit {
       return [];
     }
 
-    const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
-    const legalMoves: Array<string> = [];
-
-    //Rooks move horizontally or vertically, these correspond to left, right, up and down.
-    let xDirections = [-1, 1, 0, 0];
-    let yDirections = [0, 0, -1, 1];
-
-    //Loop through each of the four directions a rook can go in.
-    for(let offsetIndex = 0; offsetIndex < xDirections.length; offsetIndex++)
-    {
-      //The current directions.
-      let dx = xDirections[offsetIndex];
-      let dy = yDirections[offsetIndex];
-
-      //Ensures that the loop does not run longer than necessary (ie, not exceeding the board size).
-      let runCount = 0;
-
-      for(
-        //set the offsets to their starting values and repeatedly adding that value in each direction until the end is reached.
-        let currentXOffset = dx, currentYOffset = dy; 
-        runCount < Chessboard.SIZE;  
-        currentXOffset += dx, currentYOffset += dy, runCount ++)
-        {
-          //row of the square the bishop will move to.
-          const rowInQuestion = this.pieceState[rowIndex + currentXOffset];
-
-          //if it indeed exists within the board, get the square.
-          if (rowInQuestion)
-          {
-            const potentialMoveSquare = rowInQuestion[colIndex + currentYOffset];
-
-            //If the square exists, there are three cases:
-            if (potentialMoveSquare != undefined)
-            {
-              //If there is a piece in that square and it is an opposite colored piece, add it to the list of legal moves and break out (cannot go through pieces).
-              if (piece == PieceType.WHITE_ROOK ? potentialMoveSquare.startsWith(PieceColor.BLACK) : potentialMoveSquare.startsWith(PieceColor.WHITE))
-              {
-                legalMoves.push(this.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset]);
-                break;
-              }
-
-              //If the square is empty, that is a legal move, and the one after it could be.
-              if (potentialMoveSquare == "")
-              {
-                legalMoves.push(this.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset]);
-              }
-
-              //If the square has an ally piece, that can't be a legal move, nor can anything after it. 
-              if (piece == PieceType.WHITE_ROOK ? potentialMoveSquare.startsWith(PieceColor.WHITE) : potentialMoveSquare.startsWith(PieceColor.BLACK))
-              {
-                break;
-              }
-            }
-          }
-        }
-    }
-
-    return legalMoves;
+    return this._getVectorMoves(coordinate, piece, Chessboard.ROOK_VECTOR_X, Chessboard.ROOK_VECTOR_Y);
   }
 
   _getPotentiallyLegalQueenMoves(coordinate: string, piece: string) : Array<string>
@@ -435,65 +327,7 @@ export class Chessboard implements OnInit {
       return [];
     }
 
-    const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
-    const legalMoves: Array<string> = [];
-
-    //Queens can do a combination of rook movements and bishop movements.
-    let xDirections = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
-    let yDirections = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
-
-    //Loop through each of the four directions a rook can go in.
-    for(let offsetIndex = 0; offsetIndex < xDirections.length; offsetIndex++)
-    {
-      //The current directions.
-      let dx = xDirections[offsetIndex];
-      let dy = yDirections[offsetIndex];
-
-      //Ensures that the loop does not run longer than necessary (ie, not exceeding the board size).
-      let runCount = 0;
-
-      for(
-        //set the offsets to their starting values and repeatedly adding that value in each direction until the end is reached.
-        let currentXOffset = dx, currentYOffset = dy; 
-        runCount < Chessboard.SIZE;  
-        currentXOffset += dx, currentYOffset += dy, runCount ++)
-        {
-          //row of the square the bishop will move to.
-          const rowInQuestion = this.pieceState[rowIndex + currentXOffset];
-
-          //if it indeed exists within the board, get the square.
-          if (rowInQuestion)
-          {
-            const potentialMoveSquare = rowInQuestion[colIndex + currentYOffset];
-
-            //If the square exists, there are three cases:
-            if (potentialMoveSquare != undefined)
-            {
-              //If there is a piece in that square and it is an opposite colored piece, add it to the list of legal moves and break out (cannot go through pieces).
-              if (piece == PieceType.WHITE_QUEEN ? potentialMoveSquare.startsWith(PieceColor.BLACK) : potentialMoveSquare.startsWith(PieceColor.WHITE))
-              {
-                legalMoves.push(this.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset]);
-                break;
-              }
-
-              //If the square is empty, that is a legal move, and the one after it could be.
-              if (potentialMoveSquare == "")
-              {
-                legalMoves.push(this.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset]);
-              }
-
-              //If the square has an ally piece, that can't be a legal move, nor can anything after it. 
-              if (piece == PieceType.WHITE_QUEEN ? potentialMoveSquare.startsWith(PieceColor.WHITE) : potentialMoveSquare.startsWith(PieceColor.BLACK))
-              {
-                break;
-              }
-            }
-          }
-        }
-    }
-
-
-    return legalMoves;
+    return this._getVectorMoves(coordinate, piece, Chessboard.QUEEN_VECTOR_X, Chessboard.QUEEN_VECTOR_Y);
   }
 
   _getPotentiallyLegalKingMoves(coordinate: string, piece: string): Array<string>
@@ -506,6 +340,63 @@ export class Chessboard implements OnInit {
     const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
     const legalMoves: Array<string> = [];
 
+    return legalMoves;
+  }
+
+  _getVectorMoves(coordinate: string, piece: string, vectorX: Array<number>, vectorY: Array<number>): Array<string>
+  {
+    const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
+    const legalMoves: Array<string> = [];
+
+    //Loop through each of the vectors x and y components
+    for(let offsetIndex = 0; offsetIndex < vectorX.length; offsetIndex++)
+    {
+      //The current directions.
+      let dx = vectorX[offsetIndex];
+      let dy = vectorY[offsetIndex];
+
+      //Ensures that the loop does not run longer than necessary (ie, not exceeding the board size).
+      let runCount = 0;
+
+      for(
+        //set the offsets to their starting values and repeatedly adding that value in each direction until the end is reached.
+        let currentXOffset = dx, currentYOffset = dy; 
+        runCount < Chessboard.SIZE;  
+        currentXOffset += dx, currentYOffset += dy, runCount ++)
+        {
+          //row of the square the bishop will move to.
+          const rowInQuestion = this.pieceState[rowIndex + currentXOffset];
+
+          //if it indeed exists within the board, get the square.
+          if (rowInQuestion)
+          {
+            const potentialMoveSquare = rowInQuestion[colIndex + currentYOffset];
+
+            //If the square exists, there are three cases:
+            if (potentialMoveSquare != undefined)
+            {
+              //If there is a piece in that square and it is an opposite colored piece, add it to the list of legal moves and break out (cannot go through pieces).
+              if (piece.startsWith(PieceColor.WHITE) ? potentialMoveSquare.startsWith(PieceColor.BLACK) : potentialMoveSquare.startsWith(PieceColor.WHITE))
+              {
+                legalMoves.push(this.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset]);
+                break;
+              }
+
+              //If the square is empty, that is a legal move, and the one after it could be.
+              if (potentialMoveSquare == "")
+              {
+                legalMoves.push(this.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset]);
+              }
+
+              //If the square has an ally piece, that can't be a legal move, nor can anything after it. 
+              if (piece.startsWith(PieceColor.WHITE) ? potentialMoveSquare.startsWith(PieceColor.WHITE) : potentialMoveSquare.startsWith(PieceColor.BLACK))
+              {
+                break;
+              }
+            }
+          }
+        }
+    }
     return legalMoves;
   }
 
