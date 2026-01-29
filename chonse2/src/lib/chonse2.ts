@@ -55,6 +55,20 @@ export default class Chonse2
     constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE)
     {
         this.pieceState = passedState;
+
+        if (this.pieceState.length != Chonse2.SIZE)
+        {
+            throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
+        }
+
+        //validates correct number of files per rank.
+        this.pieceState.forEach( rank => 
+        {
+        if (rank.length != Chonse2.SIZE)
+        {
+            throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
+        }
+        });
     }
 
     getLegalMoves(coordinate: string, piece: string): Array<string>
