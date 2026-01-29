@@ -136,29 +136,29 @@ export class Chessboard implements OnInit {
 
   getLegalMoves(coordinate: string, piece: string): Array<string>
   {
-    let legalMoves: Array<string> = [];
+    let potentiallyLegalMoves: Array<string> = [];
 
     //handle pawn
     if (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN)
     {
-      legalMoves = this._getLegalPawnMoves(coordinate, piece);
+      potentiallyLegalMoves = this._getPotentiallyLegalPawnMoves(coordinate, piece);
     }
 
     //handle knight
     if (piece == PieceType.WHITE_KNIGHT || piece == PieceType.BLACK_KNIGHT)
     {
-      legalMoves = this._getLegalKnightMoves(coordinate, piece);
+      potentiallyLegalMoves = this._getPotentiallyLegalKnightMoves(coordinate, piece);
     }
 
     if (piece == PieceType.WHITE_BISHOP || piece == PieceType.BLACK_BISHOP)
     {
-      legalMoves = this._getLegalBishopMoves(coordinate, piece);
+      potentiallyLegalMoves = this._getPotentiallyLegalBishopMoves(coordinate, piece);
     }
 
     //handle rook
     if (piece == PieceType.WHITE_ROOK || piece == PieceType.BLACK_ROOK)
     {
-      legalMoves = this._getLegalRookMoves(coordinate, piece);
+      potentiallyLegalMoves = this._getPotentiallyLegalRookMoves(coordinate, piece);
     }
 
     //handle queen
@@ -173,10 +173,10 @@ export class Chessboard implements OnInit {
       //
     }
 
-    return legalMoves;
+    return potentiallyLegalMoves;
   }
 
-  _getLegalPawnMoves(coordinate: string, piece: string): Array<string>
+  _getPotentiallyLegalPawnMoves(coordinate: string, piece: string): Array<string>
   {
     if (piece != PieceType.WHITE_PAWN && piece != PieceType.BLACK_PAWN)
     {
@@ -243,7 +243,7 @@ export class Chessboard implements OnInit {
     return legalMoves;
   }
 
-  _getLegalKnightMoves(coordinate: string, piece: string) : Array<string>
+  _getPotentiallyLegalKnightMoves(coordinate: string, piece: string) : Array<string>
   {
     if (piece != PieceType.WHITE_KNIGHT && piece != PieceType.BLACK_KNIGHT)
     {
@@ -290,7 +290,7 @@ export class Chessboard implements OnInit {
     return legalMoves;
   }
   
-  _getLegalBishopMoves(coordinate: string, piece: string): Array<string>
+  _getPotentiallyLegalBishopMoves(coordinate: string, piece: string): Array<string>
   {
     if (piece != PieceType.WHITE_BISHOP && piece != PieceType.BLACK_BISHOP)
     {
@@ -357,7 +357,7 @@ export class Chessboard implements OnInit {
     return legalMoves;
   }
 
-  _getLegalRookMoves(coordinate: string, piece: string): Array<string>
+  _getPotentiallyLegalRookMoves(coordinate: string, piece: string): Array<string>
   {
     if (piece != PieceType.WHITE_ROOK && piece != PieceType.BLACK_ROOK)
     {
@@ -473,6 +473,32 @@ export class Chessboard implements OnInit {
         break;
       }
     }
+
+    return legalMoves;
+  }
+
+  _getPotentiallyLegalQueenMoves(coordinate: string, piece: string) : Array<string>
+  {
+    if (piece != PieceType.WHITE_BISHOP && piece != PieceType.BLACK_BISHOP)
+    {
+      return [];
+    }
+
+    const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
+    const legalMoves: Array<string> = [];
+
+    return legalMoves;
+  }
+
+  _getPotentiallyLegalKingMoves(coordinate: string, piece: string): Array<string>
+  {
+    if (piece != PieceType.WHITE_KING && piece != PieceType.BLACK_KING)
+    {
+      return [];
+    }
+
+    const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
+    const legalMoves: Array<string> = [];
 
     return legalMoves;
   }
