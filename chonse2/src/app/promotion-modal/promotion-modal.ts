@@ -13,6 +13,11 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class PromotionModal {
   color: string = "";
 
+  queenOption: string = PieceType.QUEEN;
+  rookOption: string = PieceType.ROOK;
+  bishopOption: string = PieceType.BISHOP;
+  knightOption: string = PieceType.KNIGHT;
+  
   constructor(private activeModal: NgbActiveModal)
   {
 

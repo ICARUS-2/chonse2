@@ -64,10 +64,55 @@ export class Chessboard implements OnInit {
     //sets the square in the UI to where the player is dropping the piece.
     this.toSquare = event.coordinate;
 
-    //perform the move
-    this.chessGame.completeMove(this.fromSquare, this.toSquare, this.currentlyHeldPiece);
+    const fromSquare = this.fromSquare;
+    const toSquare = event.coordinate;
+    const piece = this.currentlyHeldPiece;
 
-    this.resetMoveState();
+    if (!this.currentLegalMoves.includes(toSquare))
+    {
+      return;
+    }
+    
+    const isPromotion = (
+      this.currentlyHeldPiece == PieceType.WHITE_PAWN && this.toSquare.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
+      this.currentlyHeldPiece == PieceType.BLACK_PAWN && this.toSquare.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
+
+    //handle pawn promotion if the pawn is at the opposite rank=.
+    if (isPromotion)
+    {
+      //color to show on the dialog is derived.
+      const promotionPieceColor = this.currentlyHeldPiece == PieceType.WHITE_PAWN ? PieceColor.WHITE : PieceColor.BLACK;
+
+      //open the modal and set the color.
+      const modalRef = this.modalService.open(PromotionModal, {size: 'xl'});
+      modalRef.componentInstance.color = promotionPieceColor;
+
+      //gets the result of that dialog.
+      modalRef.result.then( (result) =>
+      {
+        //perform the move and promote to what the user selected.
+        this.chessGame.completeMove(fromSquare, toSquare, piece, result);
+      } )
+      .catch( () =>
+      {
+        //if the dialog was forced closed, promote to queen by default.
+        this.chessGame.completeMove(fromSquare, toSquare, piece, PieceType.QUEEN);
+      } )
+      .finally()
+      {
+        //Resets the state of the from/to squares and current piece back to nothing.
+       this.resetMoveState();
+      }
+    }
+    else
+    {
+
+      //perform the move
+      this.chessGame.completeMove(fromSquare, toSquare, piece);
+        
+      //Resets the state of the from/to squares and current piece back to nothing.
+      this.resetMoveState();
+    }
   }
 
   //MOUSE LOGIC
