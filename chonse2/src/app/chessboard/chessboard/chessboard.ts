@@ -27,11 +27,6 @@ export class Chessboard implements OnInit {
   fromSquare: string = "";
   toSquare: string = "";
 
-  //CAPTURE PROPERTIES
-  piecesWhiteCaptured: string[] = [];
-  piecesBlackCaptured: string[] = [];
-  promotionalMaterialDifference: number = 0;
-
   //COSMETIC
   mouseX: number = 0;
   mouseY: number = 0;
