@@ -9,6 +9,11 @@
     position: relative;
 }
 
+.squareFlipped
+{
+    transform: rotate(180deg);
+}
+
 .rankLabel
 {
     position: absolute;
