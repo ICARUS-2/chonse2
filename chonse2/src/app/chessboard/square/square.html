@@ -1,6 +1,7 @@
 
 <div class="squareContainer" 
-    [style]="{'background-color': getColor()}" 
+    [style]="{'background-color': getColor()}"
+    [class]="isFlipped ? 'squareFlipped' : ''" 
     (mousedown)="handleMouseDown($event)"
     (mouseup)="handleMouseUp()">
 

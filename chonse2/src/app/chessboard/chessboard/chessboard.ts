@@ -30,6 +30,7 @@ export class Chessboard implements OnInit {
   //COSMETIC
   mouseX: number = 0;
   mouseY: number = 0;
+  isFlipped: boolean = false;
 
   constructor(private modalService: NgbModal)
   {
@@ -151,4 +152,8 @@ export class Chessboard implements OnInit {
     this.currentLegalMoves = [];
   }
 
+  handleFlipClicked()
+  {
+    this.isFlipped = !this.isFlipped;
+  }
 }

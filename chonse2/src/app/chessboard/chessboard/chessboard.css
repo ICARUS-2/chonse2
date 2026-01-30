@@ -1,4 +1,20 @@
-.boardContainer 
+.componentContainer
+{
+    display: flex;
+}
+
+.boardOuterContainer
+{
+    display: flex;
+    flex-direction: column;
+}
+
+.boardOuterContainerFlipped
+{
+    flex-direction: column-reverse;
+}
+
+.boardContainerInner
 {
     display: grid;
     grid-template-rows: repeat(8, 1fr);
@@ -10,6 +26,11 @@
     user-select: none;
 }
 
+.boardContainerInnerFlipped
+{
+    transform: rotate(180deg);
+}
+
 .currentlyHeldPiece
 {
     width: 10vmin;
@@ -17,4 +38,12 @@
     position: fixed;
     pointer-events: none;
     transform: translate(-50%, -50%);
+}
+
+@media screen and (max-width: 800px) 
+{
+    .componentContainer
+    {
+        flex-direction: column;
+    }    
 }

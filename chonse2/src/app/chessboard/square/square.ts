@@ -16,6 +16,7 @@ export class Square {
   @Input() showFile: boolean = true;
   @Input() isLegalMove: boolean = false;
   @Input() showPiece: boolean = true;
+  @Input() isFlipped: boolean = false;
 
   @Output() mouseDown = new EventEmitter<{coordinate: string, piece: string, mouse: MouseEvent}>();
   @Output() mouseUp = new EventEmitter<{coordinate: string}>();

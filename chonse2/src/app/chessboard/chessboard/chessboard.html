@@ -1,29 +1,35 @@
-<ng-container>
-    <app-captured-pieces for="b" [capturedPieces]="chessGame.piecesBlackCaptured" [advantage]="chessGame.getMaterialAdvantage()"></app-captured-pieces>
-    <div class="boardContainer">
-        @for( rank of chessGame.pieceState; let rankIndex = $index; track rankIndex)
-        {
-            <ng-container>
-                @for ( piece of rank; let fileIndex = $index; track fileIndex )
-                {
-                    <app-square 
-                        [coordinate]="this.COORDS[rankIndex][fileIndex]" 
-                        [piece]="chessGame.pieceState[rankIndex][fileIndex]"
-                        [isDark]="(rankIndex + fileIndex) % 2 == 1"
-                        [showFile]="rankIndex == rank.length - 1"
-                        [showRank]="fileIndex == 0"
-                        [showPiece]="this.COORDS[rankIndex][fileIndex] != fromSquare"
-                        [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
-                        (mouseDown)="onSquareMouseDown($event)"
-                        (mouseUp)="onSquareMouseUp($event)">
-                    </app-square>
-                }
-            </ng-container>
-        }
+<div class="componentContainer">
+    <div class="boardOuterContainer" [class]="isFlipped ? 'boardOuterContainerFlipped' : ''">
+        <app-captured-pieces for="b" [capturedPieces]="chessGame.piecesBlackCaptured" [advantage]="chessGame.getMaterialAdvantage()"></app-captured-pieces>
+        <div class="boardContainerInner" [class]="isFlipped ? 'boardContainerInnerFlipped' : ''">
+            @for( rank of chessGame.pieceState; let rankIndex = $index; track rankIndex)
+            {
+                <ng-container>
+                    @for ( piece of rank; let fileIndex = $index; track fileIndex )
+                    {
+                        <app-square 
+                            [coordinate]="this.COORDS[rankIndex][fileIndex]" 
+                            [piece]="chessGame.pieceState[rankIndex][fileIndex]"
+                            [isDark]="(rankIndex + fileIndex) % 2 == 1"
+                            [showFile]="rankIndex == rank.length - 1"
+                            [showRank]="fileIndex == 0"
+                            [showPiece]="this.COORDS[rankIndex][fileIndex] != fromSquare"
+                            [isFlipped]="isFlipped"
+                            [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
+                            (mouseDown)="onSquareMouseDown($event)"
+                            (mouseUp)="onSquareMouseUp($event)">
+                        </app-square>
+                    }
+                </ng-container>
+            }
+        </div>
+
+        <app-captured-pieces for="w" [capturedPieces]="chessGame.piecesWhiteCaptured" [advantage]="chessGame.getMaterialAdvantage()"></app-captured-pieces>
     </div>
-
-    <app-captured-pieces for="w" [capturedPieces]="chessGame.piecesWhiteCaptured" [advantage]="chessGame.getMaterialAdvantage()"></app-captured-pieces>
-
+    <div class="boardControls p-5">
+        <h2>Controls</h2>
+        <div class="btn btn-primary" (click)="handleFlipClicked()">↑↓</div>
+    </div>
     @if(currentlyHeldPiece != "")
     {
         <img class="currentlyHeldPiece"
@@ -31,12 +37,7 @@
             [style.left.px]="mouseX"
             [style.top.px]="mouseY">
     }
-
-    <ng-container>
-        
-    </ng-container>
-
-</ng-container>
+</div>
 <div class="testingPurposes">
     <p>CURRENT PIECE: {{currentlyHeldPiece}}</p>
     <p>LEGAL MOVES: {{ currentLegalMoves.toString() }}</p>
