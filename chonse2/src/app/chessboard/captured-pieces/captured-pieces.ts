@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { PieceColor } from '../piece-color';
+import { PieceColor } from '../../../lib/piece-color';
 
 @Component({
   selector: 'app-captured-pieces',

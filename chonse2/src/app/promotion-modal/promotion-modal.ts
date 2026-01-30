@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Square } from "../chessboard/square/square";
-import { PieceType } from '../chessboard/piece-type';
-import { PieceColor } from '../chessboard/piece-color';
+import { PieceType } from '../../lib/piece-type';
+import { PieceColor } from '../../lib/piece-color';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -13,6 +13,11 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 export class PromotionModal {
   color: string = "";
 
+  queenOption: string = PieceType.QUEEN;
+  rookOption: string = PieceType.ROOK;
+  bishopOption: string = PieceType.BISHOP;
+  knightOption: string = PieceType.KNIGHT;
+  
   constructor(private activeModal: NgbActiveModal)
   {
 

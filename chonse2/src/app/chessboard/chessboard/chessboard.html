@@ -1,14 +1,14 @@
 <ng-container>
-    <app-captured-pieces for="b" [capturedPieces]="piecesBlackCaptured" [advantage]="getMaterialAdvantage()"></app-captured-pieces>
+    <app-captured-pieces for="b" [capturedPieces]="chessGame.piecesBlackCaptured" [advantage]="chessGame.getMaterialAdvantage()"></app-captured-pieces>
     <div class="boardContainer">
-        @for( rank of pieceState; let rankIndex = $index; track rankIndex)
+        @for( rank of chessGame.pieceState; let rankIndex = $index; track rankIndex)
         {
             <ng-container>
                 @for ( piece of rank; let fileIndex = $index; track fileIndex )
                 {
                     <app-square 
                         [coordinate]="this.COORDS[rankIndex][fileIndex]" 
-                        [piece]="pieceState[rankIndex][fileIndex]"
+                        [piece]="chessGame.pieceState[rankIndex][fileIndex]"
                         [isDark]="(rankIndex + fileIndex) % 2 == 1"
                         [showFile]="rankIndex == rank.length - 1"
                         [showRank]="fileIndex == 0"
@@ -22,7 +22,7 @@
         }
     </div>
 
-    <app-captured-pieces for="w" [capturedPieces]="piecesWhiteCaptured" [advantage]="getMaterialAdvantage()"></app-captured-pieces>
+    <app-captured-pieces for="w" [capturedPieces]="chessGame.piecesWhiteCaptured" [advantage]="chessGame.getMaterialAdvantage()"></app-captured-pieces>
 
     @if(currentlyHeldPiece != "")
     {
