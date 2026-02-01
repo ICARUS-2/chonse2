@@ -43,13 +43,16 @@ export default class Chonse2
     static _QUEEN_VECTOR_X = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
     static _QUEEN_VECTOR_Y = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
 
-    //CAPTURE PROPERTIES
+    //captures
     piecesWhiteCaptured: string[] = [];
     piecesBlackCaptured: string[] = [];
     promotionalMaterialDifference: number = 0;
 
     //the state of the board
     pieceState: Array<Array<string>>;
+
+    //true: White's turn, false: black's turn
+    turn: boolean = true; 
 
     //instantiates with either a passed game state or the default one.
     constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE)
@@ -72,6 +75,21 @@ export default class Chonse2
     }
 
     getLegalMoves(coordinate: string, piece: string): Array<string>
+    {
+      if (piece == ""
+        || (piece.startsWith(PieceColor.WHITE) && !this.turn)
+        || (piece.startsWith(PieceColor.BLACK) && this.turn)
+      )
+      {
+        return [];
+      }
+
+      let legalMoves = this.getPotentiallyLegalMoves(coordinate, piece);
+
+      return legalMoves
+    }
+
+    getPotentiallyLegalMoves(coordinate: string, piece: string): Array<string>
     {
         let potentiallyLegalMoves: Array<string> = [];
 
@@ -330,7 +348,7 @@ export default class Chonse2
     
     completeMove(fromCoordinate: string, toCordinate: string, piece: string, promotionPiece = PieceType.QUEEN): boolean
     {
-        const legalMoves = this.getLegalMoves(fromCoordinate, piece); 
+        const legalMoves = this.getPotentiallyLegalMoves(fromCoordinate, piece); 
 
         if (!legalMoves.includes(toCordinate))
         {
@@ -409,6 +427,7 @@ export default class Chonse2
         this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
         
         //The move was successful if we got this far.
+        this.turn = !this.turn;
         return true;
     }
     
