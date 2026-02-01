@@ -29,6 +29,7 @@
     <div class="boardControls p-5">
         <h2>Controls</h2>
         <div class="btn btn-primary" (click)="handleFlipClicked()">↑↓</div>
+        <p>{{chessGame.turn ? "White" : "Black"}} to move</p>
     </div>
     @if(currentlyHeldPiece != "")
     {

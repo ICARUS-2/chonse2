@@ -40,8 +40,8 @@ export default class Chonse2
     static _BISHOP_VECTOR_Y = [-1, 1, -1, 1];
     static _ROOK_VECTOR_X = [-1, 1, 0, 0];
     static _ROOK_VECTOR_Y = [0, 0, -1, 1];
-    static _QUEEN_VECTOR_X = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
-    static _QUEEN_VECTOR_Y = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
+    static _QUEEN_KING_VECTOR_X = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
+    static _QUEEN_KING_VECTOR_Y = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
 
     //captures
     piecesWhiteCaptured: string[] = [];
@@ -124,9 +124,9 @@ export default class Chonse2
         }
 
         //handle king
-        if (piece == PieceType.WHITE_QUEEN || piece == PieceType.BLACK_KING)
+        if (piece == PieceType.WHITE_KING || piece == PieceType.BLACK_KING)
         {
-            //
+            potentiallyLegalMoves = this._getPotentiallyLegalKingMoves(coordinate, piece)
         }
 
         return potentiallyLegalMoves;
@@ -273,7 +273,7 @@ export default class Chonse2
           return [];
         }
     
-        return this._getVectorMoves(coordinate, piece, Chonse2._QUEEN_VECTOR_X, Chonse2._QUEEN_VECTOR_Y);
+        return this._getVectorMoves(coordinate, piece, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y);
     }
     
     _getPotentiallyLegalKingMoves(coordinate: string, piece: string): Array<string>
@@ -283,13 +283,10 @@ export default class Chonse2
           return [];
         }
     
-        const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
-        const legalMoves: Array<string> = [];
-    
-        return legalMoves;
+        return this._getVectorMoves(coordinate, piece, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
     }
     
-    _getVectorMoves(coordinate: string, piece: string, vectorX: Array<number>, vectorY: Array<number>): Array<string>
+    _getVectorMoves(coordinate: string, piece: string, vectorX: Array<number>, vectorY: Array<number>, distance = Chonse2.SIZE): Array<string>
     {
         const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
         const legalMoves: Array<string> = [];
@@ -307,7 +304,7 @@ export default class Chonse2
           for(
             //set the offsets to their starting values and repeatedly adding that value in each direction until the end is reached.
             let currentXOffset = dx, currentYOffset = dy; 
-            runCount < Chonse2.SIZE;  
+            runCount < distance;  
             currentXOffset += dx, currentYOffset += dy, runCount ++)
             {
               //row of the square the bishop will move to.
