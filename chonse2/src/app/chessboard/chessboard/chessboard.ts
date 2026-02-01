@@ -43,6 +43,11 @@ export class Chessboard implements OnInit {
 
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: MouseEvent })
   {
+    if (event.mouse.button != 0)
+    {
+      return;
+    }
+
     //update the square that the piece is dragged from
     this.fromSquare = event.coordinate;
     this.currentlyHeldPiece = event.piece;
