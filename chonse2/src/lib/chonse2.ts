@@ -43,6 +43,7 @@ export default class Chonse2
     static WHITE_KINGSIDE_KNIGHT_SQUARE = "g1";
     static WHITE_KINGSIDE_ROOK_SQUARE = "h1";
     static WHITE_QUEEN_SQUARE = "d1";
+    static WHITE_KING_SQUARE = "e1"
     static BLACK_QUEENSIDE_KNIGHT_SQUARE = "b8";
     static BLACK_QUEENSIDE_BISHOP_SQUARE = "c8";
     static BLACK_QUEENSIDE_ROOK_SQUARE = "a8";
@@ -50,6 +51,7 @@ export default class Chonse2
     static BLACK_KINGSIDE_BISHOP_SQUARE = "f8";
     static BLACK_KINGSIDE_ROOK_SQUARE = "h8"
     static BLACK_QUEEN_SQUARE = "d8";
+    static BLACK_KING_SQUARE = "e8";
 
     static _BISHOP_VECTOR_X = [-1, -1, 1, 1];
     static _BISHOP_VECTOR_Y = [-1, 1, -1, 1];
@@ -409,8 +411,10 @@ export default class Chonse2
       //In the piece state, where the current piece is moving from.
       const fromSquareIndex = this.findIndexFromCoordinate(fromCoordinate);
 
+      //Extract the piece from the square that is being moved from.
       let piece = this.pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex];
 
+      //So far, potentially legal moves not counting checks.
       const legalMoves = this.getPotentiallyLegalMoves(fromCoordinate, piece); 
 
       if (!legalMoves.includes(toCoordinate))
@@ -482,9 +486,67 @@ export default class Chonse2
   
       //Replace it in the new position.
       this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
+
+      //If the player castled kingside (check that the from and to coordinates match a kingside castle).
+      if (this.turn == true ? 
+        (piece == PieceType.WHITE_KING && fromCoordinate == Chonse2.WHITE_KING_SQUARE && toCoordinate == Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) 
+        : (piece == PieceType.BLACK_KING && fromCoordinate == Chonse2.BLACK_KING_SQUARE && toCoordinate == Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE))
+      {
+        //If they do, check that they actually have castling rights for the king side.
+        if (piece == PieceType.WHITE_KING ? this.whiteCastlingRights.kingSide : this.blackCastlingRights.kingSide)
+        {
+          //Where the rook will when the player castles.
+          const newRookPlaceIndex = piece == PieceType.WHITE_KING ? this.findIndexFromCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) : this.findIndexFromCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
+          
+          //Where the old rook will be cleared.
+          const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? this.findIndexFromCoordinate(Chonse2.WHITE_KINGSIDE_ROOK_SQUARE) : this.findIndexFromCoordinate(Chonse2.BLACK_KINGSIDE_ROOK_SQUARE);
+          
+          //The piece to replace it with (a white rook if white is castling, black otherwise).
+          const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
+
+          //Clears the old rook place.
+          this.pieceState[oldRookPlaceIndex.rowIndex][oldRookPlaceIndex.colIndex] = PieceType.NONE;
+
+          //Sets the new rook in place (protecting the king).
+          this.pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
+
+          //Removes castling rights as a player cannot castle multiple times.
+          piece == PieceType.WHITE_KING ? this.whiteCastlingRights.removeCastlingRights() : this.blackCastlingRights.removeCastlingRights();
+        }
+      }
+
+      //If the player castled queenside (check that the from and to coordinates match a queenside castle).
+      if (this.turn == true ? 
+        (piece == PieceType.WHITE_KING && fromCoordinate == Chonse2.WHITE_KING_SQUARE && toCoordinate == Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) 
+        : (piece == PieceType.BLACK_KING && fromCoordinate == Chonse2.BLACK_KING_SQUARE && toCoordinate == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE))
+      {
+        //If they do, check that they actually have castling rights for the queen side.
+        if (piece == PieceType.WHITE_KING ? this.whiteCastlingRights.queenSide : this.blackCastlingRights.queenSide)
+        {
+          //Where the rook will when the player castles.
+          const newRookPlaceIndex = piece == PieceType.WHITE_KING ? this.findIndexFromCoordinate(Chonse2.WHITE_QUEEN_SQUARE) : this.findIndexFromCoordinate(Chonse2.BLACK_QUEEN_SQUARE);
+          
+          //Where the old rook will be cleared.
+          const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? this.findIndexFromCoordinate(Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE) : this.findIndexFromCoordinate(Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE);
+          
+          //The piece to replace it with (a white rook if white is castling, black otherwise).
+          const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
+
+          //Clears the old rook place.
+          this.pieceState[oldRookPlaceIndex.rowIndex][oldRookPlaceIndex.colIndex] = PieceType.NONE;
+
+          //Sets the new rook in place (protecting the king).
+          this.pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
+
+          //Removes castling rights as a player cannot castle multiple times.
+          piece == PieceType.WHITE_KING ? this.whiteCastlingRights.removeCastlingRights() : this.blackCastlingRights.removeCastlingRights();
+        }
+      }
       
-      //The move was successful if we got this far.
+      //Once this player finishes their move, it's the next person's turn.
       this.turn = !this.turn;
+
+      //The move was successful if we got this far.
       return true;
     }
     
