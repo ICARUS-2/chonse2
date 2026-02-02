@@ -155,7 +155,16 @@ export default class Chonse2
     //The piece already present in the square the current piece is moving to (being captured)
     const pieceInToSquare = this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex];
 
-    //handle en passant
+    //Handle en passant
+    if (toCoordinate == this.enPassantSquare && (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN))
+    {
+      //Remove the pawn that just got en passant'd
+      this.turn ? this.pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : this.pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
+    
+      //Add the captured piece.
+      this.turn ? this.piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : this.piecesBlackCaptured.push(PieceType.WHITE_PAWN);
+    }
+    //Update the en passant square.
     this.enPassantSquare = this._getEnPassantSquareIfExists(fromCoordinate, toCoordinate, this.turn);
 
     //handle capture
