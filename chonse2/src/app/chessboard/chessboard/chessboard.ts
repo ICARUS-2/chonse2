@@ -95,12 +95,12 @@ export class Chessboard implements OnInit {
       modalRef.result.then( (result) =>
       {
         //perform the move and promote to what the user selected.
-        this.chessGame.completeMove(fromSquare, toSquare, piece, result);
+        this.chessGame.completeMove(fromSquare, toSquare, result);
       } )
       .catch( () =>
       {
         //if the dialog was forced closed, promote to queen by default.
-        this.chessGame.completeMove(fromSquare, toSquare, piece, PieceType.QUEEN);
+        this.chessGame.completeMove(fromSquare, toSquare, PieceType.QUEEN);
       } )
       .finally()
       {

@@ -401,89 +401,91 @@ export default class Chonse2
         return legalMoves;
     }
     
-    completeMove(fromCoordinate: string, toCordinate: string, piece: string, promotionPiece = PieceType.QUEEN): boolean
+    completeMove(fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN): boolean
     {
-        const legalMoves = this.getPotentiallyLegalMoves(fromCoordinate, piece); 
+      //In piece state, where the current piece is moving to.
+      const toSquareIndex = this.findIndexFromCoordinate(toCoordinate);
+  
+      //In the piece state, where the current piece is moving from.
+      const fromSquareIndex = this.findIndexFromCoordinate(fromCoordinate);
 
-        if (!legalMoves.includes(toCordinate))
+      let piece = this.pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex];
+
+      const legalMoves = this.getPotentiallyLegalMoves(fromCoordinate, piece); 
+
+      if (!legalMoves.includes(toCoordinate))
+      {
+          return false;
+      }
+  
+      //The piece already present in the square the current piece is moving to (being captured)
+      const pieceInToSquare = this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex];
+  
+      //handle capture
+      if (pieceInToSquare != "")
+      {
+        //if there was already a piece in the TO square, and the current piece is a black one, then black must be capturing a white piece.
+        if (piece.startsWith(PieceColor.BLACK))
         {
-            return false;
+          this.piecesBlackCaptured.push(pieceInToSquare);
         }
-
-        //In piece state, where the current piece is moving to.
-        const toSquareIndex = this.findIndexFromCoordinate(toCordinate);
-    
-        //In the piece state, where the current piece is moving from.
-        const fromSquareIndex = this.findIndexFromCoordinate(fromCoordinate);
-    
-        //The piece already present in the square the current piece is moving to (being captured)
-        const pieceInToSquare = this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex];
-    
-        //handle capture
-        if (pieceInToSquare != "")
+        
+        //vice versa
+        if (piece.startsWith(PieceColor.WHITE))
         {
-          //if there was already a piece in the TO square, and the current piece is a black one, then black must be capturing a white piece.
-          if (piece.startsWith(PieceColor.BLACK))
+          this.piecesWhiteCaptured.push(pieceInToSquare);
+        }
+      }
+  
+      //Handle promotion
+      if (
+        piece == PieceType.WHITE_PAWN && toCoordinate.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
+        piece == PieceType.BLACK_PAWN && toCoordinate.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
+      {
+
+          switch(promotionPiece)
           {
-            this.piecesBlackCaptured.push(pieceInToSquare);
+              case PieceType.QUEEN:
+                  piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_QUEEN : PieceType.BLACK_QUEEN;
+                  break;
+
+              case PieceType.ROOK:
+                  piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
+                  break;
+
+              case PieceType.BISHOP:
+                  piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_BISHOP : PieceType.BLACK_BISHOP;
+                  break;
+              
+              case PieceType.KNIGHT:
+                  piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_KNIGHT : PieceType.BLACK_KNIGHT;
+                  break;
           }
-          
-          //vice versa
+
+          //Change the piece for the promoted one and update material difference.
           if (piece.startsWith(PieceColor.WHITE))
           {
-            this.piecesWhiteCaptured.push(pieceInToSquare);
+              this.promotionalMaterialDifference += PieceMaterial.getMaterialFromPiece(piece) - 1; //+1 accounts for the loss of pawn.
           }
-        }
-    
-        //Handle promotion
-        if (
-          piece == PieceType.WHITE_PAWN && toCordinate.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
-          piece == PieceType.BLACK_PAWN && toCordinate.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
-        {
-
-            switch(promotionPiece)
-            {
-                case PieceType.QUEEN:
-                    piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_QUEEN : PieceType.BLACK_QUEEN;
-                    break;
-
-                case PieceType.ROOK:
-                    piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
-                    break;
-
-                case PieceType.BISHOP:
-                    piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_BISHOP : PieceType.BLACK_BISHOP;
-                    break;
-                
-                case PieceType.KNIGHT:
-                    piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_KNIGHT : PieceType.BLACK_KNIGHT;
-                    break;
-            }
-
-            //Change the piece for the promoted one and update material difference.
-            if (piece.startsWith(PieceColor.WHITE))
-            {
-                this.promotionalMaterialDifference += PieceMaterial.getMaterialFromPiece(piece) - 1; //+1 accounts for the loss of pawn.
-            }
-            else
-            {
-                this.promotionalMaterialDifference -= PieceMaterial.getMaterialFromPiece(piece) + 1;
-            }
-            
-            //set promoted piece
-            this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
-        
-        }
-        
-        //Clear the old piece position.
-        this.pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex] = "";
-    
-        //Replace it in the new position.
-        this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
-        
-        //The move was successful if we got this far.
-        this.turn = !this.turn;
-        return true;
+          else
+          {
+              this.promotionalMaterialDifference -= PieceMaterial.getMaterialFromPiece(piece) + 1;
+          }
+          
+          //set promoted piece
+          this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
+      
+      }
+      
+      //Clear the old piece position.
+      this.pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex] = "";
+  
+      //Replace it in the new position.
+      this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
+      
+      //The move was successful if we got this far.
+      this.turn = !this.turn;
+      return true;
     }
     
     findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
