@@ -3,7 +3,6 @@ import CastlingRights from "./castling-rights";
 import { PieceColor } from "./piece-color";
 import PieceMaterial from "./piece-material";
 import { PieceType } from "./piece-type";
-import EnPassantCoord from "./en-passant-coord";
 
 export default class Chonse2
 {
@@ -61,8 +60,27 @@ export default class Chonse2
   private static readonly _ROOK_VECTOR_Y = [0, 0, -1, 1];
   private static readonly _QUEEN_KING_VECTOR_X = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
   private static readonly _QUEEN_KING_VECTOR_Y = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
-  private static readonly _WHITE_EP_TRIGGERS = new Set<string>([ "a2-a4", "b2-b4", "c2-c4", "d2-d4", "e2-e4", "f2-f4", "g2-g4", "h2-h4",]);
-  private static readonly _BLACK_EP_TRIGGERS = new Set<string>([ "a7-a5", "b7-b5", "c7-c5", "d7-d5", "e7-e5", "f7-f5", "g7-g5", "h7-h5",]);
+  private static readonly _WHITE_EP_TRIGGERS = new Map<string, string>([
+      ["a2-a4", "a3"],
+      ["b2-b4", "b3"],
+      ["c2-c4", "c3"],
+      ["d2-d4", "d3"],
+      ["e2-e4", "e3"],
+      ["f2-f4", "f3"],
+      ["g2-g4", "g3"],
+      ["h2-h4", "h3"],
+  ]);
+
+  private static readonly _BLACK_EP_TRIGGERS = new Map<string, string>([
+      ["a7-a5", "a6"],
+      ["b7-b5", "b6"],
+      ["c7-c5", "c6"],
+      ["d7-d5", "d6"],
+      ["e7-e5", "e6"],
+      ["f7-f5", "f6"],
+      ["g7-g5", "g6"],
+      ["h7-h5", "h6"],
+  ]);
 
   //captures
   piecesWhiteCaptured: string[] = [];
@@ -78,8 +96,7 @@ export default class Chonse2
   //RIGHTS (castling/en passant)
   whiteCastlingRights: CastlingRights = new CastlingRights();
   blackCastlingRights: CastlingRights = new CastlingRights();
-  whiteEnPassantRights: boolean = false;
-  blackEnPassantRights: boolean = false;
+  enPassantSquare: string = "";
 
   //instantiates with either a passed game state or the default one.
   constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE)
@@ -132,11 +149,14 @@ export default class Chonse2
 
     if (!legalMoves.includes(toCoordinate))
     {
-        return false;
+      return false;
     }
 
     //The piece already present in the square the current piece is moving to (being captured)
     const pieceInToSquare = this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex];
+
+    //handle en passant
+    this.enPassantSquare = this._getEnPassantSquareIfExists(fromCoordinate, toCoordinate, this.turn);
 
     //handle capture
     if (pieceInToSquare != "")
@@ -351,7 +371,6 @@ export default class Chonse2
   
       return whiteMaterialCaptured - blackMaterialCaptured + this.promotionalMaterialDifference;
   }
-
 
   //#region Inner legal move helper functions
 
@@ -647,4 +666,12 @@ export default class Chonse2
       return legalMoves;
   }
   //#endregion
+
+  private _getEnPassantSquareIfExists(fromSquare: string, toSquare: string, turn: boolean) : string
+  {
+    const key = fromSquare + "-" + toSquare;
+    const val = turn ? Chonse2._WHITE_EP_TRIGGERS.get(key) : Chonse2._BLACK_EP_TRIGGERS.get(key);
+
+    return val == null ? "" : val;
+  }
 }
