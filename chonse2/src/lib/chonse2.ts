@@ -444,22 +444,34 @@ export default class Chonse2
         //if this column is not the leftmost one, then it can potentially capture a piece left-diagonally.
         if (colIndex != 0)
         {
+          //The piece content of the left capture square.
           const leftCaptureSquare = rankAbove.at(colIndex - 1);
+
+          //The coordinate of the above square.
+          const leftCaptureSquareCoord = piece == PieceType.WHITE_PAWN ? Chonse2.COORDS[rowIndex - 1][colIndex - 1] : Chonse2.COORDS[rowIndex + 1][colIndex - 1];
   
-          if (leftCaptureSquare?.startsWith(piece == PieceType.WHITE_PAWN ? PieceColor.BLACK : PieceColor.WHITE))
+          //The square is a legal move if it has an opposing piece OR it is the en passant square
+          if (leftCaptureSquare?.startsWith(piece == PieceType.WHITE_PAWN ? PieceColor.BLACK : PieceColor.WHITE) 
+            || leftCaptureSquareCoord == this.enPassantSquare)
           {
-            piece == PieceType.WHITE_PAWN ? legalMoves.push(Chonse2.COORDS[rowIndex - 1][colIndex - 1]) : legalMoves.push(Chonse2.COORDS[rowIndex + 1][colIndex - 1]);
+            legalMoves.push(leftCaptureSquareCoord);
           }
         }
   
         //if this column is not the rightmost one, then it can potentially capture a piece right-diagonally.
         if (colIndex != rankAbove.length - 1)
         {
+          //The piece content of the right capture square.
           const rightCaptureSquare = rankAbove.at(colIndex + 1);
-  
-          if (rightCaptureSquare?.startsWith(piece == PieceType.WHITE_PAWN ? PieceColor.BLACK : PieceColor.WHITE))
+
+          //The coordinate of the above square.
+          const rightCaptureSquareCoord = piece == PieceType.WHITE_PAWN ? Chonse2.COORDS[rowIndex - 1][colIndex + 1] : Chonse2.COORDS[rowIndex + 1][colIndex + 1]
+
+          //The square is a legal move if it has an opposing piece OR it is the en passant square
+          if (rightCaptureSquare?.startsWith(piece == PieceType.WHITE_PAWN ? PieceColor.BLACK : PieceColor.WHITE)
+            || rightCaptureSquareCoord == this.enPassantSquare)
           {
-            piece == PieceType.WHITE_PAWN ? legalMoves.push(Chonse2.COORDS[rowIndex - 1][colIndex + 1]) : legalMoves.push(Chonse2.COORDS[rowIndex + 1][colIndex + 1]);;
+            legalMoves.push(rightCaptureSquareCoord);
           }
         }
   
@@ -669,9 +681,13 @@ export default class Chonse2
 
   private _getEnPassantSquareIfExists(fromSquare: string, toSquare: string, turn: boolean) : string
   {
+    //En passant moves are stored with key fromsquare-tosquare
     const key = fromSquare + "-" + toSquare;
+
+    //Gets the en passant square corresponding to the double pawn move if it exists.
     const val = turn ? Chonse2._WHITE_EP_TRIGGERS.get(key) : Chonse2._BLACK_EP_TRIGGERS.get(key);
 
+    //Return it if it exists or empty string otherwise.
     return val == null ? "" : val;
   }
 }
