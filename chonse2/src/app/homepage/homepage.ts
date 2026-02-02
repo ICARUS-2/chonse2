@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { PieceType } from '../../lib/piece-type';
+import Chonse2 from '../../lib/chonse2';
 
 @Component({
   selector: 'app-homepage',
@@ -11,16 +12,15 @@ import { PieceType } from '../../lib/piece-type';
 export class Homepage {
 
   testPieceState:Array<Array<string>> = [
-    [ PieceType.WHITE_BISHOP, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.BLACK_ROOK, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.BLACK_KING, PieceType.NONE, PieceType.NONE, PieceType.BLACK_ROOK],
     [ PieceType.NONE,       PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
     [ PieceType.NONE,       PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
     [ PieceType.NONE,       PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
     [ PieceType.NONE,       PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
     [ PieceType.NONE,       PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
     [ PieceType.NONE,       PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.BLACK_BISHOP, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE]
+    [ PieceType.WHITE_ROOK, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.WHITE_KING, PieceType.NONE, PieceType.NONE, PieceType.WHITE_ROOK]
 ];
 
-
-
+  testGame: Chonse2 = new Chonse2(this.testPieceState);
 }
