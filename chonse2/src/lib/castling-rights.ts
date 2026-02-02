@@ -3,7 +3,7 @@ export default class CastlingRights
     queenSide: boolean = true;
     kingSide: boolean = true;
 
-    removeCastlingRights()
+    removeBothCastlingRights()
     {
         this.queenSide = false;
         this.kingSide = false;

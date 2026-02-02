@@ -1,3 +1,4 @@
+import { from } from "rxjs";
 import CastlingRights from "./castling-rights";
 import { PieceColor } from "./piece-color";
 import PieceMaterial from "./piece-material";
@@ -511,7 +512,7 @@ export default class Chonse2
           this.pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
 
           //Removes castling rights as a player cannot castle multiple times.
-          piece == PieceType.WHITE_KING ? this.whiteCastlingRights.removeCastlingRights() : this.blackCastlingRights.removeCastlingRights();
+          piece == PieceType.WHITE_KING ? this.whiteCastlingRights.removeBothCastlingRights() : this.blackCastlingRights.removeBothCastlingRights();
         }
       }
 
@@ -539,10 +540,62 @@ export default class Chonse2
           this.pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
 
           //Removes castling rights as a player cannot castle multiple times.
-          piece == PieceType.WHITE_KING ? this.whiteCastlingRights.removeCastlingRights() : this.blackCastlingRights.removeCastlingRights();
+          piece == PieceType.WHITE_KING ? this.whiteCastlingRights.removeBothCastlingRights() : this.blackCastlingRights.removeBothCastlingRights();
         }
       }
       
+      //If the player moved their king, strip castling rights on both sides.
+      if (this.turn == true ? piece == PieceType.WHITE_KING : piece == PieceType.BLACK_KING)
+      {
+        this.turn == true ? this.whiteCastlingRights.removeBothCastlingRights() : this.blackCastlingRights.removeBothCastlingRights();
+      }
+    
+      //If the player moved their rook, remove castling rights for that side.
+      if (this.turn == true ? piece == PieceType.WHITE_ROOK : piece == PieceType.BLACK_ROOK)
+      {
+        if (this.turn && fromCoordinate == Chonse2.WHITE_KINGSIDE_ROOK_SQUARE)
+        {
+          this.whiteCastlingRights.kingSide = false;
+        }
+
+        if (this.turn && fromCoordinate == Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE)
+        {
+          this.whiteCastlingRights.queenSide = false;
+        }
+
+        if (!this.turn && fromCoordinate == Chonse2.BLACK_KINGSIDE_ROOK_SQUARE)
+        {
+          this.blackCastlingRights.kingSide = false;
+        }
+
+        if (!this.turn && fromCoordinate == Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE)
+        {
+          this.blackCastlingRights.queenSide = false;
+        }
+      }
+
+      //If the player had that rook captured, remove castling rights for that side
+      if (this.turn && toCoordinate == Chonse2.BLACK_KINGSIDE_ROOK_SQUARE)
+      {
+        this.blackCastlingRights.kingSide = false;
+      }
+
+      if (this.turn && toCoordinate == Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE)
+      {
+        this.blackCastlingRights.queenSide = false;
+      }
+
+      if (!this.turn && toCoordinate == Chonse2.WHITE_KINGSIDE_ROOK_SQUARE)
+      {
+        this.whiteCastlingRights.kingSide = false;
+      }
+
+      if (!this.turn && toCoordinate == Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE)
+      {
+        this.whiteCastlingRights.queenSide = false;
+      }
+
+
       //Once this player finishes their move, it's the next person's turn.
       this.turn = !this.turn;
 
