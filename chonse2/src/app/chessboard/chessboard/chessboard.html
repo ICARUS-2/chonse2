@@ -42,4 +42,6 @@
 <div class="testingPurposes">
     <p>CURRENT PIECE: {{currentlyHeldPiece}}</p>
     <p>LEGAL MOVES: {{ currentLegalMoves.toString() }}</p>
+    <p>WHITE CASTLING RIGHTS: {{ `Kingside: ` + this.chessGame.whiteCastlingRights.kingSide + ` |  Queenside: ` + this.chessGame.whiteCastlingRights.queenSide }}</p>
+    <p>BLACK CASTLING RIGHTS: {{ `Kingside: ` + this.chessGame.blackCastlingRights.kingSide + ` |  Queenside: ` + this.chessGame.blackCastlingRights.queenSide }}</p>
 </div>

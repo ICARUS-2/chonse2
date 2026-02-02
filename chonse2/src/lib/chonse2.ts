@@ -1,3 +1,4 @@
+import CastlingRights from "./castling-rights";
 import { PieceColor } from "./piece-color";
 import PieceMaterial from "./piece-material";
 import { PieceType } from "./piece-type";
@@ -30,11 +31,25 @@ export default class Chonse2
     ];
 
     //CONSTANTS
+    static SIZE: number = 8;
     static WHITE_PAWN_RANK = 2;
     static BLACK_PAWN_RANK = 7;
     static WHITE_PAWN_PROMOTE_RANK = 8;
     static BLACK_PAWN_PROMOTE_RANK = 1;
-    static SIZE: number = 8;
+    static WHITE_QUEENSIDE_KNIGHT_SQUARE = "b1";
+    static WHITE_QUEENSIDE_BISHOP_SQUARE = "c1";
+    static WHITE_QUEENSIDE_ROOK_SQUARE = "a1";
+    static WHITE_KINGSIDE_BISHOP_SQUARE = "f1";
+    static WHITE_KINGSIDE_KNIGHT_SQUARE = "g1";
+    static WHITE_KINGSIDE_ROOK_SQUARE = "h1";
+    static WHITE_QUEEN_SQUARE = "d1";
+    static BLACK_QUEENSIDE_KNIGHT_SQUARE = "b8";
+    static BLACK_QUEENSIDE_BISHOP_SQUARE = "c8";
+    static BLACK_QUEENSIDE_ROOK_SQUARE = "a8";
+    static BLACK_KINGSIDE_KNIGHT_SQUARE = "g8";
+    static BLACK_KINGSIDE_BISHOP_SQUARE = "f8";
+    static BLACK_KINGSIDE_ROOK_SQUARE = "h8"
+    static BLACK_QUEEN_SQUARE = "d8";
 
     static _BISHOP_VECTOR_X = [-1, -1, 1, 1];
     static _BISHOP_VECTOR_Y = [-1, 1, -1, 1];
@@ -53,6 +68,11 @@ export default class Chonse2
 
     //true: White's turn, false: black's turn
     turn: boolean = true; 
+      
+    //RIGHTS (castling/en passant)
+    whiteCastlingRights: CastlingRights = new CastlingRights();
+    blackCastlingRights: CastlingRights = new CastlingRights();
+
 
     //instantiates with either a passed game state or the default one.
     constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE)
@@ -283,7 +303,45 @@ export default class Chonse2
           return [];
         }
     
-        return this._getVectorMoves(coordinate, piece, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
+        //Base moves.
+        let legalMoves = this._getVectorMoves(coordinate, piece, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
+        
+        //Kingside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
+        if (this.turn == true ? this.whiteCastlingRights.kingSide : this.blackCastlingRights.kingSide)
+        {
+          //These two squares need to be free in order to castle kingside.
+          const kingsideKnightSqaure = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
+          const kingsideBishopSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
+
+          //Check if they're clear, and if so, push the castling square as a legal move.
+          if (
+            this.pieceState[kingsideKnightSqaure.rowIndex][kingsideKnightSqaure.colIndex] == ""
+            && this.pieceState[kingsideBishopSquare.rowIndex][kingsideBishopSquare.colIndex] == "" 
+          )
+          {
+            this.turn == true ? legalMoves.push(Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) : legalMoves.push(Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
+          }
+        }
+
+        //Queenside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
+        if (this.turn == true ? this.whiteCastlingRights.queenSide : this.blackCastlingRights.queenSide)
+        {
+          //These three squares need to be free in order to castle queenside.
+          const queensideKnightSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE : Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE);
+          const queensideBishopSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
+          const queenSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE);
+        
+          //Check if they're clear, and if so, push the castling square as a legal move.
+          if (
+            this.pieceState[queensideKnightSquare.rowIndex][queensideKnightSquare.colIndex] == ""
+            && this.pieceState[queensideBishopSquare.rowIndex][queensideBishopSquare.colIndex] == ""
+            && this.pieceState[queenSquare.rowIndex][queenSquare.colIndex] == ""
+          )
+          {
+            this.turn == true ? legalMoves.push(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) : legalMoves.push(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
+          }
+        }
+        return legalMoves;   
     }
     
     _getVectorMoves(coordinate: string, piece: string, vectorX: Array<number>, vectorY: Array<number>, distance = Chonse2.SIZE): Array<string>

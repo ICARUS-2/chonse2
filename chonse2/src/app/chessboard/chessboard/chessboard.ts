@@ -7,6 +7,7 @@ import PieceMaterial from '../../../lib/piece-material';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PromotionModal } from '../../promotion-modal/promotion-modal';
 import Chonse2 from '../../../lib/chonse2';
+import CastlingRights from '../../../lib/castling-rights';
 
 @Component({
   selector: 'app-chessboard',
@@ -41,6 +42,8 @@ export class Chessboard implements OnInit {
 
   }
 
+  //MOUSE LOGIC
+  //#region 
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: MouseEvent })
   {
     if (event.mouse.button != 0)
@@ -116,8 +119,6 @@ export class Chessboard implements OnInit {
     }
   }
 
-  //MOUSE LOGIC
-  //#region 
   handleDragImage(mouse: MouseEvent)
   {
     //Adds sets the current mouse position in the UI so it can be tracked.
