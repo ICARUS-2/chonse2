@@ -93,7 +93,7 @@ export default class Chonse2
   //true: White's turn, false: black's turn
   turn: boolean = true; 
     
-  //RIGHTS (castling/en passant)
+  //Special cases (castling/en passant)
   whiteCastlingRights: CastlingRights = new CastlingRights();
   blackCastlingRights: CastlingRights = new CastlingRights();
   enPassantSquare: string = "";
@@ -120,9 +120,12 @@ export default class Chonse2
 
   getLegalMoves(coordinate: string): Array<string>
   {
-    const index = this.findIndexFromCoordinate(coordinate);
-    const piece = this.pieceState[index.rowIndex][index.colIndex];
+    //Where the piece is within the state.
+    const index = Chonse2.findIndexFromCoordinate(coordinate);
 
+    //The piece that is being moved.
+    const piece = this.pieceState[index.rowIndex][index.colIndex];
+    
     if (piece == ""
       || (piece.startsWith(PieceColor.WHITE) && !this.turn)
       || (piece.startsWith(PieceColor.BLACK) && this.turn)
@@ -131,7 +134,17 @@ export default class Chonse2
       return [];
     }
 
-    let legalMoves = this._getPotentiallyLegalMoves(coordinate);
+    const potentiallyLegalMoves = this._getPotentiallyLegalMoves(coordinate);
+
+    const legalMoves = potentiallyLegalMoves.filter(item =>
+      {
+        const deepCopy: Chonse2 = this._clone();
+
+        Chonse2._playDummyMove(deepCopy, coordinate, item);
+
+        return this.turn ? !deepCopy.isInCheck(PieceColor.WHITE) : !deepCopy.isInCheck(PieceColor.BLACK);
+      }
+    )
 
     return legalMoves;
   }
@@ -139,10 +152,10 @@ export default class Chonse2
   completeMove(fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN): boolean
   {
     //In piece state, where the current piece is moving to.
-    const toSquareIndex = this.findIndexFromCoordinate(toCoordinate);
+    const toSquareIndex = Chonse2.findIndexFromCoordinate(toCoordinate);
 
     //In the piece state, where the current piece is moving from.
-    const fromSquareIndex = this.findIndexFromCoordinate(fromCoordinate);
+    const fromSquareIndex = Chonse2.findIndexFromCoordinate(fromCoordinate);
 
     //Extract the piece from the square that is being moved from.
     let piece = this.pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex];
@@ -241,10 +254,10 @@ export default class Chonse2
       if (piece == PieceType.WHITE_KING ? this.whiteCastlingRights.kingSide : this.blackCastlingRights.kingSide)
       {
         //Where the rook will when the player castles.
-        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? this.findIndexFromCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) : this.findIndexFromCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
+        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) : Chonse2.findIndexFromCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
         
         //Where the old rook will be cleared.
-        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? this.findIndexFromCoordinate(Chonse2.WHITE_KINGSIDE_ROOK_SQUARE) : this.findIndexFromCoordinate(Chonse2.BLACK_KINGSIDE_ROOK_SQUARE);
+        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(Chonse2.WHITE_KINGSIDE_ROOK_SQUARE) : Chonse2.findIndexFromCoordinate(Chonse2.BLACK_KINGSIDE_ROOK_SQUARE);
         
         //The piece to replace it with (a white rook if white is castling, black otherwise).
         const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
@@ -269,10 +282,10 @@ export default class Chonse2
       if (piece == PieceType.WHITE_KING ? this.whiteCastlingRights.queenSide : this.blackCastlingRights.queenSide)
       {
         //Where the rook will when the player castles.
-        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? this.findIndexFromCoordinate(Chonse2.WHITE_QUEEN_SQUARE) : this.findIndexFromCoordinate(Chonse2.BLACK_QUEEN_SQUARE);
+        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(Chonse2.WHITE_QUEEN_SQUARE) : Chonse2.findIndexFromCoordinate(Chonse2.BLACK_QUEEN_SQUARE);
         
         //Where the old rook will be cleared.
-        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? this.findIndexFromCoordinate(Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE) : this.findIndexFromCoordinate(Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE);
+        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE) : Chonse2.findIndexFromCoordinate(Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE);
         
         //The piece to replace it with (a white rook if white is castling, black otherwise).
         const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
@@ -348,7 +361,7 @@ export default class Chonse2
   }
   
   //Gets the row and column indeces when a rank and file coordinate are passed in.
-  findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
+  static findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
   {
       //Finds the row that includes this coordinate.
       const rIdx = Chonse2.COORDS.findIndex( row => row.includes(coordinate) );
@@ -397,6 +410,7 @@ export default class Chonse2
       }
     }
 
+    //For each of these coordinates, we need to check if those pieces include the king. If they do, it's a check.
     opposingPieceCoords.forEach( pieceCoord =>
     {
       const potentiallyLegalMoves = this._getPotentiallyLegalMoves(pieceCoord);      
@@ -452,7 +466,7 @@ export default class Chonse2
 
   private _getPotentiallyLegalMoves(coordinate: string): Array<string>
   {
-    const index = this.findIndexFromCoordinate(coordinate);
+    const index = Chonse2.findIndexFromCoordinate(coordinate);
     const piece = this.pieceState[index.rowIndex][index.colIndex];
     let potentiallyLegalMoves: Array<string> = [];
 
@@ -501,7 +515,7 @@ export default class Chonse2
       {
         return [];
       }
-      const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
+      const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
       const legalMoves:Array<string> = [];
   
       //rank ahead of this one
@@ -581,7 +595,7 @@ export default class Chonse2
         return [];
       }
   
-      const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
+      const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
       const legalMoves: Array<string> = [];
   
       //A knight can only move two ahead and one to the side. These are the offsets for the eight possible squares a knight can go to relative to its current position
@@ -670,8 +684,8 @@ export default class Chonse2
         if (this.turn == true ? this.whiteCastlingRights.kingSide : this.blackCastlingRights.kingSide)
         {
           //These two squares need to be free in order to castle kingside.
-          const kingsideKnightSqaure = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
-          const kingsideBishopSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
+          const kingsideKnightSqaure = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
+          const kingsideBishopSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
 
           //Check if they're clear, and if so, push the castling square as a legal move.
           if (
@@ -687,9 +701,9 @@ export default class Chonse2
         if (this.turn == true ? this.whiteCastlingRights.queenSide : this.blackCastlingRights.queenSide)
         {
           //These three squares need to be free in order to castle queenside.
-          const queensideKnightSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE : Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE);
-          const queensideBishopSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
-          const queenSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE);
+          const queensideKnightSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE : Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE);
+          const queensideBishopSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
+          const queenSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE);
         
           //Check if they're clear, and if so, push the castling square as a legal move.
           if (
@@ -708,7 +722,7 @@ export default class Chonse2
   
   private _getVectorMoves(coordinate: string, piece: string, vectorX: Array<number>, vectorY: Array<number>, distance = Chonse2.SIZE): Array<string>
   {
-      const {rowIndex, colIndex} = this.findIndexFromCoordinate(coordinate);
+      const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
       const legalMoves: Array<string> = [];
   
       //Loop through each of the vectors x and y components
@@ -762,6 +776,93 @@ export default class Chonse2
       }
       return legalMoves;
   }
+
+  private static _playDummyMove(inst: Chonse2, fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN)
+  {
+    //In piece state, where the current piece is moving to.
+    const toSquareIndex = Chonse2.findIndexFromCoordinate(toCoordinate);
+
+    //In the piece state, where the current piece is moving from.
+    const fromSquareIndex = Chonse2.findIndexFromCoordinate(fromCoordinate);
+
+    //Extract the piece from the square that is being moved from.
+    let piece = inst.pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex];
+
+    //The piece already present in the square the current piece is moving to (being captured)
+    const pieceInToSquare = inst.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex];
+
+    //Handle en passant
+    if (toCoordinate == inst.enPassantSquare && (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN))
+    {
+      //Remove the pawn that just got en passant'd
+      inst.turn ? inst.pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : inst.pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
+    
+      //Add the captured piece.
+      inst.turn ? inst.piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : inst.piecesBlackCaptured.push(PieceType.WHITE_PAWN);
+    }
+    
+    //Clear the old piece position.
+    inst.pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex] = "";
+
+    //Replace it in the new position.
+    inst.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
+
+    //If the player castled kingside (check that the from and to coordinates match a kingside castle).
+    if (inst.turn == true ? 
+      (piece == PieceType.WHITE_KING && fromCoordinate == Chonse2.WHITE_KING_SQUARE && toCoordinate == Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) 
+      : (piece == PieceType.BLACK_KING && fromCoordinate == Chonse2.BLACK_KING_SQUARE && toCoordinate == Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE))
+    {
+      //If they do, check that they actually have castling rights for the king side.
+      if (piece == PieceType.WHITE_KING ? inst.whiteCastlingRights.kingSide : inst.blackCastlingRights.kingSide)
+      {
+        //Where the rook will when the player castles.
+        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) : Chonse2.findIndexFromCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
+        
+        //Where the old rook will be cleared.
+        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(Chonse2.WHITE_KINGSIDE_ROOK_SQUARE) : Chonse2.findIndexFromCoordinate(Chonse2.BLACK_KINGSIDE_ROOK_SQUARE);
+        
+        //The piece to replace it with (a white rook if white is castling, black otherwise).
+        const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
+
+        //Clears the old rook place.
+        inst.pieceState[oldRookPlaceIndex.rowIndex][oldRookPlaceIndex.colIndex] = PieceType.NONE;
+
+        //Sets the new rook in place (protecting the king).
+        inst.pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
+      }
+    }
+
+    //If the player castled queenside (check that the from and to coordinates match a queenside castle).
+    if (inst.turn == true ? 
+      (piece == PieceType.WHITE_KING && fromCoordinate == Chonse2.WHITE_KING_SQUARE && toCoordinate == Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) 
+      : (piece == PieceType.BLACK_KING && fromCoordinate == Chonse2.BLACK_KING_SQUARE && toCoordinate == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE))
+    {
+      //If they do, check that they actually have castling rights for the queen side.
+      if (piece == PieceType.WHITE_KING ? inst.whiteCastlingRights.queenSide : inst.blackCastlingRights.queenSide)
+      {
+        //Where the rook will when the player castles.
+        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(Chonse2.WHITE_QUEEN_SQUARE) : Chonse2.findIndexFromCoordinate(Chonse2.BLACK_QUEEN_SQUARE);
+        
+        //Where the old rook will be cleared.
+        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE) : Chonse2.findIndexFromCoordinate(Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE);
+        
+        //The piece to replace it with (a white rook if white is castling, black otherwise).
+        const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
+
+        //Clears the old rook place.
+        inst.pieceState[oldRookPlaceIndex.rowIndex][oldRookPlaceIndex.colIndex] = PieceType.NONE;
+
+        //Sets the new rook in place (protecting the king).
+        inst.pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
+
+        //Removes castling rights as a player cannot castle multiple times.
+        piece == PieceType.WHITE_KING ? inst.whiteCastlingRights.removeBothCastlingRights() : inst.blackCastlingRights.removeBothCastlingRights();
+      }
+    }
+
+    //The move was successful if we got this far.
+    return true;
+  }
   //#endregion
 
   private _getEnPassantSquareIfExists(fromSquare: string, toSquare: string, turn: boolean) : string
@@ -774,5 +875,18 @@ export default class Chonse2
 
     //Return it if it exists or empty string otherwise.
     return val == null ? "" : val;
+  }
+
+  private _clone()
+  {
+    const copy = new Chonse2();
+
+    copy.pieceState = structuredClone(this.pieceState);
+    copy.turn = this.turn;
+    copy.enPassantSquare = this.enPassantSquare;
+    copy.whiteCastlingRights = structuredClone(this.whiteCastlingRights);
+    copy.blackCastlingRights = structuredClone(this.blackCastlingRights);
+
+  return copy;
   }
 }

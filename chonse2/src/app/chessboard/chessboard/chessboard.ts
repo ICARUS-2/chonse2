@@ -3,11 +3,9 @@ import { PieceType } from '../../../lib/piece-type';
 import { Square } from '../square/square';
 import { PieceColor } from '../../../lib/piece-color';
 import { CapturedPieces } from "../captured-pieces/captured-pieces";
-import PieceMaterial from '../../../lib/piece-material';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PromotionModal } from '../../promotion-modal/promotion-modal';
 import Chonse2 from '../../../lib/chonse2';
-import CastlingRights from '../../../lib/castling-rights';
 
 @Component({
   selector: 'app-chessboard',
