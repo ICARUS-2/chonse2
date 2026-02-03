@@ -118,8 +118,11 @@ export default class Chonse2
       });
   }
 
-  getLegalMoves(coordinate: string, piece: string): Array<string>
+  getLegalMoves(coordinate: string): Array<string>
   {
+    const index = this.findIndexFromCoordinate(coordinate);
+    const piece = this.pieceState[index.rowIndex][index.colIndex];
+
     if (piece == ""
       || (piece.startsWith(PieceColor.WHITE) && !this.turn)
       || (piece.startsWith(PieceColor.BLACK) && this.turn)
@@ -128,9 +131,9 @@ export default class Chonse2
       return [];
     }
 
-    let legalMoves = this._getPotentiallyLegalMoves(coordinate, piece);
+    let legalMoves = this._getPotentiallyLegalMoves(coordinate);
 
-    return legalMoves
+    return legalMoves;
   }
 
   completeMove(fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN): boolean
@@ -145,7 +148,7 @@ export default class Chonse2
     let piece = this.pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex];
 
     //So far, potentially legal moves not counting checks.
-    const legalMoves = this._getPotentiallyLegalMoves(fromCoordinate, piece); 
+    const legalMoves = this.getLegalMoves(fromCoordinate); 
 
     if (!legalMoves.includes(toCoordinate))
     {
@@ -344,6 +347,7 @@ export default class Chonse2
     return true;
   }
   
+  //Gets the row and column indeces when a rank and file coordinate are passed in.
   findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
   {
       //Finds the row that includes this coordinate.
@@ -360,6 +364,68 @@ export default class Chonse2
 
       //Both row and column indeces are returned.
       return {rowIndex: rIdx, colIndex: cIdx};
+  }
+
+  isInCheck(kingColor: string)
+  {
+    //If the color isn't valid, don't bother checking for checks (haha get it)
+    if (kingColor != PieceColor.BLACK && kingColor != PieceColor.WHITE)
+    {
+      return false;
+    }
+
+    let isCheck: boolean = false;
+
+    //The piece coords of the other color (any of these can cause a check)
+    const opposingPieceCoords: Array<string> = [];
+
+    //The coordinate of the current color king
+    const kingCoordinate: string = this.getKingCoordinate(kingColor);
+
+    //Loop through each of these to get the coordinates of the pieces.
+    for(let i = 0; i < Chonse2.COORDS.length; i++)
+    {
+      for(let j = 0; j < Chonse2.COORDS[i].length; j++)
+      {
+        const piece = this.pieceState[i][j];
+
+        if ( kingColor == PieceColor.WHITE ? piece.startsWith(PieceColor.BLACK) : piece.startsWith(PieceColor.WHITE ))
+        {
+          opposingPieceCoords.push(Chonse2.COORDS[i][j]);
+        }
+      }
+    }
+
+    opposingPieceCoords.forEach( pieceCoord =>
+    {
+      const potentiallyLegalMoves = this._getPotentiallyLegalMoves(pieceCoord);      
+      if (potentiallyLegalMoves.includes(kingCoordinate))
+      {
+        isCheck = true;
+      }
+    }
+     )
+
+    return isCheck;
+  }
+
+  getKingCoordinate(kingColor: string): string
+  {
+    if (kingColor != PieceColor.BLACK && kingColor != PieceColor.WHITE)
+    {
+      return "";
+    }
+
+    const rIdx = this.pieceState.findIndex( row => row.includes( (kingColor == PieceColor.WHITE ? PieceType.WHITE_KING : PieceType.BLACK_KING) ) )
+    
+    if (rIdx == -1)
+    {
+      return "";
+    }
+
+    const cIdx = this.pieceState[rIdx].findIndex( p => p === (kingColor == PieceColor.WHITE ? PieceType.WHITE_KING : PieceType.BLACK_KING))
+  
+    return Chonse2.COORDS[rIdx][cIdx];
   }
   
   //Positive number signifies that white is up, negative signifies black is up.
@@ -383,47 +449,49 @@ export default class Chonse2
 
   //#region Inner legal move helper functions
 
-  private _getPotentiallyLegalMoves(coordinate: string, piece: string): Array<string>
+  private _getPotentiallyLegalMoves(coordinate: string): Array<string>
   {
-      let potentiallyLegalMoves: Array<string> = [];
+    const index = this.findIndexFromCoordinate(coordinate);
+    const piece = this.pieceState[index.rowIndex][index.colIndex];
+    let potentiallyLegalMoves: Array<string> = [];
 
-      //handle pawn
-      if (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN)
-      {
-          potentiallyLegalMoves = this._getPotentiallyLegalPawnMoves(coordinate, piece);
-      }
+    //handle pawn
+    if (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN)
+    {
+        potentiallyLegalMoves = this._getPotentiallyLegalPawnMoves(coordinate, piece);
+    }
 
-      //handle knight
-      if (piece == PieceType.WHITE_KNIGHT || piece == PieceType.BLACK_KNIGHT)
-      {
-          potentiallyLegalMoves = this._getPotentiallyLegalKnightMoves(coordinate, piece);
-      }
+    //handle knight
+    if (piece == PieceType.WHITE_KNIGHT || piece == PieceType.BLACK_KNIGHT)
+    {
+        potentiallyLegalMoves = this._getPotentiallyLegalKnightMoves(coordinate, piece);
+    }
 
-      //handle bishop
-      if (piece == PieceType.WHITE_BISHOP || piece == PieceType.BLACK_BISHOP)
-      {
-          potentiallyLegalMoves = this._getPotentiallyLegalBishopMoves(coordinate, piece);
-      }
+    //handle bishop
+    if (piece == PieceType.WHITE_BISHOP || piece == PieceType.BLACK_BISHOP)
+    {
+        potentiallyLegalMoves = this._getPotentiallyLegalBishopMoves(coordinate, piece);
+    }
 
-      //handle rook
-      if (piece == PieceType.WHITE_ROOK || piece == PieceType.BLACK_ROOK)
-      {
-          potentiallyLegalMoves = this._getPotentiallyLegalRookMoves(coordinate, piece);
-      }
+    //handle rook
+    if (piece == PieceType.WHITE_ROOK || piece == PieceType.BLACK_ROOK)
+    {
+        potentiallyLegalMoves = this._getPotentiallyLegalRookMoves(coordinate, piece);
+    }
 
-      //handle queen
-      if (piece == PieceType.WHITE_QUEEN || piece == PieceType.BLACK_QUEEN)
-      {
-          potentiallyLegalMoves = this._getPotentiallyLegalQueenMoves(coordinate, piece)
-      }
+    //handle queen
+    if (piece == PieceType.WHITE_QUEEN || piece == PieceType.BLACK_QUEEN)
+    {
+        potentiallyLegalMoves = this._getPotentiallyLegalQueenMoves(coordinate, piece)
+    }
 
-      //handle king
-      if (piece == PieceType.WHITE_KING || piece == PieceType.BLACK_KING)
-      {
-          potentiallyLegalMoves = this._getPotentiallyLegalKingMoves(coordinate, piece)
-      }
+    //handle king
+    if (piece == PieceType.WHITE_KING || piece == PieceType.BLACK_KING)
+    {
+        potentiallyLegalMoves = this._getPotentiallyLegalKingMoves(coordinate, piece)
+    }
 
-      return potentiallyLegalMoves;
+    return potentiallyLegalMoves;
   }
   
   private _getPotentiallyLegalPawnMoves(coordinate: string, piece: string): Array<string>

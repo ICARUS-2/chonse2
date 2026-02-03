@@ -60,7 +60,7 @@ export class Chessboard implements OnInit {
       this.handleDragImage(event.mouse);
     }    
 
-    this.currentLegalMoves = this.chessGame.getLegalMoves(event.coordinate, event.piece);
+    this.currentLegalMoves = this.chessGame.getLegalMoves(event.coordinate);
   }
 
   onSquareMouseUp(event: { coordinate: string })
