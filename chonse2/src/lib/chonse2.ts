@@ -473,50 +473,49 @@ export default class Chonse2
     //handle pawn
     if (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN)
     {
-        potentiallyLegalMoves = this._getPotentiallyLegalPawnMoves(coordinate);
+        potentiallyLegalMoves = this._getPotentiallyLegalPawnMoves(coordinate, piece[0]);
     }
 
     //handle knight
     if (piece == PieceType.WHITE_KNIGHT || piece == PieceType.BLACK_KNIGHT)
     {
-        potentiallyLegalMoves = this._getPotentiallyLegalKnightMoves(coordinate);
+        potentiallyLegalMoves = this._getPotentiallyLegalKnightMoves(coordinate, piece[0]);
     }
 
     //handle bishop
     if (piece == PieceType.WHITE_BISHOP || piece == PieceType.BLACK_BISHOP)
     {
-        potentiallyLegalMoves = this._getPotentiallyLegalBishopMoves(coordinate);
+        potentiallyLegalMoves = this._getPotentiallyLegalBishopMoves(coordinate, piece[0]);
     }
 
     //handle rook
     if (piece == PieceType.WHITE_ROOK || piece == PieceType.BLACK_ROOK)
     {
-        potentiallyLegalMoves = this._getPotentiallyLegalRookMoves(coordinate);
+        potentiallyLegalMoves = this._getPotentiallyLegalRookMoves(coordinate, piece[0]);
     }
 
     //handle queen
     if (piece == PieceType.WHITE_QUEEN || piece == PieceType.BLACK_QUEEN)
     {
-        potentiallyLegalMoves = this._getPotentiallyLegalQueenMoves(coordinate)
+        potentiallyLegalMoves = this._getPotentiallyLegalQueenMoves(coordinate, piece[0])
     }
 
     //handle king
     if (piece == PieceType.WHITE_KING || piece == PieceType.BLACK_KING)
     {
-        potentiallyLegalMoves = this._getPotentiallyLegalKingMoves(coordinate)
+        potentiallyLegalMoves = this._getPotentiallyLegalKingMoves(coordinate, piece[0])
     }
 
     return potentiallyLegalMoves;
   }
   
-  private _getPotentiallyLegalPawnMoves(coordinate: string): Array<string>
+  private _getPotentiallyLegalPawnMoves(coordinate: string, color: string): Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
-    const piece = this.pieceState[rowIndex][colIndex];
     const legalMoves:Array<string> = [];
 
     //rank ahead of this one
-    const rankAbove = piece == PieceType.WHITE_PAWN ? this.pieceState.at(rowIndex - 1) : this.pieceState.at(rowIndex + 1);
+    const rankAbove = color == PieceColor.WHITE ? this.pieceState.at(rowIndex - 1) : this.pieceState.at(rowIndex + 1);
     const rankNumber = Number(coordinate[1]);
 
     //if the rank above this one exists, there might be a legal move
@@ -527,7 +526,7 @@ export default class Chonse2
       //if the square directly in front of it has nothing in it, then it can be moved to.
       if (squareInFront == "")
       {
-        piece == PieceType.WHITE_PAWN ? legalMoves.push(Chonse2.COORDS[rowIndex - 1][colIndex]) : legalMoves.push(Chonse2.COORDS[rowIndex + 1][colIndex]);
+        color == PieceColor.WHITE ? legalMoves.push(Chonse2.COORDS[rowIndex - 1][colIndex]) : legalMoves.push(Chonse2.COORDS[rowIndex + 1][colIndex]);
       }
 
       //if this column is not the leftmost one, then it can potentially capture a piece left-diagonally.
@@ -537,10 +536,10 @@ export default class Chonse2
         const leftCaptureSquare = rankAbove.at(colIndex - 1);
 
         //The coordinate of the above square.
-        const leftCaptureSquareCoord = piece == PieceType.WHITE_PAWN ? Chonse2.COORDS[rowIndex - 1][colIndex - 1] : Chonse2.COORDS[rowIndex + 1][colIndex - 1];
+        const leftCaptureSquareCoord = color == PieceColor.WHITE ? Chonse2.COORDS[rowIndex - 1][colIndex - 1] : Chonse2.COORDS[rowIndex + 1][colIndex - 1];
 
         //The square is a legal move if it has an opposing piece OR it is the en passant square
-        if (leftCaptureSquare?.startsWith(piece == PieceType.WHITE_PAWN ? PieceColor.BLACK : PieceColor.WHITE) 
+        if (leftCaptureSquare?.startsWith(color == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE) 
           || leftCaptureSquareCoord == this.enPassantSquare)
         {
           legalMoves.push(leftCaptureSquareCoord);
@@ -554,20 +553,20 @@ export default class Chonse2
         const rightCaptureSquare = rankAbove.at(colIndex + 1);
 
         //The coordinate of the above square.
-        const rightCaptureSquareCoord = piece == PieceType.WHITE_PAWN ? Chonse2.COORDS[rowIndex - 1][colIndex + 1] : Chonse2.COORDS[rowIndex + 1][colIndex + 1]
+        const rightCaptureSquareCoord = color == PieceColor.WHITE ? Chonse2.COORDS[rowIndex - 1][colIndex + 1] : Chonse2.COORDS[rowIndex + 1][colIndex + 1]
 
         //The square is a legal move if it has an opposing piece OR it is the en passant square
-        if (rightCaptureSquare?.startsWith(piece == PieceType.WHITE_PAWN ? PieceColor.BLACK : PieceColor.WHITE)
+        if (rightCaptureSquare?.startsWith(color == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE)
           || rightCaptureSquareCoord == this.enPassantSquare)
         {
           legalMoves.push(rightCaptureSquareCoord);
         }
       }
 
-      if (piece == PieceType.WHITE_PAWN ? rankNumber == Chonse2.WHITE_PAWN_RANK : rankNumber === Chonse2.BLACK_PAWN_RANK)
+      if (color == PieceColor.WHITE ? rankNumber == Chonse2.WHITE_PAWN_RANK : rankNumber === Chonse2.BLACK_PAWN_RANK)
       {
         //two ranks ahead of where the pawn is.
-        const twoRanksAbove = piece == PieceType.WHITE_PAWN ? this.pieceState.at(rowIndex - 2) : this.pieceState.at(rowIndex + 2);
+        const twoRanksAbove = color == PieceColor.WHITE ? this.pieceState.at(rowIndex - 2) : this.pieceState.at(rowIndex + 2);
 
         //the two squares above it can potentially be legal moves.
         if (twoRanksAbove)
@@ -577,7 +576,7 @@ export default class Chonse2
           //two squares up is only legal if one square up is.
           if (twoSquaresAbove == "")
           {
-            piece == PieceType.WHITE_PAWN ? legalMoves.push(Chonse2.COORDS[rowIndex - 2][colIndex]) : legalMoves.push(Chonse2.COORDS[rowIndex + 2][colIndex]);;
+            color == PieceColor.WHITE ? legalMoves.push(Chonse2.COORDS[rowIndex - 2][colIndex]) : legalMoves.push(Chonse2.COORDS[rowIndex + 2][colIndex]);;
           }
         }
       }
@@ -585,10 +584,9 @@ export default class Chonse2
     return legalMoves;
   }
   
-  private _getPotentiallyLegalKnightMoves(coordinate: string) : Array<string>
+  private _getPotentiallyLegalKnightMoves(coordinate: string, color: string) : Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
-    const piece = this.pieceState[rowIndex][colIndex];
     const legalMoves: Array<string> = [];
 
     //A knight can only move two ahead and one to the side. These are the offsets for the eight possible squares a knight can go to relative to its current position
@@ -612,7 +610,7 @@ export default class Chonse2
         {
           //Two cases: Either there's nothing there and the knight can move there, or there is a piece of the opposite color that can be captured.
           if (
-            (piece == PieceType.WHITE_KNIGHT ? potentialMoveSquare.startsWith(PieceColor.BLACK) : potentialMoveSquare.startsWith(PieceColor.WHITE)) 
+            (color == PieceColor.WHITE ? potentialMoveSquare.startsWith(PieceColor.BLACK) : potentialMoveSquare.startsWith(PieceColor.WHITE)) 
             || potentialMoveSquare == "")
           {
             //Legal move in either case is the current square with the 2 straight/1 side offset applied.
@@ -628,34 +626,28 @@ export default class Chonse2
     return legalMoves;
   }
     
-  private _getPotentiallyLegalBishopMoves(coordinate: string): Array<string>
+  private _getPotentiallyLegalBishopMoves(coordinate: string, color: string): Array<string>
   {
-    return this._getVectorMoves(coordinate, Chonse2._BISHOP_VECTOR_X, Chonse2._BISHOP_VECTOR_Y);
+    return this._getVectorMoves(coordinate, color, Chonse2._BISHOP_VECTOR_X, Chonse2._BISHOP_VECTOR_Y);
   }
   
-  private _getPotentiallyLegalRookMoves(coordinate: string): Array<string>
+  private _getPotentiallyLegalRookMoves(coordinate: string, color: string): Array<string>
   {
-    return this._getVectorMoves(coordinate, Chonse2._ROOK_VECTOR_X, Chonse2._ROOK_VECTOR_Y);
+    return this._getVectorMoves(coordinate, color, Chonse2._ROOK_VECTOR_X, Chonse2._ROOK_VECTOR_Y);
   }
   
-  private _getPotentiallyLegalQueenMoves(coordinate: string) : Array<string>
+  private _getPotentiallyLegalQueenMoves(coordinate: string, color: string) : Array<string>
   {
-    return this._getVectorMoves(coordinate, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y);
+    return this._getVectorMoves(coordinate, color, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y);
   }
   
-  private _getPotentiallyLegalKingMoves(coordinate: string): Array<string>
+  private _getPotentiallyLegalKingMoves(coordinate: string, color: string): Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
     let piece = this.pieceState[rowIndex][colIndex];
-      if (piece != PieceType.WHITE_KING && piece != PieceType.BLACK_KING)
-      {
-        return [];
-      }
-  
+
       //Base moves.
-      let legalMoves = this._getVectorMoves(coordinate, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
-      
-      let color = piece == PieceType.WHITE_KING ? PieceColor.WHITE : PieceColor.BLACK;
+      let legalMoves = this._getVectorMoves(coordinate, color, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
 
       //King cannot castle while in check
       //if (!this.isInCheck(color))
@@ -702,11 +694,10 @@ export default class Chonse2
       return legalMoves;   
   }
   
-  private _getVectorMoves(coordinate: string, vectorX: Array<number>, vectorY: Array<number>, distance = Chonse2.SIZE): Array<string>
+  private _getVectorMoves(coordinate: string, color: string, vectorX: Array<number>, vectorY: Array<number>, distance = Chonse2.SIZE): Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
     //Extract the piece from the square that is being moved from.
-    let piece = this.pieceState[rowIndex][colIndex];
       const legalMoves: Array<string> = [];
   
       //Loop through each of the vectors x and y components
@@ -737,7 +728,7 @@ export default class Chonse2
               if (potentialMoveSquare != undefined)
               {
                 //If there is a piece in that square and it is an opposite colored piece, add it to the list of legal moves and break out (cannot go through pieces).
-                if (piece.startsWith(PieceColor.WHITE) ? potentialMoveSquare.startsWith(PieceColor.BLACK) : potentialMoveSquare.startsWith(PieceColor.WHITE))
+                if (color == PieceColor.WHITE ? potentialMoveSquare.startsWith(PieceColor.BLACK) : potentialMoveSquare.startsWith(PieceColor.WHITE))
                 {
                   legalMoves.push(Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset]);
                   break;
@@ -750,7 +741,7 @@ export default class Chonse2
                 }
   
                 //If the square has an ally piece, that can't be a legal move, nor can anything after it. 
-                if (piece.startsWith(PieceColor.WHITE) ? potentialMoveSquare.startsWith(PieceColor.WHITE) : potentialMoveSquare.startsWith(PieceColor.BLACK))
+                if (color == PieceColor.WHITE ? potentialMoveSquare.startsWith(PieceColor.WHITE) : potentialMoveSquare.startsWith(PieceColor.BLACK))
                 {
                   break;
                 }
@@ -858,9 +849,102 @@ export default class Chonse2
     return val == null ? "" : val;
   }
 
-  isSquareAttacked(coord: string, colorAttackedBy: string): boolean 
+  isSquareAttacked(coord: string, attackerColor: string): boolean 
   {
-    this._getVectorMoves(coord, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y)
+    if (attackerColor != PieceColor.WHITE && attackerColor != PieceColor.BLACK)
+    {
+      return false;
+    }
+
+    const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
+
+    //The legal moves of the given piece types in this position.
+    const rookMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2._ROOK_VECTOR_X, Chonse2._ROOK_VECTOR_Y);
+    const queenMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y);
+    const kingMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
+    const bishopMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2._BISHOP_VECTOR_X, Chonse2._BISHOP_VECTOR_Y);
+    const knightMoves = this._getPotentiallyLegalKnightMoves(coord, PieceColor.getOpposite(attackerColor));
+
+    //Check if a rook can attack the square
+    const rookPiece = attackerColor + PieceType.ROOK;
+    for(let seenSquare of rookMoves)
+    {
+      //console.log(`${attackerColor} ${coord} ${rookMoves}`)
+      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == rookPiece)
+      {
+        return true;
+      }
+    }
+
+    //Check if a queen can attack the square.
+    const queenPiece = attackerColor + PieceType.QUEEN;
+    for(let seenSquare of queenMoves)
+    {
+      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == queenPiece)
+      {
+        return true;
+      }
+    }
+
+    //Check if a king can attack the square.
+    const kingPiece = attackerColor + PieceType.KING;
+    for(let seenSquare of kingMoves)
+    {
+      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == kingPiece)
+      {
+        return true;
+      }
+    }
+
+    //Check if a king can attack the square.
+    const bishopPiece = attackerColor + PieceType.BISHOP;
+    for(let seenSquare of bishopMoves)
+    {
+      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == bishopPiece)
+      {
+        return true;
+      }
+    }
+
+    //Check if a knight can see the square.
+    const knightPiece = attackerColor + PieceType.KNIGHT;
+    for(let seenSquare of knightMoves)
+    {
+      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == knightPiece)
+      {
+        return true;
+      }
+    }
+
+    //Check if there's a pawn that can strike diagonally
+    const pawnPiece = attackerColor + PieceType.PAWN;
+    const rankAbove = attackerColor == PieceColor.BLACK ? this.pieceState[rowIndex - 1] : this.pieceState[rowIndex + 1];
+    if (rankAbove)
+    {
+      const leftPotentialPawnSquare = rankAbove[colIndex - 1];
+      const rightPotentialPawnSquare = rankAbove[colIndex + 1];
+
+      if (leftPotentialPawnSquare)
+      {
+        if (leftPotentialPawnSquare == pawnPiece)
+        {
+          return true;
+        }
+      }
+
+      if (rightPotentialPawnSquare)
+      {
+        if (rightPotentialPawnSquare == pawnPiece)
+        {
+          return true;
+        }
+      }
+    }
 
     return false;
   }
