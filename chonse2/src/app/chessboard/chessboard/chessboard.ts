@@ -14,7 +14,8 @@ import Chonse2 from '../../../lib/chonse2';
   styleUrl: './chessboard.css',
 })
 export class Chessboard implements OnInit {
-
+  pieceType = PieceType;
+  pieceColor = PieceColor;
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
   //PIECES ON THE BOARD CURRENTLY

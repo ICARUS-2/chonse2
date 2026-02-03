@@ -431,6 +431,108 @@ export default class Chonse2
       return whiteMaterialCaptured - blackMaterialCaptured + this.promotionalMaterialDifference;
   }
 
+
+  isSquareAttacked(coord: string, attackerColor: string): boolean 
+  {
+    if (attackerColor != PieceColor.WHITE && attackerColor != PieceColor.BLACK)
+    {
+      return false;
+    }
+
+    const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
+
+    //The legal moves of the given piece types in this position.
+    const rookMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2._ROOK_VECTOR_X, Chonse2._ROOK_VECTOR_Y);
+    const queenMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y);
+    const kingMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
+    const bishopMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2._BISHOP_VECTOR_X, Chonse2._BISHOP_VECTOR_Y);
+    const knightMoves = this._getPotentiallyLegalKnightMoves(coord, PieceColor.getOpposite(attackerColor));
+
+    //Check if a rook can attack the square
+    const rookPiece = attackerColor + PieceType.ROOK;
+    for(let seenSquare of rookMoves)
+    {
+      //console.log(`${attackerColor} ${coord} ${rookMoves}`)
+      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == rookPiece)
+      {
+        return true;
+      }
+    }
+
+    //Check if a queen can attack the square.
+    const queenPiece = attackerColor + PieceType.QUEEN;
+    for(let seenSquare of queenMoves)
+    {
+      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == queenPiece)
+      {
+        return true;
+      }
+    }
+
+    //Check if a king can attack the square.
+    const kingPiece = attackerColor + PieceType.KING;
+    for(let seenSquare of kingMoves)
+    {
+      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == kingPiece)
+      {
+        return true;
+      }
+    }
+
+    //Check if a king can attack the square.
+    const bishopPiece = attackerColor + PieceType.BISHOP;
+    for(let seenSquare of bishopMoves)
+    {
+      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == bishopPiece)
+      {
+        return true;
+      }
+    }
+
+    //Check if a knight can see the square.
+    const knightPiece = attackerColor + PieceType.KNIGHT;
+    for(let seenSquare of knightMoves)
+    {
+      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == knightPiece)
+      {
+        return true;
+      }
+    }
+
+    //Check if there's a pawn that can strike diagonally
+    const pawnPiece = attackerColor + PieceType.PAWN;
+    const rankAbove = attackerColor == PieceColor.BLACK ? this.pieceState[rowIndex - 1] : this.pieceState[rowIndex + 1];
+    if (rankAbove)
+    {
+      const leftPotentialPawnSquare = rankAbove[colIndex - 1];
+      const rightPotentialPawnSquare = rankAbove[colIndex + 1];
+
+      if (leftPotentialPawnSquare)
+      {
+        if (leftPotentialPawnSquare == pawnPiece)
+        {
+          return true;
+        }
+      }
+
+      if (rightPotentialPawnSquare)
+      {
+        if (rightPotentialPawnSquare == pawnPiece)
+        {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+
   //#region Inner legal move helper functions
 
   private _getPotentiallyLegalMoves(coordinate: string): Array<string>
@@ -818,106 +920,6 @@ export default class Chonse2
 
     //Return it if it exists or empty string otherwise.
     return val == null ? "" : val;
-  }
-
-  isSquareAttacked(coord: string, attackerColor: string): boolean 
-  {
-    if (attackerColor != PieceColor.WHITE && attackerColor != PieceColor.BLACK)
-    {
-      return false;
-    }
-
-    const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
-
-    //The legal moves of the given piece types in this position.
-    const rookMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2._ROOK_VECTOR_X, Chonse2._ROOK_VECTOR_Y);
-    const queenMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y);
-    const kingMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
-    const bishopMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2._BISHOP_VECTOR_X, Chonse2._BISHOP_VECTOR_Y);
-    const knightMoves = this._getPotentiallyLegalKnightMoves(coord, PieceColor.getOpposite(attackerColor));
-
-    //Check if a rook can attack the square
-    const rookPiece = attackerColor + PieceType.ROOK;
-    for(let seenSquare of rookMoves)
-    {
-      //console.log(`${attackerColor} ${coord} ${rookMoves}`)
-      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
-      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == rookPiece)
-      {
-        return true;
-      }
-    }
-
-    //Check if a queen can attack the square.
-    const queenPiece = attackerColor + PieceType.QUEEN;
-    for(let seenSquare of queenMoves)
-    {
-      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
-      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == queenPiece)
-      {
-        return true;
-      }
-    }
-
-    //Check if a king can attack the square.
-    const kingPiece = attackerColor + PieceType.KING;
-    for(let seenSquare of kingMoves)
-    {
-      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
-      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == kingPiece)
-      {
-        return true;
-      }
-    }
-
-    //Check if a king can attack the square.
-    const bishopPiece = attackerColor + PieceType.BISHOP;
-    for(let seenSquare of bishopMoves)
-    {
-      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
-      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == bishopPiece)
-      {
-        return true;
-      }
-    }
-
-    //Check if a knight can see the square.
-    const knightPiece = attackerColor + PieceType.KNIGHT;
-    for(let seenSquare of knightMoves)
-    {
-      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
-      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == knightPiece)
-      {
-        return true;
-      }
-    }
-
-    //Check if there's a pawn that can strike diagonally
-    const pawnPiece = attackerColor + PieceType.PAWN;
-    const rankAbove = attackerColor == PieceColor.BLACK ? this.pieceState[rowIndex - 1] : this.pieceState[rowIndex + 1];
-    if (rankAbove)
-    {
-      const leftPotentialPawnSquare = rankAbove[colIndex - 1];
-      const rightPotentialPawnSquare = rankAbove[colIndex + 1];
-
-      if (leftPotentialPawnSquare)
-      {
-        if (leftPotentialPawnSquare == pawnPiece)
-        {
-          return true;
-        }
-      }
-
-      if (rightPotentialPawnSquare)
-      {
-        if (rightPotentialPawnSquare == pawnPiece)
-        {
-          return true;
-        }
-      }
-    }
-
-    return false;
   }
 
   private _clone()
