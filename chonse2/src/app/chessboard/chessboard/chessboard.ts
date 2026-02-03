@@ -6,6 +6,7 @@ import { CapturedPieces } from "../captured-pieces/captured-pieces";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PromotionModal } from '../../promotion-modal/promotion-modal';
 import Chonse2 from '../../../lib/chonse2';
+import { GameOverReason, GameState } from '../../../lib/game-state';
 
 @Component({
   selector: 'app-chessboard',
@@ -16,6 +17,8 @@ import Chonse2 from '../../../lib/chonse2';
 export class Chessboard implements OnInit {
   pieceType = PieceType;
   pieceColor = PieceColor;
+  gameOverReason = GameOverReason;
+
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
   //PIECES ON THE BOARD CURRENTLY

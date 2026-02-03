@@ -17,6 +17,8 @@
                             [isFlipped]="isFlipped"
                             [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
                             [isInCheck]="(chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.isInCheck(pieceColor.WHITE)) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.isInCheck(pieceColor.BLACK)) "
+                            [isWinner]="(chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.gameState.winner == pieceColor.WHITE) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.gameState.winner == pieceColor.BLACK) "
+                            [isCheckmate]="((chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.gameState.winner == pieceColor.BLACK) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.gameState.winner == pieceColor.WHITE)) && chessGame.gameState.reason == gameOverReason.Checkmate"
                             (mouseDown)="onSquareMouseDown($event)"
                             (mouseUp)="onSquareMouseUp($event)">
                         </app-square>
@@ -40,6 +42,8 @@
             <p>EN PASSANT: {{chessGame.enPassantSquare}}</p>
             <p>WHITE IS IN CHECK: {{chessGame.isInCheck("w")}}</p>
             <p>BLACK IS IN CHECK: {{chessGame.isInCheck("b")}}</p>-->
+            <p>Game is Over: {{chessGame.gameState.isGameOver}}</p>
+            <p>Reason: {{chessGame.gameState.reason.toString()}}</p>
         </div>
     </div>
     @if(currentlyHeldPiece != "")

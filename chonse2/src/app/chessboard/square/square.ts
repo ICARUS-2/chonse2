@@ -18,6 +18,9 @@ export class Square {
   @Input() showPiece: boolean = true;
   @Input() isFlipped: boolean = false;
   @Input() isInCheck: boolean = false;
+  @Input() isCheckmate: boolean = false;
+  @Input() isDraw: boolean = false;
+  @Input() isWinner: boolean = false;
 
   @Output() mouseDown = new EventEmitter<{coordinate: string, piece: string, mouse: MouseEvent}>();
   @Output() mouseUp = new EventEmitter<{coordinate: string}>();
@@ -48,4 +51,47 @@ export class Square {
   {
     this.mouseUp.emit( {coordinate: this.coordinate} );
   }
+
+  _getBackgroundColor(): string
+  {
+    if (this.isCheckmate)
+    {
+      return "red";
+    }
+
+    if (this.isDraw)
+    {
+      return "skyblue"
+    }
+
+    if (this.isWinner)
+    {
+      return "limegreen";
+    }
+
+    return "transparent";
+  }
+
+  _getImgSrc(): string
+  {
+    const base = "icons/";
+
+    if (this.isCheckmate)
+    {
+      return base + "checkmate.webp";
+    }
+
+    if (this.isDraw)
+    {
+      return base + "draw.webp"
+    }
+
+    if (this.isWinner)
+    {
+      return base + "winner.webp";
+    }
+
+    return "";
+  }
+
 }

@@ -3,6 +3,7 @@ import CastlingRights from "./castling-rights";
 import { PieceColor } from "./piece-color";
 import PieceMaterial from "./piece-material";
 import { PieceType } from "./piece-type";
+import { GameOverReason, GameState } from "./game-state";
 
 export default class Chonse2
 {
@@ -89,6 +90,7 @@ export default class Chonse2
 
   //the state of the board
   pieceState: Array<Array<string>>;
+  gameState: GameState = new GameState();
 
   //true: White's turn, false: black's turn
   turn: boolean = true; 
@@ -101,21 +103,21 @@ export default class Chonse2
   //instantiates with either a passed game state or the default one.
   constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE)
   {
-      this.pieceState = passedState;
+    this.pieceState = passedState;
 
-      if (this.pieceState.length != Chonse2.SIZE)
-      {
-          throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
-      }
+    if (this.pieceState.length != Chonse2.SIZE)
+    {
+        throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
+    }
 
-      //validates correct number of files per rank.
-      this.pieceState.forEach( rank => 
-      {
-      if (rank.length != Chonse2.SIZE)
-      {
-          throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
-      }
-      });
+    //validates correct number of files per rank.
+    this.pieceState.forEach( rank => 
+    {
+    if (rank.length != Chonse2.SIZE)
+    {
+        throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
+    }
+    });
   }
 
   getLegalMoves(coordinate: string): Array<string>
@@ -134,14 +136,19 @@ export default class Chonse2
       return [];
     }
 
+    //The moves disregarding checks.
     const potentiallyLegalMoves = this._getPotentiallyLegalMoves(coordinate);
 
+    //Out of the available potential legal moves, use dummy moves to see if the player would be in check after. If so, it is not a legal move.
     const legalMoves = potentiallyLegalMoves.filter(item =>
       {
+        //Create a deep copy with all its functions.
         const deepCopy: Chonse2 = this._clone();
 
+        //Test the dummy move using a stripped-down version
         Chonse2._playDummyMove(deepCopy, coordinate, item);
 
+        //Return true if the player was not in check after the legal move, false if the move would put them in check
         return this.turn ? !deepCopy.isInCheck(PieceColor.WHITE) : !deepCopy.isInCheck(PieceColor.BLACK);
       }
     )
@@ -151,6 +158,11 @@ export default class Chonse2
 
   completeMove(fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN): boolean
   {
+    if (this.gameState.isGameOver)
+    {
+      return false;
+    }
+
     //In piece state, where the current piece is moving to.
     const toSquareIndex = Chonse2.findIndexFromCoordinate(toCoordinate);
 
@@ -352,9 +364,11 @@ export default class Chonse2
       this.whiteCastlingRights.queenSide = false;
     }
 
-
     //Once this player finishes their move, it's the next person's turn.
     this.turn = !this.turn;
+
+    //check for checkmate, stalemate, etc
+    this._updateGameState();
 
     //The move was successful if we got this far.
     return true;
@@ -452,7 +466,6 @@ export default class Chonse2
     const rookPiece = attackerColor + PieceType.ROOK;
     for(let seenSquare of rookMoves)
     {
-      //console.log(`${attackerColor} ${coord} ${rookMoves}`)
       const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
       if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == rookPiece)
       {
@@ -825,6 +838,36 @@ export default class Chonse2
       return legalMoves;
   }
 
+  private _playerHasLegalMoves(turn: boolean): boolean
+  {
+    const color: string = turn ? PieceColor.WHITE : PieceColor.BLACK;
+    const pieceCoords: Array<string> = [];
+    const legalMoves: Array<string> = [];
+    
+    //Loop through each of these to get the coordinates of the pieces.
+    for(let i = 0; i < Chonse2.COORDS.length; i++)
+    {
+      for(let j = 0; j < Chonse2.COORDS[i].length; j++)
+      {
+        const piece = this.pieceState[i][j];
+
+        if ( piece.startsWith(color))
+        {
+          pieceCoords.push(Chonse2.COORDS[i][j]);
+        }
+      }
+    }
+
+    pieceCoords.forEach( pieceCoord =>
+    {
+      const result = this.getLegalMoves(pieceCoord)
+      legalMoves.push(...result);
+    }
+    )
+
+    return legalMoves.length != 0;
+  }
+
   private static _playDummyMove(inst: Chonse2, fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN)
   {
     //In piece state, where the current piece is moving to.
@@ -933,5 +976,28 @@ export default class Chonse2
     copy.blackCastlingRights = structuredClone(this.blackCastlingRights);
 
   return copy;
+  }
+
+  private _updateGameState()
+  {
+    const nextPlayerHasLegalMoves = this._playerHasLegalMoves(this.turn);
+    const playerColor: string = this.turn ? PieceColor.WHITE : PieceColor.BLACK;
+    
+    //checkmate
+    if (!nextPlayerHasLegalMoves && this.isInCheck(playerColor))
+    {
+      this.gameState.isGameOver = true;
+      this.gameState.reason = GameOverReason.Checkmate;
+      this.gameState.winner = PieceColor.getOpposite(playerColor);
+    }
+
+    //stalemate
+
+    //insufficient material
+
+    //fifty moves with no pawn movements or captures
+
+    //threefold repetition
+
   }
 }
