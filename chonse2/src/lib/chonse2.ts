@@ -744,12 +744,14 @@ export default class Chonse2
           //These two squares need to be free in order to castle kingside.
           const kingsideKnightSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
           const kingsideBishopSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
+          const kingSquare = this.turn == true ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
 
           //Check if they're clear and that the king is not castling through an attacked square, and if so, push the castling square as a legal move.
           if (
             this.pieceState[kingsideKnightSquare.rowIndex][kingsideKnightSquare.colIndex] == ""
             && this.pieceState[kingsideBishopSquare.rowIndex][kingsideBishopSquare.colIndex] == "" 
             && !this.isSquareAttacked( (color == PieceColor.WHITE ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE), PieceColor.getOpposite(color) )
+            && coordinate == kingSquare
           )
           {
             this.turn == true ? legalMoves.push(Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) : legalMoves.push(Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
@@ -763,13 +765,15 @@ export default class Chonse2
           const queensideKnightSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE : Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE);
           const queensideBishopSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
           const queenSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE);
-        
+          const kingSquare = this.turn == true ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
+
           //Check if they're clear and that the king is not castling through an attacked square, and if so, push the castling square as a legal move.
           if (
             this.pieceState[queensideKnightSquare.rowIndex][queensideKnightSquare.colIndex] == ""
             && this.pieceState[queensideBishopSquare.rowIndex][queensideBishopSquare.colIndex] == ""
             && this.pieceState[queenSquare.rowIndex][queenSquare.colIndex] == ""
             && !this.isSquareAttacked(  (color == PieceColor.WHITE ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE), PieceColor.getOpposite(color)  )
+            && coordinate == kingSquare
           )
           {
             this.turn == true ? legalMoves.push(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) : legalMoves.push(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
@@ -992,6 +996,11 @@ export default class Chonse2
     }
 
     //stalemate
+    if (!nextPlayerHasLegalMoves && !this.isInCheck(playerColor))
+    {
+      this.gameState.isGameOver = true;
+      this.gameState.reason = GameOverReason.Stalemate;
+    }
 
     //insufficient material
 

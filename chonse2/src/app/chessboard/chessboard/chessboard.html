@@ -19,6 +19,7 @@
                             [isInCheck]="(chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.isInCheck(pieceColor.WHITE)) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.isInCheck(pieceColor.BLACK)) "
                             [isWinner]="(chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.gameState.winner == pieceColor.WHITE) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.gameState.winner == pieceColor.BLACK) "
                             [isCheckmate]="((chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.gameState.winner == pieceColor.BLACK) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.gameState.winner == pieceColor.WHITE)) && chessGame.gameState.reason == gameOverReason.Checkmate"
+                            [isDraw]="chessGame.gameState.isDraw() && (chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING || chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING)"
                             (mouseDown)="onSquareMouseDown($event)"
                             (mouseUp)="onSquareMouseUp($event)">
                         </app-square>
