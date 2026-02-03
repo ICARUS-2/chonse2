@@ -389,7 +389,8 @@ export default class Chonse2
       {
         const piece = this.pieceState[i][j];
 
-        if ( kingColor == PieceColor.WHITE ? piece.startsWith(PieceColor.BLACK) : piece.startsWith(PieceColor.WHITE ))
+        if ( (kingColor == PieceColor.WHITE ? piece.startsWith(PieceColor.BLACK) : piece.startsWith(PieceColor.WHITE ))
+        && !piece.endsWith(PieceType.KING))
         {
           opposingPieceCoords.push(Chonse2.COORDS[i][j]);
         }
@@ -660,41 +661,48 @@ export default class Chonse2
       //Base moves.
       let legalMoves = this._getVectorMoves(coordinate, piece, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
       
-      //Kingside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
-      if (this.turn == true ? this.whiteCastlingRights.kingSide : this.blackCastlingRights.kingSide)
-      {
-        //These two squares need to be free in order to castle kingside.
-        const kingsideKnightSqaure = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
-        const kingsideBishopSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
+      let color = piece == PieceType.WHITE_KING ? PieceColor.WHITE : PieceColor.BLACK;
 
-        //Check if they're clear, and if so, push the castling square as a legal move.
-        if (
-          this.pieceState[kingsideKnightSqaure.rowIndex][kingsideKnightSqaure.colIndex] == ""
-          && this.pieceState[kingsideBishopSquare.rowIndex][kingsideBishopSquare.colIndex] == "" 
-        )
+      //King cannot castle while in check
+      if (!this.isInCheck(color))
+      {
+        //Kingside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
+        if (this.turn == true ? this.whiteCastlingRights.kingSide : this.blackCastlingRights.kingSide)
         {
-          this.turn == true ? legalMoves.push(Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) : legalMoves.push(Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
+          //These two squares need to be free in order to castle kingside.
+          const kingsideKnightSqaure = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
+          const kingsideBishopSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
+
+          //Check if they're clear, and if so, push the castling square as a legal move.
+          if (
+            this.pieceState[kingsideKnightSqaure.rowIndex][kingsideKnightSqaure.colIndex] == ""
+            && this.pieceState[kingsideBishopSquare.rowIndex][kingsideBishopSquare.colIndex] == "" 
+          )
+          {
+            this.turn == true ? legalMoves.push(Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) : legalMoves.push(Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
+          }
+        }
+
+        //Queenside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
+        if (this.turn == true ? this.whiteCastlingRights.queenSide : this.blackCastlingRights.queenSide)
+        {
+          //These three squares need to be free in order to castle queenside.
+          const queensideKnightSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE : Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE);
+          const queensideBishopSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
+          const queenSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE);
+        
+          //Check if they're clear, and if so, push the castling square as a legal move.
+          if (
+            this.pieceState[queensideKnightSquare.rowIndex][queensideKnightSquare.colIndex] == ""
+            && this.pieceState[queensideBishopSquare.rowIndex][queensideBishopSquare.colIndex] == ""
+            && this.pieceState[queenSquare.rowIndex][queenSquare.colIndex] == ""
+          )
+          {
+            this.turn == true ? legalMoves.push(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) : legalMoves.push(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
+          }
         }
       }
 
-      //Queenside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
-      if (this.turn == true ? this.whiteCastlingRights.queenSide : this.blackCastlingRights.queenSide)
-      {
-        //These three squares need to be free in order to castle queenside.
-        const queensideKnightSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE : Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE);
-        const queensideBishopSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
-        const queenSquare = this.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE);
-      
-        //Check if they're clear, and if so, push the castling square as a legal move.
-        if (
-          this.pieceState[queensideKnightSquare.rowIndex][queensideKnightSquare.colIndex] == ""
-          && this.pieceState[queensideBishopSquare.rowIndex][queensideBishopSquare.colIndex] == ""
-          && this.pieceState[queenSquare.rowIndex][queenSquare.colIndex] == ""
-        )
-        {
-          this.turn == true ? legalMoves.push(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) : legalMoves.push(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
-        }
-      }
       return legalMoves;   
   }
   
