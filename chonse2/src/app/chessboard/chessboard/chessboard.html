@@ -16,6 +16,7 @@
                             [showPiece]="this.COORDS[rankIndex][fileIndex] != fromSquare"
                             [isFlipped]="isFlipped"
                             [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
+                            [isInCheck]="(chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.isInCheck(pieceColor.WHITE)) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.isInCheck(pieceColor.BLACK)) "
                             (mouseDown)="onSquareMouseDown($event)"
                             (mouseUp)="onSquareMouseUp($event)">
                         </app-square>
@@ -32,11 +33,13 @@
         <p>{{chessGame.turn ? "White" : "Black"}} to move</p>
 
         <div class="testingPurposes">
-            <p>CURRENT PIECE: {{currentlyHeldPiece}}</p>
+            <!--<p>CURRENT PIECE: {{currentlyHeldPiece}}</p>
             <p>LEGAL MOVES: {{ currentLegalMoves.toString() }}</p>
             <p>WHITE CASTLING RIGHTS: {{ `Kingside: ` + this.chessGame.whiteCastlingRights.kingSide + ` |  Queenside: ` + this.chessGame.whiteCastlingRights.queenSide }}</p>
             <p>BLACK CASTLING RIGHTS: {{ `Kingside: ` + this.chessGame.blackCastlingRights.kingSide + ` |  Queenside: ` + this.chessGame.blackCastlingRights.queenSide }}</p>
             <p>EN PASSANT: {{chessGame.enPassantSquare}}</p>
+            <p>WHITE IS IN CHECK: {{chessGame.isInCheck("w")}}</p>
+            <p>BLACK IS IN CHECK: {{chessGame.isInCheck("b")}}</p>-->
         </div>
     </div>
     @if(currentlyHeldPiece != "")
