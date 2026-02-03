@@ -387,41 +387,10 @@ export default class Chonse2
       return false;
     }
 
-    let isCheck: boolean = false;
-
-    //The piece coords of the other color (any of these can cause a check)
-    const opposingPieceCoords: Array<string> = [];
-
     //The coordinate of the current color king
     const kingCoordinate: string = this.getKingCoordinate(kingColor);
 
-    //Loop through each of these to get the coordinates of the pieces.
-    for(let i = 0; i < Chonse2.COORDS.length; i++)
-    {
-      for(let j = 0; j < Chonse2.COORDS[i].length; j++)
-      {
-        const piece = this.pieceState[i][j];
-
-        if ( (kingColor == PieceColor.WHITE ? piece.startsWith(PieceColor.BLACK) : piece.startsWith(PieceColor.WHITE ))
-       )
-        {
-          opposingPieceCoords.push(Chonse2.COORDS[i][j]);
-        }
-      }
-    }
-
-    //For each of these coordinates, we need to check if those pieces include the king. If they do, it's a check.
-    opposingPieceCoords.forEach( pieceCoord =>
-    {
-      const potentiallyLegalMoves = this._getPotentiallyLegalMoves(pieceCoord);      
-      if (potentiallyLegalMoves.includes(kingCoordinate))
-      {
-        isCheck = true;
-      }
-    }
-     )
-
-    return isCheck;
+    return this.isSquareAttacked(kingCoordinate, PieceColor.getOpposite(kingColor))
   }
 
   getKingCoordinate(kingColor: string): string
@@ -650,7 +619,7 @@ export default class Chonse2
       let legalMoves = this._getVectorMoves(coordinate, color, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
 
       //King cannot castle while in check
-      //if (!this.isInCheck(color))
+      if (!this.isInCheck(color))
       {
         //TODO: MAKE SURE KING CANNOT CASTLE THROUGH A SQUARE THAT CAN BE SEEN BY AN ENEMY PIECE
 
