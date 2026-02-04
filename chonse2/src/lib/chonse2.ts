@@ -872,6 +872,39 @@ export default class Chonse2
     return legalMoves.length != 0;
   }
 
+  /*private*/ _getAllPiecesAndCoordsByColor(color: string): {pieces: Array<string>, coords: Array<string>}
+  {
+    if (color != PieceColor.WHITE && color != PieceColor.BLACK)
+    {
+      return { pieces: [], coords: [] };
+    }
+
+    const pieces = [];
+    const coordinates = [];
+
+    //Loop through each of these to get the coordinates + pieces.
+    for(let i = 0; i < Chonse2.COORDS.length; i++)
+    {
+      for(let j = 0; j < Chonse2.COORDS[i].length; j++)
+      {
+        const piece = this.pieceState[i][j];
+
+        if ( piece.startsWith(color))
+        {
+          pieces.push(piece);
+          coordinates.push(Chonse2.COORDS[i][j])
+        }
+      }
+    }
+
+    return { pieces: pieces, coords : coordinates};
+  }
+
+  _isDarkColoredSquare(rowIndex: number, fileIndex: number): boolean
+  {
+    return (rowIndex + fileIndex) % 2 == 1;
+  }
+
   private static _playDummyMove(inst: Chonse2, fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN)
   {
     //In piece state, where the current piece is moving to.
@@ -987,7 +1020,7 @@ export default class Chonse2
     const nextPlayerHasLegalMoves = this._playerHasLegalMoves(this.turn);
     const playerColor: string = this.turn ? PieceColor.WHITE : PieceColor.BLACK;
     
-    //checkmate
+    //Checkmate
     if (!nextPlayerHasLegalMoves && this.isInCheck(playerColor))
     {
       this.gameState.isGameOver = true;
@@ -995,14 +1028,44 @@ export default class Chonse2
       this.gameState.winner = PieceColor.getOpposite(playerColor);
     }
 
-    //stalemate
+    //Stalemate
     if (!nextPlayerHasLegalMoves && !this.isInCheck(playerColor))
     {
       this.gameState.isGameOver = true;
       this.gameState.reason = GameOverReason.Stalemate;
     }
 
-    //insufficient material
+    //Insufficient material
+    const whitePieceData = this._getAllPiecesAndCoordsByColor(PieceColor.WHITE);
+    const blackPieceData = this._getAllPiecesAndCoordsByColor(PieceColor.BLACK);
+
+    //Insufficient material case 1: King vs king
+    const isKingVsKing: boolean = (
+      (whitePieceData.pieces.length == 1 && whitePieceData.pieces[0] == PieceType.WHITE_KING)
+      && (blackPieceData.pieces.length == 1 && blackPieceData.pieces[0] == PieceType.BLACK_KING)
+    );
+
+    //Insufficient material case 2: King vs bishop and king.
+    const isKingVsBishopAndKing: boolean = (
+      (whitePieceData.pieces.length == 1 && whitePieceData.pieces[0] == PieceType.WHITE_KING && blackPieceData.pieces.length == 2 && blackPieceData.pieces.some( p => p == PieceType.BLACK_BISHOP ))
+      || (blackPieceData.pieces.length == 1 && blackPieceData.pieces[0] == PieceType.BLACK_KING && whitePieceData.pieces.length == 2 && whitePieceData.pieces.some( p => p == PieceType.WHITE_BISHOP ))
+    );
+
+    //Insufficient material case 3: King vs knight and king.
+    const isKingVsKnightAndKing: boolean = false;
+
+    //Insufficient material case 4: King vs bishop and king on the same color
+    const isKingAndBishopVsKingAndBishopOnSameColor: boolean = false;
+
+    if (isKingVsKing 
+      || isKingVsBishopAndKing
+      || isKingVsKnightAndKing 
+      || isKingAndBishopVsKingAndBishopOnSameColor 
+        )
+      {
+        this.gameState.isGameOver = true;
+        this.gameState.reason = GameOverReason.InsufficientMaterial;
+      }
 
     //fifty moves with no pawn movements or captures
 

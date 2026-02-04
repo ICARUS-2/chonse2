@@ -64,6 +64,10 @@
             <p>BLACK IS IN CHECK: {{chessGame.isInCheck("b")}}</p>-->
             <p>Game is Over: {{chessGame.gameState.isGameOver}}</p>
             <p>Reason: {{chessGame.gameState.reason.toString()}}</p>
+            <p>White pieces: {{chessGame._getAllPiecesAndCoordsByColor("w").pieces}}</p>
+            <p>White piece coords: {{chessGame._getAllPiecesAndCoordsByColor("w").coords}}</p>
+            <p>Black pieces: {{chessGame._getAllPiecesAndCoordsByColor("b").pieces}}</p>
+            <p>Black piece coords: {{chessGame._getAllPiecesAndCoordsByColor("b").coords}}</p>
         </div>
     </div>
     @if(currentlyHeldPiece != "")
