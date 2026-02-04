@@ -122,6 +122,11 @@ export default class Chonse2
 
   getLegalMoves(coordinate: string): Array<string>
   {
+    if (this.gameState.isGameOver)
+    {
+      return [];
+    }
+
     //Where the piece is within the state.
     const index = Chonse2.findIndexFromCoordinate(coordinate);
 
@@ -1052,10 +1057,34 @@ export default class Chonse2
     );
 
     //Insufficient material case 3: King vs knight and king.
-    const isKingVsKnightAndKing: boolean = false;
+    const isKingVsKnightAndKing: boolean = (
+      (whitePieceData.pieces.length == 1 && whitePieceData.pieces[0] == PieceType.WHITE_KING && blackPieceData.pieces.length == 2 && blackPieceData.pieces.some( p => p == PieceType.BLACK_KNIGHT ))
+      || (blackPieceData.pieces.length == 1 && blackPieceData.pieces[0] == PieceType.BLACK_KING && whitePieceData.pieces.length == 2 && whitePieceData.pieces.some( p => p == PieceType.WHITE_KNIGHT ))
+    );
+    
 
     //Insufficient material case 4: King vs bishop and king on the same color
-    const isKingAndBishopVsKingAndBishopOnSameColor: boolean = false;
+    let isKingAndBishopVsKingAndBishopOnSameColor: boolean = false;
+    const bothSidesHaveKingAndBishop: boolean = (
+      (whitePieceData.pieces.length == 2 && whitePieceData.pieces.some( p => p == PieceType.WHITE_KING ) && whitePieceData.pieces.some( p => p == PieceType.WHITE_BISHOP ) )
+      && (blackPieceData.pieces.length == 2 && blackPieceData.pieces.some( p => p == PieceType.BLACK_KING ) && blackPieceData.pieces.some(p => p == PieceType.BLACK_BISHOP))
+    )
+    if (bothSidesHaveKingAndBishop)
+    {
+      const whiteBishopCoord: string = whitePieceData.coords[whitePieceData.pieces.findIndex( p => p === PieceType.WHITE_BISHOP )];
+      const whiteBishopIndex = Chonse2.findIndexFromCoordinate(whiteBishopCoord);
+
+      const blackBishopCoord: string = blackPieceData.coords[blackPieceData.pieces.findIndex( p => p === PieceType.BLACK_BISHOP )];
+      const blackBishopIndex = Chonse2.findIndexFromCoordinate(blackBishopCoord);
+      
+      const wbIsDark: boolean = this._isDarkColoredSquare(whiteBishopIndex.rowIndex, whiteBishopIndex.colIndex);
+      const bbIsDark: boolean = this._isDarkColoredSquare(blackBishopIndex.rowIndex, blackBishopIndex.colIndex);
+
+      if (wbIsDark == bbIsDark)
+      {
+        isKingAndBishopVsKingAndBishopOnSameColor = true;
+      }
+    }
 
     if (isKingVsKing 
       || isKingVsBishopAndKing
