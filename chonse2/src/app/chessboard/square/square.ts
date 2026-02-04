@@ -51,47 +51,4 @@ export class Square {
   {
     this.mouseUp.emit( {coordinate: this.coordinate} );
   }
-
-  _getBackgroundColor(): string
-  {
-    if (this.isCheckmate)
-    {
-      return "red";
-    }
-
-    if (this.isDraw)
-    {
-      return "skyblue"
-    }
-
-    if (this.isWinner)
-    {
-      return "limegreen";
-    }
-
-    return "transparent";
-  }
-
-  _getImgSrc(): string
-  {
-    const base = "icons/";
-
-    if (this.isCheckmate)
-    {
-      return base + "checkmate.webp";
-    }
-
-    if (this.isDraw)
-    {
-      return base + "draw.webp"
-    }
-
-    if (this.isWinner)
-    {
-      return base + "winner.webp";
-    }
-
-    return "";
-  }
-
 }

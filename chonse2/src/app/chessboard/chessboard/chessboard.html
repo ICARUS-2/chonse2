@@ -5,24 +5,43 @@
             @for( rank of chessGame.pieceState; let rankIndex = $index; track rankIndex)
             {
                 <ng-container>
-                    @for ( piece of rank; let fileIndex = $index; track fileIndex )
+                    @for ( piece of rank; let fileIndex = $index; track fileIndex; )
                     {
-                        <app-square 
-                            [coordinate]="this.COORDS[rankIndex][fileIndex]" 
-                            [piece]="chessGame.pieceState[rankIndex][fileIndex]"
-                            [isDark]="(rankIndex + fileIndex) % 2 == 1"
-                            [showFile]="rankIndex == rank.length - 1"
-                            [showRank]="fileIndex == 0"
-                            [showPiece]="this.COORDS[rankIndex][fileIndex] != fromSquare"
-                            [isFlipped]="isFlipped"
-                            [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
-                            [isInCheck]="(chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.isInCheck(pieceColor.WHITE)) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.isInCheck(pieceColor.BLACK)) "
-                            [isWinner]="(chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.gameState.winner == pieceColor.WHITE) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.gameState.winner == pieceColor.BLACK) "
-                            [isCheckmate]="((chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.gameState.winner == pieceColor.BLACK) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.gameState.winner == pieceColor.WHITE)) && chessGame.gameState.reason == gameOverReason.Checkmate"
-                            [isDraw]="chessGame.gameState.isDraw() && (chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING || chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING)"
-                            (mouseDown)="onSquareMouseDown($event)"
-                            (mouseUp)="onSquareMouseUp($event)">
-                        </app-square>
+                        <div style="position: relative; width: 100%; height: 100%;">
+                            <app-square 
+                                [coordinate]="this.COORDS[rankIndex][fileIndex]" 
+                                [piece]="chessGame.pieceState[rankIndex][fileIndex]"
+                                [isDark]="(rankIndex + fileIndex) % 2 == 1"
+                                [showFile]="rankIndex == rank.length - 1"
+                                [showRank]="fileIndex == 0"
+                                [showPiece]="this.COORDS[rankIndex][fileIndex] != fromSquare"
+                                [isFlipped]="isFlipped"
+                                [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
+                                [isInCheck]="(chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.isInCheck(pieceColor.WHITE)) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.isInCheck(pieceColor.BLACK)) "
+                                (mouseDown)="onSquareMouseDown($event)"
+                                (mouseUp)="onSquareMouseUp($event)">
+                            </app-square>
+
+                            @if (_isSquareEndgameKingSquare(rankIndex, fileIndex))
+                            {
+                                <div class="endgameSquareOverlay" 
+                                [ngClass]="{'endgameSquareOverlayFlipped': isFlipped}">
+                                    <div class="fade-out-bg endgameSquareBackground"
+                                        [style]="{'background-color' : _getEndgameSquareBackgroundColor(rankIndex, fileIndex)}">
+                                    </div>
+
+                                    <img class="move-up-right-shrink endgameSquareImage"
+                                        [src]="_getEndgameSquareImgSrc(rankIndex, fileIndex)"
+                                        style="width: 10vmin;" />
+
+                                    <div class="corner-text fade-out-bg"
+                                        [style]="{'background-color' : _getEndgameSquareBackgroundColor(rankIndex, fileIndex)}">
+                                        {{_getEndgameSquareText(rankIndex, fileIndex)}}
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
                     }
                 </ng-container>
             }

@@ -26,7 +26,7 @@
     user-select: none;
 }
 
-.boardContainerInnerFlipped
+.boardContainerInnerFlipped 
 {
     transform: rotate(180deg);
 }
@@ -40,6 +40,73 @@
     transform: translate(-50%, -50%);
 }
 
+.endgameSquareOverlay
+{
+    position: absolute; 
+    inset: 0; 
+    pointer-events: none; 
+    z-index: 2;
+}
+
+.endgameSquareBackground
+{
+    position: absolute;
+    inset: 0; 
+    z-index: 2;
+}
+
+.endgameSquareImage
+{
+    position: absolute;
+    z-index: 3;
+}
+
+.endgameSquareOverlayFlipped
+{
+    transform: rotate(180deg);
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.fade-out-bg {
+  animation: fadeOut 0.6s ease-out forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes iconMove {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(50%, -50%) scale(0.65); /* moves up-right and shrinks */
+  }
+}
+
+.move-up-right-shrink
+{
+    animation: iconMove 0.6s ease-in-out forwards;
+    animation-delay: 0.5s;
+}
+
+.corner-text
+{
+    position: absolute;
+    width: 14vmin;
+    font-size: 2vmin;
+    transform: translate(50%, -50%);
+    padding: 10px;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    border-radius: 10px;
+}
 @media screen and (max-width: 800px) 
 {
     .componentContainer
