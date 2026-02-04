@@ -1,9 +1,10 @@
-import { from } from "rxjs";
+import { empty, from } from "rxjs";
 import CastlingRights from "./castling-rights";
 import { PieceColor } from "./piece-color";
 import PieceMaterial from "./piece-material";
 import { PieceType } from "./piece-type";
 import { GameOverReason, GameState } from "./game-state";
+import FenHelper from "./fen-helper";
 
 export default class Chonse2
 {
@@ -99,6 +100,10 @@ export default class Chonse2
   whiteCastlingRights: CastlingRights = new CastlingRights();
   blackCastlingRights: CastlingRights = new CastlingRights();
   enPassantSquare: string = "";
+
+  //move counters
+  halfMoveCounter: number = 0;
+  fullMoveCounter: number = 1;
 
   //instantiates with either a passed game state or the default one.
   constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE)
@@ -550,6 +555,74 @@ export default class Chonse2
     return false;
   }
 
+  getFEN(): string
+  {
+    //string to be built
+    let fen: string = "";
+
+    //board
+    for(let i = 0; i < this.pieceState.length; i++)
+    {
+      //check each rank
+      const currentRank = this.pieceState[i];
+      
+      //notation requires the number of consecutive empty squares
+      let emptyCount = 0;
+
+      //loop through each file in that rank
+      for(let j = 0; j < currentRank.length; j++)
+      {
+        //check the piece that's in it
+        const currentSquareContent = currentRank[j];
+
+        //if there is one, increment
+        if (currentSquareContent == PieceType.NONE)
+        {
+          emptyCount += 1;
+        }
+        else //if there isn't, append the empty squares counted and then add the piece
+        {
+          if (emptyCount > 0)
+          {
+            fen += emptyCount.toString();
+            emptyCount = 0;
+          }
+          fen += FenHelper.getFenPieceFromPiece(currentSquareContent);
+        }
+      } 
+
+      if (emptyCount > 0)
+      {
+        fen += emptyCount.toString();
+      }
+
+      if (i != this.pieceState.length - 1)
+      {
+        fen += "/";
+      }
+    }
+
+    //active color
+    fen += " "; 
+    fen += this.turn ? PieceColor.WHITE : PieceColor.BLACK;
+
+    //castling
+    fen += " "
+    fen += FenHelper.getFenCastlingRights(this.whiteCastlingRights, this.blackCastlingRights);
+
+    //en passant
+    fen += " "
+    fen += this.enPassantSquare == "" ? "-" : this.enPassantSquare;
+
+    //halfmove clock
+    fen += " "
+    fen += this.halfMoveCounter;
+
+    //full move clock
+    fen += " "
+    fen += this.fullMoveCounter;
+    return fen;
+  }
 
   //#region Inner legal move helper functions
 
@@ -995,6 +1068,7 @@ export default class Chonse2
   }
   //#endregion
 
+  //#region Inner state management
   private _getEnPassantSquareIfExists(fromSquare: string, toSquare: string, turn: boolean) : string
   {
     //En passant moves are stored with key fromsquare-tosquare
@@ -1101,4 +1175,5 @@ export default class Chonse2
     //threefold repetition
 
   }
+  //#endregion
 }
