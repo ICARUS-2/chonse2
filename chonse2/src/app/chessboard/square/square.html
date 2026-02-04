@@ -29,4 +29,24 @@
     {
         <div class="legalMoveCaptureCircle"></div>
     }
+
+    <!--
+    @if(isCheckmate || isDraw || isWinner)
+    {
+        <div class="fade-out-bg"
+            style="position: absolute; inset: 0; z-index: 9999;"
+            [style]="{'background-color' : _getBackgroundColor()}">
+        </div>
+
+        <img class="move-up-right-shrink"
+            alt="end icon"
+            [src]="_getImgSrc()"
+            style="position: absolute; z-index: 9999; inset: 0; width: 10vmin;"
+         />
+
+        <div class="corner-text fade-out-bg"
+            [style]="{'background-color' : _getBackgroundColor()}">
+            {{ isCheckmate ? 'Checkmate' : isDraw ? 'Draw' : 'Winner' }}
+        </div>
+    }-->
 </div>

@@ -18,6 +18,9 @@ export class Square {
   @Input() showPiece: boolean = true;
   @Input() isFlipped: boolean = false;
   @Input() isInCheck: boolean = false;
+  @Input() isCheckmate: boolean = false;
+  @Input() isDraw: boolean = false;
+  @Input() isWinner: boolean = false;
 
   @Output() mouseDown = new EventEmitter<{coordinate: string, piece: string, mouse: MouseEvent}>();
   @Output() mouseUp = new EventEmitter<{coordinate: string}>();

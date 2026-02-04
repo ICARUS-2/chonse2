@@ -6,16 +6,20 @@ import { CapturedPieces } from "../captured-pieces/captured-pieces";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PromotionModal } from '../../promotion-modal/promotion-modal';
 import Chonse2 from '../../../lib/chonse2';
+import { GameOverReason, GameState } from '../../../lib/game-state';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, CapturedPieces],
+  imports: [Square, CapturedPieces, CommonModule],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
 })
 export class Chessboard implements OnInit {
   pieceType = PieceType;
   pieceColor = PieceColor;
+  gameOverReason = GameOverReason;
+
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
   //PIECES ON THE BOARD CURRENTLY
@@ -41,7 +45,7 @@ export class Chessboard implements OnInit {
 
   }
 
-  //MOUSE LOGIC
+  //Mouse movement logic
   //#region 
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: MouseEvent })
   {
@@ -147,6 +151,91 @@ export class Chessboard implements OnInit {
     this.mouseY = 0;
 
     this.resetMoveState();
+  }
+  //#endregion
+
+  //Endgame square animation logic
+  //#region
+  _isSquareEndgameKingSquare(rankIndex: number, fileIndex: number)
+  {
+    return this._isSquareCheckmatedKing(rankIndex, fileIndex) || this._isSquareWinningKing(rankIndex, fileIndex) || this._isSquareKingInDraw(rankIndex, fileIndex);
+  }
+
+  _isSquareCheckmatedKing(rankIndex: number, fileIndex: number) : boolean
+  {
+    return (this.chessGame.pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.chessGame.gameState.winner == PieceColor.BLACK) || (this.chessGame.pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.chessGame.gameState.winner == PieceColor.WHITE) && this.chessGame.gameState.reason == GameOverReason.Checkmate;
+  }
+
+  _isSquareWinningKing(rankIndex: number, fileIndex: number) : boolean
+  {
+    return (this.chessGame.pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.chessGame.gameState.winner == PieceColor.WHITE) || (this.chessGame.pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.chessGame.gameState.winner == PieceColor.BLACK); 
+  }
+
+  _isSquareKingInDraw(rankIndex: number, fileIndex: number) : boolean 
+  { 
+    return this.chessGame.gameState.isDraw() && (this.chessGame.pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING || this.chessGame.pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING);
+  }
+
+  _getEndgameSquareBackgroundColor(rankIndex: number, fileIndex: number): string
+  {
+    if (this._isSquareCheckmatedKing(rankIndex, fileIndex))
+    {
+      return "red";
+    }
+
+    if (this._isSquareKingInDraw(rankIndex, fileIndex))
+    {
+      return "skyblue"
+    }
+
+    if (this._isSquareWinningKing(rankIndex, fileIndex))
+    {
+      return "limegreen";
+    }
+
+    return "transparent";
+  }
+
+  _getEndgameSquareImgSrc(rankIndex: number, fileIndex: number): string
+  {
+    const base = "icons/";
+
+    if (this._isSquareCheckmatedKing(rankIndex, fileIndex))
+    {
+      return base + "checkmate.webp";
+    }
+
+    if (this._isSquareKingInDraw(rankIndex, fileIndex))
+    {
+      return base + "draw.webp"
+    }
+
+    if (this._isSquareWinningKing(rankIndex, fileIndex))
+    {
+      return base + "winner.webp";
+    }
+
+    return "";
+  }
+
+  _getEndgameSquareText(rankIndex: number, fileIndex: number) : string
+  {
+    if (this._isSquareCheckmatedKing(rankIndex, fileIndex))
+    {
+      return "Checkmate";
+    }
+
+    if (this._isSquareWinningKing(rankIndex, fileIndex))
+    {
+      return "Winner";
+    }
+
+    if (this._isSquareKingInDraw(rankIndex, fileIndex))
+    {
+      return "Draw";
+    }
+
+    return "";
   }
   //#endregion
 
