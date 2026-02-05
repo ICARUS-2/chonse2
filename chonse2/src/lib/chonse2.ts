@@ -54,7 +54,9 @@ export default class Chonse2
   static readonly BLACK_KINGSIDE_ROOK_SQUARE = "h8"
   static readonly BLACK_QUEEN_SQUARE = "d8";
   static readonly BLACK_KING_SQUARE = "e8";
+  static readonly DRAW_BY_REPETITION_THRESHOLD: number = 3;
 
+  private static readonly _FEN_SPLIT_POSKEY_INDEX = 2
   private static readonly _BISHOP_VECTOR_X = [-1, -1, 1, 1];
   private static readonly _BISHOP_VECTOR_Y = [-1, 1, -1, 1];
   private static readonly _ROOK_VECTOR_X = [-1, 1, 0, 0];
@@ -104,6 +106,9 @@ export default class Chonse2
   halfMoveCounter: number = 0;
   fullMoveCounter: number = 1;
 
+  //used to track repetition
+  private _previousPositionMap: Map<string, number> = new Map<string, number>()
+
   //instantiates with either a passed game state or the default one.
   constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE)
   {
@@ -123,6 +128,26 @@ export default class Chonse2
     }
     });
   }
+
+  //Gets the row and column indeces when a rank and file coordinate are passed in.
+  static findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
+  {
+      //Finds the row that includes this coordinate.
+      const rIdx = Chonse2.COORDS.findIndex( row => row.includes(coordinate) );
+
+      //If it doesn't exist, it should return -1.
+      if (rIdx === -1)
+      {
+          return { rowIndex: -1, colIndex: -1 };
+      }
+
+      //The column index is the place in the rank where that exact coordinate is found.
+      const cIdx = Chonse2.COORDS[rIdx].findIndex( col => col === coordinate );
+
+      //Both row and column indeces are returned.
+      return {rowIndex: rIdx, colIndex: cIdx};
+  }
+
 
   getLegalMoves(coordinate: string): Array<string>
   {
@@ -152,7 +177,7 @@ export default class Chonse2
     const legalMoves = potentiallyLegalMoves.filter(item =>
       {
         //Create a deep copy with all its functions.
-        const deepCopy: Chonse2 = this._clone();
+        const deepCopy: Chonse2 = this._lightweightCloneForCheckVerification();
 
         //Test the dummy move using a stripped-down version
         Chonse2._playDummyMove(deepCopy, coordinate, item);
@@ -373,33 +398,32 @@ export default class Chonse2
       this.whiteCastlingRights.queenSide = false;
     }
 
+    //If black just moved, increase counter of full moves.
+    if (!this.turn)
+    {
+      this.fullMoveCounter++;
+    }
+
     //Once this player finishes their move, it's the next person's turn.
     this.turn = !this.turn;
 
+    //Track this position in the state map.
+    const currentPosKey = this._getPositionKey()
+    const currentStateCount: number | undefined = this._previousPositionMap.get(currentPosKey);
+    if (!currentStateCount)
+    {
+      this._previousPositionMap.set(currentPosKey, 1);
+    }
+    else
+    {
+      this._previousPositionMap.set(currentPosKey, currentStateCount + 1);
+    }
+
     //check for checkmate, stalemate, etc
-    this._updateGameState();
+    this._checkIsGameOver();
 
     //The move was successful if we got this far.
     return true;
-  }
-  
-  //Gets the row and column indeces when a rank and file coordinate are passed in.
-  static findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
-  {
-      //Finds the row that includes this coordinate.
-      const rIdx = Chonse2.COORDS.findIndex( row => row.includes(coordinate) );
-
-      //If it doesn't exist, it should return -1.
-      if (rIdx === -1)
-      {
-          return { rowIndex: -1, colIndex: -1 };
-      }
-
-      //The column index is the place in the rank where that exact coordinate is found.
-      const cIdx = Chonse2.COORDS[rIdx].findIndex( col => col === coordinate );
-
-      //Both row and column indeces are returned.
-      return {rowIndex: rIdx, colIndex: cIdx};
   }
 
   isInCheck(kingColor: string)
@@ -621,6 +645,48 @@ export default class Chonse2
     fen += " "
     fen += this.fullMoveCounter;
     return fen;
+  }
+
+  isEnPassantCaptureActuallyPossible() : boolean
+  {
+    //Logically an en passant capture can't happen if no pawn moved to squares to begin with.
+    if (this.enPassantSquare == "")
+    {
+      return false;
+    }
+
+    //The place within the piece state that the en passant square can be found
+    let enPassantSquareIndex = Chonse2.findIndexFromCoordinate(this.enPassantSquare);
+    
+    //Only run the necessary checks if there is an en passant square.
+    if (enPassantSquareIndex)
+    {
+      //Gets the row so that the pawns next to it can be checked.
+      const rankEnPassantPawnIsOn = this.turn ? this.pieceState[enPassantSquareIndex.rowIndex + 1] : this.pieceState[enPassantSquareIndex.rowIndex - 1];
+
+      //The squares that might have pawns that could capture.
+      const potentialOpposingPawnLeftSquare = rankEnPassantPawnIsOn[enPassantSquareIndex.colIndex - 1];
+      const potentialOpposingPawnRightSquare = rankEnPassantPawnIsOn[enPassantSquareIndex.colIndex + 1];
+
+      //If there are indeed pawns of the color opposing the pawn that just moved two spaces to the left or right, then an en passant capture is possible.
+      if (potentialOpposingPawnLeftSquare)
+      {
+        if (this.turn ? potentialOpposingPawnLeftSquare == PieceType.WHITE_PAWN : potentialOpposingPawnLeftSquare == PieceType.BLACK_PAWN)
+        {
+          return true;
+        }
+      }
+
+      if (potentialOpposingPawnRightSquare)
+      {
+        if (this.turn ? potentialOpposingPawnRightSquare == PieceType.WHITE_PAWN : potentialOpposingPawnRightSquare == PieceType.BLACK_PAWN)
+        {
+          return true;
+        }
+      }
+    }
+
+    return false; 
   }
 
   //#region Inner legal move helper functions
@@ -1080,48 +1146,7 @@ export default class Chonse2
     return val == null ? "" : val;
   }
 
-  isEnPassantCaptureActuallyPossible() : boolean
-  {
-    if (this.enPassantSquare == "")
-    {
-      return false;
-    }
-
-    //The place within the piece state that the en passant square can be found
-    let enPassantSquareIndex = Chonse2.findIndexFromCoordinate(this.enPassantSquare);
-    
-    //Only run the necessary checks if there is an en passant square.
-    if (enPassantSquareIndex)
-    {
-      //Gets the row so that the pawns next to it can be checked.
-      const rankEnPassantPawnIsOn = this.turn ? this.pieceState[enPassantSquareIndex.rowIndex + 1] : this.pieceState[enPassantSquareIndex.rowIndex - 1];
-
-      //The squares that might have pawns that could capture.
-      const potentialOpposingPawnLeftSquare = rankEnPassantPawnIsOn[enPassantSquareIndex.colIndex - 1];
-      const potentialOpposingPawnRightSquare = rankEnPassantPawnIsOn[enPassantSquareIndex.colIndex + 1];
-
-      //If there are indeed pawns of the color opposing the pawn that just moved two spaces to the left or right, then an en passant capture is possible.
-      if (potentialOpposingPawnLeftSquare)
-      {
-        if (this.turn ? potentialOpposingPawnLeftSquare == PieceType.WHITE_PAWN : potentialOpposingPawnLeftSquare == PieceType.BLACK_PAWN)
-        {
-          return true;
-        }
-      }
-
-      if (potentialOpposingPawnRightSquare)
-      {
-        if (this.turn ? potentialOpposingPawnRightSquare == PieceType.WHITE_PAWN : potentialOpposingPawnRightSquare == PieceType.BLACK_PAWN)
-        {
-          return true;
-        }
-      }
-    }
-
-    return false; 
-  }
-
-  private _clone()
+  private _lightweightCloneForCheckVerification()
   {
     const copy = new Chonse2();
 
@@ -1131,10 +1156,10 @@ export default class Chonse2
     copy.whiteCastlingRights = structuredClone(this.whiteCastlingRights);
     copy.blackCastlingRights = structuredClone(this.blackCastlingRights);
 
-  return copy;
+    return copy;
   }
 
-  private _updateGameState()
+  private _checkIsGameOver()
   {
     const nextPlayerHasLegalMoves = this._playerHasLegalMoves(this.turn);
     const playerColor: string = this.turn ? PieceColor.WHITE : PieceColor.BLACK;
@@ -1213,7 +1238,38 @@ export default class Chonse2
     //fifty moves with no pawn movements or captures
 
     //threefold repetition
+    for( let posKey of this._previousPositionMap.keys() )
+    {
+      const val = this._previousPositionMap.get(posKey);
 
+      if (val)
+      {
+        if (val >= Chonse2.DRAW_BY_REPETITION_THRESHOLD)
+        {
+          this.gameState.isGameOver = true;
+          this.gameState.reason = GameOverReason.ThreefoldRepetition;
+          break;
+        }
+      }
+    }
+    
+
+  }
+
+  private _getPositionKey()
+  {
+    const fenSplit = this.getFEN().split(" ");
+    let posKey = "";
+
+    for(let i = 0; i <= Chonse2._FEN_SPLIT_POSKEY_INDEX; i++)
+    {
+      posKey += fenSplit[i];
+      posKey += " ";
+    }
+
+    this.isEnPassantCaptureActuallyPossible() ? posKey += this.enPassantSquare : posKey += "-"
+
+    return posKey
   }
   //#endregion
 }
