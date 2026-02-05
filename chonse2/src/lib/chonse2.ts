@@ -128,6 +128,9 @@ export default class Chonse2
         throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
     }
     });
+    
+    //Starting position always counts towards the repetition.
+    this._previousPositionMap.set(this._getPositionKey(), 1);
   }
 
   //Gets the row and column indeces when a rank and file coordinate are passed in.
