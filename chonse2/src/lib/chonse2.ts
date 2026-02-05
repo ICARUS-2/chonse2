@@ -499,7 +499,6 @@ export default class Chonse2
       return whiteMaterialCaptured - blackMaterialCaptured + this.promotionalMaterialDifference;
   }
 
-
   isSquareAttacked(coord: string, attackerColor: string): boolean 
   {
     if (attackerColor != PieceColor.WHITE && attackerColor != PieceColor.BLACK)
@@ -708,6 +707,49 @@ export default class Chonse2
     }
 
     return false; 
+  }
+
+  getFullDeepCopy(): Chonse2
+  {
+    const copy = new Chonse2();
+
+    //captures/material
+    copy.piecesWhiteCaptured = structuredClone(this.piecesWhiteCaptured);
+    copy.piecesBlackCaptured = structuredClone(this.piecesBlackCaptured);
+    copy.promotionalMaterialDifference = this.promotionalMaterialDifference;
+
+    //pieces
+    copy.pieceState = structuredClone(this.pieceState);
+
+    //game state
+    const gameStateCopy = new GameState();
+    gameStateCopy.isGameOver = this.gameState.isGameOver;
+    gameStateCopy.reason = this.gameState.reason;
+    copy.gameState = gameStateCopy;
+
+    //turn
+    copy.turn = this.turn;
+
+    //en passant
+    copy.enPassantSquare = this.enPassantSquare;
+
+    //castling rights
+    copy.whiteCastlingRights = new CastlingRights();
+    copy.whiteCastlingRights.kingSide = this.whiteCastlingRights.kingSide;
+    copy.whiteCastlingRights.queenSide = this.whiteCastlingRights.queenSide;
+
+    copy.blackCastlingRights = new CastlingRights();
+    copy.blackCastlingRights.kingSide = this.blackCastlingRights.kingSide; 
+    copy.blackCastlingRights.queenSide = this.blackCastlingRights.queenSide;
+
+    //move counters
+    copy.halfMovesWithoutPawnMovementsOrCaptures = this.halfMovesWithoutPawnMovementsOrCaptures;
+    copy.fullMoveCounter = this.fullMoveCounter;
+
+    //state tracker
+    copy._previousPositionMap = structuredClone(this._previousPositionMap);
+
+    return copy;
   }
 
   //#region Inner legal move helper functions
@@ -1036,7 +1078,7 @@ export default class Chonse2
     return legalMoves.length != 0;
   }
 
-  /*private*/ _getAllPiecesAndCoordsByColor(color: string): {pieces: Array<string>, coords: Array<string>}
+  private _getAllPiecesAndCoordsByColor(color: string): {pieces: Array<string>, coords: Array<string>}
   {
     if (color != PieceColor.WHITE && color != PieceColor.BLACK)
     {
@@ -1064,7 +1106,7 @@ export default class Chonse2
     return { pieces: pieces, coords : coordinates};
   }
 
-  _isDarkColoredSquare(rowIndex: number, fileIndex: number): boolean
+  private _isDarkColoredSquare(rowIndex: number, fileIndex: number): boolean
   {
     return (rowIndex + fileIndex) % 2 == 1;
   }
