@@ -55,21 +55,9 @@
         <p>{{chessGame.turn ? "White" : "Black"}} to move</p>
 
         <div class="testingPurposes">
-            <!--<p>CURRENT PIECE: {{currentlyHeldPiece}}</p>
-            <p>LEGAL MOVES: {{ currentLegalMoves.toString() }}</p>
-            <p>WHITE CASTLING RIGHTS: {{ `Kingside: ` + this.chessGame.whiteCastlingRights.kingSide + ` |  Queenside: ` + this.chessGame.whiteCastlingRights.queenSide }}</p>
-            <p>BLACK CASTLING RIGHTS: {{ `Kingside: ` + this.chessGame.blackCastlingRights.kingSide + ` |  Queenside: ` + this.chessGame.blackCastlingRights.queenSide }}</p>
-            <p>WHITE IS IN CHECK: {{chessGame.isInCheck("w")}}</p>
-            <p>BLACK IS IN CHECK: {{chessGame.isInCheck("b")}}</p>
-            <p>Game is Over: {{chessGame.gameState.isGameOver}}</p>
-            <p>Reason: {{chessGame.gameState.reason.toString()}}</p>
-            <p>EN PASSANT: {{chessGame.enPassantSquare}}</p>
-            <p>EN PASSANT POSSIBLE: {{chessGame.isEnPassantCaptureActuallyPossible()}}</p>
-            <p>White pieces: {{chessGame._getAllPiecesAndCoordsByColor("w").pieces}}</p>
-            <p>White piece coords: {{chessGame._getAllPiecesAndCoordsByColor("w").coords}}</p>
-            <p>Black pieces: {{chessGame._getAllPiecesAndCoordsByColor("b").pieces}}</p>
-            <p>Black piece coords: {{chessGame._getAllPiecesAndCoordsByColor("b").coords}}</p>
-            <p>FEN: {{chessGame.getFEN()}}</p>-->
+            <p>In progress: {{!this.chessGame.gameState.isGameOver}}</p>
+            <p>Result: {{this.chessGame.gameState.reason}}</p>
+            <p>No pawn moves or captures: {{chessGame.halfMovesWithoutPawnMovementsOrCaptures}}</p>
         </div>
     </div>
     @if(currentlyHeldPiece != "")

@@ -55,6 +55,7 @@ export default class Chonse2
   static readonly BLACK_QUEEN_SQUARE = "d8";
   static readonly BLACK_KING_SQUARE = "e8";
   static readonly DRAW_BY_REPETITION_THRESHOLD: number = 3;
+  static readonly DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD = 100; //50 full moves * 2
 
   private static readonly _FEN_SPLIT_POSKEY_INDEX = 2
   private static readonly _BISHOP_VECTOR_X = [-1, -1, 1, 1];
@@ -103,7 +104,7 @@ export default class Chonse2
   enPassantSquare: string = "";
 
   //move counters
-  halfMoveCounter: number = 0;
+  halfMovesWithoutPawnMovementsOrCaptures: number = 0;
   fullMoveCounter: number = 1;
 
   //used to track repetition
@@ -216,6 +217,13 @@ export default class Chonse2
 
     //The piece already present in the square the current piece is moving to (being captured)
     const pieceInToSquare = this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex];
+
+    //Used to track the 50 move rule.
+    let isPawnMovementOrCapture = false;
+    if (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN || pieceInToSquare != PieceType.NONE)
+    {
+      isPawnMovementOrCapture = true;
+    }
 
     //Handle en passant
     if (toCoordinate == this.enPassantSquare && (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN))
@@ -402,6 +410,16 @@ export default class Chonse2
     if (!this.turn)
     {
       this.fullMoveCounter++;
+    }
+
+    //If it was a move or a pawn capture, reset the draw counter. If not, increment it.
+    if (!isPawnMovementOrCapture)
+    {
+      this.halfMovesWithoutPawnMovementsOrCaptures++;
+    }
+    else
+    {
+      this.halfMovesWithoutPawnMovementsOrCaptures = 0;
     }
 
     //Once this player finishes their move, it's the next person's turn.
@@ -639,7 +657,7 @@ export default class Chonse2
 
     //halfmove clock
     fen += " "
-    fen += this.halfMoveCounter;
+    fen += this.halfMovesWithoutPawnMovementsOrCaptures;
 
     //full move clock
     fen += " "
@@ -1210,21 +1228,26 @@ export default class Chonse2
     )
     if (bothSidesHaveKingAndBishop)
     {
+      //Where the white bishop is on the board.
       const whiteBishopCoord: string = whitePieceData.coords[whitePieceData.pieces.findIndex( p => p === PieceType.WHITE_BISHOP )];
       const whiteBishopIndex = Chonse2.findIndexFromCoordinate(whiteBishopCoord);
 
+      //Where the black bishop is on the board.
       const blackBishopCoord: string = blackPieceData.coords[blackPieceData.pieces.findIndex( p => p === PieceType.BLACK_BISHOP )];
       const blackBishopIndex = Chonse2.findIndexFromCoordinate(blackBishopCoord);
       
+      //What colors the bishops are on.
       const wbIsDark: boolean = this._isDarkColoredSquare(whiteBishopIndex.rowIndex, whiteBishopIndex.colIndex);
       const bbIsDark: boolean = this._isDarkColoredSquare(blackBishopIndex.rowIndex, blackBishopIndex.colIndex);
 
+      //Draw can only happen if the bishops are on the same color.
       if (wbIsDark == bbIsDark)
       {
         isKingAndBishopVsKingAndBishopOnSameColor = true;
       }
     }
 
+    //If any of the four insufficient material conditions are met, then the game is automatically a draw.
     if (isKingVsKing 
       || isKingVsBishopAndKing
       || isKingVsKnightAndKing 
@@ -1236,6 +1259,11 @@ export default class Chonse2
       }
 
     //fifty moves with no pawn movements or captures
+    if (this.halfMovesWithoutPawnMovementsOrCaptures >= Chonse2.DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD)
+    {
+      this.gameState.isGameOver = true;
+      this.gameState.reason = GameOverReason.FiftyMoveNoPawnMovementsOrCaptures;
+    }
 
     //threefold repetition
     for( let posKey of this._previousPositionMap.keys() )
