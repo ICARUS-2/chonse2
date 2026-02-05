@@ -1,4 +1,3 @@
-import { empty, from } from "rxjs";
 import CastlingRights from "./castling-rights";
 import { PieceColor } from "./piece-color";
 import PieceMaterial from "./piece-material";
@@ -1079,6 +1078,47 @@ export default class Chonse2
 
     //Return it if it exists or empty string otherwise.
     return val == null ? "" : val;
+  }
+
+  isEnPassantCaptureActuallyPossible() : boolean
+  {
+    if (this.enPassantSquare == "")
+    {
+      return false;
+    }
+
+    //The place within the piece state that the en passant square can be found
+    let enPassantSquareIndex = Chonse2.findIndexFromCoordinate(this.enPassantSquare);
+    
+    //Only run the necessary checks if there is an en passant square.
+    if (enPassantSquareIndex)
+    {
+      //Gets the row so that the pawns next to it can be checked.
+      const rankEnPassantPawnIsOn = this.turn ? this.pieceState[enPassantSquareIndex.rowIndex + 1] : this.pieceState[enPassantSquareIndex.rowIndex - 1];
+
+      //The squares that might have pawns that could capture.
+      const potentialOpposingPawnLeftSquare = rankEnPassantPawnIsOn[enPassantSquareIndex.colIndex - 1];
+      const potentialOpposingPawnRightSquare = rankEnPassantPawnIsOn[enPassantSquareIndex.colIndex + 1];
+
+      //If there are indeed pawns of the color opposing the pawn that just moved two spaces to the left or right, then an en passant capture is possible.
+      if (potentialOpposingPawnLeftSquare)
+      {
+        if (this.turn ? potentialOpposingPawnLeftSquare == PieceType.WHITE_PAWN : potentialOpposingPawnLeftSquare == PieceType.BLACK_PAWN)
+        {
+          return true;
+        }
+      }
+
+      if (potentialOpposingPawnRightSquare)
+      {
+        if (this.turn ? potentialOpposingPawnRightSquare == PieceType.WHITE_PAWN : potentialOpposingPawnRightSquare == PieceType.BLACK_PAWN)
+        {
+          return true;
+        }
+      }
+    }
+
+    return false; 
   }
 
   private _clone()
