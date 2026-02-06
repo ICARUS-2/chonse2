@@ -39,6 +39,7 @@
               "zone.js",
               "@angular/localize/init"
             ],
+            "outputPath": "docs/chonse2",
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
