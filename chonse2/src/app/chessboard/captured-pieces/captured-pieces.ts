@@ -27,4 +27,30 @@ export class CapturedPieces {
 
     return 0;
   }
+
+  
+  getDisplayMap(): Map<string, number>
+  {
+    //will map the pieces to how many of each piece are present.
+    const map = new Map<string, number>();
+
+    //for each item in the captured pieces, place it into the map alongside its count.
+    for(const item of this.capturedPieces)
+    {
+      //how many of the piece have been counted
+      const itemCount = map.get(item);
+
+      //if it doesn't exist, add it.
+      if (!itemCount)
+      {
+        map.set(item, 1);
+      }
+      else //if it does, increase the count by 1
+      {
+        map.set(item, itemCount+1);
+      }
+    }
+
+    return map;
+  }
 }

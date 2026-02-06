@@ -1,8 +1,29 @@
 .capturedPieceContainer
 {
-    height: 6vh;
+    height: 7vmin;
 }
+
+.piece-group
+{
+    margin-right: 3vmin;
+}
+
 .capturedPieceImg
 {
-    width: 5vh;
+    width: 5vmin;
+    margin-right: -3vmin;
 }
+
+@media screen and (max-width: 800px) 
+{
+    .piece-group
+    {
+        margin-right: 3vmin;
+    }
+
+    .capturedPieceImg
+    {
+        width: 5vmin;
+        margin-right: -3vmin;
+    }
+    }
