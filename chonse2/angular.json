@@ -39,7 +39,10 @@
               "zone.js",
               "@angular/localize/init"
             ],
-            "outputPath": "docs/chonse2",
+            "outputPath": {
+              "base": "docs/chonse2",
+              "browser": ""
+            },
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
