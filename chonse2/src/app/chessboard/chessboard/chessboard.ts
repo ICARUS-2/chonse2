@@ -48,17 +48,7 @@ export class Chessboard implements OnInit {
   }
 
   ngOnInit(): void {
-    const clickToMoveSetting = LocalStorageHelper.getValue(LocalStorageHelper.CLICK_TO_MOVE);
 
-    if (clickToMoveSetting == null)
-    {
-      LocalStorageHelper.setValue(LocalStorageHelper.CLICK_TO_MOVE, "false");
-      this.clickToMove = false;
-    }
-    else
-    {
-      this.clickToMove = clickToMoveSetting === "true";
-    }
   }
 
   //Mouse movement logic
@@ -180,12 +170,6 @@ export class Chessboard implements OnInit {
   handleFlipClicked()
   {
     this.isFlipped = !this.isFlipped;
-  }
-
-  handleClickToMoveSwitchPressed(val: boolean)
-  {
-    LocalStorageHelper.setValue(LocalStorageHelper.CLICK_TO_MOVE, val.toString());
-    this.clickToMove = val;
   }
   
   //Endgame square animation logic
