@@ -55,8 +55,10 @@
         <p>{{chessGame.turn ? "White" : "Black"}} to move</p>
 
         <div class="testingPurposes">
-            <p>In progress: {{!this.chessGame.gameState.isGameOver}}</p>
-            <p>Result: {{this.chessGame.gameState.reason}}</p>
+            @if(this.chessGame.gameState.isGameOver)
+            {
+                <p>Result: {{this.chessGame.gameState.reason}}</p>
+            }
         </div>
     </div>
     @if(currentlyHeldPiece != "")
