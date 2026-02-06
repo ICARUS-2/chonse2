@@ -1,9 +1,9 @@
-import { from } from "rxjs";
 import CastlingRights from "./castling-rights";
 import { PieceColor } from "./piece-color";
 import PieceMaterial from "./piece-material";
 import { PieceType } from "./piece-type";
 import { GameOverReason, GameState } from "./game-state";
+import FenHelper from "./fen-helper";
 
 export default class Chonse2
 {
@@ -54,7 +54,10 @@ export default class Chonse2
   static readonly BLACK_KINGSIDE_ROOK_SQUARE = "h8"
   static readonly BLACK_QUEEN_SQUARE = "d8";
   static readonly BLACK_KING_SQUARE = "e8";
+  static readonly DRAW_BY_REPETITION_THRESHOLD: number = 3;
+  static readonly DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD = 100; //50 full moves * 2
 
+  private static readonly _FEN_SPLIT_POSKEY_INDEX = 2
   private static readonly _BISHOP_VECTOR_X = [-1, -1, 1, 1];
   private static readonly _BISHOP_VECTOR_Y = [-1, 1, -1, 1];
   private static readonly _ROOK_VECTOR_X = [-1, 1, 0, 0];
@@ -100,6 +103,13 @@ export default class Chonse2
   blackCastlingRights: CastlingRights = new CastlingRights();
   enPassantSquare: string = "";
 
+  //move counters
+  halfMovesWithoutPawnMovementsOrCaptures: number = 0;
+  fullMoveCounter: number = 1;
+
+  //used to track repetition
+  private _previousPositionMap: Map<string, number> = new Map<string, number>()
+
   //instantiates with either a passed game state or the default one.
   constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE)
   {
@@ -118,10 +128,38 @@ export default class Chonse2
         throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
     }
     });
+    
+    //Starting position always counts towards the repetition.
+    this._previousPositionMap.set(this._getPositionKey(), 1);
   }
+
+  //Gets the row and column indeces when a rank and file coordinate are passed in.
+  static findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
+  {
+      //Finds the row that includes this coordinate.
+      const rIdx = Chonse2.COORDS.findIndex( row => row.includes(coordinate) );
+
+      //If it doesn't exist, it should return -1.
+      if (rIdx === -1)
+      {
+          return { rowIndex: -1, colIndex: -1 };
+      }
+
+      //The column index is the place in the rank where that exact coordinate is found.
+      const cIdx = Chonse2.COORDS[rIdx].findIndex( col => col === coordinate );
+
+      //Both row and column indeces are returned.
+      return {rowIndex: rIdx, colIndex: cIdx};
+  }
+
 
   getLegalMoves(coordinate: string): Array<string>
   {
+    if (this.gameState.isGameOver)
+    {
+      return [];
+    }
+
     //Where the piece is within the state.
     const index = Chonse2.findIndexFromCoordinate(coordinate);
 
@@ -143,7 +181,7 @@ export default class Chonse2
     const legalMoves = potentiallyLegalMoves.filter(item =>
       {
         //Create a deep copy with all its functions.
-        const deepCopy: Chonse2 = this._clone();
+        const deepCopy: Chonse2 = this._lightweightCloneForCheckVerification();
 
         //Test the dummy move using a stripped-down version
         Chonse2._playDummyMove(deepCopy, coordinate, item);
@@ -182,6 +220,13 @@ export default class Chonse2
 
     //The piece already present in the square the current piece is moving to (being captured)
     const pieceInToSquare = this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex];
+
+    //Used to track the 50 move rule.
+    let isPawnMovementOrCapture = false;
+    if (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN || pieceInToSquare != PieceType.NONE)
+    {
+      isPawnMovementOrCapture = true;
+    }
 
     //Handle en passant
     if (toCoordinate == this.enPassantSquare && (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN))
@@ -364,33 +409,42 @@ export default class Chonse2
       this.whiteCastlingRights.queenSide = false;
     }
 
+    //If black just moved, increase counter of full moves.
+    if (!this.turn)
+    {
+      this.fullMoveCounter++;
+    }
+
+    //If it was a move or a pawn capture, reset the draw counter. If not, increment it.
+    if (!isPawnMovementOrCapture)
+    {
+      this.halfMovesWithoutPawnMovementsOrCaptures++;
+    }
+    else
+    {
+      this.halfMovesWithoutPawnMovementsOrCaptures = 0;
+    }
+
     //Once this player finishes their move, it's the next person's turn.
     this.turn = !this.turn;
 
+    //Track this position in the state map.
+    const currentPosKey = this._getPositionKey()
+    const currentStateCount: number | undefined = this._previousPositionMap.get(currentPosKey);
+    if (!currentStateCount)
+    {
+      this._previousPositionMap.set(currentPosKey, 1);
+    }
+    else
+    {
+      this._previousPositionMap.set(currentPosKey, currentStateCount + 1);
+    }
+
     //check for checkmate, stalemate, etc
-    this._updateGameState();
+    this._checkIsGameOver();
 
     //The move was successful if we got this far.
     return true;
-  }
-  
-  //Gets the row and column indeces when a rank and file coordinate are passed in.
-  static findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
-  {
-      //Finds the row that includes this coordinate.
-      const rIdx = Chonse2.COORDS.findIndex( row => row.includes(coordinate) );
-
-      //If it doesn't exist, it should return -1.
-      if (rIdx === -1)
-      {
-          return { rowIndex: -1, colIndex: -1 };
-      }
-
-      //The column index is the place in the rank where that exact coordinate is found.
-      const cIdx = Chonse2.COORDS[rIdx].findIndex( col => col === coordinate );
-
-      //Both row and column indeces are returned.
-      return {rowIndex: rIdx, colIndex: cIdx};
   }
 
   isInCheck(kingColor: string)
@@ -444,7 +498,6 @@ export default class Chonse2
   
       return whiteMaterialCaptured - blackMaterialCaptured + this.promotionalMaterialDifference;
   }
-
 
   isSquareAttacked(coord: string, attackerColor: string): boolean 
   {
@@ -545,6 +598,159 @@ export default class Chonse2
     return false;
   }
 
+  getFEN(): string
+  {
+    //string to be built
+    let fen: string = "";
+
+    //board
+    for(let i = 0; i < this.pieceState.length; i++)
+    {
+      //check each rank
+      const currentRank = this.pieceState[i];
+      
+      //notation requires the number of consecutive empty squares
+      let emptyCount = 0;
+
+      //loop through each file in that rank
+      for(let j = 0; j < currentRank.length; j++)
+      {
+        //check the piece that's in it
+        const currentSquareContent = currentRank[j];
+
+        //if there is one, increment
+        if (currentSquareContent == PieceType.NONE)
+        {
+          emptyCount += 1;
+        }
+        else //if there isn't, append the empty squares counted and then add the piece
+        {
+          if (emptyCount > 0)
+          {
+            fen += emptyCount.toString();
+            emptyCount = 0;
+          }
+          fen += FenHelper.getFenPieceFromPiece(currentSquareContent);
+        }
+      } 
+
+      if (emptyCount > 0)
+      {
+        fen += emptyCount.toString();
+      }
+
+      if (i != this.pieceState.length - 1)
+      {
+        fen += "/";
+      }
+    }
+
+    //active color
+    fen += " "; 
+    fen += this.turn ? PieceColor.WHITE : PieceColor.BLACK;
+
+    //castling
+    fen += " "
+    fen += FenHelper.getFenCastlingRights(this.whiteCastlingRights, this.blackCastlingRights);
+
+    //en passant
+    fen += " "
+    fen += this.enPassantSquare == "" ? "-" : this.enPassantSquare;
+
+    //halfmove clock
+    fen += " "
+    fen += this.halfMovesWithoutPawnMovementsOrCaptures;
+
+    //full move clock
+    fen += " "
+    fen += this.fullMoveCounter;
+    return fen;
+  }
+
+  isEnPassantCaptureActuallyPossible() : boolean
+  {
+    //Logically an en passant capture can't happen if no pawn moved to squares to begin with.
+    if (this.enPassantSquare == "")
+    {
+      return false;
+    }
+
+    //The place within the piece state that the en passant square can be found
+    let enPassantSquareIndex = Chonse2.findIndexFromCoordinate(this.enPassantSquare);
+    
+    //Only run the necessary checks if there is an en passant square.
+    if (enPassantSquareIndex)
+    {
+      //Gets the row so that the pawns next to it can be checked.
+      const rankEnPassantPawnIsOn = this.turn ? this.pieceState[enPassantSquareIndex.rowIndex + 1] : this.pieceState[enPassantSquareIndex.rowIndex - 1];
+
+      //The squares that might have pawns that could capture.
+      const potentialOpposingPawnLeftSquare = rankEnPassantPawnIsOn[enPassantSquareIndex.colIndex - 1];
+      const potentialOpposingPawnRightSquare = rankEnPassantPawnIsOn[enPassantSquareIndex.colIndex + 1];
+
+      //If there are indeed pawns of the color opposing the pawn that just moved two spaces to the left or right, then an en passant capture is possible.
+      if (potentialOpposingPawnLeftSquare)
+      {
+        if (this.turn ? potentialOpposingPawnLeftSquare == PieceType.WHITE_PAWN : potentialOpposingPawnLeftSquare == PieceType.BLACK_PAWN)
+        {
+          return true;
+        }
+      }
+
+      if (potentialOpposingPawnRightSquare)
+      {
+        if (this.turn ? potentialOpposingPawnRightSquare == PieceType.WHITE_PAWN : potentialOpposingPawnRightSquare == PieceType.BLACK_PAWN)
+        {
+          return true;
+        }
+      }
+    }
+
+    return false; 
+  }
+
+  getFullDeepCopy(): Chonse2
+  {
+    const copy = new Chonse2();
+
+    //captures/material
+    copy.piecesWhiteCaptured = structuredClone(this.piecesWhiteCaptured);
+    copy.piecesBlackCaptured = structuredClone(this.piecesBlackCaptured);
+    copy.promotionalMaterialDifference = this.promotionalMaterialDifference;
+
+    //pieces
+    copy.pieceState = structuredClone(this.pieceState);
+
+    //game state
+    const gameStateCopy = new GameState();
+    gameStateCopy.isGameOver = this.gameState.isGameOver;
+    gameStateCopy.reason = this.gameState.reason;
+    copy.gameState = gameStateCopy;
+
+    //turn
+    copy.turn = this.turn;
+
+    //en passant
+    copy.enPassantSquare = this.enPassantSquare;
+
+    //castling rights
+    copy.whiteCastlingRights = new CastlingRights();
+    copy.whiteCastlingRights.kingSide = this.whiteCastlingRights.kingSide;
+    copy.whiteCastlingRights.queenSide = this.whiteCastlingRights.queenSide;
+
+    copy.blackCastlingRights = new CastlingRights();
+    copy.blackCastlingRights.kingSide = this.blackCastlingRights.kingSide; 
+    copy.blackCastlingRights.queenSide = this.blackCastlingRights.queenSide;
+
+    //move counters
+    copy.halfMovesWithoutPawnMovementsOrCaptures = this.halfMovesWithoutPawnMovementsOrCaptures;
+    copy.fullMoveCounter = this.fullMoveCounter;
+
+    //state tracker
+    copy._previousPositionMap = structuredClone(this._previousPositionMap);
+
+    return copy;
+  }
 
   //#region Inner legal move helper functions
 
@@ -872,6 +1078,39 @@ export default class Chonse2
     return legalMoves.length != 0;
   }
 
+  private _getAllPiecesAndCoordsByColor(color: string): {pieces: Array<string>, coords: Array<string>}
+  {
+    if (color != PieceColor.WHITE && color != PieceColor.BLACK)
+    {
+      return { pieces: [], coords: [] };
+    }
+
+    const pieces = [];
+    const coordinates = [];
+
+    //Loop through each of these to get the coordinates + pieces.
+    for(let i = 0; i < Chonse2.COORDS.length; i++)
+    {
+      for(let j = 0; j < Chonse2.COORDS[i].length; j++)
+      {
+        const piece = this.pieceState[i][j];
+
+        if ( piece.startsWith(color))
+        {
+          pieces.push(piece);
+          coordinates.push(Chonse2.COORDS[i][j])
+        }
+      }
+    }
+
+    return { pieces: pieces, coords : coordinates};
+  }
+
+  private _isDarkColoredSquare(rowIndex: number, fileIndex: number): boolean
+  {
+    return (rowIndex + fileIndex) % 2 == 1;
+  }
+
   private static _playDummyMove(inst: Chonse2, fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN)
   {
     //In piece state, where the current piece is moving to.
@@ -957,6 +1196,7 @@ export default class Chonse2
   }
   //#endregion
 
+  //#region Inner state management
   private _getEnPassantSquareIfExists(fromSquare: string, toSquare: string, turn: boolean) : string
   {
     //En passant moves are stored with key fromsquare-tosquare
@@ -969,7 +1209,7 @@ export default class Chonse2
     return val == null ? "" : val;
   }
 
-  private _clone()
+  private _lightweightCloneForCheckVerification()
   {
     const copy = new Chonse2();
 
@@ -979,15 +1219,15 @@ export default class Chonse2
     copy.whiteCastlingRights = structuredClone(this.whiteCastlingRights);
     copy.blackCastlingRights = structuredClone(this.blackCastlingRights);
 
-  return copy;
+    return copy;
   }
 
-  private _updateGameState()
+  private _checkIsGameOver()
   {
     const nextPlayerHasLegalMoves = this._playerHasLegalMoves(this.turn);
     const playerColor: string = this.turn ? PieceColor.WHITE : PieceColor.BLACK;
     
-    //checkmate
+    //Checkmate
     if (!nextPlayerHasLegalMoves && this.isInCheck(playerColor))
     {
       this.gameState.isGameOver = true;
@@ -995,18 +1235,114 @@ export default class Chonse2
       this.gameState.winner = PieceColor.getOpposite(playerColor);
     }
 
-    //stalemate
+    //Stalemate
     if (!nextPlayerHasLegalMoves && !this.isInCheck(playerColor))
     {
       this.gameState.isGameOver = true;
       this.gameState.reason = GameOverReason.Stalemate;
     }
 
-    //insufficient material
+    //Insufficient material
+    const whitePieceData = this._getAllPiecesAndCoordsByColor(PieceColor.WHITE);
+    const blackPieceData = this._getAllPiecesAndCoordsByColor(PieceColor.BLACK);
+
+    //Insufficient material case 1: King vs king
+    const isKingVsKing: boolean = (
+      (whitePieceData.pieces.length == 1 && whitePieceData.pieces[0] == PieceType.WHITE_KING)
+      && (blackPieceData.pieces.length == 1 && blackPieceData.pieces[0] == PieceType.BLACK_KING)
+    );
+
+    //Insufficient material case 2: King vs bishop and king.
+    const isKingVsBishopAndKing: boolean = (
+      (whitePieceData.pieces.length == 1 && whitePieceData.pieces[0] == PieceType.WHITE_KING && blackPieceData.pieces.length == 2 && blackPieceData.pieces.some( p => p == PieceType.BLACK_BISHOP ))
+      || (blackPieceData.pieces.length == 1 && blackPieceData.pieces[0] == PieceType.BLACK_KING && whitePieceData.pieces.length == 2 && whitePieceData.pieces.some( p => p == PieceType.WHITE_BISHOP ))
+    );
+
+    //Insufficient material case 3: King vs knight and king.
+    const isKingVsKnightAndKing: boolean = (
+      (whitePieceData.pieces.length == 1 && whitePieceData.pieces[0] == PieceType.WHITE_KING && blackPieceData.pieces.length == 2 && blackPieceData.pieces.some( p => p == PieceType.BLACK_KNIGHT ))
+      || (blackPieceData.pieces.length == 1 && blackPieceData.pieces[0] == PieceType.BLACK_KING && whitePieceData.pieces.length == 2 && whitePieceData.pieces.some( p => p == PieceType.WHITE_KNIGHT ))
+    );
+    
+
+    //Insufficient material case 4: King vs bishop and king on the same color
+    let isKingAndBishopVsKingAndBishopOnSameColor: boolean = false;
+    const bothSidesHaveKingAndBishop: boolean = (
+      (whitePieceData.pieces.length == 2 && whitePieceData.pieces.some( p => p == PieceType.WHITE_KING ) && whitePieceData.pieces.some( p => p == PieceType.WHITE_BISHOP ) )
+      && (blackPieceData.pieces.length == 2 && blackPieceData.pieces.some( p => p == PieceType.BLACK_KING ) && blackPieceData.pieces.some(p => p == PieceType.BLACK_BISHOP))
+    )
+    if (bothSidesHaveKingAndBishop)
+    {
+      //Where the white bishop is on the board.
+      const whiteBishopCoord: string = whitePieceData.coords[whitePieceData.pieces.findIndex( p => p === PieceType.WHITE_BISHOP )];
+      const whiteBishopIndex = Chonse2.findIndexFromCoordinate(whiteBishopCoord);
+
+      //Where the black bishop is on the board.
+      const blackBishopCoord: string = blackPieceData.coords[blackPieceData.pieces.findIndex( p => p === PieceType.BLACK_BISHOP )];
+      const blackBishopIndex = Chonse2.findIndexFromCoordinate(blackBishopCoord);
+      
+      //What colors the bishops are on.
+      const wbIsDark: boolean = this._isDarkColoredSquare(whiteBishopIndex.rowIndex, whiteBishopIndex.colIndex);
+      const bbIsDark: boolean = this._isDarkColoredSquare(blackBishopIndex.rowIndex, blackBishopIndex.colIndex);
+
+      //Draw can only happen if the bishops are on the same color.
+      if (wbIsDark == bbIsDark)
+      {
+        isKingAndBishopVsKingAndBishopOnSameColor = true;
+      }
+    }
+
+    //If any of the four insufficient material conditions are met, then the game is automatically a draw.
+    if (isKingVsKing 
+      || isKingVsBishopAndKing
+      || isKingVsKnightAndKing 
+      || isKingAndBishopVsKingAndBishopOnSameColor 
+        )
+      {
+        this.gameState.isGameOver = true;
+        this.gameState.reason = GameOverReason.InsufficientMaterial;
+      }
 
     //fifty moves with no pawn movements or captures
+    if (this.halfMovesWithoutPawnMovementsOrCaptures >= Chonse2.DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD)
+    {
+      this.gameState.isGameOver = true;
+      this.gameState.reason = GameOverReason.FiftyMoveNoPawnMovementsOrCaptures;
+    }
 
     //threefold repetition
+    for( let posKey of this._previousPositionMap.keys() )
+    {
+      const val = this._previousPositionMap.get(posKey);
+
+      if (val)
+      {
+        if (val >= Chonse2.DRAW_BY_REPETITION_THRESHOLD)
+        {
+          this.gameState.isGameOver = true;
+          this.gameState.reason = GameOverReason.ThreefoldRepetition;
+          break;
+        }
+      }
+    }
+    
 
   }
+
+  private _getPositionKey()
+  {
+    const fenSplit = this.getFEN().split(" ");
+    let posKey = "";
+
+    for(let i = 0; i <= Chonse2._FEN_SPLIT_POSKEY_INDEX; i++)
+    {
+      posKey += fenSplit[i];
+      posKey += " ";
+    }
+
+    this.isEnPassantCaptureActuallyPossible() ? posKey += this.enPassantSquare : posKey += "-"
+
+    return posKey
+  }
+  //#endregion
 }
