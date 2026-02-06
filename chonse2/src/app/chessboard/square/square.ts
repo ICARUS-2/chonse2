@@ -22,7 +22,7 @@ export class Square {
   @Input() isDraw: boolean = false;
   @Input() isWinner: boolean = false;
 
-  @Output() mouseDown = new EventEmitter<{coordinate: string, piece: string, mouse: MouseEvent}>();
+  @Output() mouseDown = new EventEmitter<{coordinate: string, piece: string, mouse: PointerEvent}>();
   @Output() mouseUp = new EventEmitter<{coordinate: string}>();
 
   darkColor = "rgb(85,150,242)";
@@ -42,7 +42,7 @@ export class Square {
     return this.isDark ? "white" : this.darkColor;
   }
 
-  handleMouseDown($event: MouseEvent)
+  handleMouseDown($event: PointerEvent)
   {
     this.mouseDown.emit( {coordinate: this.coordinate, piece: this.piece, mouse: $event} );
   }

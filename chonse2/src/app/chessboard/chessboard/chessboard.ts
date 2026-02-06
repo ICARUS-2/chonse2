@@ -47,7 +47,7 @@ export class Chessboard implements OnInit {
 
   //Mouse movement logic
   //#region 
-  onSquareMouseDown(event: { coordinate: string, piece: string, mouse: MouseEvent })
+  onSquareMouseDown(event: { coordinate: string, piece: string, mouse: PointerEvent })
   {
     if (event.mouse.button != 0)
     {
@@ -122,29 +122,29 @@ export class Chessboard implements OnInit {
     }
   }
 
-  handleDragImage(mouse: MouseEvent)
+  handleDragImage(mouse: PointerEvent)
   {
     //Adds sets the current mouse position in the UI so it can be tracked.
     this.mouseX = mouse.clientX;
     this.mouseY = mouse.clientY;
 
     //Adds events to continuously track the movement of the piece.
-    document.addEventListener('mousemove', this.onMouseMove);
-    document.addEventListener('mouseup', this.onMouseUp)
+    document.addEventListener('pointermove', this.onMouseMove);
+    document.addEventListener('pointerup', this.onMouseUp)
   }
 
   //When the mouse moves, tell the UI where it is.
-  onMouseMove = (event: MouseEvent) => 
+  onMouseMove = (event: PointerEvent) => 
   {
     this.mouseX = event.clientX; 
     this.mouseY = event.clientY;
   }
 
   //When the mouse is released, remove the event listeners and reset the from/to/stored legal moves.
-  onMouseUp = (event: MouseEvent) => 
+  onMouseUp = (event: PointerEvent) => 
   {
-    document.removeEventListener('mousemove', this.onMouseMove);
-    document.removeEventListener('mouseup', this.onMouseUp);
+    document.removeEventListener('pointermove', this.onMouseMove);
+    document.removeEventListener('pointerup', this.onMouseUp);
 
     this.currentlyHeldPiece = "";
     this.mouseX = 0;
