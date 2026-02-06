@@ -55,3 +55,18 @@
     transform: translate(-50%, -50%); /* truly center it */
     pointer-events: none;   /* so it doesn't block clicks */
 }
+
+@media screen and (max-width: 800px) 
+{
+    .legalMoveCircle 
+    {
+        width: 1vh;            /* size of the circle */
+        height: 1vh;
+    }
+
+    .legalMoveCaptureCircle 
+    {
+        width: 4vh;            /* size of the circle */
+        height: 4vh;
+    }
+}

@@ -24,6 +24,7 @@
     gap: 0;
     border: 1px solid;
     user-select: none;
+    touch-action: none;
 }
 
 .boardContainerInnerFlipped 
@@ -107,6 +108,7 @@
     color: white;
     border-radius: 10px;
 }
+
 @media screen and (max-width: 800px) 
 {
     .componentContainer
