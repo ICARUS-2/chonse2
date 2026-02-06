@@ -1,7 +1,17 @@
 <div class="capturedPieceContainer d-flex">
-    @for(piece of capturedPieces; track $index)
+    
+    <!--@for(piece of getDisplay(); track $index)
     {
         <img class="capturedPieceImg" [src]="`piece/merida/${piece}.svg`" [alt]="piece" />
+    }-->
+    @for(key of getDisplayMap().keys(); track $index)
+    {
+        <div class="piece-group">
+            @for(i of [].constructor(getDisplayMap().get(key)); track $index)
+            {
+                <img class="capturedPieceImg" [src]="`piece/merida/${key}.svg`" alt="piece" />
+            }
+        </div>
     }
 
     @if(getAbsoluteAdvantage() > 0)
