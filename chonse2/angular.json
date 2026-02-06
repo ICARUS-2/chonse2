@@ -40,7 +40,7 @@
               "@angular/localize/init"
             ],
             "outputPath": {
-              "base": "docs/chonse2",
+              "base": "docs/",
               "browser": ""
             },
             "tsConfig": "tsconfig.app.json",
