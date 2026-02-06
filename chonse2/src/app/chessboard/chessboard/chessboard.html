@@ -54,6 +54,15 @@
         <div class="btn btn-primary" (click)="handleFlipClicked()">↑↓</div>
         <p>{{chessGame.turn ? "White" : "Black"}} to move</p>
 
+        <p>Touch to move: {{localStorageHelper.getValue(localStorageHelper.CLICK_TO_MOVE)}}</p>
+        <input
+            class="form-check-input"
+            type="checkbox"
+            id="darkModeSwitch"
+            [(ngModel)]="clickToMove"
+            (ngModelChange)="handleClickToMoveSwitchPressed($event)"
+        />
+        
         <div class="testingPurposes">
             @if(this.chessGame.gameState.isGameOver)
             {

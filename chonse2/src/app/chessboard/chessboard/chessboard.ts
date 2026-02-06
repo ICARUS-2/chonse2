@@ -8,10 +8,12 @@ import { PromotionModal } from '../../promotion-modal/promotion-modal';
 import Chonse2 from '../../../lib/chonse2';
 import { GameOverReason, GameState } from '../../../lib/game-state';
 import { CommonModule } from '@angular/common';
+import LocalStorageHelper from './local-storage-helper';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, CapturedPieces, CommonModule],
+  imports: [Square, CapturedPieces, CommonModule, FormsModule],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
 })
@@ -19,6 +21,7 @@ export class Chessboard implements OnInit {
   pieceType = PieceType;
   pieceColor = PieceColor;
   gameOverReason = GameOverReason;
+  localStorageHelper = LocalStorageHelper;
 
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
@@ -35,6 +38,9 @@ export class Chessboard implements OnInit {
   mouseX: number = 0;
   mouseY: number = 0;
   isFlipped: boolean = false;
+  
+  //FUNCTIONAL
+  clickToMove: boolean = false;
 
   constructor(private modalService: NgbModal)
   {
@@ -42,7 +48,17 @@ export class Chessboard implements OnInit {
   }
 
   ngOnInit(): void {
+    const clickToMoveSetting = LocalStorageHelper.getValue(LocalStorageHelper.CLICK_TO_MOVE);
 
+    if (clickToMoveSetting == null)
+    {
+      LocalStorageHelper.setValue(LocalStorageHelper.CLICK_TO_MOVE, "false");
+      this.clickToMove = false;
+    }
+    else
+    {
+      this.clickToMove = clickToMoveSetting === "true";
+    }
   }
 
   //Mouse movement logic
@@ -154,6 +170,24 @@ export class Chessboard implements OnInit {
   }
   //#endregion
 
+  resetMoveState()
+  {
+    this.fromSquare = "";
+    this.toSquare = "";
+    this.currentLegalMoves = [];
+  }
+
+  handleFlipClicked()
+  {
+    this.isFlipped = !this.isFlipped;
+  }
+
+  handleClickToMoveSwitchPressed(val: boolean)
+  {
+    LocalStorageHelper.setValue(LocalStorageHelper.CLICK_TO_MOVE, val.toString());
+    this.clickToMove = val;
+  }
+  
   //Endgame square animation logic
   //#region
   _isSquareEndgameKingSquare(rankIndex: number, fileIndex: number)
@@ -239,15 +273,4 @@ export class Chessboard implements OnInit {
   }
   //#endregion
 
-  resetMoveState()
-  {
-    this.fromSquare = "";
-    this.toSquare = "";
-    this.currentLegalMoves = [];
-  }
-
-  handleFlipClicked()
-  {
-    this.isFlipped = !this.isFlipped;
-  }
 }
