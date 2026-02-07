@@ -10,6 +10,7 @@ import { GameOverReason, GameState } from '../../../lib/game-state';
 import { CommonModule } from '@angular/common';
 import LocalStorageHelper from './local-storage-helper';
 import { FormsModule } from '@angular/forms';
+import { ChessGameService } from './game-service';
 
 @Component({
   selector: 'app-chessboard',
@@ -25,8 +26,12 @@ export class Chessboard implements OnInit {
 
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
+  //Game service ID
+  
+  @Input({required: true}) gameId: string = "";
+
   //PIECES ON THE BOARD CURRENTLY
-  @Input() chessGame: Chonse2 = new Chonse2();
+  @Input() chessGame!: Chonse2;
   
   //MOVE PROPERTIES
   currentLegalMoves: string[] = [];
@@ -42,13 +47,13 @@ export class Chessboard implements OnInit {
   //FUNCTIONAL
   clickToMove: boolean = false;
 
-  constructor(private modalService: NgbModal)
+  constructor(private modalService: NgbModal, private gameService: ChessGameService)
   {
 
   }
 
   ngOnInit(): void {
-
+    this.chessGame = this.gameService.getGame(this.gameId);
   }
 
   //Mouse movement logic
@@ -59,28 +64,54 @@ export class Chessboard implements OnInit {
     {
       return;
     }
-
-    //update the square that the piece is dragged from
-    this.fromSquare = event.coordinate;
-    this.currentlyHeldPiece = event.piece;
-
-    if (event.piece != "")
+    
+    //If the user wishes to click to move, this event should be used for both picking up and placing.
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE))
     {
-      this.handleDragImage(event.mouse);
-    }    
+      if (this.fromSquare == "")
+      {
+        this.fromSquare = event.coordinate;
+      }
+      else
+      {
+        this.toSquare = event.coordinate;
 
+        this.completeMove(this.fromSquare, this.toSquare);
+      }
+    }
+    else //if not, the piece is dragged under the mouse cursor.
+    {
+      //update the square that the piece is dragged from
+      this.fromSquare = event.coordinate;
+      this.currentlyHeldPiece = event.piece;
+
+      if (event.piece != "")
+      {
+        this.handleDragImage(event.mouse);
+      }    
+    }
     this.currentLegalMoves = this.chessGame.getLegalMoves(event.coordinate);
   }
 
   onSquareMouseUp(event: { coordinate: string })
   {
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE))
+    {
+      return;
+    }
+
     //sets the square in the UI to where the player is dropping the piece.
     this.toSquare = event.coordinate;
 
     const fromSquare = this.fromSquare;
     const toSquare = event.coordinate;
-    const piece = this.currentlyHeldPiece;
 
+    this.completeMove(fromSquare, toSquare);
+  }
+
+  completeMove(fromSquare: string, toSquare: string)
+  {
+    const piece = this.currentlyHeldPiece;
     if (!this.currentLegalMoves.includes(toSquare))
     {
       return;
