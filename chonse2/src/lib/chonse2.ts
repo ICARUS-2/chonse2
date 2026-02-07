@@ -196,7 +196,7 @@ export default class Chonse2
 
   completeMove(fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN): boolean
   {
-    if (this.gameState.isGameOver)
+    if (this.gameState.isGameOver || fromCoordinate == toCoordinate)
     {
       return false;
     }

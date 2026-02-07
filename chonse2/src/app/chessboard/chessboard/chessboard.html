@@ -14,7 +14,7 @@
                                 [isDark]="(rankIndex + fileIndex) % 2 == 1"
                                 [showFile]="rankIndex == rank.length - 1"
                                 [showRank]="fileIndex == 0"
-                                [showPiece]="this.COORDS[rankIndex][fileIndex] != fromSquare"
+                                [showPiece]="(this.COORDS[rankIndex][fileIndex] != fromSquare) || localStorageHelper.getBoolean(localStorageHelper.CLICK_TO_MOVE)"
                                 [isFlipped]="isFlipped"
                                 [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
                                 [isInCheck]="(chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.isInCheck(pieceColor.WHITE)) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.isInCheck(pieceColor.BLACK)) "
