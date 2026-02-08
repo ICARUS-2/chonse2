@@ -1,5 +1,5 @@
 import Chonse2 from "../../../lib/chonse2";
-import Arrow from "./arrow";
+import { Arrow } from "./arrow";
 
 export default interface BoardState
 {

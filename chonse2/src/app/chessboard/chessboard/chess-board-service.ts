@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import BoardState from "./board-state";
 import Chonse2 from "../../../lib/chonse2";
-import Arrow from "./arrow";
+import { Arrow } from "./arrow";
 
 @Injectable({ providedIn: 'root' })
 export class ChessBoardService {

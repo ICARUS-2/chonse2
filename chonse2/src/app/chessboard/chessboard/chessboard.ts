@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 import LocalStorageHelper from './local-storage-helper';
 import { FormsModule } from '@angular/forms';
 import { ChessBoardService as ChessBoardService } from './chess-board-service';
-import Arrow from './arrow';
+import {Arrow, ArrowContext } from './arrow';
 import BoardState from './board-state';
 
 @Component({
@@ -309,7 +309,7 @@ export class Chessboard implements OnInit {
     };
   }
 
-  createArrow(fromCoordinate: string, toCoordinate: string, color: string = "rgba(0,0,255,0.6") : Arrow | null
+  createArrow(fromCoordinate: string, toCoordinate: string, color: string = "rgba(0,0,255,0.6", context: ArrowContext = ArrowContext.Player) : Arrow | null
   {
     //Cannot create an arrow from or to a nonextistant place.
     if (!fromCoordinate || !toCoordinate)
@@ -332,7 +332,8 @@ export class Chessboard implements OnInit {
       fromFile: fromIdx.colIndex, 
       toRank: toIdx.rowIndex, 
       toFile: toIdx.colIndex, 
-      color: color}
+      color: color,
+      context: context}
   }
   //#endregion
 
