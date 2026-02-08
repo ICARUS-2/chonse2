@@ -10,7 +10,9 @@ import { GameOverReason, GameState } from '../../../lib/game-state';
 import { CommonModule } from '@angular/common';
 import LocalStorageHelper from './local-storage-helper';
 import { FormsModule } from '@angular/forms';
-import { ChessGameService } from './game-service';
+import { ChessBoardService as ChessBoardService } from './chess-board-service';
+import {Arrow, ArrowContext } from './arrow';
+import BoardState from './board-state';
 
 @Component({
   selector: 'app-chessboard',
@@ -27,7 +29,6 @@ export class Chessboard implements OnInit {
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
   //Game service ID
-  
   @Input({required: true}) gameId: string = "";
 
   //PIECES ON THE BOARD CURRENTLY
@@ -38,75 +39,129 @@ export class Chessboard implements OnInit {
   currentlyHeldPiece: string = "";
   fromSquare: string = "";
   toSquare: string = "";
+  fromRightClickSquare: string = "";
+  toRightClickSquare: string = "";
 
   //COSMETIC
+  private readonly _ARROW_PULLBACK = 0.18;
   mouseX: number = 0;
   mouseY: number = 0;
   isFlipped: boolean = false;
+  squareRightClickStatuses: Array<Array<boolean>> = [];
+  arrows: Array<Arrow> = [];
   
   //FUNCTIONAL
   clickToMove: boolean = false;
 
-  constructor(private modalService: NgbModal, private gameService: ChessGameService)
+  constructor(private modalService: NgbModal, private chessBoardService: ChessBoardService)
   {
 
   }
 
   ngOnInit(): void {
-    this.chessGame = this.gameService.getGame(this.gameId);
+    //Board state stored in service to persist across routerlink changes.
+    const boardState: BoardState = this.chessBoardService.getGame(this.gameId);
+
+    //Sets the state from the service.
+    this.chessGame = boardState.chessGame;
+    this.arrows = boardState.arrows;
+    this.squareRightClickStatuses = boardState.squareHighlightStatuses;
   }
 
-  //Mouse movement logic
+  //Left click/pointer
   //#region 
+  onSquareLeftClick = () =>
+  {
+    this.resetClickedSquares();
+    this.arrows.length = 0;
+  }
+
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: PointerEvent })
   {
-    if (event.mouse.button != 0)
+    //If the square was left clicked
+    if (event.mouse.button == 0)
     {
-      return;
-    }
-    
-    //If the user wishes to click to move, this event should be used for both picking up and placing.
-    if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE))
-    {
-      if (this.fromSquare == "")
+      //If the user wishes to click to move, this event should be used for both picking up and placing.
+      if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE))
       {
+        if (this.fromSquare == "")
+        {
+          this.fromSquare = event.coordinate;
+        }
+        else
+        {
+          this.toSquare = event.coordinate;
+
+          this.completeMove(this.fromSquare, this.toSquare);
+        }
+      }
+      else //if not, the piece is dragged under the mouse cursor.
+      {
+        //update the square that the piece is dragged from
         this.fromSquare = event.coordinate;
-      }
-      else
-      {
-        this.toSquare = event.coordinate;
+        this.currentlyHeldPiece = event.piece;
 
-        this.completeMove(this.fromSquare, this.toSquare);
+        if (event.piece != "")
+        {
+          this.handleDragImage(event.mouse);
+        }    
       }
+
+      //property will display legal moves on the screen.
+      this.currentLegalMoves = this.chessGame.getLegalMoves(event.coordinate);
     }
-    else //if not, the piece is dragged under the mouse cursor.
+
+    //Right click for square highlight or arrow drawing
+    if (event.mouse.button == 2)
     {
-      //update the square that the piece is dragged from
-      this.fromSquare = event.coordinate;
-      this.currentlyHeldPiece = event.piece;
-
-      if (event.piece != "")
-      {
-        this.handleDragImage(event.mouse);
-      }    
+      this.fromRightClickSquare = event.coordinate;
     }
-    this.currentLegalMoves = this.chessGame.getLegalMoves(event.coordinate);
   }
 
-  onSquareMouseUp(event: { coordinate: string })
+  onSquareMouseUp(event: { coordinate: string, mouse: PointerEvent })
   {
-    if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE))
+    if (event.mouse.button == 0)
     {
-      return;
+      if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE))
+      {
+        return;
+      }
+
+      //sets the square in the UI to where the player is dropping the piece.
+      this.toSquare = event.coordinate;
+
+      const fromSquare = this.fromSquare;
+      const toSquare = event.coordinate;
+
+      this.completeMove(fromSquare, toSquare);
     }
 
-    //sets the square in the UI to where the player is dropping the piece.
-    this.toSquare = event.coordinate;
+    if (event.mouse.button == 2)
+    {
+      this.toRightClickSquare = event.coordinate;
 
-    const fromSquare = this.fromSquare;
-    const toSquare = event.coordinate;
+      //If the squares are the same, the user is highlighting a sqaure.
+      if (this.fromRightClickSquare == this.toRightClickSquare)
+      {
+        //Gets the index of the square to highlight.
+        const idx = Chonse2.findIndexFromCoordinate(this.toRightClickSquare);
 
-    this.completeMove(fromSquare, toSquare);
+        //Sets the status telling it to change color.
+        this.squareRightClickStatuses[idx.rowIndex][idx.colIndex] = !this.squareRightClickStatuses[idx.rowIndex][idx.colIndex];
+      }
+      else //If the squares are different, they are drawing an arrow.
+      {
+        const arrow = this.createArrow(this.fromRightClickSquare, this.toRightClickSquare);
+        
+        if (arrow)
+        {
+          this.arrows.push(arrow); 
+        }
+      }
+
+      this.fromRightClickSquare = "";
+      this.toRightClickSquare = "";
+    }
   }
 
   completeMove(fromSquare: string, toSquare: string)
@@ -188,6 +243,97 @@ export class Chessboard implements OnInit {
     this.mouseY = 0;
 
     this.resetMoveState();
+  }
+  //#endregion
+
+  //Square highlight logic
+  //#region 
+
+  //For the coordinate, get whether it is right clicked or not.
+  getRightClickedStatusForSquare(coordinate: string)
+  {
+    const idx = Chonse2.findIndexFromCoordinate(coordinate);
+    
+    return this.squareRightClickStatuses[idx.rowIndex][idx.colIndex];
+  }
+
+  //Sets all the right clicked statuses to false, clearing any right clicked squares.
+  resetClickedSquares()
+  {
+    if (this.squareRightClickStatuses.length == 0)
+    {
+      for(let i = 0; i < Chonse2.SIZE; i++)
+      {
+        const rank: Array<boolean> = [];
+        for(let j = 0; j < Chonse2.SIZE; j++)
+        {
+          rank.push(false);
+        }
+        this.squareRightClickStatuses.push(rank);
+      }
+    }
+    else 
+    {
+      for(let i = 0; i < Chonse2.SIZE; i++)
+      {
+        const rank = this.squareRightClickStatuses[i];
+        for(let j = 0; j < Chonse2.SIZE; j++)
+        {
+          rank[j] = false;
+        }
+        this.squareRightClickStatuses.push(rank);
+      }
+    }
+  }
+  //#endregion
+
+  //Arrow logic
+  //#region
+  //had some help with cat i farted for this one, i aint a graphic designer lol
+  _getArrowCoords(arrow: Arrow) 
+  {
+    const x1 = arrow.fromFile + 0.5;
+    const y1 = arrow.fromRank + 0.5;
+    const x2 = arrow.toFile + 0.5;
+    const y2 = arrow.toRank + 0.5;
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.hypot(dx, dy) || 1;
+
+    return {
+      x1,
+      y1,
+      x2: x2 - (dx / len) * this._ARROW_PULLBACK,
+      y2: y2 - (dy / len) * this._ARROW_PULLBACK
+    };
+  }
+
+  createArrow(fromCoordinate: string, toCoordinate: string, color: string = "rgba(0,0,255,0.6", context: ArrowContext = ArrowContext.Player) : Arrow | null
+  {
+    //Cannot create an arrow from or to a nonextistant place.
+    if (!fromCoordinate || !toCoordinate)
+    {
+      return null;
+    }
+
+    //Cannot create an arrow from -> to the same square
+    if (fromCoordinate == toCoordinate)
+    {
+      return null;
+    }
+
+    //Get the indeces and create the arrow from that.
+    const fromIdx = Chonse2.findIndexFromCoordinate(fromCoordinate);
+    const toIdx = Chonse2.findIndexFromCoordinate(toCoordinate);
+
+    return { 
+      fromRank: fromIdx.rowIndex, 
+      fromFile: fromIdx.colIndex, 
+      toRank: toIdx.rowIndex, 
+      toFile: toIdx.colIndex, 
+      color: color,
+      context: context}
   }
   //#endregion
 

@@ -21,11 +21,17 @@ export class Square {
   @Input() isCheckmate: boolean = false;
   @Input() isDraw: boolean = false;
   @Input() isWinner: boolean = false;
+  @Input() isClicked: boolean = false;
 
   @Output() mouseDown = new EventEmitter<{coordinate: string, piece: string, mouse: PointerEvent}>();
-  @Output() mouseUp = new EventEmitter<{coordinate: string}>();
+  @Output() mouseUp = new EventEmitter<{coordinate: string, mouse: PointerEvent}>();
+  @Output() leftClick = new EventEmitter<{coordinate: string, mouse: PointerEvent}>
+  @Output() rightClick = new EventEmitter<{coordinate: string}>();
 
-  darkColor = "rgb(85,150,242)";
+  lightColor: string = "white"
+  darkColor: string = "rgb(85,150,242)";
+  lightPressedColor: string = "pink";
+  darkPressedColor: string = "hotpink"
 
   constructor()
   {
@@ -34,12 +40,16 @@ export class Square {
 
   getColor(): string
   {
-    return this.isDark ? this.darkColor : "white";
+    if (this.isClicked)
+    {
+      return this.isDark ? this.darkPressedColor : this.lightPressedColor;
+    }
+    return this.isDark ? this.darkColor : this.lightColor;
   }
 
   getReverseColor(): string 
   {
-    return this.isDark ? "white" : this.darkColor;
+    return this.isDark ? this.lightColor : this.darkColor;
   }
 
   handleMouseDown($event: PointerEvent)
@@ -47,8 +57,22 @@ export class Square {
     this.mouseDown.emit( {coordinate: this.coordinate, piece: this.piece, mouse: $event} );
   }
 
-  handleMouseUp()
+  handleMouseUp($event: PointerEvent)
   {
-    this.mouseUp.emit( {coordinate: this.coordinate} );
+    this.mouseUp.emit( {coordinate: this.coordinate, mouse: $event} );
+  }
+
+  handleRightClick(event: PointerEvent)
+  {
+    event.preventDefault();
+  }
+
+  handleLeftClick(event: PointerEvent)
+  {
+    if (event.button != 0)
+    {
+      return;
+    }
+    this.leftClick.emit();
   }
 }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { PieceType } from '../../lib/piece-type';
 import Chonse2 from '../../lib/chonse2';
-import { ChessGameService } from '../chessboard/chessboard/game-service';
+import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 
 @Component({
   selector: 'app-homepage',
@@ -23,7 +23,7 @@ export class Homepage implements OnInit{
     [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE]
 ];
 
-  constructor(private gameService: ChessGameService)
+  constructor(private gameService: ChessBoardService)
   {
     
   }

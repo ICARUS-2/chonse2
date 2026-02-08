@@ -2,6 +2,40 @@
     <div class="boardOuterContainer" [class]="isFlipped ? 'boardOuterContainerFlipped' : ''">
         <app-captured-pieces for="b" [capturedPieces]="chessGame.piecesBlackCaptured" [advantage]="chessGame.getMaterialAdvantage()"></app-captured-pieces>
         <div class="boardContainerInner" [class]="isFlipped ? 'boardContainerInnerFlipped' : ''">
+            
+            <!-- ARROW OVERLAY -->
+            <svg
+                class="arrowOverlay"
+                [attr.viewBox]="'0 0 8 8'"
+                preserveAspectRatio="none">
+                @for( arrow of arrows; track $index )
+                {
+                    <ng-container>
+                        <line
+                            [attr.x1]="_getArrowCoords(arrow).x1"
+                            [attr.y1]="_getArrowCoords(arrow).y1"
+                            [attr.x2]="_getArrowCoords(arrow).x2"
+                            [attr.y2]="_getArrowCoords(arrow).y2"
+                            [attr.stroke]="arrow.color"
+                            stroke-width="0.13"
+                            marker-end="url(#arrowhead)" />
+                    </ng-container>
+
+                }
+
+                <defs>
+                    <marker
+                        id="arrowhead"
+                        markerWidth="3"
+                        markerHeight="3"
+                        refX="1.5"
+                        refY="1.5"
+                        orient="auto"
+                        markerUnits="strokeWidth">
+                        <polygon points="0 0, 3 1.5, 0 3" fill="context-stroke" />
+                    </marker>
+                </defs>
+            </svg>
             @for( rank of chessGame.pieceState; let rankIndex = $index; track rankIndex)
             {
                 <ng-container>
@@ -18,8 +52,10 @@
                                 [isFlipped]="isFlipped"
                                 [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
                                 [isInCheck]="(chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.isInCheck(pieceColor.WHITE)) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.isInCheck(pieceColor.BLACK)) "
+                                [isClicked]="getRightClickedStatusForSquare(this.COORDS[rankIndex][fileIndex])"
                                 (mouseDown)="onSquareMouseDown($event)"
-                                (mouseUp)="onSquareMouseUp($event)">
+                                (mouseUp)="onSquareMouseUp($event)"
+                                (leftClick)="onSquareLeftClick()">
                             </app-square>
 
                             @if (_isSquareEndgameKingSquare(rankIndex, fileIndex))
@@ -51,7 +87,7 @@
     </div>
     <div class="boardControls p-5">
         <h2>Controls</h2>
-        <div class="btn btn-primary" (click)="handleFlipClicked()">↑↓</div>
+        <div class="btn btn-primary" style="touch-action: manipulation;" (click)="handleFlipClicked()">↑↓</div>
         <p>{{chessGame.turn ? "White" : "Black"}} to move</p>
 
         <div class="testingPurposes">

@@ -3,7 +3,9 @@
     [style]="{'background-color': getColor(), 'box-shadow': isInCheck ? '0 4px 0 0 red inset' : ''}"
     [class]="isFlipped ? 'squareFlipped' : ''" 
     (pointerdown)="handleMouseDown($event)"
-    (pointerup)="handleMouseUp()">
+    (pointerup)="handleMouseUp($event)"
+    (click)="handleLeftClick($event)"
+    (contextmenu)="handleRightClick($event)">
 
     @if(showFile && coordinate != "")
     {
@@ -17,7 +19,7 @@
 
     @if (piece != "" && showPiece)
     {
-        <img class="pieceImage" [src]="`piece/merida/${piece}.svg`" class="w-100" draggable="false">
+        <img class="pieceImage" [src]="`piece/merida/${piece}.svg`" draggable="false">
     }
 
     @if (isLegalMove && piece == "")
