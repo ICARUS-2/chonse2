@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import LocalStorageHelper from './local-storage-helper';
 import { FormsModule } from '@angular/forms';
 import { ChessGameService } from './game-service';
+import Arrow from './arrow';
 
 @Component({
   selector: 'app-chessboard',
@@ -27,7 +28,6 @@ export class Chessboard implements OnInit {
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
   //Game service ID
-  
   @Input({required: true}) gameId: string = "";
 
   //PIECES ON THE BOARD CURRENTLY
@@ -40,10 +40,12 @@ export class Chessboard implements OnInit {
   toSquare: string = "";
 
   //COSMETIC
+  private readonly _ARROW_PULLBACK = 0.18;
   mouseX: number = 0;
   mouseY: number = 0;
   isFlipped: boolean = false;
-  squareRightClickStatuses: Array<Array<boolean>> = []
+  squareRightClickStatuses: Array<Array<boolean>> = [];
+  arrows: Array<Arrow> = [];
   
   //FUNCTIONAL
   clickToMove: boolean = false;
@@ -55,8 +57,12 @@ export class Chessboard implements OnInit {
 
   ngOnInit(): void {
     this.chessGame = this.gameService.getGame(this.gameId);
-    
     this.resetClickedSquares();
+
+    const testArrow = this.createArrow("c1","f4");
+
+    if (testArrow)
+      this.arrows.push(testArrow);
   }
 
   //Left click/pointer
@@ -245,6 +251,55 @@ export class Chessboard implements OnInit {
         this.squareRightClickStatuses.push(rank);
       }
     }
+  }
+  //#endregion
+
+  //Arrow logic
+  //#region
+  //had some help with cat i farted for this one, i aint a graphic designer lol
+  _getArrowCoords(arrow: Arrow) 
+  {
+    const x1 = arrow.fromFile + 0.5;
+    const y1 = arrow.fromRank + 0.5;
+    const x2 = arrow.toFile + 0.5;
+    const y2 = arrow.toRank + 0.5;
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.hypot(dx, dy) || 1;
+
+    return {
+      x1,
+      y1,
+      x2: x2 - (dx / len) * this._ARROW_PULLBACK,
+      y2: y2 - (dy / len) * this._ARROW_PULLBACK
+    };
+  }
+
+  createArrow(fromCoordinate: string, toCoordinate: string, color: string = "rgba(0,0,255,0.6") : Arrow | null
+  {
+    //Cannot create an arrow from or to a nonextistant place.
+    if (!fromCoordinate || !toCoordinate)
+    {
+      return null;
+    }
+
+    //Cannot create an arrow from -> to the same square
+    if (fromCoordinate == toCoordinate)
+    {
+      return null;
+    }
+
+    //Get the indeces and create the arrow from that.
+    const fromIdx = Chonse2.findIndexFromCoordinate(fromCoordinate);
+    const toIdx = Chonse2.findIndexFromCoordinate(toCoordinate);
+
+    return { 
+      fromRank: fromIdx.rowIndex, 
+      fromFile: fromIdx.colIndex, 
+      toRank: toIdx.rowIndex, 
+      toFile: toIdx.colIndex, 
+      color: color}
   }
   //#endregion
 
