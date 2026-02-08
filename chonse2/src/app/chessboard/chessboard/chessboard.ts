@@ -43,6 +43,7 @@ export class Chessboard implements OnInit {
   mouseX: number = 0;
   mouseY: number = 0;
   isFlipped: boolean = false;
+  squareRightClickStatuses: Array<Array<boolean>> = []
   
   //FUNCTIONAL
   clickToMove: boolean = false;
@@ -54,17 +55,24 @@ export class Chessboard implements OnInit {
 
   ngOnInit(): void {
     this.chessGame = this.gameService.getGame(this.gameId);
+    
+    this.resetClickedSquares();
   }
 
-  //Mouse movement logic
+  //Left click/pointer
   //#region 
+  onSquareLeftClick = () =>
+  {
+    this.resetClickedSquares();
+  }
+
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: PointerEvent })
   {
     if (event.mouse.button != 0)
     {
       return;
     }
-    
+
     //If the user wishes to click to move, this event should be used for both picking up and placing.
     if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE))
     {
@@ -188,6 +196,55 @@ export class Chessboard implements OnInit {
     this.mouseY = 0;
 
     this.resetMoveState();
+  }
+  //#endregion
+
+  //Square right-clicking logic
+  //#region 
+
+  //When the square is right clicked, it should swap the clicked status.
+  onSquareRightClicked = (event: {coordinate: string} ) =>
+  {
+    const idx = Chonse2.findIndexFromCoordinate(event.coordinate);
+
+    this.squareRightClickStatuses[idx.rowIndex][idx.colIndex] = !this.squareRightClickStatuses[idx.rowIndex][idx.colIndex];
+  }
+
+  //For the coordinate, get whether it is right clicked or not.
+  getRightClickedStatusForSquare(coordinate: string)
+  {
+    const idx = Chonse2.findIndexFromCoordinate(coordinate);
+    
+    return this.squareRightClickStatuses[idx.rowIndex][idx.colIndex];
+  }
+
+  //Sets all the right clicked statuses to false, clearing any right clicked squares.
+  resetClickedSquares()
+  {
+    if (this.squareRightClickStatuses.length == 0)
+    {
+      for(let i = 0; i < Chonse2.SIZE; i++)
+      {
+        const rank: Array<boolean> = [];
+        for(let j = 0; j < Chonse2.SIZE; j++)
+        {
+          rank.push(false);
+        }
+        this.squareRightClickStatuses.push(rank);
+      }
+    }
+    else 
+    {
+      for(let i = 0; i < Chonse2.SIZE; i++)
+      {
+        const rank = this.squareRightClickStatuses[i];
+        for(let j = 0; j < Chonse2.SIZE; j++)
+        {
+          rank[j] = false;
+        }
+        this.squareRightClickStatuses.push(rank);
+      }
+    }
   }
   //#endregion
 

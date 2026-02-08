@@ -3,7 +3,9 @@
     [style]="{'background-color': getColor(), 'box-shadow': isInCheck ? '0 4px 0 0 red inset' : ''}"
     [class]="isFlipped ? 'squareFlipped' : ''" 
     (pointerdown)="handleMouseDown($event)"
-    (pointerup)="handleMouseUp()">
+    (pointerup)="handleMouseUp()"
+    (click)="handleLeftClick($event)"
+    (contextmenu)="handleRightClick($event)">
 
     @if(showFile && coordinate != "")
     {

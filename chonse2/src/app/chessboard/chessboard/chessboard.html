@@ -18,8 +18,11 @@
                                 [isFlipped]="isFlipped"
                                 [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
                                 [isInCheck]="(chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.isInCheck(pieceColor.WHITE)) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.isInCheck(pieceColor.BLACK)) "
+                                [isClicked]="getRightClickedStatusForSquare(this.COORDS[rankIndex][fileIndex])"
                                 (mouseDown)="onSquareMouseDown($event)"
-                                (mouseUp)="onSquareMouseUp($event)">
+                                (mouseUp)="onSquareMouseUp($event)"
+                                (leftClick)="onSquareLeftClick()"
+                                (rightClick)="onSquareRightClicked($event)">
                             </app-square>
 
                             @if (_isSquareEndgameKingSquare(rankIndex, fileIndex))
@@ -51,7 +54,7 @@
     </div>
     <div class="boardControls p-5">
         <h2>Controls</h2>
-        <div class="btn btn-primary" (click)="handleFlipClicked()">↑↓</div>
+        <div class="btn btn-primary" style="touch-action: manipulation;" (click)="handleFlipClicked()">↑↓</div>
         <p>{{chessGame.turn ? "White" : "Black"}} to move</p>
 
         <div class="testingPurposes">
