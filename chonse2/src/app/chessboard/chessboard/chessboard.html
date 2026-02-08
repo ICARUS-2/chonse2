@@ -55,8 +55,7 @@
                                 [isClicked]="getRightClickedStatusForSquare(this.COORDS[rankIndex][fileIndex])"
                                 (mouseDown)="onSquareMouseDown($event)"
                                 (mouseUp)="onSquareMouseUp($event)"
-                                (leftClick)="onSquareLeftClick()"
-                                (rightClick)="onSquareRightClicked($event)">
+                                (leftClick)="onSquareLeftClick()">
                             </app-square>
 
                             @if (_isSquareEndgameKingSquare(rankIndex, fileIndex))

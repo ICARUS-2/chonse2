@@ -24,7 +24,7 @@ export class Square {
   @Input() isClicked: boolean = false;
 
   @Output() mouseDown = new EventEmitter<{coordinate: string, piece: string, mouse: PointerEvent}>();
-  @Output() mouseUp = new EventEmitter<{coordinate: string}>();
+  @Output() mouseUp = new EventEmitter<{coordinate: string, mouse: PointerEvent}>();
   @Output() leftClick = new EventEmitter<{coordinate: string, mouse: PointerEvent}>
   @Output() rightClick = new EventEmitter<{coordinate: string}>();
 
@@ -57,15 +57,14 @@ export class Square {
     this.mouseDown.emit( {coordinate: this.coordinate, piece: this.piece, mouse: $event} );
   }
 
-  handleMouseUp()
+  handleMouseUp($event: PointerEvent)
   {
-    this.mouseUp.emit( {coordinate: this.coordinate} );
+    this.mouseUp.emit( {coordinate: this.coordinate, mouse: $event} );
   }
 
   handleRightClick(event: PointerEvent)
   {
     event.preventDefault();
-    this.rightClick.emit({coordinate: this.coordinate});
   }
 
   handleLeftClick(event: PointerEvent)
