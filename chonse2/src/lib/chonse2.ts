@@ -89,7 +89,6 @@ export default class Chonse2
   //captures
   piecesWhiteCaptured: string[] = [];
   piecesBlackCaptured: string[] = [];
-  promotionalMaterialDifference: number = 0;
 
   //the state of the board
   pieceState: Array<Array<string>>;
@@ -108,7 +107,7 @@ export default class Chonse2
   fullMoveCounter: number = 1;
 
   //used to track repetition
-  private _previousPositionMap: Map<string, number> = new Map<string, number>()
+  private _previousPositionMap: Map<string, number> = new Map<string, number>();
 
   //instantiates with either a passed game state or the default one.
   constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE)
@@ -152,7 +151,7 @@ export default class Chonse2
       return {rowIndex: rIdx, colIndex: cIdx};
   }
 
-
+  //Fully validated legal moves that a certain coordinate's piece can make
   getLegalMoves(coordinate: string): Array<string>
   {
     if (this.gameState.isGameOver)
@@ -194,6 +193,7 @@ export default class Chonse2
     return legalMoves;
   }
 
+  //Moves a piece from one spot to another and accounting for promotion if applicable.
   completeMove(fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN): boolean
   {
     if (this.gameState.isGameOver || fromCoordinate == toCoordinate)
@@ -281,16 +281,6 @@ export default class Chonse2
                 break;
         }
 
-        //Change the piece for the promoted one and update material difference.
-        if (piece.startsWith(PieceColor.WHITE))
-        {
-            this.promotionalMaterialDifference += PieceMaterial.getMaterialFromPiece(piece) - 1; //+1 accounts for the loss of pawn.
-        }
-        else
-        {
-            this.promotionalMaterialDifference -= PieceMaterial.getMaterialFromPiece(piece) + 1;
-        }
-        
         //set promoted piece
         this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
     
@@ -447,7 +437,8 @@ export default class Chonse2
     return true;
   }
 
-  isInCheck(kingColor: string)
+  //Verifies if a king of a particular color is in check.
+  isInCheck(kingColor: string): boolean
   {
     //If the color isn't valid, don't bother checking for checks (haha get it)
     if (kingColor != PieceColor.BLACK && kingColor != PieceColor.WHITE)
@@ -461,6 +452,7 @@ export default class Chonse2
     return this.isSquareAttacked(kingCoordinate, PieceColor.getOpposite(kingColor))
   }
 
+  //Gets the coordinate of the passed color's king
   getKingCoordinate(kingColor: string): string
   {
     if (kingColor != PieceColor.BLACK && kingColor != PieceColor.WHITE)
@@ -481,24 +473,33 @@ export default class Chonse2
   }
   
   //Positive number signifies that white is up, negative signifies black is up.
-  getMaterialAdvantage()
+  getMaterialAdvantage(): number
   {
-      let whiteMaterialCaptured: number = 0;
-      let blackMaterialCaptured: number = 0;
-  
-      this.piecesWhiteCaptured.forEach( piece =>
-      {
-        whiteMaterialCaptured += PieceMaterial.getMaterialFromPiece(piece);
-      })
-  
-      this.piecesBlackCaptured.forEach(piece =>
-      {
-        blackMaterialCaptured += PieceMaterial.getMaterialFromPiece(piece);
-      })
-  
-      return whiteMaterialCaptured - blackMaterialCaptured + this.promotionalMaterialDifference;
+    //get each player's pieces in a separate array.
+    const whitePieceData = this._getAllPiecesAndCoordsByColor(PieceColor.WHITE);
+    const blackPieceData = this._getAllPiecesAndCoordsByColor(PieceColor.BLACK);
+
+    let adv = 0;
+
+    //add all white pieces on the board.
+    whitePieceData.pieces.forEach( piece =>
+    {
+      const materialVal = PieceMaterial.getMaterialFromPiece(piece);
+      adv += materialVal;
+    })
+
+    //subtract by the black pieces.
+    blackPieceData.pieces.forEach( piece =>
+    {
+      const materialVal = PieceMaterial.getMaterialFromPiece(piece);
+      adv -= materialVal; 
+    })
+
+    //result is the material advantage (+w -b)
+    return adv;
   }
 
+  //Checks if any piece of the passed color can attack the passed square.
   isSquareAttacked(coord: string, attackerColor: string): boolean 
   {
     if (attackerColor != PieceColor.WHITE && attackerColor != PieceColor.BLACK)
@@ -598,6 +599,7 @@ export default class Chonse2
     return false;
   }
 
+  //FEN notation (old standard)
   getFEN(): string
   {
     //string to be built
@@ -667,6 +669,7 @@ export default class Chonse2
     return fen;
   }
 
+  //Checks if a pawn can capture en passant (not just that there is an en passant square)
   isEnPassantCaptureActuallyPossible() : boolean
   {
     //Logically an en passant capture can't happen if no pawn moved to squares to begin with.
@@ -709,6 +712,7 @@ export default class Chonse2
     return false; 
   }
 
+  //Clones every single field of the object.
   getFullDeepCopy(): Chonse2
   {
     const copy = new Chonse2();
@@ -716,7 +720,6 @@ export default class Chonse2
     //captures/material
     copy.piecesWhiteCaptured = structuredClone(this.piecesWhiteCaptured);
     copy.piecesBlackCaptured = structuredClone(this.piecesBlackCaptured);
-    copy.promotionalMaterialDifference = this.promotionalMaterialDifference;
 
     //pieces
     copy.pieceState = structuredClone(this.pieceState);
