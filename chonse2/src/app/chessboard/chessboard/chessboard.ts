@@ -81,19 +81,10 @@ export class Chessboard implements OnInit {
     //If the square was left clicked
     if (event.mouse.button == 0)
     {
-      //If the user wishes to click to move, this event should be used for both picking up and placing.
+      //Mouse down doesn't matter if the user is clicking to move.
       if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE))
       {
-        if (this.fromSquare == "")
-        {
-          this.fromSquare = event.coordinate;
-        }
-        else
-        {
-          this.toSquare = event.coordinate;
-
-          this.completeMove(this.fromSquare, this.toSquare);
-        }
+        return;
       }
       else //if not, the piece is dragged under the mouse cursor.
       {
@@ -122,11 +113,44 @@ export class Chessboard implements OnInit {
   {
     if (event.mouse.button == 0)
     {
+      //If this is click to move mode
       if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE))
       {
+        //If the fromsquare has not been selected, we should set it and compute its legal moves.
+        if (this.fromSquare == "")
+        {
+          this.fromSquare = event.coordinate;
+          this.currentLegalMoves = this.chessGame.getLegalMoves(this.fromSquare);
+
+          //If it has no legal moves, reset the state to reduce the number of clicks required when switching to another piece.
+          if (this.currentLegalMoves.length == 0)
+          {
+            this.resetMoveState();
+          }
+
+          //Return so that the toSquare logic cannot be triggered.
+          return;
+        }
+
+        //If the toSquare is empty and we got this far, the user would like to move to this square.
+        if (this.toSquare == "")
+        {
+          this.toSquare = event.coordinate;
+
+          //If it is not legal, reset the state and disregard the from square, or complete the move if it is legal.
+          if (!this.currentLegalMoves.includes(this.toSquare))
+          {
+            this.resetMoveState();
+          }
+          else
+          {
+            this.completeMove(this.fromSquare, this.toSquare);
+          }
+        }
         return;
       }
 
+      //If it is not click to move mode:
       //sets the square in the UI to where the player is dropping the piece.
       this.toSquare = event.coordinate;
 
