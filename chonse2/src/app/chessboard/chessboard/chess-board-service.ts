@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import BoardState from "./board-state";
 import Chonse2 from "../../../lib/chonse2";
-import { Arrow } from "./arrow";
 
 @Injectable({ providedIn: 'root' })
 export class ChessBoardService {
@@ -14,11 +13,10 @@ export class ChessBoardService {
             return false;
         }
 
-        const highlightStatuses: Array<Array<boolean>> = ChessBoardService._initializeHighlightStatuses();
-        const arrows: Array<Arrow> = [];
+        //Applying the initialized fields to the interface.
+        const boardState = new BoardState(game);
 
-        const boardState: BoardState = {chessGame: game, squareHighlightStatuses : highlightStatuses, arrows: arrows}
-
+        //Add it.
         this.games.set(id, boardState);
         return true;
     }
@@ -27,10 +25,7 @@ export class ChessBoardService {
     {
         if (!this.games.has(id)) 
         {
-            const highlightStatuses: Array<Array<boolean>> = ChessBoardService._initializeHighlightStatuses();
-            const arrows: Array<Arrow> = [];
-            const boardState: BoardState = {chessGame: new Chonse2(), squareHighlightStatuses : highlightStatuses, arrows: arrows}
-            this.games.set(id, boardState);
+            this.addGame(id, new Chonse2());
         }
 
         return this.games.get(id)!;
@@ -39,22 +34,5 @@ export class ChessBoardService {
     deleteGame(id: string) 
     {
         this.games.delete(id);
-    }
-
-    private static _initializeHighlightStatuses(): Array<Array<boolean>>
-    {
-        const highlightStatuses: Array<Array<boolean>> = [];
-
-        for(let i = 0; i < Chonse2.SIZE; i++)
-        {
-            const rank: Array<boolean> = [];
-            for(let j = 0; j < Chonse2.SIZE; j++)
-            {
-                rank[j] = false;
-            }
-            highlightStatuses.push(rank);
-        }
-
-        return highlightStatuses;
     }
 }
