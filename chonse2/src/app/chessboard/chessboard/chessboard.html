@@ -1,6 +1,6 @@
 <div class="componentContainer">
     <div class="boardOuterContainer" [class]="boardState.isFlipped ? 'boardOuterContainerFlipped' : ''">
-        <app-captured-pieces for="b" [capturedPieces]="getCurrentState().piecesBlackCaptured" [advantage]="getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
+        <app-captured-pieces for="b" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
         <div class="boardContainerInner" [class]="boardState.isFlipped ? 'boardContainerInnerFlipped' : ''">
             
             <!-- ARROW OVERLAY -->
@@ -36,7 +36,7 @@
                     </marker>
                 </defs>
             </svg>
-            @for( rank of getCurrentState().pieceState; let rankIndex = $index; track rankIndex)
+            @for( rank of boardState.getCurrentState().pieceState; let rankIndex = $index; track rankIndex)
             {
                 <ng-container>
                     @for ( piece of rank; let fileIndex = $index; track fileIndex; )
@@ -44,14 +44,14 @@
                         <div style="position: relative; width: 100%; height: 100%;">
                             <app-square 
                                 [coordinate]="this.COORDS[rankIndex][fileIndex]" 
-                                [piece]="getCurrentState().pieceState[rankIndex][fileIndex]"
+                                [piece]="boardState.getCurrentState().pieceState[rankIndex][fileIndex]"
                                 [isDark]="(rankIndex + fileIndex) % 2 == 1"
                                 [showFile]="rankIndex == rank.length - 1"
                                 [showRank]="fileIndex == 0"
                                 [showPiece]="(this.COORDS[rankIndex][fileIndex] != fromSquare) || localStorageHelper.getBoolean(localStorageHelper.CLICK_TO_MOVE)"
                                 [isFlipped]="boardState.isFlipped"
                                 [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
-                                [isInCheck]="(getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && getCurrentState().isInCheck(pieceColor.WHITE)) || (getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && getCurrentState().isInCheck(pieceColor.BLACK)) "
+                                [isInCheck]="(boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState.getCurrentState().isInCheck(pieceColor.WHITE)) || (boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState.getCurrentState().isInCheck(pieceColor.BLACK)) "
                                 [isClicked]="getRightClickedStatusForSquare(this.COORDS[rankIndex][fileIndex])"
                                 (mouseDown)="onSquareMouseDown($event)"
                                 (mouseUp)="onSquareMouseUp($event)"
@@ -83,10 +83,9 @@
             }
         </div>
 
-        <app-captured-pieces for="w" [capturedPieces]="getCurrentState().piecesWhiteCaptured" [advantage]="getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
+        <app-captured-pieces for="w" [capturedPieces]="boardState.getCurrentState().piecesWhiteCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
     </div>
     <div class="boardControls p-5">
-        <h2>Controls</h2>
         <div class="boardControlButtons">
             <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleBackButtonClicked()">&lt;&lt;-</div>
             <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleBackButtonClicked()">&lt;</div>
@@ -95,7 +94,7 @@
         </div>
         <div class="btn btn-primary controlButton" (click)="handleFlipClicked()">↑↓</div>
 
-        <p>{{getCurrentState().turn ? "White" : "Black"}} to move</p>
+        <p>{{boardState.getCurrentState().turn ? "White" : "Black"}} to move</p>
 
         <div class="algebraicContainer">
             @for (item of boardState.mainAlgebraicStack; track $index) 
@@ -104,17 +103,27 @@
                 {
                     <div>
                         <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
-                        <p class="d-inline" [ngClass]="{'text-primary' : $index == boardState.mainStackPointer - 1}">{{item}} </p>
-                        <p class="d-inline" [ngClass]="{'text-primary' : $index == boardState.mainStackPointer - 2}">{{boardState.mainAlgebraicStack[$index + 1] ?? "-"}} </p>
+                        <p 
+                            class="d-inline" 
+                            [ngClass]="{
+                                'text-primary' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length == 0,
+                                'text-danger' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length != 0}"
+                                >{{item}} 
+                        </p>
+                        <p class="d-inline" 
+                            [ngClass]="{
+                                'text-primary' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length == 0,
+                                'text-danger' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length != 0}"
+                                >{{boardState.mainAlgebraicStack[$index + 1] ?? "-"}} </p>
                     </div>   
                 }
             }
         </div>
 
         <div class="testingPurposes">
-            @if(this.getCurrentState().gameState.isGameOver)
+            @if(this.boardState.getCurrentState().gameState.isGameOver)
             {
-                <p>Result: {{this.getCurrentState().gameState.reason}}</p>
+                <p>Result: {{this.boardState.getCurrentState().gameState.reason}}</p>
             }
         </div>
     </div>

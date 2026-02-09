@@ -63,10 +63,6 @@ export class Chessboard implements OnInit {
 
   }
 
-  getCurrentState(): Chonse2
-  {
-    return this.boardState.mainStateStack[this.boardState.mainStackPointer];    
-  }
 
   //Controls
   //#region 
@@ -77,53 +73,22 @@ export class Chessboard implements OnInit {
 
   handleDoubleBackButtonClicked()
   {
-    //Simply back up to the first move.
-    this.boardState.mainStackPointer = 0;
+    this.boardState.goBackToStart();
   }
 
   handleBackButtonClicked()
   {
-    //Cannot go back if we are already at the first move.
-    if (this.boardState.mainStackPointer == 0)
-    {
-      return;
-    }
-
-    //If we are somewhere past the first move, go back one.
-    this.boardState.mainStackPointer--;
+    this.boardState.goBack();
   }
 
   handleForwardButtonClicked()
   {
-    //If we are deviating from the main game, don't go forward (can't see the future).
-    if (this.boardState.deviationStack.length != 0)
-    {
-      return;
-    }
-
-    //If the stack pointer isn't already at the end, then go up by one.
-    if (this.boardState.mainStackPointer != this.boardState.mainStateStack.length - 1)
-    {
-      this.boardState.mainStackPointer++;
-    }
-  } 
+    this.boardState.goForward();
+  }   
 
   handleDoubleForwardButtonClicked()
   {
-    //If we are deviating from the main game, can't see into the future.
-    if (this.boardState.deviationStack.length != 0)
-    {
-      return;
-    }
-
-    //If we are already at the final move, don't do anything.
-    if (this.boardState.mainStackPointer == this.boardState.mainStateStack.length - 1)
-    {
-      return;
-    }
-
-    //If we are going through the main game and we aren't at the end, go to the very end.
-    this.boardState.mainStackPointer = this.boardState.mainStateStack.length - 1;
+    this.boardState.goForwardToEnd();
   }
 
   //Should the back buttons be enabled
@@ -135,7 +100,7 @@ export class Chessboard implements OnInit {
   areForwardButtonsEnabled(): boolean 
   {
     //If we are deviating from the main game (by going back) then you can't logically go forward.
-    if (this.boardState.deviationStack.length != 0)
+    if (this.boardState.divergenceStack.length != 0)
     {
       return false;
     }
@@ -182,7 +147,7 @@ export class Chessboard implements OnInit {
       }
 
       //property will display legal moves on the screen.
-      this.currentLegalMoves = this.getCurrentState().getLegalMoves(event.coordinate);
+      this.currentLegalMoves = this.boardState.getCurrentState().getLegalMoves(event.coordinate);
     }
 
     //Right click for square highlight or arrow drawing
@@ -203,7 +168,7 @@ export class Chessboard implements OnInit {
         if (this.fromSquare == "")
         {
           this.fromSquare = event.coordinate;
-          this.currentLegalMoves = this.getCurrentState().getLegalMoves(this.fromSquare);
+          this.currentLegalMoves = this.boardState.getCurrentState().getLegalMoves(this.fromSquare);
 
           //If it has no legal moves, reset the state to reduce the number of clicks required when switching to another piece.
           if (this.currentLegalMoves.length == 0)
@@ -279,7 +244,7 @@ export class Chessboard implements OnInit {
       return;
     }
     
-    const stateCopy = this.getCurrentState().getFullDeepCopy();
+    const stateCopy = this.boardState.getCurrentState().getFullDeepCopy();
 
     const isPromotion = (
       this.currentlyHeldPiece == PieceType.WHITE_PAWN && this.toSquare.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
@@ -324,7 +289,7 @@ export class Chessboard implements OnInit {
       this.resetMoveState();
     }
 
-    this.boardState.addStateAndMoveToMain(stateCopy, moveResult);
+    this.boardState.pushState(stateCopy, moveResult);
   }
 
   handleDragImage(mouse: PointerEvent)
@@ -459,17 +424,17 @@ export class Chessboard implements OnInit {
 
   _isSquareCheckmatedKing(rankIndex: number, fileIndex: number) : boolean
   {
-    return (this.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.getCurrentState().gameState.winner == PieceColor.BLACK) || (this.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.getCurrentState().gameState.winner == PieceColor.WHITE) && this.getCurrentState().gameState.reason == GameOverReason.Checkmate;
+    return (this.boardState.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState.getCurrentState().gameState.winner == PieceColor.BLACK) || (this.boardState.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState.getCurrentState().gameState.winner == PieceColor.WHITE) && this.boardState.getCurrentState().gameState.reason == GameOverReason.Checkmate;
   }
 
   _isSquareWinningKing(rankIndex: number, fileIndex: number) : boolean
   {
-    return (this.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.getCurrentState().gameState.winner == PieceColor.WHITE) || (this.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.getCurrentState().gameState.winner == PieceColor.BLACK); 
+    return (this.boardState.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState.getCurrentState().gameState.winner == PieceColor.WHITE) || (this.boardState.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState.getCurrentState().gameState.winner == PieceColor.BLACK); 
   }
 
   _isSquareKingInDraw(rankIndex: number, fileIndex: number) : boolean 
   { 
-    return this.getCurrentState().gameState.isDraw() && (this.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING || this.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING);
+    return this.boardState.getCurrentState().gameState.isDraw() && (this.boardState.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING || this.boardState.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING);
   }
 
   _getEndgameSquareBackgroundColor(rankIndex: number, fileIndex: number): string
