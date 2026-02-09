@@ -75,6 +75,80 @@ export class Chessboard implements OnInit {
     this.boardState.isFlipped = !this.boardState.isFlipped;
   }
 
+  handleDoubleBackButtonClicked()
+  {
+    //Simply back up to the first move.
+    this.boardState.mainStackPointer = 0;
+  }
+
+  handleBackButtonClicked()
+  {
+    //Cannot go back if we are already at the first move.
+    if (this.boardState.mainStackPointer == 0)
+    {
+      return;
+    }
+
+    //If we are somewhere past the first move, go back one.
+    this.boardState.mainStackPointer--;
+  }
+
+  handleForwardButtonClicked()
+  {
+    //If we are deviating from the main game, don't go forward (can't see the future).
+    if (this.boardState.deviationStack.length != 0)
+    {
+      return;
+    }
+
+    //If the stack pointer isn't already at the end, then go up by one.
+    if (this.boardState.mainStackPointer != this.boardState.mainStateStack.length - 1)
+    {
+      this.boardState.mainStackPointer++;
+    }
+  } 
+
+  handleDoubleForwardButtonClicked()
+  {
+    //If we are deviating from the main game, can't see into the future.
+    if (this.boardState.deviationStack.length != 0)
+    {
+      return;
+    }
+
+    //If we are already at the final move, don't do anything.
+    if (this.boardState.mainStackPointer == this.boardState.mainStateStack.length - 1)
+    {
+      return;
+    }
+
+    //If we are going through the main game and we aren't at the end, go to the very end.
+    this.boardState.mainStackPointer = this.boardState.mainStateStack.length - 1;
+  }
+
+  //Should the back buttons be enabled
+  areBackButtonsEnabled(): boolean 
+  {
+    return this.boardState.mainStackPointer != 0;
+  }
+
+  areForwardButtonsEnabled(): boolean 
+  {
+    //If we are deviating from the main game (by going back) then you can't logically go forward.
+    if (this.boardState.deviationStack.length != 0)
+    {
+      return false;
+    }
+
+    //If there are no more moves left after this, then you can't go back.
+    if (this.boardState.mainStackPointer == this.boardState.mainStateStack.length - 1)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
   //#endregion
 
   //Left click/pointer

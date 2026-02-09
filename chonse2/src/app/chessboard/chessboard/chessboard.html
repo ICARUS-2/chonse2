@@ -88,10 +88,10 @@
     <div class="boardControls p-5">
         <h2>Controls</h2>
         <div class="boardControlButtons">
-            <div class="btn btn-lg btn-primary controlButton">&lt;&lt;-</div>
-            <div class="btn btn-lg btn-primary controlButton">&lt;</div>
-            <div class="btn btn-lg btn-primary controlButton">></div>
-            <div class="btn btn-lg btn-primary controlButton">->></div>
+            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleBackButtonClicked()">&lt;&lt;-</div>
+            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleBackButtonClicked()">&lt;</div>
+            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areForwardButtonsEnabled() ? '' : 'disabled'" (click)="handleForwardButtonClicked()">></div>
+            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areForwardButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleForwardButtonClicked()">->></div>
         </div>
         <div class="btn btn-primary controlButton" (click)="handleFlipClicked()">↑↓</div>
 
