@@ -29,6 +29,13 @@ export default class BoardState
         this.deviationStackPointer = 0;
     }
 
+    addStateAndMoveToMain(state: Chonse2, move: IMoveResult)
+    {
+        this.mainStateStack.push(state);
+        this.mainAlgebraicStack.push(move.notation);
+        this.mainStackPointer++;
+    }
+
     static initializeHighlightStatuses(): Array<Array<boolean>>
     {
         const highlightStatuses: Array<Array<boolean>> = [];

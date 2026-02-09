@@ -285,7 +285,7 @@ export class Chessboard implements OnInit {
       this.currentlyHeldPiece == PieceType.WHITE_PAWN && this.toSquare.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
       this.currentlyHeldPiece == PieceType.BLACK_PAWN && this.toSquare.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
 
-    let moveResult: IMoveResult;
+    let moveResult: IMoveResult = {result: false, notation: ""};
 
     //handle pawn promotion if the pawn is at the opposite rank=.
     if (isPromotion)
@@ -324,8 +324,7 @@ export class Chessboard implements OnInit {
       this.resetMoveState();
     }
 
-    this.boardState.mainStateStack.push(stateCopy);
-    this.boardState.mainStackPointer+=1;
+    this.boardState.addStateAndMoveToMain(stateCopy, moveResult);
   }
 
   handleDragImage(mouse: PointerEvent)
