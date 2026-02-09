@@ -143,6 +143,15 @@
   margin: 5px;
 }
 
+.algebraicContainer
+{
+  padding: 5px;
+  border: 1px solid blue;
+  height: 40vmin;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 @media screen and (max-width: 800px) 
 {
     .componentContainer

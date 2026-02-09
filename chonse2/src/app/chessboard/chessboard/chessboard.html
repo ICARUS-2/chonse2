@@ -97,16 +97,19 @@
 
         <p>{{getCurrentState().turn ? "White" : "Black"}} to move</p>
 
-        @for (item of boardState.mainAlgebraicStack; track $index) 
-        {
-            @if ($index % 2 == 0)
+        <div class="algebraicContainer">
+            @for (item of boardState.mainAlgebraicStack; track $index) 
             {
-                <div >
-                    <p class="d-inline" [ngClass]="{'text-primary' : $index == boardState.mainStackPointer - 1}">{{item}} </p>
-                    <p class="d-inline" [ngClass]="{'text-primary' : $index == boardState.mainStackPointer - 2}">{{boardState.mainAlgebraicStack[$index + 1] ?? "-"}} </p>
-                </div>   
+                @if ($index % 2 == 0)
+                {
+                    <div>
+                        <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
+                        <p class="d-inline" [ngClass]="{'text-primary' : $index == boardState.mainStackPointer - 1}">{{item}} </p>
+                        <p class="d-inline" [ngClass]="{'text-primary' : $index == boardState.mainStackPointer - 2}">{{boardState.mainAlgebraicStack[$index + 1] ?? "-"}} </p>
+                    </div>   
+                }
             }
-        }
+        </div>
 
         <div class="testingPurposes">
             @if(this.getCurrentState().gameState.isGameOver)
