@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import BoardState from "./board-state";
 import Chonse2 from "../../../lib/chonse2";
-import { Arrow } from "./arrow";
 
 @Injectable({ providedIn: 'root' })
 export class ChessBoardService {
@@ -14,24 +13,10 @@ export class ChessBoardService {
             return false;
         }
 
-        const highlightStatuses: Array<Array<boolean>> = ChessBoardService._initializeHighlightStatuses();
-        const arrows: Array<Arrow> = [];
-        const mainStates: Array<Chonse2> = [];
-        const deviationStates: Array<Chonse2> = [];
-        mainStates.push(game);
+        //Applying the initialized fields to the interface.
+        const boardState = new BoardState(game);
 
-        const boardState: BoardState = 
-        {
-            mainStateStack: mainStates,
-            mainStackPointer: 0,
-
-            deviationStack: deviationStates,
-            deviationStackPointer: 0,
-
-            squareHighlightStatuses: highlightStatuses,
-            arrows: arrows,
-            isFlipped: false
-        }
+        //Add it.
         this.games.set(id, boardState);
         return true;
     }
@@ -49,22 +34,5 @@ export class ChessBoardService {
     deleteGame(id: string) 
     {
         this.games.delete(id);
-    }
-
-    private static _initializeHighlightStatuses(): Array<Array<boolean>>
-    {
-        const highlightStatuses: Array<Array<boolean>> = [];
-
-        for(let i = 0; i < Chonse2.SIZE; i++)
-        {
-            const rank: Array<boolean> = [];
-            for(let j = 0; j < Chonse2.SIZE; j++)
-            {
-                rank[j] = false;
-            }
-            highlightStatuses.push(rank);
-        }
-
-        return highlightStatuses;
     }
 }

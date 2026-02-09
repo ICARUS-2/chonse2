@@ -195,7 +195,7 @@ export default class Chonse2
   }
 
   //Moves a piece from one spot to another and accounting for promotion if applicable.
-  completeMove(fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN): {result: boolean, notation: string}
+  completeMove(fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN): IMoveResult
   {
     if (this.gameState.isGameOver || fromCoordinate == toCoordinate)
     {

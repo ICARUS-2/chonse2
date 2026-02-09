@@ -285,6 +285,8 @@ export class Chessboard implements OnInit {
       this.currentlyHeldPiece == PieceType.WHITE_PAWN && this.toSquare.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
       this.currentlyHeldPiece == PieceType.BLACK_PAWN && this.toSquare.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
 
+    let moveResult: IMoveResult;
+
     //handle pawn promotion if the pawn is at the opposite rank=.
     if (isPromotion)
     {
@@ -299,12 +301,12 @@ export class Chessboard implements OnInit {
       modalRef.result.then( (result) =>
       {
         //perform the move and promote to what the user selected.
-        stateCopy.completeMove(fromSquare, toSquare, result);
+        moveResult = stateCopy.completeMove(fromSquare, toSquare, result);
       } )
       .catch( () =>
       {
         //if the dialog was forced closed, promote to queen by default.
-        stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
+        moveResult = stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
       } )
       .finally()
       {
@@ -316,7 +318,7 @@ export class Chessboard implements OnInit {
     {
 
       //perform the move
-      stateCopy.completeMove(fromSquare, toSquare, piece);
+      moveResult = stateCopy.completeMove(fromSquare, toSquare, piece);
         
       //Resets the state of the from/to squares and current piece back to nothing.
       this.resetMoveState();
