@@ -3,7 +3,13 @@ import { Arrow } from "./arrow";
 
 export default interface BoardState
 {
-    chessGame: Chonse2;
+    mainStateStack: Array<Chonse2>;    
+    mainStackPointer: number;
+
+    deviationStack: Array<Chonse2>;
+    deviationStackPointer: number;
+
     squareHighlightStatuses: Array<Array<boolean>>;
     arrows: Array<Arrow>;
+    isFlipped: boolean;
 }

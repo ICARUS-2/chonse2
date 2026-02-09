@@ -1,6 +1,8 @@
 .componentContainer
 {
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .boardOuterContainer
@@ -119,6 +121,27 @@
     z-index: 10;
 }
 
+.boardControls
+{
+  display: flex;
+  border: 1px solid blue;
+  flex-direction: column;
+  height: 82vmin;
+  width: 43vmin;
+}
+
+.boardControlButtons
+{
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.controlButton
+{
+  touch-action: manipulation;
+  margin: 5px;
+}
 
 @media screen and (max-width: 800px) 
 {
@@ -126,4 +149,9 @@
     {
         flex-direction: column;
     }    
+
+    .boardControls
+    {
+      width: 100%;
+    }
 }

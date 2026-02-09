@@ -16,9 +16,22 @@ export class ChessBoardService {
 
         const highlightStatuses: Array<Array<boolean>> = ChessBoardService._initializeHighlightStatuses();
         const arrows: Array<Arrow> = [];
+        const mainStates: Array<Chonse2> = [];
+        const deviationStates: Array<Chonse2> = [];
+        mainStates.push(game);
 
-        const boardState: BoardState = {chessGame: game, squareHighlightStatuses : highlightStatuses, arrows: arrows}
+        const boardState: BoardState = 
+        {
+            mainStateStack: mainStates,
+            mainStackPointer: 0,
 
+            deviationStack: deviationStates,
+            deviationStackPointer: 0,
+
+            squareHighlightStatuses: highlightStatuses,
+            arrows: arrows,
+            isFlipped: false
+        }
         this.games.set(id, boardState);
         return true;
     }
@@ -27,10 +40,7 @@ export class ChessBoardService {
     {
         if (!this.games.has(id)) 
         {
-            const highlightStatuses: Array<Array<boolean>> = ChessBoardService._initializeHighlightStatuses();
-            const arrows: Array<Arrow> = [];
-            const boardState: BoardState = {chessGame: new Chonse2(), squareHighlightStatuses : highlightStatuses, arrows: arrows}
-            this.games.set(id, boardState);
+            this.addGame(id, new Chonse2());
         }
 
         return this.games.get(id)!;

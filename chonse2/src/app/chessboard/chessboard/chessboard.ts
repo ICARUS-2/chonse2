@@ -30,10 +30,10 @@ export class Chessboard implements OnInit {
 
   //Game service ID
   @Input({required: true}) gameId: string = "";
-
-  //PIECES ON THE BOARD CURRENTLY
-  @Input() chessGame!: Chonse2;
   
+  //State
+  boardState: BoardState
+
   //MOVE PROPERTIES
   currentLegalMoves: string[] = [];
   currentlyHeldPiece: string = "";
@@ -46,8 +46,6 @@ export class Chessboard implements OnInit {
   private readonly _ARROW_PULLBACK = 0.18;
   mouseX: number = 0;
   mouseY: number = 0;
-  isFlipped: boolean = false;
-  squareRightClickStatuses: Array<Array<boolean>> = [];
   arrows: Array<Arrow> = [];
   
   //FUNCTIONAL
@@ -55,18 +53,29 @@ export class Chessboard implements OnInit {
 
   constructor(private modalService: NgbModal, private chessBoardService: ChessBoardService)
   {
-
-  }
-
-  ngOnInit(): void {
     //Board state stored in service to persist across routerlink changes.
     const boardState: BoardState = this.chessBoardService.getGame(this.gameId);
 
-    //Sets the state from the service.
-    this.chessGame = boardState.chessGame;
-    this.arrows = boardState.arrows;
-    this.squareRightClickStatuses = boardState.squareHighlightStatuses;
+    this.boardState = boardState;
   }
+
+  ngOnInit(): void {
+
+  }
+
+  getCurrentState(): Chonse2
+  {
+    return this.boardState.mainStateStack[this.boardState.mainStackPointer];    
+  }
+
+  //Controls
+  //#region 
+  handleFlipClicked()
+  {
+    this.boardState.isFlipped = !this.boardState.isFlipped;
+  }
+
+  //#endregion
 
   //Left click/pointer
   //#region 
@@ -99,7 +108,7 @@ export class Chessboard implements OnInit {
       }
 
       //property will display legal moves on the screen.
-      this.currentLegalMoves = this.chessGame.getLegalMoves(event.coordinate);
+      this.currentLegalMoves = this.getCurrentState().getLegalMoves(event.coordinate);
     }
 
     //Right click for square highlight or arrow drawing
@@ -120,7 +129,7 @@ export class Chessboard implements OnInit {
         if (this.fromSquare == "")
         {
           this.fromSquare = event.coordinate;
-          this.currentLegalMoves = this.chessGame.getLegalMoves(this.fromSquare);
+          this.currentLegalMoves = this.getCurrentState().getLegalMoves(this.fromSquare);
 
           //If it has no legal moves, reset the state to reduce the number of clicks required when switching to another piece.
           if (this.currentLegalMoves.length == 0)
@@ -171,7 +180,7 @@ export class Chessboard implements OnInit {
         const idx = Chonse2.findIndexFromCoordinate(this.toRightClickSquare);
 
         //Sets the status telling it to change color.
-        this.squareRightClickStatuses[idx.rowIndex][idx.colIndex] = !this.squareRightClickStatuses[idx.rowIndex][idx.colIndex];
+        this.boardState.squareHighlightStatuses[idx.rowIndex][idx.colIndex] = !this.boardState.squareHighlightStatuses[idx.rowIndex][idx.colIndex];
       }
       else //If the squares are different, they are drawing an arrow.
       {
@@ -196,6 +205,8 @@ export class Chessboard implements OnInit {
       return;
     }
     
+    const stateCopy = this.getCurrentState().getFullDeepCopy();
+
     const isPromotion = (
       this.currentlyHeldPiece == PieceType.WHITE_PAWN && this.toSquare.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
       this.currentlyHeldPiece == PieceType.BLACK_PAWN && this.toSquare.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
@@ -214,12 +225,12 @@ export class Chessboard implements OnInit {
       modalRef.result.then( (result) =>
       {
         //perform the move and promote to what the user selected.
-        this.chessGame.completeMove(fromSquare, toSquare, result);
+        stateCopy.completeMove(fromSquare, toSquare, result);
       } )
       .catch( () =>
       {
         //if the dialog was forced closed, promote to queen by default.
-        this.chessGame.completeMove(fromSquare, toSquare, PieceType.QUEEN);
+        stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
       } )
       .finally()
       {
@@ -231,11 +242,14 @@ export class Chessboard implements OnInit {
     {
 
       //perform the move
-      this.chessGame.completeMove(fromSquare, toSquare, piece);
+      stateCopy.completeMove(fromSquare, toSquare, piece);
         
       //Resets the state of the from/to squares and current piece back to nothing.
       this.resetMoveState();
     }
+
+    this.boardState.mainStateStack.push(stateCopy);
+    this.boardState.mainStackPointer+=1;
   }
 
   handleDragImage(mouse: PointerEvent)
@@ -278,13 +292,13 @@ export class Chessboard implements OnInit {
   {
     const idx = Chonse2.findIndexFromCoordinate(coordinate);
     
-    return this.squareRightClickStatuses[idx.rowIndex][idx.colIndex];
+    return this.boardState.squareHighlightStatuses[idx.rowIndex][idx.colIndex];
   }
 
   //Sets all the right clicked statuses to false, clearing any right clicked squares.
   resetClickedSquares()
   {
-    if (this.squareRightClickStatuses.length == 0)
+    if (this.boardState.squareHighlightStatuses.length == 0)
     {
       for(let i = 0; i < Chonse2.SIZE; i++)
       {
@@ -293,19 +307,19 @@ export class Chessboard implements OnInit {
         {
           rank.push(false);
         }
-        this.squareRightClickStatuses.push(rank);
+        this.boardState.squareHighlightStatuses.push(rank);
       }
     }
     else 
     {
       for(let i = 0; i < Chonse2.SIZE; i++)
       {
-        const rank = this.squareRightClickStatuses[i];
+        const rank = this.boardState.squareHighlightStatuses[i];
         for(let j = 0; j < Chonse2.SIZE; j++)
         {
           rank[j] = false;
         }
-        this.squareRightClickStatuses.push(rank);
+        this.boardState.squareHighlightStatuses.push(rank);
       }
     }
   }
@@ -361,18 +375,6 @@ export class Chessboard implements OnInit {
   }
   //#endregion
 
-  resetMoveState()
-  {
-    this.fromSquare = "";
-    this.toSquare = "";
-    this.currentLegalMoves = [];
-  }
-
-  handleFlipClicked()
-  {
-    this.isFlipped = !this.isFlipped;
-  }
-  
   //Endgame square animation logic
   //#region
   _isSquareEndgameKingSquare(rankIndex: number, fileIndex: number)
@@ -382,17 +384,17 @@ export class Chessboard implements OnInit {
 
   _isSquareCheckmatedKing(rankIndex: number, fileIndex: number) : boolean
   {
-    return (this.chessGame.pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.chessGame.gameState.winner == PieceColor.BLACK) || (this.chessGame.pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.chessGame.gameState.winner == PieceColor.WHITE) && this.chessGame.gameState.reason == GameOverReason.Checkmate;
+    return (this.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.getCurrentState().gameState.winner == PieceColor.BLACK) || (this.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.getCurrentState().gameState.winner == PieceColor.WHITE) && this.getCurrentState().gameState.reason == GameOverReason.Checkmate;
   }
 
   _isSquareWinningKing(rankIndex: number, fileIndex: number) : boolean
   {
-    return (this.chessGame.pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.chessGame.gameState.winner == PieceColor.WHITE) || (this.chessGame.pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.chessGame.gameState.winner == PieceColor.BLACK); 
+    return (this.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.getCurrentState().gameState.winner == PieceColor.WHITE) || (this.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.getCurrentState().gameState.winner == PieceColor.BLACK); 
   }
 
   _isSquareKingInDraw(rankIndex: number, fileIndex: number) : boolean 
   { 
-    return this.chessGame.gameState.isDraw() && (this.chessGame.pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING || this.chessGame.pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING);
+    return this.getCurrentState().gameState.isDraw() && (this.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING || this.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING);
   }
 
   _getEndgameSquareBackgroundColor(rankIndex: number, fileIndex: number): string
@@ -457,5 +459,11 @@ export class Chessboard implements OnInit {
     return "";
   }
   //#endregion
-
+  resetMoveState()
+  {
+    this.fromSquare = "";
+    this.toSquare = "";
+    this.currentLegalMoves = [];
+  }
+  
 }

@@ -1,7 +1,7 @@
 <div class="componentContainer">
-    <div class="boardOuterContainer" [class]="isFlipped ? 'boardOuterContainerFlipped' : ''">
-        <app-captured-pieces for="b" [capturedPieces]="chessGame.piecesBlackCaptured" [advantage]="chessGame.getMaterialAdvantage()"></app-captured-pieces>
-        <div class="boardContainerInner" [class]="isFlipped ? 'boardContainerInnerFlipped' : ''">
+    <div class="boardOuterContainer" [class]="boardState.isFlipped ? 'boardOuterContainerFlipped' : ''">
+        <app-captured-pieces for="b" [capturedPieces]="getCurrentState().piecesBlackCaptured" [advantage]="getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
+        <div class="boardContainerInner" [class]="boardState.isFlipped ? 'boardContainerInnerFlipped' : ''">
             
             <!-- ARROW OVERLAY -->
             <svg
@@ -36,7 +36,7 @@
                     </marker>
                 </defs>
             </svg>
-            @for( rank of chessGame.pieceState; let rankIndex = $index; track rankIndex)
+            @for( rank of getCurrentState().pieceState; let rankIndex = $index; track rankIndex)
             {
                 <ng-container>
                     @for ( piece of rank; let fileIndex = $index; track fileIndex; )
@@ -44,14 +44,14 @@
                         <div style="position: relative; width: 100%; height: 100%;">
                             <app-square 
                                 [coordinate]="this.COORDS[rankIndex][fileIndex]" 
-                                [piece]="chessGame.pieceState[rankIndex][fileIndex]"
+                                [piece]="getCurrentState().pieceState[rankIndex][fileIndex]"
                                 [isDark]="(rankIndex + fileIndex) % 2 == 1"
                                 [showFile]="rankIndex == rank.length - 1"
                                 [showRank]="fileIndex == 0"
                                 [showPiece]="(this.COORDS[rankIndex][fileIndex] != fromSquare) || localStorageHelper.getBoolean(localStorageHelper.CLICK_TO_MOVE)"
-                                [isFlipped]="isFlipped"
+                                [isFlipped]="boardState.isFlipped"
                                 [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
-                                [isInCheck]="(chessGame.pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && chessGame.isInCheck(pieceColor.WHITE)) || (chessGame.pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && chessGame.isInCheck(pieceColor.BLACK)) "
+                                [isInCheck]="(getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && getCurrentState().isInCheck(pieceColor.WHITE)) || (getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && getCurrentState().isInCheck(pieceColor.BLACK)) "
                                 [isClicked]="getRightClickedStatusForSquare(this.COORDS[rankIndex][fileIndex])"
                                 (mouseDown)="onSquareMouseDown($event)"
                                 (mouseUp)="onSquareMouseUp($event)"
@@ -61,7 +61,7 @@
                             @if (_isSquareEndgameKingSquare(rankIndex, fileIndex))
                             {
                                 <div class="endgameSquareOverlay" 
-                                [ngClass]="{'endgameSquareOverlayFlipped': isFlipped}">
+                                [ngClass]="{'endgameSquareOverlayFlipped': boardState.isFlipped}">
                                     <div class="fade-out-bg endgameSquareBackground"
                                         [style]="{'background-color' : _getEndgameSquareBackgroundColor(rankIndex, fileIndex)}">
                                     </div>
@@ -83,17 +83,24 @@
             }
         </div>
 
-        <app-captured-pieces for="w" [capturedPieces]="chessGame.piecesWhiteCaptured" [advantage]="chessGame.getMaterialAdvantage()"></app-captured-pieces>
+        <app-captured-pieces for="w" [capturedPieces]="getCurrentState().piecesWhiteCaptured" [advantage]="getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
     </div>
     <div class="boardControls p-5">
         <h2>Controls</h2>
-        <div class="btn btn-primary" style="touch-action: manipulation;" (click)="handleFlipClicked()">↑↓</div>
-        <p>{{chessGame.turn ? "White" : "Black"}} to move</p>
+        <div class="boardControlButtons">
+            <div class="btn btn-lg btn-primary controlButton">&lt;&lt;-</div>
+            <div class="btn btn-lg btn-primary controlButton">&lt;</div>
+            <div class="btn btn-lg btn-primary controlButton">></div>
+            <div class="btn btn-lg btn-primary controlButton">->></div>
+        </div>
+        <div class="btn btn-primary controlButton" (click)="handleFlipClicked()">↑↓</div>
+
+        <p>{{getCurrentState().turn ? "White" : "Black"}} to move</p>
 
         <div class="testingPurposes">
-            @if(this.chessGame.gameState.isGameOver)
+            @if(this.getCurrentState().gameState.isGameOver)
             {
-                <p>Result: {{this.chessGame.gameState.reason}}</p>
+                <p>Result: {{this.getCurrentState().gameState.reason}}</p>
             }
         </div>
     </div>
