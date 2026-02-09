@@ -5,7 +5,7 @@ export default class BoardState
 {
     mainStateStack: Array<Chonse2>;    
     mainStackPointer: number;
-    mainAlgebraicStack: Array<string>;
+    mainMoveStack: Array<IMoveResult>;
     
     divergenceStack: Array<Chonse2>;
     divergenceStackPointer: number;
@@ -23,7 +23,7 @@ export default class BoardState
         this.mainStateStack = [];
         this.mainStateStack.push(startingState);
         this.mainStackPointer = 0;
-        this.mainAlgebraicStack = [];
+        this.mainMoveStack = [];
 
         this.divergenceStack = [];
         this.divergenceStackPointer = -1;
@@ -40,7 +40,7 @@ export default class BoardState
         else //If the pointer is at the top of the stack, continue to add to it.
         {
             this.mainStateStack.push(state);
-            this.mainAlgebraicStack.push(move.notation);
+            this.mainMoveStack.push(move);
             this.mainStackPointer++;
         }
     }

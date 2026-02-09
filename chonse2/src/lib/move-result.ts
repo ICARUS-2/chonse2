@@ -1,5 +1,7 @@
 interface IMoveResult 
 {
     result: boolean,
-    notation: string
+    notation: string,
+    fromCoord: string,
+    toCoord: string
 }
