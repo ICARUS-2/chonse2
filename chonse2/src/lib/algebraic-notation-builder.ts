@@ -48,7 +48,7 @@ export default class AlgebraicNotationMaker
         this._promotion = piece;
     }
 
-    addCapture(piece: string): void
+    addCapture(): void
     {
         this._capture = true;
     }
@@ -67,7 +67,7 @@ export default class AlgebraicNotationMaker
     {
         let str: string = "";
 
-        if (!this._castleKingside && this._castleQueenside)
+        if (!this._castleKingside && !this._castleQueenside)
         {
             if (this._piece != PieceType.PAWN)
             {
@@ -107,7 +107,7 @@ export default class AlgebraicNotationMaker
                 str += AlgebraicNotationMaker.QUEENSIDE_CASTLE;
             }
         }
-        
+
         if (this._checkOrMate)
         {
             str += this._checkOrMate;

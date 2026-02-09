@@ -4,6 +4,7 @@ import PieceMaterial from "./piece-material";
 import { PieceType } from "./piece-type";
 import { GameOverReason, GameState } from "./game-state";
 import FenHelper from "./fen-helper";
+import AlgebraicNotationMaker from "./algebraic-notation-builder";
 
 export default class Chonse2
 {
@@ -194,11 +195,11 @@ export default class Chonse2
   }
 
   //Moves a piece from one spot to another and accounting for promotion if applicable.
-  completeMove(fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN): boolean
+  completeMove(fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN): {result: boolean, notation: string}
   {
     if (this.gameState.isGameOver || fromCoordinate == toCoordinate)
     {
-      return false;
+      return {result: false, notation: ""};
     }
 
     //In piece state, where the current piece is moving to.
@@ -215,8 +216,16 @@ export default class Chonse2
 
     if (!legalMoves.includes(toCoordinate))
     {
-      return false;
+      return {result: false, notation: ""};
     }
+
+    //Begin building algebraic notation for move
+    const notation: AlgebraicNotationMaker = new AlgebraicNotationMaker();
+
+    //We know the piece, from square and to square, so we can add it to the notation
+    notation.addPiece(piece[1]);
+    notation.addFromSquare(fromCoordinate);
+    notation.addToSquare(toCoordinate);
 
     //The piece already present in the square the current piece is moving to (being captured)
     const pieceInToSquare = this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex];
@@ -236,6 +245,9 @@ export default class Chonse2
     
       //Add the captured piece.
       this.turn ? this.piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : this.piecesBlackCaptured.push(PieceType.WHITE_PAWN);
+    
+      //Add to notation.
+      notation.addCapture();
     }
     //Update the en passant square.
     this.enPassantSquare = this._getEnPassantSquareIfExists(fromCoordinate, toCoordinate, this.turn);
@@ -243,6 +255,9 @@ export default class Chonse2
     //handle capture
     if (pieceInToSquare != "")
     {
+      //Record it as a capture in the notation
+      notation.addCapture();
+
       //if there was already a piece in the TO square, and the current piece is a black one, then black must be capturing a white piece.
       if (piece.startsWith(PieceColor.BLACK))
       {
@@ -261,28 +276,30 @@ export default class Chonse2
       piece == PieceType.WHITE_PAWN && toCoordinate.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
       piece == PieceType.BLACK_PAWN && toCoordinate.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
     {
+      //record it in the notation
+      notation.addPromotion(promotionPiece);
 
-        switch(promotionPiece)
-        {
-            case PieceType.QUEEN:
-                piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_QUEEN : PieceType.BLACK_QUEEN;
-                break;
+      switch(promotionPiece)
+      {
+          case PieceType.QUEEN:
+              piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_QUEEN : PieceType.BLACK_QUEEN;
+              break;
 
-            case PieceType.ROOK:
-                piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
-                break;
+          case PieceType.ROOK:
+              piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
+              break;
 
-            case PieceType.BISHOP:
-                piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_BISHOP : PieceType.BLACK_BISHOP;
-                break;
-            
-            case PieceType.KNIGHT:
-                piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_KNIGHT : PieceType.BLACK_KNIGHT;
-                break;
-        }
+          case PieceType.BISHOP:
+              piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_BISHOP : PieceType.BLACK_BISHOP;
+              break;
+          
+          case PieceType.KNIGHT:
+              piece = (piece == PieceType.WHITE_PAWN) ? PieceType.WHITE_KNIGHT : PieceType.BLACK_KNIGHT;
+              break;
+      }
 
-        //set promoted piece
-        this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
+      //set promoted piece
+      this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
     
     }
     
@@ -317,6 +334,9 @@ export default class Chonse2
 
         //Removes castling rights as a player cannot castle multiple times.
         piece == PieceType.WHITE_KING ? this.whiteCastlingRights.removeBothCastlingRights() : this.blackCastlingRights.removeBothCastlingRights();
+      
+        //Record castling move in notation.
+        notation.addKingsideCastle();
       }
     }
 
@@ -345,6 +365,9 @@ export default class Chonse2
 
         //Removes castling rights as a player cannot castle multiple times.
         piece == PieceType.WHITE_KING ? this.whiteCastlingRights.removeBothCastlingRights() : this.blackCastlingRights.removeBothCastlingRights();
+      
+        //Record castling move in notation.
+        notation.addQueensideCastle();
       }
     }
     
@@ -433,8 +456,22 @@ export default class Chonse2
     //check for checkmate, stalemate, etc
     this._checkIsGameOver();
 
+    //If there is a checkmate, append it to the notation.
+    if (this.gameState.isGameOver && this.gameState.reason == GameOverReason.Checkmate)
+    {
+      notation.addMate();
+    }
+    else //If there isn't, verify if there is just a check and add it if applicable.
+    {
+      const nextPlayerIsIncheck = this.isInCheck(this.turn ? PieceColor.WHITE : PieceColor.BLACK);
+      if (nextPlayerIsIncheck)
+      {
+        notation.addCheck();
+      }
+    }
+
     //The move was successful if we got this far.
-    return true;
+    return {result: true, notation: notation.get()};
   }
 
   //Verifies if a king of a particular color is in check.
@@ -1229,9 +1266,10 @@ export default class Chonse2
   {
     const nextPlayerHasLegalMoves = this._playerHasLegalMoves(this.turn);
     const playerColor: string = this.turn ? PieceColor.WHITE : PieceColor.BLACK;
-    
+    const nextPlayerIsIncheck = this.isInCheck(playerColor)
+
     //Checkmate
-    if (!nextPlayerHasLegalMoves && this.isInCheck(playerColor))
+    if (!nextPlayerHasLegalMoves && nextPlayerIsIncheck)
     {
       this.gameState.isGameOver = true;
       this.gameState.reason = GameOverReason.Checkmate;
@@ -1239,7 +1277,7 @@ export default class Chonse2
     }
 
     //Stalemate
-    if (!nextPlayerHasLegalMoves && !this.isInCheck(playerColor))
+    if (!nextPlayerHasLegalMoves && !nextPlayerIsIncheck)
     {
       this.gameState.isGameOver = true;
       this.gameState.reason = GameOverReason.Stalemate;
