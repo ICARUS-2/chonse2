@@ -9,6 +9,7 @@ export default class BoardState
     
     divergenceStack: Array<Chonse2>;
     divergenceStackPointer: number;
+    divergenceMoveStack: Array<IMoveResult>
 
     squareHighlightStatuses: Array<Array<boolean>>;
     arrows: Array<Arrow>;
@@ -27,6 +28,7 @@ export default class BoardState
 
         this.divergenceStack = [];
         this.divergenceStackPointer = -1;
+        this.divergenceMoveStack = [];
     }
 
     pushState(state: Chonse2, move: IMoveResult)
@@ -35,6 +37,7 @@ export default class BoardState
         if (this.mainStackPointer != this.mainStateStack.length - 1)
         {
             this.divergenceStack.push(state);
+            this.divergenceMoveStack.push(move);
             this.divergenceStackPointer++;
         }
         else //If the pointer is at the top of the stack, continue to add to it.
@@ -82,6 +85,7 @@ export default class BoardState
         else //If we are diverging, just get rid of the state entirely.
         {
             this.divergenceStack.pop();
+            this.divergenceMoveStack.pop();
             this.divergenceStackPointer --;
         }
     }

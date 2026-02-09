@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { PieceType } from '../../../lib/piece-type';
 import { Square } from '../square/square';
 import { PieceColor } from '../../../lib/piece-color';
@@ -20,7 +20,7 @@ import BoardState from './board-state';
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
 })
-export class Chessboard implements OnInit {
+export class Chessboard implements OnInit, AfterViewInit {
   pieceType = PieceType;
   pieceColor = PieceColor;
   gameOverReason = GameOverReason;
@@ -47,6 +47,13 @@ export class Chessboard implements OnInit {
   mouseX: number = 0;
   mouseY: number = 0;
   arrows: Array<Arrow> = [];
+  @ViewChild('board', { static: false }) boardElement!: ElementRef<HTMLDivElement>;
+  @HostListener('window:resize') onResize() { this.updateBoardSize();}
+  boardPixelSize: number = 0;
+  animatedPiece: string = "";
+  animatedPieceX: number = 0;
+  animatedPieceY: number = 0;
+  animationDuration: number = 300; //ms
   
   //FUNCTIONAL
   clickToMove: boolean = false;
@@ -63,6 +70,9 @@ export class Chessboard implements OnInit {
 
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => this.updateBoardSize());;
+  }
 
   //Controls
   //#region 
@@ -78,6 +88,7 @@ export class Chessboard implements OnInit {
 
   handleBackButtonClicked()
   {
+    this.animateMove("d2", "d8", PieceType.WHITE_PAWN);
     this.boardState.goBack();
   }
 
@@ -499,6 +510,77 @@ export class Chessboard implements OnInit {
     return "";
   }
   //#endregion
+  
+  
+  //Animation for piece movement logic
+  //#region
+
+  updateBoardSize()
+  {
+    if (!this.boardElement)
+    {
+      return;
+    }
+
+    this.boardPixelSize = this.boardElement.nativeElement.getBoundingClientRect().width;
+  }
+  
+  getBoardTopLeft(): { left: number; top: number } {
+    const rect = this.boardElement.nativeElement.getBoundingClientRect();
+    return { left: rect.left, top: rect.top };
+  }
+
+  getBoardPixelSize(): number 
+  {
+    return this.boardPixelSize;
+  }
+
+  getSquarePixelSize(): number 
+  {
+    return this.boardPixelSize / Chonse2.SIZE;
+  }
+
+  getPiecePixelPosition(coordinate: string): { x: number, y: number } {
+    const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coordinate);
+    const squareSize = this.getSquarePixelSize();
+
+    // If board is flipped
+    if (this.boardState.isFlipped) {
+        return {
+            x: (7 - colIndex) * squareSize,
+            y: (7 - rowIndex) * squareSize
+        };
+    }
+
+    return {
+        x: colIndex * squareSize,
+        y: rowIndex * squareSize
+    };
+  }
+
+  animateMove(from: string, to: string, piece: string) {
+
+    const boardOffset = this.getBoardTopLeft();
+    const fromCoords = this.getPiecePixelPosition(from);
+    const toCoords = this.getPiecePixelPosition(to);
+
+    this.animatedPiece = piece;
+    this.animatedPieceX = fromCoords.x + boardOffset.left;
+    this.animatedPieceY = fromCoords.y + boardOffset.top;
+    // Wait a tick so the browser registers the initial position
+    setTimeout(() => {
+        this.animatedPieceX = toCoords.x + boardOffset.left;
+        this.animatedPieceY = toCoords.y + boardOffset.top;
+    }, 0);
+
+    // Remove the animated piece after animation completes
+    setTimeout(() => {
+        this.animatedPiece = "";
+    }, this.animationDuration);
+}
+
+  //#endregion
+
   resetMoveState()
   {
     this.fromSquare = "";
