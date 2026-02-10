@@ -1,4 +1,5 @@
 import Chonse2 from "../../../lib/chonse2";
+import { PieceType } from "../../../lib/piece-type";
 import { Arrow } from "./arrow";
 
 export default class BoardState
@@ -60,7 +61,8 @@ export default class BoardState
         return this.mainStateStack[this.mainStackPointer];    
     }
     
-    getMostRecentMove(): IMoveResult {
+    getMostRecentMove(): IMoveResult 
+    {
         //If we have any moves in the divergence stack, return the most recent one
         if (this.divergenceStackPointer >= 0) 
         {
@@ -73,8 +75,24 @@ export default class BoardState
         }
 
         //If neither stack has a move (aka starting position), return a dummy move.
-        return { result: false, notation: "N/A", fromCoord: "", toCoord: "" };
+        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE};
+    }
+
+    getFutureMove(): IMoveResult 
+    {
+        //If there are moves in the divergence stack ahead of the pointer
+        if (this.divergenceStackPointer + 1 < this.divergenceMoveStack.length) {
+            return this.divergenceMoveStack[this.divergenceStackPointer + 1];
         }
+
+        //Otherwise, check the main move stack using the pointer
+        if (this.mainStackPointer < this.mainMoveStack.length) {
+            return this.mainMoveStack[this.mainStackPointer];
+        }
+
+        //If no moves ahead, return a dummy move
+        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE };
+    }
 
     goBackToStart()
     {

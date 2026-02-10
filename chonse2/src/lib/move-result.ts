@@ -3,5 +3,6 @@ interface IMoveResult
     result: boolean,
     notation: string,
     fromCoord: string,
-    toCoord: string
+    toCoord: string,
+    piece: string
 }

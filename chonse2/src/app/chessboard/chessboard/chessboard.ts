@@ -53,7 +53,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   animatedPiece: string = "";
   animatedPieceX: number = 0;
   animatedPieceY: number = 0;
-  animationDuration: number = 300; //ms
+  animationDuration: number = 150; //ms
   
   //FUNCTIONAL
   clickToMove: boolean = false;
@@ -88,13 +88,24 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   handleBackButtonClicked()
   {
-    //this.animateMove("d2", "d8", PieceType.WHITE_PAWN);
-    this.boardState.goBack();
+    const mostRecentMove = this.boardState.getMostRecentMove();
+
+    this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
+
+    setTimeout( () =>
+    {
+      this.boardState.goBack();
+    }, this.animationDuration )
   }
 
   handleForwardButtonClicked()
   {
-    this.boardState.goForward();
+    const mostRecentMove = this.boardState.getFutureMove();
+    this.animateMove(mostRecentMove.fromCoord, mostRecentMove.toCoord, mostRecentMove.piece);
+    setTimeout( () =>
+    {
+      this.boardState.goForward();
+    }, this.animationDuration )
   }   
 
   handleDoubleForwardButtonClicked()
@@ -261,7 +272,7 @@ export class Chessboard implements OnInit, AfterViewInit {
       this.currentlyHeldPiece == PieceType.WHITE_PAWN && this.toSquare.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
       this.currentlyHeldPiece == PieceType.BLACK_PAWN && this.toSquare.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
 
-    let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare};
+    let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare, piece: PieceType.NONE};
 
     //handle pawn promotion if the pawn is at the opposite rank=.
     if (isPromotion)
