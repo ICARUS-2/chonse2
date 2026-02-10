@@ -1,9 +1,5 @@
-<div class="capturedPieceContainer d-flex">
+<div class="capturedPieceContainer d-flex align-items-center">
     
-    <!--@for(piece of getDisplay(); track $index)
-    {
-        <img class="capturedPieceImg" [src]="`piece/merida/${piece}.svg`" [alt]="piece" />
-    }-->
     @for(key of getDisplayMap().keys(); track $index)
     {
         <div class="piece-group">

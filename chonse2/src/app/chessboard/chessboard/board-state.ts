@@ -1,14 +1,16 @@
 import Chonse2 from "../../../lib/chonse2";
+import { PieceType } from "../../../lib/piece-type";
 import { Arrow } from "./arrow";
 
 export default class BoardState
 {
     mainStateStack: Array<Chonse2>;    
     mainStackPointer: number;
-    mainAlgebraicStack: Array<string>;
+    mainMoveStack: Array<IMoveResult>;
     
     divergenceStack: Array<Chonse2>;
     divergenceStackPointer: number;
+    divergenceMoveStack: Array<IMoveResult>
 
     squareHighlightStatuses: Array<Array<boolean>>;
     arrows: Array<Arrow>;
@@ -23,10 +25,11 @@ export default class BoardState
         this.mainStateStack = [];
         this.mainStateStack.push(startingState);
         this.mainStackPointer = 0;
-        this.mainAlgebraicStack = [];
+        this.mainMoveStack = [];
 
         this.divergenceStack = [];
         this.divergenceStackPointer = -1;
+        this.divergenceMoveStack = [];
     }
 
     pushState(state: Chonse2, move: IMoveResult)
@@ -35,12 +38,13 @@ export default class BoardState
         if (this.mainStackPointer != this.mainStateStack.length - 1)
         {
             this.divergenceStack.push(state);
+            this.divergenceMoveStack.push(move);
             this.divergenceStackPointer++;
         }
         else //If the pointer is at the top of the stack, continue to add to it.
         {
             this.mainStateStack.push(state);
-            this.mainAlgebraicStack.push(move.notation);
+            this.mainMoveStack.push(move);
             this.mainStackPointer++;
         }
     }
@@ -55,6 +59,39 @@ export default class BoardState
 
         //Otherwise, just get the current main state.
         return this.mainStateStack[this.mainStackPointer];    
+    }
+    
+    getMostRecentMove(): IMoveResult 
+    {
+        //If we have any moves in the divergence stack, return the most recent one
+        if (this.divergenceStackPointer >= 0) 
+        {
+            return this.divergenceMoveStack[this.divergenceStackPointer];
+        }
+
+        //Otherwise, check the main move stack using the pointer
+        if (this.mainStackPointer > 0) { 
+            return this.mainMoveStack[this.mainStackPointer - 1];
+        }
+
+        //If neither stack has a move (aka starting position), return a dummy move.
+        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE};
+    }
+
+    getFutureMove(): IMoveResult 
+    {
+        //If there are moves in the divergence stack ahead of the pointer
+        if (this.divergenceStackPointer + 1 < this.divergenceMoveStack.length) {
+            return this.divergenceMoveStack[this.divergenceStackPointer + 1];
+        }
+
+        //Otherwise, check the main move stack using the pointer
+        if (this.mainStackPointer < this.mainMoveStack.length) {
+            return this.mainMoveStack[this.mainStackPointer];
+        }
+
+        //If no moves ahead, return a dummy move
+        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE };
     }
 
     goBackToStart()
@@ -82,6 +119,7 @@ export default class BoardState
         else //If we are diverging, just get rid of the state entirely.
         {
             this.divergenceStack.pop();
+            this.divergenceMoveStack.pop();
             this.divergenceStackPointer --;
         }
     }

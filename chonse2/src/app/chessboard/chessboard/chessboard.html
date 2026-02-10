@@ -1,7 +1,7 @@
 <div class="componentContainer">
     <div class="boardOuterContainer" [class]="boardState.isFlipped ? 'boardOuterContainerFlipped' : ''">
         <app-captured-pieces for="b" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
-        <div class="boardContainerInner" [class]="boardState.isFlipped ? 'boardContainerInnerFlipped' : ''">
+        <div #board class="boardContainerInner" [class]="boardState.isFlipped ? 'boardContainerInnerFlipped' : ''">
             
             <!-- ARROW OVERLAY -->
             <svg
@@ -48,7 +48,7 @@
                                 [isDark]="(rankIndex + fileIndex) % 2 == 1"
                                 [showFile]="rankIndex == rank.length - 1"
                                 [showRank]="fileIndex == 0"
-                                [showPiece]="(this.COORDS[rankIndex][fileIndex] != fromSquare) || localStorageHelper.getBoolean(localStorageHelper.CLICK_TO_MOVE)"
+                                [showPiece]="animatedPieceCoord ? this.COORDS[rankIndex][fileIndex] != animatedPieceCoord : localStorageHelper.getBoolean(localStorageHelper.CLICK_TO_MOVE) ? true : this.COORDS[rankIndex][fileIndex] != fromSquare"
                                 [isFlipped]="boardState.isFlipped"
                                 [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
                                 [isInCheck]="(boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState.getCurrentState().isInCheck(pieceColor.WHITE)) || (boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState.getCurrentState().isInCheck(pieceColor.BLACK)) "
@@ -97,7 +97,7 @@
         <p>{{boardState.getCurrentState().turn ? "White" : "Black"}} to move</p>
 
         <div class="algebraicContainer">
-            @for (item of boardState.mainAlgebraicStack; track $index) 
+            @for (item of boardState.mainMoveStack; track $index) 
             {
                 @if ($index % 2 == 0)
                 {
@@ -108,13 +108,13 @@
                             [ngClass]="{
                                 'text-primary' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length == 0,
                                 'text-danger' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length != 0}"
-                                >{{item}} 
+                                >{{item.notation}} 
                         </p>
                         <p class="d-inline" 
                             [ngClass]="{
                                 'text-primary' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length == 0,
                                 'text-danger' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length != 0}"
-                                >{{boardState.mainAlgebraicStack[$index + 1] ?? "-"}} </p>
+                                >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index + 1].notation}} </p>
                     </div>   
                 }
             }
@@ -125,13 +125,25 @@
             {
                 <p>Result: {{this.boardState.getCurrentState().gameState.reason}}</p>
             }
+            <p>animated piece coord {{this.animatedPieceCoord}}</p>
+            
         </div>
     </div>
+
     @if(currentlyHeldPiece != "")
     {
         <img class="currentlyHeldPiece"
             [src]="`piece/merida/${currentlyHeldPiece}.svg`"
             [style.left.px]="mouseX"
             [style.top.px]="mouseY">
+    }
+
+    @if(animatedPiece)
+    {
+        <img class="animatedPiece"
+            [src]="`piece/merida/${animatedPiece}.svg`"
+            [style.left.px]="animatedPieceX"
+            [style.top.px]="animatedPieceY"
+            [style.transition]="`all ${animationDuration}ms ease-in-out`" />
     }
 </div>

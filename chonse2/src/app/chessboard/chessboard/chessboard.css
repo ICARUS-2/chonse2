@@ -152,11 +152,19 @@
   overflow-x: hidden;
 }
 
+.animatedPiece {
+    position: absolute;
+    width: 10vmin; 
+    height: 10vmin;
+    pointer-events: none; /* don't block clicks */
+    z-index: 100; /* on top of board */
+}
+
 @media screen and (max-width: 800px) 
 {
     .componentContainer
     {
-        flex-direction: column;
+      flex-direction: column;
     }    
 
     .boardControls

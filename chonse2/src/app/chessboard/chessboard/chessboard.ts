@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { PieceType } from '../../../lib/piece-type';
 import { Square } from '../square/square';
 import { PieceColor } from '../../../lib/piece-color';
@@ -20,7 +20,7 @@ import BoardState from './board-state';
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
 })
-export class Chessboard implements OnInit {
+export class Chessboard implements OnInit, AfterViewInit {
   pieceType = PieceType;
   pieceColor = PieceColor;
   gameOverReason = GameOverReason;
@@ -47,6 +47,14 @@ export class Chessboard implements OnInit {
   mouseX: number = 0;
   mouseY: number = 0;
   arrows: Array<Arrow> = [];
+  @ViewChild('board', { static: false }) boardElement!: ElementRef<HTMLDivElement>;
+  @HostListener('window:resize') onResize() { this.updateBoardSize();}
+  boardPixelSize: number = 0;
+  animatedPiece: string = "";
+  animatedPieceX: number = 0;
+  animatedPieceY: number = 0;
+  animationDuration: number = 100; //ms
+  animatedPieceCoord: string = "";
   
   //FUNCTIONAL
   clickToMove: boolean = false;
@@ -63,6 +71,9 @@ export class Chessboard implements OnInit {
 
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => this.updateBoardSize());
+  }
 
   //Controls
   //#region 
@@ -78,12 +89,24 @@ export class Chessboard implements OnInit {
 
   handleBackButtonClicked()
   {
-    this.boardState.goBack();
+    const mostRecentMove = this.boardState.getMostRecentMove();
+
+    this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
+
+    setTimeout( () =>
+    {
+      this.boardState.goBack();
+    }, this.animationDuration )
   }
 
   handleForwardButtonClicked()
   {
-    this.boardState.goForward();
+    const mostRecentMove = this.boardState.getFutureMove();
+    this.animateMove(mostRecentMove.fromCoord, mostRecentMove.toCoord, mostRecentMove.piece);
+    setTimeout( () =>
+    {
+      this.boardState.goForward();
+    }, this.animationDuration )
   }   
 
   handleDoubleForwardButtonClicked()
@@ -94,7 +117,7 @@ export class Chessboard implements OnInit {
   //Should the back buttons be enabled
   areBackButtonsEnabled(): boolean 
   {
-    return this.boardState.mainStackPointer != 0;
+    return this.boardState.mainStackPointer != 0 || this.boardState.divergenceStackPointer != -1;
   }
 
   areForwardButtonsEnabled(): boolean 
@@ -250,7 +273,7 @@ export class Chessboard implements OnInit {
       this.currentlyHeldPiece == PieceType.WHITE_PAWN && this.toSquare.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
       this.currentlyHeldPiece == PieceType.BLACK_PAWN && this.toSquare.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
 
-    let moveResult: IMoveResult = {result: false, notation: ""};
+    let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare, piece: PieceType.NONE};
 
     //handle pawn promotion if the pawn is at the opposite rank=.
     if (isPromotion)
@@ -267,11 +290,13 @@ export class Chessboard implements OnInit {
       {
         //perform the move and promote to what the user selected.
         moveResult = stateCopy.completeMove(fromSquare, toSquare, result);
+        this.boardState.pushState(stateCopy, moveResult);
       } )
       .catch( () =>
       {
         //if the dialog was forced closed, promote to queen by default.
         moveResult = stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
+        this.boardState.pushState(stateCopy, moveResult);
       } )
       .finally()
       {
@@ -284,12 +309,11 @@ export class Chessboard implements OnInit {
 
       //perform the move
       moveResult = stateCopy.completeMove(fromSquare, toSquare, piece);
+      this.boardState.pushState(stateCopy, moveResult);
         
       //Resets the state of the from/to squares and current piece back to nothing.
       this.resetMoveState();
     }
-
-    this.boardState.pushState(stateCopy, moveResult);
   }
 
   handleDragImage(mouse: PointerEvent)
@@ -499,6 +523,81 @@ export class Chessboard implements OnInit {
     return "";
   }
   //#endregion
+  
+  
+  //Animation for piece movement logic
+  //#region
+
+  updateBoardSize()
+  {
+    if (!this.boardElement)
+    {
+      return;
+    }
+
+    this.boardPixelSize = this.boardElement.nativeElement.getBoundingClientRect().width;
+  }
+  
+  getBoardTopLeft(): { left: number; top: number } {
+    const rect = this.boardElement.nativeElement.getBoundingClientRect();
+    return { left: rect.left, top: rect.top };
+  }
+
+  getBoardPixelSize(): number 
+  {
+    return this.boardPixelSize;
+  }
+
+  getSquarePixelSize(): number 
+  {
+    return this.boardPixelSize / Chonse2.SIZE;
+  }
+
+  getPiecePixelPosition(coordinate: string): { x: number, y: number } 
+  {
+    const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coordinate);
+    const squareSize = this.getSquarePixelSize();
+
+    //If board is flipped
+    if (this.boardState.isFlipped) 
+    {
+      return {
+          x: (7 - colIndex) * squareSize,
+          y: (7 - rowIndex) * squareSize
+      };
+    }
+
+    return {
+        x: colIndex * squareSize,
+        y: rowIndex * squareSize
+    };
+  }
+
+  animateMove(from: string, to: string, piece: string) 
+  {
+    this.animatedPieceCoord = from;
+    const boardOffset = this.getBoardTopLeft();
+    const fromCoords = this.getPiecePixelPosition(from);
+    const toCoords = this.getPiecePixelPosition(to);
+
+    this.animatedPiece = piece;
+    this.animatedPieceX = fromCoords.x + boardOffset.left;
+    this.animatedPieceY = fromCoords.y + boardOffset.top;
+    //Wait a tick so the browser registers the initial position
+    setTimeout(() => {
+        this.animatedPieceX = toCoords.x + boardOffset.left;
+        this.animatedPieceY = toCoords.y + boardOffset.top;
+    }, 0);
+
+    //Remove the animated piece after animation completes
+    setTimeout(() => {
+        this.animatedPiece = "";
+        this.animatedPieceCoord = "";
+    }, this.animationDuration);
+}
+
+  //#endregion
+
   resetMoveState()
   {
     this.fromSquare = "";
