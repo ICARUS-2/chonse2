@@ -88,7 +88,7 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   handleBackButtonClicked()
   {
-    this.animateMove("d2", "d8", PieceType.WHITE_PAWN);
+    //this.animateMove("d2", "d8", PieceType.WHITE_PAWN);
     this.boardState.goBack();
   }
 
@@ -105,7 +105,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   //Should the back buttons be enabled
   areBackButtonsEnabled(): boolean 
   {
-    return this.boardState.mainStackPointer != 0;
+    return this.boardState.mainStackPointer != 0 || this.boardState.divergenceStackPointer != -1;
   }
 
   areForwardButtonsEnabled(): boolean 

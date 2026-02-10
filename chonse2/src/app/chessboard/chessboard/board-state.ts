@@ -39,12 +39,16 @@ export default class BoardState
             this.divergenceStack.push(state);
             this.divergenceMoveStack.push(move);
             this.divergenceStackPointer++;
+            console.log("Divergent");
+            console.log(this.divergenceStack);
         }
         else //If the pointer is at the top of the stack, continue to add to it.
         {
             this.mainStateStack.push(state);
             this.mainMoveStack.push(move);
             this.mainStackPointer++;
+            console.log("Main stack");
+            console.log(this.mainStateStack);
         }
     }
 
@@ -121,6 +125,16 @@ export default class BoardState
 
         //If we are going through the main game and we aren't at the end, go to the very end.
         this.mainStackPointer = this.mainStateStack.length - 1;
+    }
+
+    getMostRecentMove(): IMoveResult
+    {
+        if (this.divergenceStack.length != 0)
+        {
+            return this.divergenceMoveStack[this.divergenceStackPointer];
+        }
+
+        return this.mainMoveStack[this.mainStackPointer];
     }
 
     static initializeHighlightStatuses(): Array<Array<boolean>>
