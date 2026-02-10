@@ -34,7 +34,7 @@ export default class Sound
         if (notation.includes(AlgebraicNotationMaker.CHECKMATE))
         {
             Sound.playSound(Sound.CHECK);
-            setTimeout( () => {Sound.playSound(Sound.CHECKMATE);}, 500)
+            setTimeout( () => {Sound.playSound(Sound.CHECKMATE);}, 400)
             return;
         }
         

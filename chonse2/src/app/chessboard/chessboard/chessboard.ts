@@ -85,6 +85,7 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   handleDoubleBackButtonClicked()
   {
+    Sound.playSound(Sound.MOVE);
     this.boardState.goBackToStart();
   }
 
@@ -92,11 +93,13 @@ export class Chessboard implements OnInit, AfterViewInit {
   {
     const mostRecentMove = this.boardState.getMostRecentMove();
 
+
     this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
 
     setTimeout( () =>
     {
       this.boardState.goBack();
+      Sound.playSound(Sound.MOVE);
     }, this.animationDuration )
   }
 
@@ -107,12 +110,14 @@ export class Chessboard implements OnInit, AfterViewInit {
     setTimeout( () =>
     {
       this.boardState.goForward();
+      Sound.playSoundForMove(mostRecentMove.notation);
     }, this.animationDuration )
   }   
 
   handleDoubleForwardButtonClicked()
   {
     this.boardState.goForwardToEnd();
+    Sound.playSound(Sound.CAPTURE);
   }
 
   //Should the back buttons be enabled
