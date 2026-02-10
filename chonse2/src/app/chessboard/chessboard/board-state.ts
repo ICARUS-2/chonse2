@@ -157,6 +157,38 @@ export default class BoardState
         this.mainStackPointer = this.mainStateStack.length - 1;
     }
 
+    static parsePGN(pgn: string): Array<BoardState>
+    {
+        //The array to be returned.
+        const states: Array<BoardState> = [];
+
+        //A PGN is always divided by newlines.
+        const lines = pgn.split("\n");
+
+        //PGN has two components: Headers and moves.
+
+        let isHeaderMode = true;
+        for (let line of lines)
+        {
+            if (isHeaderMode && line == "")
+            {
+                isHeaderMode = false;
+            }
+
+            if (isHeaderMode)
+            {
+                //parse headers.
+            }
+            else 
+            {
+                //parse moves.
+            }
+
+        }
+
+        return states;
+    }
+
     static initializeHighlightStatuses(): Array<Array<boolean>>
     {
         const highlightStatuses: Array<Array<boolean>> = [];
