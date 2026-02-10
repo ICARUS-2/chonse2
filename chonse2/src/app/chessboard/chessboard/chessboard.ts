@@ -53,7 +53,8 @@ export class Chessboard implements OnInit, AfterViewInit {
   animatedPiece: string = "";
   animatedPieceX: number = 0;
   animatedPieceY: number = 0;
-  animationDuration: number = 150; //ms
+  animationDuration: number = 100; //ms
+  animatedPieceCoord: string = "";
   
   //FUNCTIONAL
   clickToMove: boolean = false;
@@ -552,16 +553,18 @@ export class Chessboard implements OnInit, AfterViewInit {
     return this.boardPixelSize / Chonse2.SIZE;
   }
 
-  getPiecePixelPosition(coordinate: string): { x: number, y: number } {
+  getPiecePixelPosition(coordinate: string): { x: number, y: number } 
+  {
     const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coordinate);
     const squareSize = this.getSquarePixelSize();
 
-    // If board is flipped
-    if (this.boardState.isFlipped) {
-        return {
-            x: (7 - colIndex) * squareSize,
-            y: (7 - rowIndex) * squareSize
-        };
+    //If board is flipped
+    if (this.boardState.isFlipped) 
+    {
+      return {
+          x: (7 - colIndex) * squareSize,
+          y: (7 - rowIndex) * squareSize
+      };
     }
 
     return {
@@ -570,8 +573,9 @@ export class Chessboard implements OnInit, AfterViewInit {
     };
   }
 
-  animateMove(from: string, to: string, piece: string) {
-
+  animateMove(from: string, to: string, piece: string) 
+  {
+    this.animatedPieceCoord = from;
     const boardOffset = this.getBoardTopLeft();
     const fromCoords = this.getPiecePixelPosition(from);
     const toCoords = this.getPiecePixelPosition(to);
@@ -579,15 +583,16 @@ export class Chessboard implements OnInit, AfterViewInit {
     this.animatedPiece = piece;
     this.animatedPieceX = fromCoords.x + boardOffset.left;
     this.animatedPieceY = fromCoords.y + boardOffset.top;
-    // Wait a tick so the browser registers the initial position
+    //Wait a tick so the browser registers the initial position
     setTimeout(() => {
         this.animatedPieceX = toCoords.x + boardOffset.left;
         this.animatedPieceY = toCoords.y + boardOffset.top;
     }, 0);
 
-    // Remove the animated piece after animation completes
+    //Remove the animated piece after animation completes
     setTimeout(() => {
         this.animatedPiece = "";
+        this.animatedPieceCoord = "";
     }, this.animationDuration);
 }
 

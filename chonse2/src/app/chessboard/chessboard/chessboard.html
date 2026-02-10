@@ -48,7 +48,7 @@
                                 [isDark]="(rankIndex + fileIndex) % 2 == 1"
                                 [showFile]="rankIndex == rank.length - 1"
                                 [showRank]="fileIndex == 0"
-                                [showPiece]="(this.COORDS[rankIndex][fileIndex] != fromSquare) || localStorageHelper.getBoolean(localStorageHelper.CLICK_TO_MOVE)"
+                                [showPiece]="animatedPieceCoord ? this.COORDS[rankIndex][fileIndex] != animatedPieceCoord : localStorageHelper.getBoolean(localStorageHelper.CLICK_TO_MOVE) ? true : this.COORDS[rankIndex][fileIndex] != fromSquare"
                                 [isFlipped]="boardState.isFlipped"
                                 [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
                                 [isInCheck]="(boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState.getCurrentState().isInCheck(pieceColor.WHITE)) || (boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState.getCurrentState().isInCheck(pieceColor.BLACK)) "
@@ -125,7 +125,8 @@
             {
                 <p>Result: {{this.boardState.getCurrentState().gameState.reason}}</p>
             }
-            <p>Most recent move: {{this.boardState.getMostRecentMove().notation}}</p>
+            <p>animated piece coord {{this.animatedPieceCoord}}</p>
+            
         </div>
     </div>
 
