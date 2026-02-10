@@ -125,10 +125,10 @@
             {
                 <p>Result: {{this.boardState.getCurrentState().gameState.reason}}</p>
             }
-            <p>{{this.getBoardPixelSize()}}</p>
+            <p>Most recent move: {{this.boardState.getMostRecentMove().notation}}</p>
         </div>
     </div>
-    
+
     @if(currentlyHeldPiece != "")
     {
         <img class="currentlyHeldPiece"

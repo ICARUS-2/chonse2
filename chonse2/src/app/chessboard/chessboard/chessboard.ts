@@ -71,7 +71,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => this.updateBoardSize());;
+    setTimeout(() => this.updateBoardSize());
   }
 
   //Controls

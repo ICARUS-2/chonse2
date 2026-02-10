@@ -59,6 +59,22 @@ export default class BoardState
         //Otherwise, just get the current main state.
         return this.mainStateStack[this.mainStackPointer];    
     }
+    
+    getMostRecentMove(): IMoveResult {
+        //If we have any moves in the divergence stack, return the most recent one
+        if (this.divergenceStackPointer >= 0) 
+        {
+            return this.divergenceMoveStack[this.divergenceStackPointer];
+        }
+
+        //Otherwise, check the main move stack using the pointer
+        if (this.mainStackPointer > 0) { 
+            return this.mainMoveStack[this.mainStackPointer - 1];
+        }
+
+        //If neither stack has a move (aka starting position), return a dummy move.
+        return { result: false, notation: "N/A", fromCoord: "", toCoord: "" };
+        }
 
     goBackToStart()
     {
@@ -121,16 +137,6 @@ export default class BoardState
 
         //If we are going through the main game and we aren't at the end, go to the very end.
         this.mainStackPointer = this.mainStateStack.length - 1;
-    }
-
-    getMostRecentMove(): IMoveResult
-    {
-        if (this.divergenceStack.length != 0)
-        {
-            return this.divergenceMoveStack[this.divergenceStackPointer];
-        }
-
-        return this.mainMoveStack[this.mainStackPointer];
     }
 
     static initializeHighlightStatuses(): Array<Array<boolean>>
