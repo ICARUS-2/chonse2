@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { ChessBoardService as ChessBoardService } from './chess-board-service';
 import {Arrow, ArrowContext } from './arrow';
 import BoardState from './board-state';
+import Sound from './sound';
 
 @Component({
   selector: 'app-chessboard',
@@ -314,6 +315,8 @@ export class Chessboard implements OnInit, AfterViewInit {
       //Resets the state of the from/to squares and current piece back to nothing.
       this.resetMoveState();
     }
+
+    Sound.playSoundForMove(moveResult.notation);
   }
 
   handleDragImage(mouse: PointerEvent)
