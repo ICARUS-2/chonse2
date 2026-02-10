@@ -278,11 +278,13 @@ export class Chessboard implements OnInit, AfterViewInit {
       {
         //perform the move and promote to what the user selected.
         moveResult = stateCopy.completeMove(fromSquare, toSquare, result);
+        this.boardState.pushState(stateCopy, moveResult);
       } )
       .catch( () =>
       {
         //if the dialog was forced closed, promote to queen by default.
         moveResult = stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
+        this.boardState.pushState(stateCopy, moveResult);
       } )
       .finally()
       {
@@ -295,12 +297,11 @@ export class Chessboard implements OnInit, AfterViewInit {
 
       //perform the move
       moveResult = stateCopy.completeMove(fromSquare, toSquare, piece);
+      this.boardState.pushState(stateCopy, moveResult);
         
       //Resets the state of the from/to squares and current piece back to nothing.
       this.resetMoveState();
     }
-
-    this.boardState.pushState(stateCopy, moveResult);
   }
 
   handleDragImage(mouse: PointerEvent)

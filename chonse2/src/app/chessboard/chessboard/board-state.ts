@@ -39,16 +39,12 @@ export default class BoardState
             this.divergenceStack.push(state);
             this.divergenceMoveStack.push(move);
             this.divergenceStackPointer++;
-            console.log("Divergent");
-            console.log(this.divergenceStack);
         }
         else //If the pointer is at the top of the stack, continue to add to it.
         {
             this.mainStateStack.push(state);
             this.mainMoveStack.push(move);
             this.mainStackPointer++;
-            console.log("Main stack");
-            console.log(this.mainStateStack);
         }
     }
 

@@ -278,7 +278,6 @@ export default class Chonse2
     {
       //record it in the notation
       notation.addPromotion(promotionPiece);
-
       switch(promotionPiece)
       {
           case PieceType.QUEEN:
@@ -300,7 +299,6 @@ export default class Chonse2
 
       //set promoted piece
       this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
-    
     }
     
     //Clear the old piece position.
