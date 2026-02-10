@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { ChessBoardService as ChessBoardService } from './chess-board-service';
 import {Arrow, ArrowContext } from './arrow';
 import BoardState from './board-state';
+import Sound from './sound';
 
 @Component({
   selector: 'app-chessboard',
@@ -84,6 +85,7 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   handleDoubleBackButtonClicked()
   {
+    Sound.playSound(Sound.MOVE);
     this.boardState.goBackToStart();
   }
 
@@ -91,11 +93,13 @@ export class Chessboard implements OnInit, AfterViewInit {
   {
     const mostRecentMove = this.boardState.getMostRecentMove();
 
+
     this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
 
     setTimeout( () =>
     {
       this.boardState.goBack();
+      Sound.playSound(Sound.MOVE);
     }, this.animationDuration )
   }
 
@@ -106,12 +110,14 @@ export class Chessboard implements OnInit, AfterViewInit {
     setTimeout( () =>
     {
       this.boardState.goForward();
+      Sound.playSoundForMove(mostRecentMove.notation);
     }, this.animationDuration )
   }   
 
   handleDoubleForwardButtonClicked()
   {
     this.boardState.goForwardToEnd();
+    Sound.playSound(Sound.CAPTURE);
   }
 
   //Should the back buttons be enabled
@@ -314,6 +320,8 @@ export class Chessboard implements OnInit, AfterViewInit {
       //Resets the state of the from/to squares and current piece back to nothing.
       this.resetMoveState();
     }
+
+    Sound.playSoundForMove(moveResult.notation);
   }
 
   handleDragImage(mouse: PointerEvent)
