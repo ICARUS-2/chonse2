@@ -902,7 +902,7 @@ export default class Chonse2
           const twoSquaresAbove = twoRanksAbove.at(colIndex);
 
           //two squares up is only legal if one square up is.
-          if (twoSquaresAbove == "")
+          if (twoSquaresAbove == "" && squareInFront == "")
           {
             color == PieceColor.WHITE ? legalMoves.push(Chonse2.COORDS[rowIndex - 2][colIndex]) : legalMoves.push(Chonse2.COORDS[rowIndex + 2][colIndex]);;
           }

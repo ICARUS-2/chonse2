@@ -414,8 +414,6 @@ export default class BoardState
                                 //Get the current square by the file on the rank.
                                 const currentSquareContent = currentRank[file];
 
-                                //const {rowIndex: toCoordRow, colIndex: toCoordCol} = Chonse2.findIndexFromCoordinate(move.toCoordinate);
-
                                 //The piece in that square is either empty or not the piece we are looking for. Disregard it.
                                 if (currentSquareContent != pieceThatWillMove)
                                 {
@@ -477,9 +475,10 @@ export default class BoardState
             }
         }
 
+        boardState.pgnHeaders = pgnHeaders;
         boardState.mainMoveStack = moveStack;
         boardState.mainStateStack = states;
-
+        
         return boardState;
     }
 

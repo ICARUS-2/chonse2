@@ -1,6 +1,6 @@
 <div class="componentContainer">
     <div class="boardOuterContainer" [class]="boardState.isFlipped ? 'boardOuterContainerFlipped' : ''">
-        <app-captured-pieces for="b" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
+        <app-captured-pieces [playerName]="boardState.pgnHeaders.black" for="b" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
         <div #board class="boardContainerInner" [class]="boardState.isFlipped ? 'boardContainerInnerFlipped' : ''">
             
             <!-- ARROW OVERLAY -->
@@ -82,8 +82,7 @@
                 </ng-container>
             }
         </div>
-
-        <app-captured-pieces for="w" [capturedPieces]="boardState.getCurrentState().piecesWhiteCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
+        <app-captured-pieces [playerName]="boardState.pgnHeaders.white" for="w" [capturedPieces]="boardState.getCurrentState().piecesWhiteCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
     </div>
     <div class="boardControls p-5">
         <div class="boardControlButtons">

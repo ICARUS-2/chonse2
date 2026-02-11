@@ -11,6 +11,7 @@ export class CapturedPieces {
   @Input() for: string = "";
   @Input() capturedPieces: Array<string> = [];
   @Input() advantage: number = 0;
+  @Input() playerName: string = "Player";
 
   //Positive number indicates an advantage for white, negative for black. Only display the advantage if there is one for this color.
   getAbsoluteAdvantage(): number
