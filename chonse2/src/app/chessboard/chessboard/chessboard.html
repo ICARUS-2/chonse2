@@ -1,6 +1,6 @@
 <div class="componentContainer">
     <div class="boardOuterContainer" [class]="boardState.isFlipped ? 'boardOuterContainerFlipped' : ''">
-        <app-captured-pieces [playerName]="boardState.pgnHeaders.black" for="b" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
+        <app-captured-pieces [playerName]="boardState.pgnHeaders.black + ' ' + boardState.pgnHeaders.blackElo" for="b" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
         <div #board class="boardContainerInner" [class]="boardState.isFlipped ? 'boardContainerInnerFlipped' : ''">
             
             <!-- ARROW OVERLAY -->
@@ -82,7 +82,7 @@
                 </ng-container>
             }
         </div>
-        <app-captured-pieces [playerName]="boardState.pgnHeaders.white" for="w" [capturedPieces]="boardState.getCurrentState().piecesWhiteCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
+        <app-captured-pieces [playerName]="boardState.pgnHeaders.white + ' ' + boardState.pgnHeaders.whiteElo" for="w" [capturedPieces]="boardState.getCurrentState().piecesWhiteCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
     </div>
     <div class="boardControls p-5">
         <div class="boardControlButtons">
@@ -121,12 +121,16 @@
             }
         </div>
 
+        <div class="d-flex mt-4 w-100 justify-content-between">
+            <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>
+            <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
+        </div> 
+
         <div class="testingPurposes">
             @if(this.boardState.getCurrentState().gameState.isGameOver)
             {
-                <p>Result: {{this.boardState.getCurrentState().gameState.reason}}</p>
+                <p>Result: {{this.boardState.getCurrentState().gameState.reason}} {{this.boardState.getCurrentState().gameState.gameScore}}</p>
             }      
-            <p>Score: {{this.boardState.getCurrentState().gameState.gameScore}}</p>
         </div>
     </div>
 

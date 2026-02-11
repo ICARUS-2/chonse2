@@ -4,9 +4,9 @@ import { Square } from '../square/square';
 import { PieceColor } from '../../../lib/piece-color';
 import { CapturedPieces } from "../captured-pieces/captured-pieces";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { PromotionModal } from '../../promotion-modal/promotion-modal';
+import { PromotionModal } from '../promotion-modal/promotion-modal';
 import Chonse2 from '../../../lib/chonse2';
-import { GameOverReason, GameState } from '../../../lib/game-state';
+import { GameOverReason } from '../../../lib/game-state';
 import { CommonModule } from '@angular/common';
 import LocalStorageHelper from './local-storage-helper';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +14,7 @@ import { ChessBoardService as ChessBoardService } from './chess-board-service';
 import {Arrow, ArrowContext } from './arrow';
 import BoardState from './board-state';
 import Sound from './sound';
+import { ImportModal } from '../import-modal.ts/import-modal';
 
 @Component({
   selector: 'app-chessboard',
@@ -54,7 +55,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   animatedPiece: string = "";
   animatedPieceX: number = 0;
   animatedPieceY: number = 0;
-  animationDuration: number = 200; //ms
+  animationDuration: number = 100; //ms
   animatedPieceCoord: string = "";
   
   //FUNCTIONAL
@@ -69,9 +70,10 @@ export class Chessboard implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-        const boardState: BoardState | undefined = this.chessBoardService.getGame(this.gameId);
+
+    const boardState: BoardState | undefined = this.chessBoardService.getGame(this.gameId);
     if (!boardState) {
-        // handle gracefully (e.g., show loading or create new game)
+        //Not loading component if there is no game.
         console.warn(`Game ${this.gameId} not found yet`);
         return;
     }
@@ -81,6 +83,111 @@ export class Chessboard implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     setTimeout(() => this.updateBoardSize());
   }
+
+  completeMove(fromSquare: string, toSquare: string)
+  {
+    const piece = this.currentlyHeldPiece;
+    if (!this.currentLegalMoves.includes(toSquare))
+    {
+      return;
+    }
+    
+    const stateCopy = this.boardState.getCurrentState().getFullDeepCopy();
+
+    const isPromotion = (
+      this.currentlyHeldPiece == PieceType.WHITE_PAWN && this.toSquare.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
+      this.currentlyHeldPiece == PieceType.BLACK_PAWN && this.toSquare.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
+
+    let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare, piece: PieceType.NONE};
+
+    //handle pawn promotion if the pawn is at the opposite rank=.
+    if (isPromotion)
+    {
+      //color to show on the dialog is derived.
+      const promotionPieceColor = this.currentlyHeldPiece == PieceType.WHITE_PAWN ? PieceColor.WHITE : PieceColor.BLACK;
+
+      //open the modal and set the color.
+      const modalRef = this.modalService.open(PromotionModal, {size: 'xl'});
+      modalRef.componentInstance.color = promotionPieceColor;
+
+      //gets the result of that dialog.
+      modalRef.result.then( (result) =>
+      {
+        //perform the move and promote to what the user selected.
+        moveResult = stateCopy.completeMove(fromSquare, toSquare, result);
+        this.boardState.pushState(stateCopy, moveResult);
+      } )
+      .catch( () =>
+      {
+        //if the dialog was forced closed, promote to queen by default.
+        moveResult = stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
+        this.boardState.pushState(stateCopy, moveResult);
+      } )
+      .finally()
+      {
+        //Resets the state of the from/to squares and current piece back to nothing.
+       this.resetMoveState();
+      }
+    }
+    else
+    {
+
+      //perform the move
+      moveResult = stateCopy.completeMove(fromSquare, toSquare, piece);
+      this.boardState.pushState(stateCopy, moveResult);
+        
+      //Resets the state of the from/to squares and current piece back to nothing.
+      this.resetMoveState();
+    }
+
+    Sound.playSoundForMove(moveResult.notation);
+  }
+
+
+  resetMoveState()
+  {
+    this.fromSquare = "";
+    this.toSquare = "";
+    this.currentLegalMoves = [];
+  }
+
+  //Import/Reset
+  //#region 
+  handleImportClicked()
+  {
+    const ref = this.modalService.open(ImportModal, {size: 'lg'});
+
+    ref.result.then( result => 
+      {
+        try 
+        {
+          const newBoard: BoardState = BoardState.parsePGN(result);
+          console.log(newBoard);
+          this.chessBoardService.deleteGame(this.gameId);
+          this.chessBoardService.addGame(this.gameId, newBoard);
+          this.boardState = this.chessBoardService.getGame(this.gameId);
+        }
+        catch(ex)
+        {
+          alert("PGN Error")
+        }
+      }
+    )
+    .catch(err => 
+      {
+
+      }
+    )
+  }
+
+  handleResetClicked()
+  {
+    const bs: BoardState = new BoardState();
+    this.chessBoardService.deleteGame(this.gameId);
+    this.chessBoardService.addGame(this.gameId, bs);
+    this.boardState = this.chessBoardService.getGame(this.gameId);
+  }
+  //#endregion
 
   //Controls
   //#region 
@@ -112,6 +219,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   handleForwardButtonClicked()
   {
     const mostRecentMove = this.boardState.getFutureMove();
+    console.log(mostRecentMove);
     this.animateMove(mostRecentMove.fromCoord, mostRecentMove.toCoord, mostRecentMove.piece);
     setTimeout( () =>
     {
@@ -153,7 +261,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   {
     if (this.boardState.divergenceStack.length != 0)
     { 
-      return;
+      this.boardState.goBackToStart();
     }
 
     this.boardState.mainStackPointer = index;
@@ -279,65 +387,6 @@ export class Chessboard implements OnInit, AfterViewInit {
       this.fromRightClickSquare = "";
       this.toRightClickSquare = "";
     }
-  }
-
-  completeMove(fromSquare: string, toSquare: string)
-  {
-    const piece = this.currentlyHeldPiece;
-    if (!this.currentLegalMoves.includes(toSquare))
-    {
-      return;
-    }
-    
-    const stateCopy = this.boardState.getCurrentState().getFullDeepCopy();
-
-    const isPromotion = (
-      this.currentlyHeldPiece == PieceType.WHITE_PAWN && this.toSquare.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
-      this.currentlyHeldPiece == PieceType.BLACK_PAWN && this.toSquare.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
-
-    let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare, piece: PieceType.NONE};
-
-    //handle pawn promotion if the pawn is at the opposite rank=.
-    if (isPromotion)
-    {
-      //color to show on the dialog is derived.
-      const promotionPieceColor = this.currentlyHeldPiece == PieceType.WHITE_PAWN ? PieceColor.WHITE : PieceColor.BLACK;
-
-      //open the modal and set the color.
-      const modalRef = this.modalService.open(PromotionModal, {size: 'xl'});
-      modalRef.componentInstance.color = promotionPieceColor;
-
-      //gets the result of that dialog.
-      modalRef.result.then( (result) =>
-      {
-        //perform the move and promote to what the user selected.
-        moveResult = stateCopy.completeMove(fromSquare, toSquare, result);
-        this.boardState.pushState(stateCopy, moveResult);
-      } )
-      .catch( () =>
-      {
-        //if the dialog was forced closed, promote to queen by default.
-        moveResult = stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
-        this.boardState.pushState(stateCopy, moveResult);
-      } )
-      .finally()
-      {
-        //Resets the state of the from/to squares and current piece back to nothing.
-       this.resetMoveState();
-      }
-    }
-    else
-    {
-
-      //perform the move
-      moveResult = stateCopy.completeMove(fromSquare, toSquare, piece);
-      this.boardState.pushState(stateCopy, moveResult);
-        
-      //Resets the state of the from/to squares and current piece back to nothing.
-      this.resetMoveState();
-    }
-
-    Sound.playSoundForMove(moveResult.notation);
   }
 
   handleDragImage(mouse: PointerEvent)
@@ -548,7 +597,6 @@ export class Chessboard implements OnInit, AfterViewInit {
   }
   //#endregion
   
-  
   //Animation for piece movement logic
   //#region
 
@@ -621,12 +669,5 @@ export class Chessboard implements OnInit, AfterViewInit {
 }
 
   //#endregion
-
-  resetMoveState()
-  {
-    this.fromSquare = "";
-    this.toSquare = "";
-    this.currentLegalMoves = [];
-  }
   
 }

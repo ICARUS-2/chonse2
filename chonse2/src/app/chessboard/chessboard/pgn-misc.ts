@@ -48,3 +48,9 @@ export interface SanMove {
     isCapture: boolean;
     promotion: string | null;   // "Q", "R", "B", "N"
 }
+
+export enum PgnSources
+{
+    Chesscom = "Chess.com",
+    Manual = "Pgn"
+}

@@ -90,12 +90,14 @@ export default class BoardState
         //If there are moves in the divergence stack ahead of the pointer
         if (this.divergenceStackPointer + 1 < this.divergenceMoveStack.length) 
         {
+            console.log("Diverging stack")
             return this.divergenceMoveStack[this.divergenceStackPointer + 1];
         }
 
         //Otherwise, check the main move stack using the pointer
         if (this.mainStackPointer < this.mainMoveStack.length) 
         {
+            console.log("Main stack")
             return this.mainMoveStack[this.mainStackPointer];
         }
 
@@ -108,6 +110,7 @@ export default class BoardState
         //Simply back up to the first move.
         this.mainStackPointer = 0;
         this.divergenceStack.length = 0;
+        this.divergenceMoveStack.length = 0;
         this.divergenceStackPointer = -1;
     }
 
