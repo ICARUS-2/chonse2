@@ -15,6 +15,7 @@ import {Arrow, ArrowContext } from './arrow';
 import BoardState from './board-state';
 import Sound from './sound';
 import { ImportModal } from '../import-modal.ts/import-modal';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-chessboard',
@@ -61,7 +62,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   //FUNCTIONAL
   clickToMove: boolean = false;
 
-  constructor(private modalService: NgbModal, private chessBoardService: ChessBoardService)
+  constructor(private modalService: NgbModal, private chessBoardService: ChessBoardService, private toastr: ToastrService)
   {
     //Board state stored in service to persist across routerlink changes.
     const boardState: BoardState = this.chessBoardService.getGame(this.gameId);
@@ -161,15 +162,22 @@ export class Chessboard implements OnInit, AfterViewInit {
       {
         try 
         {
+          //Create a new instance to put the game in.
           const newBoard: BoardState = BoardState.parsePGN(result);
-          console.log(newBoard);
+          
+          //Remove the old one and add the new one.
           this.chessBoardService.deleteGame(this.gameId);
           this.chessBoardService.addGame(this.gameId, newBoard);
+
+          //Update current component state.
           this.boardState = this.chessBoardService.getGame(this.gameId);
+        
+          //User feedback
+          this.toastr.success("Successfully imported PGN.");
         }
         catch(ex)
         {
-          alert("PGN Error")
+          this.toastr.error("Invalid PGN data.");
         }
       }
     )

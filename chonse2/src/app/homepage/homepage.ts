@@ -4,6 +4,7 @@ import { PieceType } from '../../lib/piece-type';
 import Chonse2 from '../../lib/chonse2';
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import BoardState from '../chessboard/chessboard/board-state';
+import { BoardNames } from '../boards';
 
 @Component({
   selector: 'app-homepage',
@@ -24,6 +25,8 @@ export class Homepage implements OnInit{
     [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE]
 ];
 
+  BoardNames = BoardNames;
+
   constructor(private gameService: ChessBoardService)
   {
 
@@ -34,7 +37,7 @@ export class Homepage implements OnInit{
 
   ngOnInit(): void {
 
-    this.gameService.addGame("2player", new BoardState());
+    this.gameService.addGame(BoardNames.Analysis, new BoardState());
 
   }
   
