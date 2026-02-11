@@ -90,14 +90,12 @@ export default class BoardState
         //If there are moves in the divergence stack ahead of the pointer
         if (this.divergenceStackPointer + 1 < this.divergenceMoveStack.length) 
         {
-            console.log("Diverging stack")
             return this.divergenceMoveStack[this.divergenceStackPointer + 1];
         }
 
         //Otherwise, check the main move stack using the pointer
         if (this.mainStackPointer < this.mainMoveStack.length) 
         {
-            console.log("Main stack")
             return this.mainMoveStack[this.mainStackPointer];
         }
 
@@ -187,7 +185,7 @@ export default class BoardState
         for (let line of lines)
         {
             //If it hits a newline, the parser knows to switch modes.
-            if (isHeaderMode && line == "")
+            if (isHeaderMode && (line == "" || !line.startsWith("[") && !line.endsWith("]")))
             {
                 isHeaderMode = false;
             }
@@ -464,8 +462,6 @@ export default class BoardState
 
                         if (passingCandidates.length > 1)
                         {
-                            console.log(token);
-                            console.log("Passing candidates: " + passingCandidates);
                             throw("Illegal move");
                         }
 
@@ -476,6 +472,11 @@ export default class BoardState
                     }
                 }
             }
+        }
+
+        if (states.length == 0)
+        {
+            throw("PGN parse invalid");
         }
 
         boardState.pgnHeaders = pgnHeaders;
