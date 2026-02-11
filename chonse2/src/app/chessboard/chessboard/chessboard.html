@@ -102,18 +102,20 @@
                 {
                     <div>
                         <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
-                        <p 
+                        <div
                             class="d-inline" 
+                            (click)="moveClicked($index + 1)"
                             [ngClass]="{
                                 'text-primary' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length == 0,
                                 'text-danger' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length != 0}"
                                 >{{item.notation}} 
-                        </p>
-                        <p class="d-inline" 
+                            </div>
+                        <div class="d-inline" 
+                            (click)="moveClicked($index + 2)"
                             [ngClass]="{
                                 'text-primary' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length == 0,
                                 'text-danger' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length != 0}"
-                                >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index + 1].notation}} </p>
+                                >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index + 1].notation}} </div>
                     </div>   
                 }
             }

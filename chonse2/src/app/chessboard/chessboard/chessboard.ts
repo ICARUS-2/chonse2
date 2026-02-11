@@ -149,6 +149,16 @@ export class Chessboard implements OnInit, AfterViewInit {
     return true;
   }
 
+  moveClicked(index: number)
+  {
+    if (this.boardState.divergenceStack.length != 0)
+    { 
+      return;
+    }
+
+    this.boardState.mainStackPointer = index;
+  }
+
   //#endregion
 
   //Left click/pointer
