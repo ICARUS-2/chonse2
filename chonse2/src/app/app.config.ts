@@ -9,6 +9,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideToastr({progressBar: true}),
+    provideToastr({progressBar: true, closeButton: true}),
   ]
 };

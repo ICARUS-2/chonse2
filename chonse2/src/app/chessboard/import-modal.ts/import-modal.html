@@ -1,9 +1,60 @@
-<div class="container">
+<div class="container p-5">
     <h1 class="text-primary">Import Game</h1>
 
-    <textarea [(ngModel)]="manualPgn" class="manualPgnField d-block w-100"></textarea>
+    <div class="m-4"></div>
 
-    <div class="m-5"></div>
+    <div class="importOptions">
+        <select class="form-select gameSourceDropdown" [(ngModel)]="selectedDropdownOption">
+            @for(opt of dropdownOptions; track $index )
+            {   
+                <option [value]="opt">{{opt}}</option>
+            }
+        </select>
 
-    <div class="btn btn-primary" (click)="handleSubmitClicked()">Submit</div>
+        <div class="m-1"></div>
+
+        @if (selectedDropdownOption == PgnSources.Chesscom)
+        {
+            <div>
+                <input 
+                    type="text" 
+                    (keydown.enter)="handleGoPressed()" 
+                    class="form-control usernameInput" 
+                    placeholder="Search username" 
+                    [(ngModel)]="siteUsername"
+                    (focus)="isUsernameInputFocused = true;"
+                    (blur)="isUsernameInputFocused = false">
+                
+                @if(isUsernameInputFocused)
+                {
+                    <ul class="list-group position-absolute savedUsernames">
+                        @for(username of savedUsernames; track $index)
+                        {
+                            <li 
+                                class="list-group-item list-group-item-action"
+                                (pointerdown)="selectUsername(username)"
+                            >
+                                {{ username }}
+                                <div class="btn btn-danger" (pointerdown)="handleRemoveUsernameClicked(username); $event.stopPropagation()">X</div>
+                            </li>
+                        }
+                    </ul>
+                } 
+            </div>
+        }
+
+        <div class="m-1"></div>
+
+        <div class="btn btn-primary" (click)="handleGoPressed()">Go</div>
+    </div>
+
+    <div class="m-4"></div>
+
+    @if(selectedDropdownOption == PgnSources.Manual)
+    {
+        <textarea [(ngModel)]="pgn" class="manualPgnField d-block w-100"></textarea>
+        <div class="m-4"></div>
+
+        <div class="btn btn-primary" (click)="handleSubmitClicked()">Submit</div>
+    }
 </div>

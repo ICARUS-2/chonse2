@@ -183,7 +183,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     )
     .catch(err => 
       {
-
+        //this.toastr.warning("Operation cancelled.");
       }
     )
   }
