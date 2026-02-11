@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import BoardState from "./board-state";
-import Chonse2 from "../../../lib/chonse2";
 
 @Injectable({ providedIn: 'root' })
 export class ChessBoardService {
@@ -20,10 +19,11 @@ export class ChessBoardService {
 
     getGame(id: string): BoardState 
     {
+        /*
         if (!this.games.has(id)) 
         {
             this.addGame(id, new BoardState());
-        }
+        }*/
 
         return this.games.get(id)!;
     }

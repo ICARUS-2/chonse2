@@ -837,7 +837,7 @@ export default class Chonse2
     return potentiallyLegalMoves;
   }
   
-  private _getPotentiallyLegalPawnMoves(coordinate: string, color: string): Array<string>
+  _getPotentiallyLegalPawnMoves(coordinate: string, color: string): Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
     const legalMoves:Array<string> = [];
@@ -912,7 +912,7 @@ export default class Chonse2
     return legalMoves;
   }
   
-  private _getPotentiallyLegalKnightMoves(coordinate: string, color: string) : Array<string>
+  _getPotentiallyLegalKnightMoves(coordinate: string, color: string) : Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
     const legalMoves: Array<string> = [];
@@ -954,22 +954,22 @@ export default class Chonse2
     return legalMoves;
   }
     
-  private _getPotentiallyLegalBishopMoves(coordinate: string, color: string): Array<string>
+  _getPotentiallyLegalBishopMoves(coordinate: string, color: string): Array<string>
   {
     return this._getVectorMoves(coordinate, color, Chonse2._BISHOP_VECTOR_X, Chonse2._BISHOP_VECTOR_Y);
   }
   
-  private _getPotentiallyLegalRookMoves(coordinate: string, color: string): Array<string>
+  _getPotentiallyLegalRookMoves(coordinate: string, color: string): Array<string>
   {
     return this._getVectorMoves(coordinate, color, Chonse2._ROOK_VECTOR_X, Chonse2._ROOK_VECTOR_Y);
   }
   
-  private _getPotentiallyLegalQueenMoves(coordinate: string, color: string) : Array<string>
+  _getPotentiallyLegalQueenMoves(coordinate: string, color: string) : Array<string>
   {
     return this._getVectorMoves(coordinate, color, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y);
   }
   
-  private _getPotentiallyLegalKingMoves(coordinate: string, color: string): Array<string>
+  _getPotentiallyLegalKingMoves(coordinate: string, color: string): Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
     let piece = this.pieceState[rowIndex][colIndex];

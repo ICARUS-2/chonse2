@@ -1,8 +1,9 @@
 import Chonse2 from "../../../lib/chonse2";
 import { GameScore } from "../../../lib/game-state";
+import { PieceColor } from "../../../lib/piece-color";
 import { PieceType } from "../../../lib/piece-type";
 import { Arrow } from "./arrow";
-import { PgnFields, PgnHeaders } from "./pgn-misc";
+import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
 
 export default class BoardState
 {
@@ -165,19 +166,19 @@ export default class BoardState
         this.mainStackPointer = this.mainStateStack.length - 1;
     }
 
-    static parsePGN(pgn: string): Array<BoardState>
+    static parsePGN(pgn: string): BoardState
     {
-        //The array to be returned.
-        const states: Array<BoardState> = [];
+        //States and PGN headers to be returned.
+        const states: Array<Chonse2> = [];
+        const moveStack: Array<IMoveResult> = [];
+        const pgnHeaders = new PgnHeaders();
+        const boardState = new BoardState();
 
         //A PGN is always divided by newlines.
         const lines = pgn.split("\n");
 
         //PGN has two components: Headers and moves. 
         let isHeaderMode = true;
-        
-        //To store the headers.
-        const pgnHeaders = new PgnHeaders();
 
         //Scan each line of the file.
         for (let line of lines)
@@ -265,6 +266,7 @@ export default class BoardState
                 //Accounts for the blank line
                 if (line != "")
                 {
+                    //If we are currently parsing a comment or not.
                     let commentState: boolean = false;
 
                     const tokens = line.split(" ");
@@ -315,13 +317,170 @@ export default class BoardState
                             continue;
                         }
 
-                        //If we got this far, parse the token into a valid move.
-                        console.log(token);
+                        //If we got this far, start parsing the moves.
+                        if (states.length == 0)
+                        {
+                            states.push(new Chonse2());
+                        }
+
+                        //Copy the state and get whose turn it is.
+                        const copyOfState: Chonse2 = states[states.length - 1].getFullDeepCopy();
+                        const turn = copyOfState.turn;
+                        const colorToMove = turn ? PieceColor.WHITE : PieceColor.BLACK;
+        
+                        let moveResult: IMoveResult = {
+                            result: false,
+                            notation: "",
+                            fromCoord: "",
+                            toCoord: "",
+                            piece: ""
+                        }
+
+                        //Special case: Kingside castle.
+                        if (token == "O-O" || token == "O-O+" || token == "O-O#")
+                        {
+                            //From and to when castling kingside.
+                            const kingSquare = turn ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
+                            const toSquare = turn ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE;
+
+                            //Perform the move on the deep copy.
+                            moveResult = copyOfState.completeMove(kingSquare, toSquare);      
+                            
+                            //Register the move on the board's stacks.
+                            states.push(copyOfState);
+                            moveStack.push(moveResult);
+
+                            //Do not continue past here if the move is already done.
+                            continue;
+                        }
+
+                        //Special case: Queenside castle.
+                        if (token == "O-O-O" || token == "O-O-O+" || token == "O-O-O#")
+                        {
+                            //From and to when castling queenside.
+                            const kingSquare = turn ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
+                            const toSquare = turn ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE;
+
+                            //Perform the move on the deep copy.
+                            moveResult = copyOfState.completeMove(kingSquare, toSquare);
+
+                            //Register the move on the board's stacks.
+                            states.push(copyOfState);
+                            moveStack.push(moveResult);
+
+                            //Do not continue past here if the move is already done.
+                            continue;
+                        }
+
+                        //Remove check/mate notation as they don't serve any purpose in finding the squares.
+                        token = token.replace(/[+#?!]+$/g, "");              
+                        
+                        //Parse the san into its parts.
+                        const sanRegex = /^(?:([KQRBN])?([a-h])?([1-8])?(x)?([a-h][1-8])(?:=([QRBN]))?)$/;
+                        const match = token.match(sanRegex);
+                        if (!match) throw new Error(`Invalid SAN: ${token}`);
+
+                        const 
+                        [
+                            _,
+                            piece,
+                            fromFile,
+                            fromRank,
+                            capture,
+                            to,
+                            promotion
+                        ] = match;
+
+                        const move: SanMove = {
+                            piece: piece ?? PieceType.PAWN,
+                            toCoordinate: to,
+                            fromFile: fromFile ?? null,
+                            fromRank: fromRank ?? null,
+                            isCapture: !!capture,
+                            promotion: promotion ?? null
+                        };
+
+                        const pieceThatWillMove = colorToMove + move.piece;
+                        const candidateFromCoordinates: Array<string> = [];
+                        //Loop through the ranks.
+                        for (let rank = 0; rank < copyOfState.pieceState.length; rank++)
+                        {
+                            //Get the current rank.
+                            const currentRank = copyOfState.pieceState[rank];
+
+                            //Loop through this current rank.
+                            for(let file = 0; file < currentRank.length; file++)
+                            {
+                                //Get the current square by the file on the rank.
+                                const currentSquareContent = currentRank[file];
+
+                                //const {rowIndex: toCoordRow, colIndex: toCoordCol} = Chonse2.findIndexFromCoordinate(move.toCoordinate);
+
+                                //The piece in that square is either empty or not the piece we are looking for. Disregard it.
+                                if (currentSquareContent != pieceThatWillMove)
+                                {
+                                    continue;
+                                }
+
+                                //File is known but is not the right file we are looking for. Disregard it.
+                                if (move.fromFile != null)
+                                {
+                                    const fileChar = String.fromCharCode("a".charCodeAt(0) + file);
+                                    if (fileChar != move.fromFile)
+                                    {
+                                        continue;
+                                    }
+                                }
+
+                                //Rank is known but is not the right file we are looking for. Disregard it.
+                                if (move.fromRank != null)
+                                {
+                                    const rankChar = (Chonse2.SIZE - rank).toString();
+
+                                    if (rankChar != move.fromRank)
+                                    {
+                                        continue
+                                    }
+                                }
+
+                                //If we got this far, it might be the right square.
+                                candidateFromCoordinates.push(Chonse2.COORDS[rank][file])
+                            } 
+                        }
+
+                        //We will check what candidates have the toSquare as their legal move (it should be 1).
+                        const passingCandidates: string[] = [];
+                        for(let i = 0; i < candidateFromCoordinates.length; i++)
+                        {
+                            const currentCandidate: string = candidateFromCoordinates[i]; 
+                            const legalMoves = copyOfState.getLegalMoves(currentCandidate);
+
+                            if (legalMoves.includes(move.toCoordinate))
+                            {
+                                passingCandidates.push(currentCandidate);
+                            }
+                        }
+
+                        if (passingCandidates.length > 1)
+                        {
+                            console.log(token);
+                            console.log("Passing candidates: " + passingCandidates);
+                            throw("Illegal move");
+                        }
+
+                        //If we got this far, it's a valid move, push it.
+                        moveResult = copyOfState.completeMove(passingCandidates[0], move.toCoordinate);
+                        states.push(copyOfState);
+                        moveStack.push(moveResult);
                     }
                 }
             }
         }
-        return states;
+
+        boardState.mainMoveStack = moveStack;
+        boardState.mainStateStack = states;
+
+        return boardState;
     }
 
     static initializeHighlightStatuses(): Array<Array<boolean>>

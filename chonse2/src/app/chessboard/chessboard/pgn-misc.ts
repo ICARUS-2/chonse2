@@ -40,28 +40,11 @@ export class PgnHeaders
 }
 
 
-interface SanMove 
-{
-    piece: string,
-    toCoordinate: string,
-    fromFile: string,
-    fromRank: string,
-    promotion: null 
-}
-
-export class PgnHelper
-{
-    static parseAlgebra(str: string) : SanMove
-    {
-        const move: SanMove = 
-        {
-            piece: "",
-            toCoordinate: "",
-            fromFile: "",
-            fromRank: "",
-            promotion: null
-        };
-
-        return move;
-    }
+export interface SanMove {
+    piece: string;              // "P", "N", "B", "R", "Q", "K"
+    toCoordinate: string;       // "e4"
+    fromFile: string | null;    // "a"–"h"
+    fromRank: string | null;    // "1"–"8"
+    isCapture: boolean;
+    promotion: string | null;   // "Q", "R", "B", "N"
 }

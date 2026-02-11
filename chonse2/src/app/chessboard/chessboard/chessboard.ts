@@ -69,7 +69,13 @@ export class Chessboard implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-
+        const boardState: BoardState | undefined = this.chessBoardService.getGame(this.gameId);
+    if (!boardState) {
+        // handle gracefully (e.g., show loading or create new game)
+        console.warn(`Game ${this.gameId} not found yet`);
+        return;
+    }
+    this.boardState = boardState;
   }
 
   ngAfterViewInit(): void {
