@@ -2,7 +2,7 @@ import CastlingRights from "./castling-rights";
 import { PieceColor } from "./piece-color";
 import PieceMaterial from "./piece-material";
 import { PieceType } from "./piece-type";
-import { GameOverReason, GameState } from "./game-state";
+import { GameOverReason, GameScore, GameState } from "./game-state";
 import FenHelper from "./fen-helper";
 import AlgebraicNotationMaker from "./algebraic-notation-builder";
 
@@ -1272,6 +1272,16 @@ export default class Chonse2
       this.gameState.isGameOver = true;
       this.gameState.reason = GameOverReason.Checkmate;
       this.gameState.winner = PieceColor.getOpposite(playerColor);
+
+      if (playerColor == PieceColor.WHITE)
+      {
+        this.gameState.gameScore = GameScore.WHITE_WON;
+      }
+      
+      if (playerColor == PieceColor.BLACK)
+      {
+        this.gameState.gameScore = GameScore.BLACK_WON;
+      }
     }
 
     //Stalemate
@@ -1279,6 +1289,7 @@ export default class Chonse2
     {
       this.gameState.isGameOver = true;
       this.gameState.reason = GameOverReason.Stalemate;
+      this.gameState.gameScore = GameScore.DRAW
     }
 
     //Insufficient material
@@ -1347,6 +1358,7 @@ export default class Chonse2
     {
       this.gameState.isGameOver = true;
       this.gameState.reason = GameOverReason.FiftyMoveNoPawnMovementsOrCaptures;
+      this.gameState.gameScore = GameScore.DRAW
     }
 
     //threefold repetition
@@ -1360,6 +1372,7 @@ export default class Chonse2
         {
           this.gameState.isGameOver = true;
           this.gameState.reason = GameOverReason.ThreefoldRepetition;
+          this.gameState.gameScore = GameScore.DRAW
           break;
         }
       }

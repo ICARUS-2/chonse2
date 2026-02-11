@@ -1,9 +1,13 @@
 import Chonse2 from "../../../lib/chonse2";
+import { GameScore } from "../../../lib/game-state";
 import { PieceType } from "../../../lib/piece-type";
 import { Arrow } from "./arrow";
+import { PgnFields, PgnHeaders } from "./pgn-misc";
 
 export default class BoardState
 {
+    pgnHeaders: PgnHeaders;
+
     mainStateStack: Array<Chonse2>;    
     mainStackPointer: number;
     mainMoveStack: Array<IMoveResult>;
@@ -16,14 +20,16 @@ export default class BoardState
     arrows: Array<Arrow>;
     isFlipped: boolean;
 
-    constructor(startingState: Chonse2 = new Chonse2())
+    constructor(startingStates: Array<Chonse2> = [new Chonse2()], headers: PgnHeaders = new PgnHeaders())
     {
+        this.pgnHeaders = headers;
+
         this.squareHighlightStatuses = BoardState.initializeHighlightStatuses();
         this.arrows = [];
         this.isFlipped = false;
 
         this.mainStateStack = [];
-        this.mainStateStack.push(startingState);
+        this.mainStateStack.push(...startingStates);
         this.mainStackPointer = 0;
         this.mainMoveStack = [];
 
@@ -81,12 +87,14 @@ export default class BoardState
     getFutureMove(): IMoveResult 
     {
         //If there are moves in the divergence stack ahead of the pointer
-        if (this.divergenceStackPointer + 1 < this.divergenceMoveStack.length) {
+        if (this.divergenceStackPointer + 1 < this.divergenceMoveStack.length) 
+        {
             return this.divergenceMoveStack[this.divergenceStackPointer + 1];
         }
 
         //Otherwise, check the main move stack using the pointer
-        if (this.mainStackPointer < this.mainMoveStack.length) {
+        if (this.mainStackPointer < this.mainMoveStack.length) 
+        {
             return this.mainMoveStack[this.mainStackPointer];
         }
 
@@ -165,27 +173,154 @@ export default class BoardState
         //A PGN is always divided by newlines.
         const lines = pgn.split("\n");
 
-        //PGN has two components: Headers and moves.
-
+        //PGN has two components: Headers and moves. 
         let isHeaderMode = true;
+        
+        //To store the headers.
+        const pgnHeaders = new PgnHeaders();
+
+        //Scan each line of the file.
         for (let line of lines)
         {
+            //If it hits a newline, the parser knows to switch modes.
             if (isHeaderMode && line == "")
             {
                 isHeaderMode = false;
             }
 
+            //If it's in header mode, parse the headers.
             if (isHeaderMode)
             {
-                //parse headers.
+                //Sometimes PGN headers can have comments. Disregard them entirely.
+                if (!line.startsWith("{"))
+                {
+                    const lineWithoutBrackets = line.slice(1, -1);
+
+                    let divider = lineWithoutBrackets.indexOf(" ");
+
+                    const key = lineWithoutBrackets.slice(0, divider);
+                    const value = lineWithoutBrackets.slice(divider + 1);
+
+                    //Remove surrounding quotes if present
+                    const cleanedValue = value.startsWith("\"") && value.endsWith("\"") ? value.slice(1, -1): value;
+
+                    switch (key)
+                    {
+                        case PgnFields.Event:
+                            pgnHeaders.event = cleanedValue;
+                            break;
+
+                        case PgnFields.Site:
+                            pgnHeaders.site = cleanedValue;
+                            break;
+
+                        case PgnFields.Date:
+                            pgnHeaders.date = cleanedValue;
+                            break;
+
+                        case PgnFields.Round:
+                            pgnHeaders.round = cleanedValue;
+                            break;
+
+                        case PgnFields.White:
+                            pgnHeaders.white = cleanedValue;
+                            break;
+
+                        case PgnFields.Black:
+                            pgnHeaders.black = cleanedValue;
+                            break;
+
+                        case PgnFields.Result:
+                            pgnHeaders.result = cleanedValue;
+                            break;
+
+                        case PgnFields.WhiteElo:
+                            pgnHeaders.whiteElo = cleanedValue;
+                            break;
+
+                        case PgnFields.BlackElo:
+                            pgnHeaders.blackElo = cleanedValue;
+                            break;
+
+                        case PgnFields.ECO:
+                            pgnHeaders.eco = cleanedValue;
+                            break;
+
+                        case PgnFields.Termination:
+                            pgnHeaders.termination = cleanedValue;
+                            break;
+
+                        case PgnFields.TimeControl:
+                            pgnHeaders.timeControl = cleanedValue;
+                            break;
+
+                        default:
+                            pgnHeaders.otherFields.set(key, cleanedValue);
+                            break;
+                    }
+                }
             }
-            else 
+            else //If not, convert the moves.
             {
-                //parse moves.
+                //Accounts for the blank line
+                if (line != "")
+                {
+                    let commentState: boolean = false;
+
+                    const tokens = line.split(" ");
+
+                    for (let token of tokens)
+                    {
+                        //Check end of comment.
+                        if (commentState)
+                        {
+                            if (token.includes("}"))
+                            {
+                                commentState = false;
+                            }
+                            continue;
+                        }
+
+                        //Check start of comment.
+                        if (token.startsWith("{"))
+                        {
+                            if(!token.includes("}"))
+                            {
+                                commentState = true;
+                                continue;
+                            }
+                        }
+
+                        //If it's a result, then that's it that's all
+                        if (token == GameScore.WHITE_WON || token == GameScore.BLACK_WON || token == GameScore.DRAW || token == GameScore.IN_PROGRESS )
+                        {
+                            break;
+                        }
+
+                        //If it's a number, handle accordingly
+                        //Handles just the number with however many dots.
+                        if (/^\d+\.(\.\.)?$/.test(token))
+                        {
+                            continue;
+                        }
+                        //If it's a number + dot + move, remove the number from it and just keep the token.
+                        if (/^\d+\..+/.test(token)) 
+                        {
+                            token = token.replace(/^\d+\.+/, "");
+                        }
+
+                        //Ignore NAGs
+                        if (token.startsWith("$") || /^[!?]+$/.test(token))
+                        {
+                            continue;
+                        }
+
+                        //If we got this far, parse the token into a valid move.
+                        console.log(token);
+                    }
+                }
             }
-
         }
-
         return states;
     }
 

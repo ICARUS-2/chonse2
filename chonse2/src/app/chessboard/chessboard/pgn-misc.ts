@@ -13,21 +13,13 @@ export enum PgnFields
     WhiteElo = "WhiteElo",
     BlackElo = "BlackElo",
     ECO = "ECO",
-    Termination = "Termination"
-}
-
-interface SanMove 
-{
-    piece: string,
-    toCoordinate: string,
-    fromFile: string,
-    fromRank: string,
-    isCapture: false,
-    promotion: null 
+    Termination = "Termination",
+    TimeControl = "TimeControl"
 }
 
 export class PgnHeaders 
 {
+    //necessary
     event: string = "-";
     site: string = "-";
     date: string = "-";
@@ -36,12 +28,25 @@ export class PgnHeaders
     black: string = "Black";
     result: string = "";
 
+    //optional
     whiteElo: string = "";
     blackElo: string = "";
     eco: string = "";
-    termination: string = ""
+    termination: string = "";
+    timeControl: string = "";
 
+    //other
     otherFields: Map<string, string> = new Map<string, string>();
+}
+
+
+interface SanMove 
+{
+    piece: string,
+    toCoordinate: string,
+    fromFile: string,
+    fromRank: string,
+    promotion: null 
 }
 
 export class PgnHelper
@@ -54,7 +59,6 @@ export class PgnHelper
             toCoordinate: "",
             fromFile: "",
             fromRank: "",
-            isCapture: false,
             promotion: null
         };
 

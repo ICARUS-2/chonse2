@@ -54,7 +54,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   animatedPiece: string = "";
   animatedPieceX: number = 0;
   animatedPieceY: number = 0;
-  animationDuration: number = 100; //ms
+  animationDuration: number = 200; //ms
   animatedPieceCoord: string = "";
   
   //FUNCTIONAL
