@@ -39,6 +39,11 @@ export class PgnHeaders
     otherFields: Map<string, string> = new Map<string, string>();
 }
 
+export enum PgnComments
+{
+    CLOCK = "%clk"
+}
+
 
 export interface SanMove {
     piece: string;              // "P", "N", "B", "R", "Q", "K"

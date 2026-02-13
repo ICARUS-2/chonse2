@@ -1,6 +1,6 @@
 <div class="componentContainer">
     <div class="boardOuterContainer" [class]="boardState.isFlipped ? 'boardOuterContainerFlipped' : ''">
-        <app-board-player-info [playerName]="boardState.pgnHeaders.black + ' ' + boardState.pgnHeaders.blackElo" for="b" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-board-player-info>
+        <app-board-player-info [playerName]="boardState.pgnHeaders.black" [playerElo]="boardState.pgnHeaders.blackElo" for="b" [clock]="getClockForPlayer('b')" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-board-player-info>
         <div #board class="boardContainerInner" [class]="boardState.isFlipped ? 'boardContainerInnerFlipped' : ''">
             
             <!-- ARROW OVERLAY -->
@@ -82,7 +82,7 @@
                 </ng-container>
             }
         </div>
-        <app-board-player-info [playerName]="boardState.pgnHeaders.white + ' ' + boardState.pgnHeaders.whiteElo" for="w" [capturedPieces]="boardState.getCurrentState().piecesWhiteCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-board-player-info>
+        <app-board-player-info [playerName]="boardState.pgnHeaders.white" [playerElo]="boardState.pgnHeaders.whiteElo" for="w" [clock]="getClockForPlayer('w')" [capturedPieces]="boardState.getCurrentState().piecesWhiteCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-board-player-info>
     </div>
     <div class="boardControls p-5">
         <div class="boardControlButtons">

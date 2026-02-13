@@ -84,7 +84,7 @@ export default class BoardState
         }
 
         //If neither stack has a move (aka starting position), return a dummy move.
-        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE};
+        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE, comment: ""};
     }
 
     getFutureMove(): IMoveResult 
@@ -102,7 +102,7 @@ export default class BoardState
         }
 
         //If no moves ahead, return a dummy move
-        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE };
+        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE, comment: "" };
     }
 
     goBackToStart()
@@ -271,6 +271,7 @@ export default class BoardState
                 {
                     //If we are currently parsing a comment or not.
                     let commentState: boolean = false;
+                    let commentStr: string = "";
 
                     const tokens = line.split(" ");
 
@@ -281,6 +282,8 @@ export default class BoardState
                         {
                             if (token.includes("}"))
                             {
+                                commentStr += token;
+                                commentStr = commentStr.replace(/[()\[\]{}<>]/g, '')
                                 commentState = false;
                             }
                             continue;
@@ -292,6 +295,7 @@ export default class BoardState
                             if(!token.includes("}"))
                             {
                                 commentState = true;
+                                commentStr += token;
                                 continue;
                             }
                         }
@@ -336,7 +340,8 @@ export default class BoardState
                             notation: "",
                             fromCoord: "",
                             toCoord: "",
-                            piece: ""
+                            piece: "",
+                            comment: ""
                         }
 
                         //Special case: Kingside castle.
@@ -469,6 +474,9 @@ export default class BoardState
 
                         //If we got this far, it's a valid move, push it.
                         moveResult = copyOfState.completeMove(passingCandidates[0], move.toCoordinate);
+                        moveResult.comment = commentStr;
+                        commentStr = "";
+
                         states.push(copyOfState);
                         moveStack.push(moveResult);
                     }
@@ -485,6 +493,8 @@ export default class BoardState
         boardState.mainMoveStack = moveStack;
         boardState.mainStateStack = states;
         boardState.isReadOnly = true;
+
+        console.log(moveStack);
         
         return boardState;
     }

@@ -16,6 +16,7 @@ import BoardState from './board-state';
 import Sound from './sound';
 import { ImportModal } from '../import-modal.ts/import-modal';
 import { ToastrService } from 'ngx-toastr';
+import { PgnComments } from './pgn-misc';
 
 @Component({
   selector: 'app-chessboard',
@@ -99,7 +100,7 @@ export class Chessboard implements OnInit, AfterViewInit {
       this.currentlyHeldPiece == PieceType.WHITE_PAWN && this.toSquare.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
       this.currentlyHeldPiece == PieceType.BLACK_PAWN && this.toSquare.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
 
-    let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare, piece: PieceType.NONE};
+    let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare, piece: PieceType.NONE, comment: ""};
 
     //handle pawn promotion if the pawn is at the opposite rank=.
     if (isPromotion)
@@ -275,6 +276,29 @@ export class Chessboard implements OnInit, AfterViewInit {
     this.boardState.mainStackPointer = index;
   }
 
+  getClockForPlayer(color: string) : string
+  {
+    const stackPtr = this.boardState.mainStackPointer;
+    const moveStack = this.boardState.mainMoveStack;
+
+    for(let i = stackPtr; i > 0; i--)
+    {
+      const move: IMoveResult = moveStack[i];
+      if (!move)
+      {
+        continue;
+      }
+
+      if (move.piece.startsWith(color))
+      {
+        if (move.comment.startsWith(PgnComments.CLOCK))
+        {
+          return move.comment.replace(PgnComments.CLOCK, "");
+        }
+      }
+    }
+      return ""
+  }
   //#endregion
 
   //Left click/pointer

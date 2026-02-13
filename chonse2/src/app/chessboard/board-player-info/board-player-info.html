@@ -1,6 +1,9 @@
-<div class="capturedPieceContainer d-flex align-items-center">
+<div class="boardPlayerInfoContainer d-flex align-items-center">
     
-    <p>{{playerName}}</p>
+    <p>{{playerName}} {{playerElo ? `(${playerElo})` : ""}}</p>
+    
+    <div class="m-1"></div>
+
     @for(key of getDisplayMap().keys(); track $index)
     {
         <div class="piece-group">
@@ -14,5 +17,12 @@
     @if(getAbsoluteAdvantage() > 0)
     {
         <p class="text-primary">+{{getAbsoluteAdvantage()}}</p>
-    }    
+    }
+    
+    <div class="m-1"></div>
+
+    @if (clock)
+    {
+        <p class="badge text-bg-secondary">{{clock}}</p>
+    }
 </div>

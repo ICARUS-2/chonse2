@@ -12,7 +12,9 @@ export class BoardPlayerInfo {
   @Input() capturedPieces: Array<string> = [];
   @Input() advantage: number = 0;
   @Input() playerName: string = "Player";
-
+  @Input() playerElo: string = "";
+  @Input() clock: string = "";
+  
   //Positive number indicates an advantage for white, negative for black. Only display the advantage if there is one for this color.
   getAbsoluteAdvantage(): number
   {
