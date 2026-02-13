@@ -1,3 +1,8 @@
+.componentContainer
+{
+    padding: 5vmin;
+}
+
 .manualPgnField
 {
     height: 20vmin;
@@ -20,4 +25,34 @@
 .savedUsernames 
 {
     z-index: 10;
+}
+
+@media screen and (max-width: 800px) 
+{
+    .componentContainer
+    {
+        max-height: 100vmin;    
+        overflow: scroll;
+    }
+    
+    .importOptions
+    {
+        flex-direction: column;
+    }
+
+    .gameSourceDropdown
+    {
+        width: unset;
+    }
+    
+    .usernameInput
+    {
+        width: unset;
+    }
+
+    .siteResultInner
+    {
+        display: flex;
+        flex-direction: column;
+    }
 }

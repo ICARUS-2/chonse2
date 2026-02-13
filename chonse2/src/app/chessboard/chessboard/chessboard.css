@@ -163,13 +163,14 @@
 
 @media screen and (max-width: 800px) 
 {
-    .componentContainer
-    {
-      flex-direction: column;
-    }    
+  .componentContainer
+  {
+    flex-direction: column;
+  }    
 
-    .boardControls
-    {
-      width: 100%;
-    }
+  .boardControls
+  {
+    width: 100%;
+    height: unset;
+  }
 }

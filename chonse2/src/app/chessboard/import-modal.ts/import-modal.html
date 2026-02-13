@@ -1,4 +1,4 @@
-<div class="container p-5">
+<div class="container componentContainer">
     <h1 class="text-primary">Import Game</h1>
 
     <div class="m-4"></div>
@@ -41,11 +41,11 @@
                     </ul>
                 } 
             </div>
+            
+            <div class="m-1"></div>
+
+            <div class="btn btn-primary" (click)="handleGoPressed()">Go</div>
         }
-
-        <div class="m-1"></div>
-
-        <div class="btn btn-primary" (click)="handleGoPressed()">Go</div>
     </div>
 
     <div class="m-4"></div>
@@ -55,7 +55,7 @@
         @for(game of chessComGames; track $index)
         {
             <button class="siteResult card mb-2 w-100" style="text-align: left;" (click)="handleChessComGameClicked(game)">
-                <div class="card-body">
+                <div class="card-body siteResultInner">
                     <p>{{ game.white.username }} [{{game.white.rating}}] vs {{game.black.username}} [{{game.black.rating}}] <span class="badge rounded-pill" [ngClass]="getResultClassForChessComGame(game)">{{game.getScore()}} {{game.getReason()}}</span></p>
                     
                     <div class="d-flex align-items-center">
@@ -70,13 +70,12 @@
                             <i class="bi bi-hash"></i>
                             <p class="d-inline">&nbsp;{{game.formatDate()}}</p>
                         </div>
-
-                        <div class="m-1"></div>
-
-                        <div class="btn btn-info text-light" (click)="handleChessComGameLinkCliked($event, game)">
-                            Copy Link
-                        </div> 
                     </div>
+                    <div class="m-1"></div>
+
+                    <div class="btn btn-info text-light" (click)="handleChessComGameLinkCliked($event, game)">
+                            Copy Link
+                    </div> 
                 </div>
             </button>
         }
