@@ -1,0 +1,13 @@
+<div class="container">
+    @if( isError() )
+    {
+        <h1 class="text-error">Error</h1>
+        <h4 class="text-error">Site, username or game ID was invalid.</h4>
+    } @else 
+    {
+        <h1 class="text-primary">Load Game</h1>
+        <h4>Site: {{this.site}}</h4>
+        <h4>Username: {{this.username}}</h4>
+        <h4>Game ID: {{this.gameId}}</h4>
+    }
+</div>

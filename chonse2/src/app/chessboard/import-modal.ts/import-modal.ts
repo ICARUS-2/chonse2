@@ -7,6 +7,8 @@ import ChessComAPI from '../api/chesscom-api';
 import { ChessComGame } from '../api/chesscom-game';
 import { CommonModule } from '@angular/common';
 import { GameScore } from '../../../lib/game-state';
+import GameLinkHelper from '../chessboard/game-link-helper';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-import-modal',
@@ -35,7 +37,7 @@ export class ImportModal implements OnInit
 
   chessComGames: Array<ChessComGame> = [];
   
-  constructor(private activeModal: NgbActiveModal)
+  constructor(private activeModal: NgbActiveModal, private toastr: ToastrService)
   {
     //LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_USERNAMES, []);
   }
@@ -77,6 +79,11 @@ export class ImportModal implements OnInit
   //Saves a username in local storage if not duplicate.
   saveUsername(name: string)
   {
+    if (name == "")
+    {
+      return;
+    }
+
     if (this.savedUsernames.includes(name))
     {
       return;
@@ -99,6 +106,22 @@ export class ImportModal implements OnInit
     //potentially add support for lichess in the future
   }
 
+  async handleChessComGameLinkCliked(event: PointerEvent, game: ChessComGame)
+  {
+    event.stopPropagation();
+    const splitUrl = game.url.split("/");
+    const gameId = splitUrl[splitUrl.length - 1];
+
+    try 
+    {
+      await navigator.clipboard.writeText(GameLinkHelper.generateGameUrl(GameLinkHelper.CHESSCOM_SOURCE, gameId, this.siteUsername));
+      this.toastr.info(`Successfully copied game for ${this.siteUsername}.`);
+    }
+    catch(ex)
+    {
+      this.toastr.error("Game link copy failed.");
+    }
+  }
   
   getResultClassForChessComGame(game: ChessComGame): string
   {

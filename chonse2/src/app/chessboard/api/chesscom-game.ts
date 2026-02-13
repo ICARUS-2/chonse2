@@ -13,8 +13,8 @@ export class ChessComGame {
   fen?: string;
   time_class: string;
   rules: string;
-  white: Player;
-  black: Player;
+  white: ChessComPlayer;
+  black: ChessComPlayer;
   eco?: string;
 
   constructor(data: any) {
@@ -29,8 +29,8 @@ export class ChessComGame {
     this.fen = data.fen;
     this.time_class = data.time_class;
     this.rules = data.rules;
-    this.white = new Player(data.white);
-    this.black = new Player(data.black);
+    this.white = new ChessComPlayer(data.white);
+    this.black = new ChessComPlayer(data.black);
     this.eco = data.eco;
   }
 
@@ -155,7 +155,7 @@ export class ChessComGame {
   }
 }
 
-export class Player {
+export class ChessComPlayer {
   rating: number;
   result: string;
   username: string;

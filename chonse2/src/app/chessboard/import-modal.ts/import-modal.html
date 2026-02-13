@@ -58,7 +58,7 @@
                 <div class="card-body">
                     <p>{{ game.white.username }} [{{game.white.rating}}] vs {{game.black.username}} [{{game.black.rating}}] <span class="badge rounded-pill" [ngClass]="getResultClassForChessComGame(game)">{{game.getScore()}} {{game.getReason()}}</span></p>
                     
-                    <div class="d-flex">
+                    <div class="d-flex align-items-center">
                         <div class="badge rounded-pill text-bg-primary">
                             <i class="bi bi-clock"></i>
                             <p class="d-inline">&nbsp;&nbsp;{{game.formatTimeControl()}} {{game.time_class}}</p>
@@ -70,6 +70,12 @@
                             <i class="bi bi-hash"></i>
                             <p class="d-inline">&nbsp;{{game.formatDate()}}</p>
                         </div>
+
+                        <div class="m-1"></div>
+
+                        <div class="btn btn-info text-light" (click)="handleChessComGameLinkCliked($event, game)">
+                            Copy Link
+                        </div> 
                     </div>
                 </div>
             </button>
