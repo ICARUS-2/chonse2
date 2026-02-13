@@ -1,6 +1,6 @@
 <div class="componentContainer">
     <div class="boardOuterContainer" [class]="boardState.isFlipped ? 'boardOuterContainerFlipped' : ''">
-        <app-captured-pieces for="b" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
+        <app-board-player-info [playerName]="boardState.pgnHeaders.black" [playerElo]="boardState.pgnHeaders.blackElo" for="b" [clock]="getClockForPlayer('b')" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-board-player-info>
         <div #board class="boardContainerInner" [class]="boardState.isFlipped ? 'boardContainerInnerFlipped' : ''">
             
             <!-- ARROW OVERLAY -->
@@ -82,8 +82,7 @@
                 </ng-container>
             }
         </div>
-
-        <app-captured-pieces for="w" [capturedPieces]="boardState.getCurrentState().piecesWhiteCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-captured-pieces>
+        <app-board-player-info [playerName]="boardState.pgnHeaders.white" [playerElo]="boardState.pgnHeaders.whiteElo" for="w" [clock]="getClockForPlayer('w')" [capturedPieces]="boardState.getCurrentState().piecesWhiteCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-board-player-info>
     </div>
     <div class="boardControls p-5">
         <div class="boardControlButtons">
@@ -103,29 +102,39 @@
                 {
                     <div>
                         <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
-                        <p 
+                        <div
                             class="d-inline" 
+                            (click)="moveClicked($index + 1)"
                             [ngClass]="{
                                 'text-primary' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length == 0,
                                 'text-danger' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length != 0}"
                                 >{{item.notation}} 
-                        </p>
-                        <p class="d-inline" 
+                            </div>
+                        <div class="d-inline" 
+                            (click)="moveClicked($index + 2)"
                             [ngClass]="{
                                 'text-primary' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length == 0,
                                 'text-danger' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length != 0}"
-                                >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index + 1].notation}} </p>
+                                >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index + 1].notation}} </div>
                     </div>   
                 }
             }
         </div>
 
-        <div class="testingPurposes">
-            @if(this.boardState.getCurrentState().gameState.isGameOver)
-            {
-                <p>Result: {{this.boardState.getCurrentState().gameState.reason}}</p>
-            }      
-        </div>
+        <div class="d-flex mt-4 w-100 justify-content-between">
+            <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>
+            <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
+        </div> 
+
+        @if (this.boardState.pgnHeaders.termination)
+        {
+            <p class="m-0"> {{this.boardState.pgnHeaders.termination}}</p>
+        }
+
+        @if(this.boardState.getCurrentState().gameState.isGameOver)
+        {
+            <p class="m-0">{{this.boardState.getCurrentState().gameState.reason}} {{this.boardState.getCurrentState().gameState.gameScore}}</p>
+        }      
     </div>
 
     @if(currentlyHeldPiece != "")

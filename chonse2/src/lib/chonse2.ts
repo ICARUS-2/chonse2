@@ -2,7 +2,7 @@ import CastlingRights from "./castling-rights";
 import { PieceColor } from "./piece-color";
 import PieceMaterial from "./piece-material";
 import { PieceType } from "./piece-type";
-import { GameOverReason, GameState } from "./game-state";
+import { GameOverReason, GameScore, GameState } from "./game-state";
 import FenHelper from "./fen-helper";
 import AlgebraicNotationMaker from "./algebraic-notation-builder";
 
@@ -199,7 +199,7 @@ export default class Chonse2
   {
     if (this.gameState.isGameOver || fromCoordinate == toCoordinate)
     {
-      return {result: false, notation: "", fromCoord: fromCoordinate, toCoord: toCoordinate, piece: ""};
+      return {result: false, notation: "", fromCoord: fromCoordinate, toCoord: toCoordinate, piece: "", comment: ""};
     }
 
     //In piece state, where the current piece is moving to.
@@ -216,7 +216,7 @@ export default class Chonse2
 
     if (!legalMoves.includes(toCoordinate))
     {
-      return {result: false, notation: "", fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece};
+      return {result: false, notation: "", fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, comment: ""};
     }
 
     //Begin building algebraic notation for move
@@ -469,7 +469,7 @@ export default class Chonse2
     }
 
     //The move was successful if we got this far.
-    return {result: true, notation: notation.get(), fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece};
+    return {result: true, notation: notation.get(), fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, comment: ""};
   }
 
   //Verifies if a king of a particular color is in check.
@@ -837,7 +837,7 @@ export default class Chonse2
     return potentiallyLegalMoves;
   }
   
-  private _getPotentiallyLegalPawnMoves(coordinate: string, color: string): Array<string>
+  _getPotentiallyLegalPawnMoves(coordinate: string, color: string): Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
     const legalMoves:Array<string> = [];
@@ -902,7 +902,7 @@ export default class Chonse2
           const twoSquaresAbove = twoRanksAbove.at(colIndex);
 
           //two squares up is only legal if one square up is.
-          if (twoSquaresAbove == "")
+          if (twoSquaresAbove == "" && squareInFront == "")
           {
             color == PieceColor.WHITE ? legalMoves.push(Chonse2.COORDS[rowIndex - 2][colIndex]) : legalMoves.push(Chonse2.COORDS[rowIndex + 2][colIndex]);;
           }
@@ -912,7 +912,7 @@ export default class Chonse2
     return legalMoves;
   }
   
-  private _getPotentiallyLegalKnightMoves(coordinate: string, color: string) : Array<string>
+  _getPotentiallyLegalKnightMoves(coordinate: string, color: string) : Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
     const legalMoves: Array<string> = [];
@@ -954,22 +954,22 @@ export default class Chonse2
     return legalMoves;
   }
     
-  private _getPotentiallyLegalBishopMoves(coordinate: string, color: string): Array<string>
+  _getPotentiallyLegalBishopMoves(coordinate: string, color: string): Array<string>
   {
     return this._getVectorMoves(coordinate, color, Chonse2._BISHOP_VECTOR_X, Chonse2._BISHOP_VECTOR_Y);
   }
   
-  private _getPotentiallyLegalRookMoves(coordinate: string, color: string): Array<string>
+  _getPotentiallyLegalRookMoves(coordinate: string, color: string): Array<string>
   {
     return this._getVectorMoves(coordinate, color, Chonse2._ROOK_VECTOR_X, Chonse2._ROOK_VECTOR_Y);
   }
   
-  private _getPotentiallyLegalQueenMoves(coordinate: string, color: string) : Array<string>
+  _getPotentiallyLegalQueenMoves(coordinate: string, color: string) : Array<string>
   {
     return this._getVectorMoves(coordinate, color, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y);
   }
   
-  private _getPotentiallyLegalKingMoves(coordinate: string, color: string): Array<string>
+  _getPotentiallyLegalKingMoves(coordinate: string, color: string): Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
     let piece = this.pieceState[rowIndex][colIndex];
@@ -1272,6 +1272,16 @@ export default class Chonse2
       this.gameState.isGameOver = true;
       this.gameState.reason = GameOverReason.Checkmate;
       this.gameState.winner = PieceColor.getOpposite(playerColor);
+
+      if (playerColor == PieceColor.WHITE)
+      {
+        this.gameState.gameScore = GameScore.BLACK_WON;
+      }
+      
+      if (playerColor == PieceColor.BLACK)
+      {
+        this.gameState.gameScore = GameScore.WHITE_WON;
+      }
     }
 
     //Stalemate
@@ -1279,6 +1289,7 @@ export default class Chonse2
     {
       this.gameState.isGameOver = true;
       this.gameState.reason = GameOverReason.Stalemate;
+      this.gameState.gameScore = GameScore.DRAW
     }
 
     //Insufficient material
@@ -1347,6 +1358,7 @@ export default class Chonse2
     {
       this.gameState.isGameOver = true;
       this.gameState.reason = GameOverReason.FiftyMoveNoPawnMovementsOrCaptures;
+      this.gameState.gameScore = GameScore.DRAW
     }
 
     //threefold repetition
@@ -1360,6 +1372,7 @@ export default class Chonse2
         {
           this.gameState.isGameOver = true;
           this.gameState.reason = GameOverReason.ThreefoldRepetition;
+          this.gameState.gameScore = GameScore.DRAW
           break;
         }
       }

@@ -1,0 +1,23 @@
+.manualPgnField
+{
+    height: 20vmin;
+}
+
+.importOptions
+{
+    display: flex;
+}
+.gameSourceDropdown
+{
+    width: 20vmin;
+}
+
+.usernameInput 
+{
+    width: 30vmin;
+}
+
+.savedUsernames 
+{
+    z-index: 10;
+}

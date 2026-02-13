@@ -3,6 +3,12 @@ import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { PieceType } from '../../lib/piece-type';
 import Chonse2 from '../../lib/chonse2';
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
+import BoardState from '../chessboard/chessboard/board-state';
+import { BoardNames } from '../boards';
+import ChessComAPI from '../chessboard/api/chesscom-api';
+import { ChessComGame } from '../chessboard/api/chesscom-game';
+import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-homepage',
@@ -11,6 +17,10 @@ import { ChessBoardService } from '../chessboard/chessboard/chess-board-service'
   styleUrl: './homepage.css',
 })
 export class Homepage implements OnInit{
+
+  site: string | undefined;
+  username: string | undefined;
+  gameId: string | undefined;
 
   testPieceState:Array<Array<string>> = [
     [ PieceType.BLACK_KING, PieceType.NONE, PieceType.WHITE_KING, PieceType.NONE, PieceType.NONE, PieceType.NONE,PieceType.NONE, PieceType.WHITE_BISHOP],
@@ -21,17 +31,63 @@ export class Homepage implements OnInit{
     [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
     [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
     [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE]
-];
+  ];
 
-  constructor(private gameService: ChessBoardService)
+  BoardNames = BoardNames;
+
+  constructor(public gameService: ChessBoardService, private toastrService: ToastrService)
   {
-    
+
   }
 
   //testGame: Chonse2 = new Chonse2(this.testPieceState);
   testGame: Chonse2 = new Chonse2();
 
-  ngOnInit(): void {
-    this.gameService.addGame("2player", this.testGame)
+  async ngOnInit(){
+    const state = history.state;
+    this.site = state.site;
+    this.username = state.username;
+    this.gameId = state.gameId;
+
+    if (this.site && this.username && this.gameId)
+    {
+      if (this.site == GameLinkHelper.CHESSCOM_SOURCE)
+      {
+        const game = await ChessComAPI.getUserGameById(this.username, this.gameId);
+
+        if (game)
+        {
+          try 
+          {
+            this.gameService.addGame(BoardNames.Analysis, BoardState.parsePGN(game.pgn));
+            this.toastrService.success("Game import successful.");
+          }
+          catch(ex) //If PGN parse failed.
+          {
+            this.toastrService.error("Import failed - PGN parse failed.")
+            this.setDefaultBoard();
+          }
+        }
+        else //If the game was not found.
+        {
+          this.toastrService.error("Import failed - Game not found.")
+          this.setDefaultBoard();
+        }
+      }
+      else //If the site source is not valid
+      {
+        this.toastrService.error("Import failed - Invalid source.");
+        this.setDefaultBoard();
+      }
+    }
+    else 
+    {
+      this.setDefaultBoard();
+    }
+  }
+  
+  setDefaultBoard()
+  {
+    this.gameService.addGame(BoardNames.Analysis, new BoardState());
   }
 }

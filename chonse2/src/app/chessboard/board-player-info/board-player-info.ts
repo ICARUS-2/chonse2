@@ -2,16 +2,19 @@ import { Component, Input } from '@angular/core';
 import { PieceColor } from '../../../lib/piece-color';
 
 @Component({
-  selector: 'app-captured-pieces',
+  selector: 'app-board-player-info',
   imports: [],
-  templateUrl: './captured-pieces.html',
-  styleUrl: './captured-pieces.css',
+  templateUrl: './board-player-info.html',
+  styleUrl: './board-player-info.css',
 })
-export class CapturedPieces {
+export class BoardPlayerInfo {
   @Input() for: string = "";
   @Input() capturedPieces: Array<string> = [];
   @Input() advantage: number = 0;
-
+  @Input() playerName: string = "Player";
+  @Input() playerElo: string = "";
+  @Input() clock: string = "";
+  
   //Positive number indicates an advantage for white, negative for black. Only display the advantage if there is one for this color.
   getAbsoluteAdvantage(): number
   {

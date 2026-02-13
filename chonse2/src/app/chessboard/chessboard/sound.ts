@@ -19,6 +19,13 @@ export default class Sound
 
     static playSoundForMove(notation: string)
     {
+        if (notation.includes(AlgebraicNotationMaker.CHECKMATE))
+        {
+            Sound.playSound(Sound.CHECK);
+            setTimeout( () => {Sound.playSound(Sound.CHECKMATE);}, 400)
+            return;
+        }
+
         if (notation.includes(AlgebraicNotationMaker.CHECK))
         {
             Sound.playSound(Sound.CHECK);
@@ -28,13 +35,6 @@ export default class Sound
         if (notation.includes(AlgebraicNotationMaker.CAPTURE))
         {
             Sound.playSound(Sound.CAPTURE);
-            return;
-        }
-
-        if (notation.includes(AlgebraicNotationMaker.CHECKMATE))
-        {
-            Sound.playSound(Sound.CHECK);
-            setTimeout( () => {Sound.playSound(Sound.CHECKMATE);}, 400)
             return;
         }
         

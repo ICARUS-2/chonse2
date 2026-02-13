@@ -4,5 +4,6 @@ interface IMoveResult
     notation: string,
     fromCoord: string,
     toCoord: string,
-    piece: string
+    piece: string,
+    comment: string
 }

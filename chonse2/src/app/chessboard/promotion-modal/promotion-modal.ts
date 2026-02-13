@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { Square } from "../chessboard/square/square";
-import { PieceType } from '../../lib/piece-type';
-import { PieceColor } from '../../lib/piece-color';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { PieceType } from '../../../lib/piece-type';
+import { PieceColor } from '../../../lib/piece-color';
 
 @Component({
   selector: 'app-promotion-modal',

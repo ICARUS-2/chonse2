@@ -1,5 +1,20 @@
 <div class="container">
     <div class="innerContainer w-100 d-flex justify-content-center">
-        <app-chessboard gameId="2player"></app-chessboard>
+
+        @if(this.gameService.getGame(BoardNames.Analysis))
+        {
+            <app-chessboard [gameId]="BoardNames.Analysis"></app-chessboard>
+        }
+        @else 
+        {
+            <div class="alert alert-primary d-flex align-items-center justify-content-center" role="alert">
+                <div class="spinner-border">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div>
+                    Loading Game.
+                </div>
+            </div>
+        }
     </div>
 </div>

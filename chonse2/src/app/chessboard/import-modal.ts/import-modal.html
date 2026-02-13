@@ -1,0 +1,92 @@
+<div class="container p-5">
+    <h1 class="text-primary">Import Game</h1>
+
+    <div class="m-4"></div>
+
+    <div class="importOptions">
+        <select class="form-select gameSourceDropdown" [(ngModel)]="selectedDropdownOption">
+            @for(opt of dropdownOptions; track $index )
+            {   
+                <option [value]="opt">{{opt}}</option>
+            }
+        </select>
+
+        <div class="m-1"></div>
+
+        @if (selectedDropdownOption == PgnSources.Chesscom)
+        {
+            <div>
+                <input 
+                    type="text" 
+                    (keydown.enter)="handleGoPressed()" 
+                    class="form-control usernameInput" 
+                    placeholder="Search username" 
+                    [(ngModel)]="siteUsername"
+                    (focus)="isUsernameInputFocused = true;"
+                    (blur)="isUsernameInputFocused = false">
+                
+                @if(isUsernameInputFocused)
+                {
+                    <ul class="list-group position-absolute savedUsernames">
+                        @for(username of savedUsernames; track $index)
+                        {
+                            <li 
+                                class="list-group-item list-group-item-action"
+                                (pointerdown)="selectUsername(username); handleGoPressed()"
+                            >
+                                {{ username }}
+                                <div class="btn btn-danger" (pointerdown)="handleRemoveUsernameClicked(username); $event.stopPropagation()">X</div>
+                            </li>
+                        }
+                    </ul>
+                } 
+            </div>
+        }
+
+        <div class="m-1"></div>
+
+        <div class="btn btn-primary" (click)="handleGoPressed()">Go</div>
+    </div>
+
+    <div class="m-4"></div>
+
+    @if(selectedDropdownOption == PgnSources.Chesscom && chessComGames.length != 0)
+    {
+        @for(game of chessComGames; track $index)
+        {
+            <button class="siteResult card mb-2 w-100" style="text-align: left;" (click)="handleChessComGameClicked(game)">
+                <div class="card-body">
+                    <p>{{ game.white.username }} [{{game.white.rating}}] vs {{game.black.username}} [{{game.black.rating}}] <span class="badge rounded-pill" [ngClass]="getResultClassForChessComGame(game)">{{game.getScore()}} {{game.getReason()}}</span></p>
+                    
+                    <div class="d-flex align-items-center">
+                        <div class="badge rounded-pill text-bg-primary">
+                            <i class="bi bi-clock"></i>
+                            <p class="d-inline">&nbsp;&nbsp;{{game.formatTimeControl()}} {{game.time_class}}</p>
+                        </div>
+
+                        <div class="m-1"></div>
+
+                        <div class="badge rounded-pill text-bg-primary">
+                            <i class="bi bi-hash"></i>
+                            <p class="d-inline">&nbsp;{{game.formatDate()}}</p>
+                        </div>
+
+                        <div class="m-1"></div>
+
+                        <div class="btn btn-info text-light" (click)="handleChessComGameLinkCliked($event, game)">
+                            Copy Link
+                        </div> 
+                    </div>
+                </div>
+            </button>
+        }
+    }
+
+    @if(selectedDropdownOption == PgnSources.Manual)
+    {
+        <textarea [(ngModel)]="pgn" class="manualPgnField d-block w-100"></textarea>
+        <div class="m-4"></div>
+
+        <div class="btn btn-primary" (click)="handleSubmitClicked()">Submit</div>
+    }
+</div>
