@@ -2,12 +2,12 @@ import { Component, Input } from '@angular/core';
 import { PieceColor } from '../../../lib/piece-color';
 
 @Component({
-  selector: 'app-captured-pieces',
+  selector: 'app-board-player-info',
   imports: [],
-  templateUrl: './captured-pieces.html',
-  styleUrl: './captured-pieces.css',
+  templateUrl: './board-player-info.html',
+  styleUrl: './board-player-info.css',
 })
-export class CapturedPieces {
+export class BoardPlayerInfo {
   @Input() for: string = "";
   @Input() capturedPieces: Array<string> = [];
   @Input() advantage: number = 0;

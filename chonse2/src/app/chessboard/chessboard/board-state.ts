@@ -21,6 +21,8 @@ export default class BoardState
     arrows: Array<Arrow>;
     isFlipped: boolean;
 
+    isReadOnly: boolean = false;
+
     constructor(startingStates: Array<Chonse2> = [new Chonse2()], headers: PgnHeaders = new PgnHeaders())
     {
         this.pgnHeaders = headers;
@@ -42,7 +44,7 @@ export default class BoardState
     pushState(state: Chonse2, move: IMoveResult)
     {
         //If the pointer was moved back, diverge from the main path.
-        if (this.mainStackPointer != this.mainStateStack.length - 1)
+        if (this.mainStackPointer != this.mainStateStack.length - 1 || this.isReadOnly)
         {
             this.divergenceStack.push(state);
             this.divergenceMoveStack.push(move);
@@ -482,6 +484,7 @@ export default class BoardState
         boardState.pgnHeaders = pgnHeaders;
         boardState.mainMoveStack = moveStack;
         boardState.mainStateStack = states;
+        boardState.isReadOnly = true;
         
         return boardState;
     }
