@@ -16,3 +16,8 @@
 {
     width: 30vmin;
 }
+
+.savedUsernames 
+{
+    z-index: 10;
+}

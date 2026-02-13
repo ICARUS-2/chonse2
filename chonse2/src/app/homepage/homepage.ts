@@ -5,6 +5,8 @@ import Chonse2 from '../../lib/chonse2';
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import BoardState from '../chessboard/chessboard/board-state';
 import { BoardNames } from '../boards';
+import ChessComAPI from '../chessboard/api/chesscom-api';
+import { ChessComGame } from '../chessboard/api/chesscom-game';
 
 @Component({
   selector: 'app-homepage',
@@ -35,10 +37,13 @@ export class Homepage implements OnInit{
   //testGame: Chonse2 = new Chonse2(this.testPieceState);
   testGame: Chonse2 = new Chonse2();
 
-  ngOnInit(): void {
+  async ngOnInit(){
 
     this.gameService.addGame(BoardNames.Analysis, new BoardState());
 
+    //const r: ChessComGame[] = await ChessComAPI.getGamesForUser("ICARUS_2LUM1NOUS");
+
+    //console.log(r);
   }
   
 }

@@ -25,9 +25,19 @@ export class GameScore
 export enum GameOverReason
 {
     None = "None",
+    Unknown = "Unknown",
+
+    //Guaranteed endgame
     Checkmate = "Checkmate",
     Stalemate = "Stalemate",
     InsufficientMaterial = "Insufficient Material",
     FiftyMoveNoPawnMovementsOrCaptures = "50-move rule",
-    ThreefoldRepetition = "Threefold repetition"
+    ThreefoldRepetition = "Threefold repetition",
+
+    //Preliminary endgame.
+    Resignation = "Resignation",
+    Timeout = "Timeout",
+    Abandon = "Abandon",
+    TimeVsInsufficient = "Timeout vs insufficient material",
+    DrawAgreed = "Agreement"
 }
