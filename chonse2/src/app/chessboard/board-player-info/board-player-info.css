@@ -14,8 +14,19 @@
     margin-right: -3vmin;
 }
 
+.pieceGroupContainer
+{
+    display: flex;
+}
+
 @media screen and (max-width: 800px) 
 {
+    .boardPlayerInfoContainer
+    {
+        height: 30vmin;
+        flex-direction: column;
+    }
+
     .piece-group
     {
         margin-right: 3vmin;

@@ -4,19 +4,21 @@
     
     <div class="m-1"></div>
 
-    @for(key of getDisplayMap().keys(); track $index)
-    {
-        <div class="piece-group">
-            @for(i of [].constructor(getDisplayMap().get(key)); track $index)
-            {
-                <img class="capturedPieceImg" [src]="`piece/merida/${key}.svg`" alt="piece" />
-            }
-        </div>
-    }
+    <div class="pieceGroupContainer">
+        @for(key of getDisplayMap().keys(); track $index)
+        {
+            <div class="piece-group">
+                @for(i of [].constructor(getDisplayMap().get(key)); track $index)
+                {
+                    <img class="capturedPieceImg" [src]="`piece/merida/${key}.svg`" alt="piece" />
+                }
+            </div>
+        }
+    </div>
 
     @if(getAbsoluteAdvantage() > 0)
     {
-        <p class="text-primary">+{{getAbsoluteAdvantage()}}</p>
+        <p class="text-primary m-0">+{{getAbsoluteAdvantage()}}</p>
     }
     
     <div class="m-1"></div>
