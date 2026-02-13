@@ -126,12 +126,15 @@
             <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
         </div> 
 
-        <div class="testingPurposes">
-            @if(this.boardState.getCurrentState().gameState.isGameOver)
-            {
-                <p>Result: {{this.boardState.getCurrentState().gameState.reason}} {{this.boardState.getCurrentState().gameState.gameScore}}</p>
-            }      
-        </div>
+        @if (this.boardState.pgnHeaders.termination)
+        {
+            <p class="m-0"> {{this.boardState.pgnHeaders.termination}}</p>
+        }
+
+        @if(this.boardState.getCurrentState().gameState.isGameOver)
+        {
+            <p class="m-0">{{this.boardState.getCurrentState().gameState.reason}} {{this.boardState.getCurrentState().gameState.gameScore}}</p>
+        }      
     </div>
 
     @if(currentlyHeldPiece != "")

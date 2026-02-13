@@ -1275,12 +1275,12 @@ export default class Chonse2
 
       if (playerColor == PieceColor.WHITE)
       {
-        this.gameState.gameScore = GameScore.WHITE_WON;
+        this.gameState.gameScore = GameScore.BLACK_WON;
       }
       
       if (playerColor == PieceColor.BLACK)
       {
-        this.gameState.gameScore = GameScore.BLACK_WON;
+        this.gameState.gameScore = GameScore.WHITE_WON;
       }
     }
 
