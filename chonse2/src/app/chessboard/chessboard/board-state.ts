@@ -2,6 +2,7 @@ import Chonse2 from "../../../lib/chonse2";
 import { GameScore } from "../../../lib/game-state";
 import { PieceColor } from "../../../lib/piece-color";
 import { PieceType } from "../../../lib/piece-type";
+import { EvaluateGameParams } from "../engine/types/eval";
 import { Arrow } from "./arrow";
 import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
 
@@ -493,8 +494,6 @@ export default class BoardState
         boardState.mainMoveStack = moveStack;
         boardState.mainStateStack = states;
         boardState.isReadOnly = true;
-
-        console.log(moveStack);
         
         return boardState;
     }
@@ -514,5 +513,13 @@ export default class BoardState
         }
 
         return highlightStatuses;
+    }
+
+    getEvaluateGameParams(): EvaluateGameParams
+    {
+        const fens: string[] = this.mainStateStack.map( c2 => c2.getFEN() );
+        const uciMoves: string[] = this.mainMoveStack.map(m => m.notation);
+
+        return {fens, uciMoves};
     }
 }

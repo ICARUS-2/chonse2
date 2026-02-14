@@ -74,11 +74,11 @@ export default class AlgebraicNotationMaker
                 str += this._piece;
             }
 
-            if (this._piece == PieceType.PAWN && this._capture)
-            {
-                str += this._fromSquare[0];
-            }
-            else 
+            //if (this._piece == PieceType.PAWN && this._capture)
+            //{
+            //    str += this._fromSquare[0];
+            //}
+            //else 
             {
                 str += this._fromSquare;
             }

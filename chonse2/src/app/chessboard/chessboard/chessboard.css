@@ -127,7 +127,7 @@
   border: 1px solid blue;
   flex-direction: column;
   height: 82vmin;
-  width: 43vmin;
+  width: 82vmin;
   touch-action: manipulation;
 }
 
@@ -161,7 +161,7 @@
     z-index: 100; /* on top of board */
 }
 
-@media screen and (max-width: 800px) 
+@media screen and (max-width: 1200px) 
 {
   .componentContainer
   {

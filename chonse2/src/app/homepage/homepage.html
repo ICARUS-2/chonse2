@@ -1,6 +1,5 @@
 <div class="container">
     <div class="innerContainer w-100 d-flex justify-content-center">
-
         @if(this.gameService.getGame(BoardNames.Analysis))
         {
             <app-chessboard [gameId]="BoardNames.Analysis"></app-chessboard>
