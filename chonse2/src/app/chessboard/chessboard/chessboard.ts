@@ -3,7 +3,7 @@ import { PieceType } from '../../../lib/piece-type';
 import { Square } from '../square/square';
 import { PieceColor } from '../../../lib/piece-color';
 import { BoardPlayerInfo } from "../board-player-info/board-player-info";
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbProgressbar } from '@ng-bootstrap/ng-bootstrap';
 import { PromotionModal } from '../promotion-modal/promotion-modal';
 import Chonse2 from '../../../lib/chonse2';
 import { GameOverReason } from '../../../lib/game-state';
@@ -17,10 +17,11 @@ import Sound from './sound';
 import { ImportModal } from '../import-modal.ts/import-modal';
 import { ToastrService } from 'ngx-toastr';
 import { PgnComments } from './pgn-misc';
+import { EngineDisplayName, EngineName } from '../engine/types/enums';
 
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule],
+  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
 })
@@ -29,6 +30,8 @@ export class Chessboard implements OnInit, AfterViewInit {
   pieceColor = PieceColor;
   gameOverReason = GameOverReason;
   localStorageHelper = LocalStorageHelper;
+  EngineName = EngineName;
+  EngineDisplayName = EngineDisplayName;
 
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
@@ -80,6 +83,14 @@ export class Chessboard implements OnInit, AfterViewInit {
         return;
     }
     this.boardState = boardState;
+
+    if (this.boardState.doEvaluateGame)
+    {
+      if (!this.boardState.engine)
+      {
+        this.boardState.evaluateGame();
+      }
+    }
   }
 
   ngAfterViewInit(): void {
@@ -165,6 +176,7 @@ export class Chessboard implements OnInit, AfterViewInit {
         {
           //Create a new instance to put the game in.
           const newBoard: BoardState = BoardState.parsePGN(result);
+          newBoard.doEvaluateGame = true;
           
           //Remove the old one and add the new one.
           this.chessBoardService.deleteGame(this.gameId);
@@ -172,7 +184,8 @@ export class Chessboard implements OnInit, AfterViewInit {
 
           //Update current component state.
           this.boardState = this.chessBoardService.getGame(this.gameId);
-        
+          this.boardState.evaluateGame();
+
           //User feedback
           this.toastr.success("Successfully imported PGN.");
         }
@@ -195,6 +208,25 @@ export class Chessboard implements OnInit, AfterViewInit {
     this.chessBoardService.deleteGame(this.gameId);
     this.chessBoardService.addGame(this.gameId, bs);
     this.boardState = this.chessBoardService.getGame(this.gameId);
+  }
+
+  getEvalProgress() : number
+  {
+    return Number(this.boardState.evalProgress.toFixed(2));
+  }
+
+  getEngineDisplayName(): string 
+  {
+    if (this.boardState.engine)
+    {
+      const eName = EngineDisplayName.get(this.boardState.engine.name);
+
+      if (eName)
+      {
+        return eName;
+      }
+    }
+    return "what the hell are you analyzing this with then?";
   }
   //#endregion
 

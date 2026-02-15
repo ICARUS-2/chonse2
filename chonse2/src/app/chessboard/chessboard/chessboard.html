@@ -84,7 +84,57 @@
         </div>
         <app-board-player-info [playerName]="boardState.pgnHeaders.white" [playerElo]="boardState.pgnHeaders.whiteElo" for="w" [clock]="getClockForPlayer('w')" [capturedPieces]="boardState.getCurrentState().piecesWhiteCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-board-player-info>
     </div>
-    <div class="boardControls p-5">
+    <div class="boardControls p-2">
+        <!--Show termiantion if exists -- Show either whose turn it is or the result + score.-->
+        <p>{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " -- " : " -- "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</p>
+
+        <div class="d-flex">
+            <div class="algebraicContainer">
+                @for (item of boardState.mainMoveStack; track $index) 
+                {
+                    @if ($index % 2 == 0)
+                    {
+                        <div>
+                            <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
+                            <div
+                                class="d-inline" 
+                                (click)="moveClicked($index + 1)"
+                                [ngClass]="{
+                                    'text-primary' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length == 0,
+                                    'text-danger' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length != 0}"
+                                    >{{item.notation}} 
+                                </div>
+                            <div class="d-inline" 
+                                (click)="moveClicked($index + 2)"
+                                [ngClass]="{
+                                    'text-primary' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length == 0,
+                                    'text-danger' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length != 0}"
+                                    >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index + 1].notation}} </div>
+                        </div>   
+                    }
+                }
+            </div>
+            <div class="evalSectionRight">
+                @if (this.boardState.eval)
+                {
+                    <div class="d-flex">
+                        <div class="badge text-bg-light border d-inline-block">
+                            <h2>{{this.boardState.eval.estimatedElo?.white?.toFixed(0)}} / {{this.boardState.eval.accuracy.white.toFixed(1)}}%</h2>
+                        </div>
+                        
+                        <div class="m-2"></div>
+
+                        <div class="badge text-bg-dark">
+                            <h2>{{this.boardState.eval.estimatedElo?.black?.toFixed(0)}} / {{this.boardState.eval.accuracy.black.toFixed(1)}}%</h2>
+                        </div>
+                    </div>
+                }
+                    </div>
+        </div>
+            <div class="d-flex w-100 justify-content-between">
+            <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>
+            <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
+        </div> 
         <div class="boardControlButtons">
             <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleBackButtonClicked()">&lt;&lt;-</div>
             <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleBackButtonClicked()">&lt;</div>
@@ -93,48 +143,14 @@
         </div>
         <div class="btn btn-primary controlButton" (click)="handleFlipClicked()">↑↓</div>
 
-        <p>{{boardState.getCurrentState().turn ? "White" : "Black"}} to move</p>
-
-        <div class="algebraicContainer">
-            @for (item of boardState.mainMoveStack; track $index) 
-            {
-                @if ($index % 2 == 0)
-                {
-                    <div>
-                        <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
-                        <div
-                            class="d-inline" 
-                            (click)="moveClicked($index + 1)"
-                            [ngClass]="{
-                                'text-primary' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length == 0,
-                                'text-danger' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length != 0}"
-                                >{{item.notation}} 
-                            </div>
-                        <div class="d-inline" 
-                            (click)="moveClicked($index + 2)"
-                            [ngClass]="{
-                                'text-primary' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length == 0,
-                                'text-danger' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length != 0}"
-                                >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index + 1].notation}} </div>
-                    </div>   
-                }
-            }
-        </div>
-
-        <div class="d-flex mt-4 w-100 justify-content-between">
-            <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>
-            <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
-        </div> 
-
-        @if (this.boardState.pgnHeaders.termination)
+        <!--EVAL-->
+        @if( this.boardState.evalProgress > 0 && this.boardState.evalProgress < 97.1)
         {
-            <p class="m-0"> {{this.boardState.pgnHeaders.termination}}</p>
+            <div >
+                <ngb-progressbar class="mb-3" type="info" [value]="getEvalProgress()" [striped]="true" [animated]="true"><i>{{this.getEvalProgress()}}% [{{this.getEngineDisplayName()}}]</i></ngb-progressbar>
+            </div>
         }
-
-        @if(this.boardState.getCurrentState().gameState.isGameOver)
-        {
-            <p class="m-0">{{this.boardState.getCurrentState().gameState.reason}} {{this.boardState.getCurrentState().gameState.gameScore}}</p>
-        }      
+        <!---->
     </div>
 
     @if(currentlyHeldPiece != "")

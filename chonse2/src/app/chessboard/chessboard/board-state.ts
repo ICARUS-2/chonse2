@@ -2,25 +2,34 @@ import Chonse2 from "../../../lib/chonse2";
 import { GameScore } from "../../../lib/game-state";
 import { PieceColor } from "../../../lib/piece-color";
 import { PieceType } from "../../../lib/piece-type";
+import { EngineName } from "../engine/types/enums";
 import { EvaluateGameParams, GameEval } from "../engine/types/eval";
+import { UciEngine } from "../engine/uciEngine";
 import { Arrow } from "./arrow";
+import LocalStorageHelper from "./local-storage-helper";
 import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
 
 export default class BoardState
 {
     pgnHeaders: PgnHeaders;
 
+    //For the moves actually being performed.
     mainStateStack: Array<Chonse2>;    
     mainStackPointer: number;
     mainMoveStack: Array<IMoveResult>;
     
+    //For going back and playing out what move COULD have been made.
     divergenceStack: Array<Chonse2>;
     divergenceStackPointer: number;
     divergenceMoveStack: Array<IMoveResult>
 
-    doEvaluateGame: boolean = true;
+    //Eval stuff.
+    doEvaluateGame: boolean = false;
     eval: GameEval | undefined = undefined;
+    evalProgress: number = 0;
+    engine: UciEngine | undefined = undefined;
 
+    //Costmetic stuff.
     squareHighlightStatuses: Array<Array<boolean>>;
     arrows: Array<Arrow>;
     isFlipped: boolean;
@@ -173,7 +182,7 @@ export default class BoardState
         this.mainStackPointer = this.mainStateStack.length - 1;
     }
 
-    static parsePGN(pgn: string): BoardState
+    static parsePGN(pgn: string, setAnalyzeFlag: boolean = false): BoardState
     {
         //States and PGN headers to be returned.
         const states: Array<Chonse2> = [];
@@ -498,7 +507,45 @@ export default class BoardState
         boardState.mainStateStack = states;
         boardState.isReadOnly = true;
         
+        boardState.doEvaluateGame = setAnalyzeFlag;
+
         return boardState;
+    }
+
+    async evaluateGame( /*setProgress: (value: number) => void*/ ): Promise<void> 
+    {
+        if (!this.doEvaluateGame)
+        {   
+            return;
+        }
+
+        await this.setEngineIfNotExists();
+
+        const params = this.getEvaluateGameParams();
+        params.setEvaluationProgress = ( (value: number) => this.evalProgress = value);
+        params.playersRatings = this.pgnHeaders.whiteElo && this.pgnHeaders.blackElo ? {white: Number(this.pgnHeaders.whiteElo), black: Number(this.pgnHeaders.blackElo)} : {}
+
+        if (this.engine)
+        {
+            const evalResult = await this.engine.evaluateGame(params);
+
+            this.eval = evalResult;
+        }
+    }
+
+    async setEngineIfNotExists()
+    {
+        if (!this.engine)
+        {
+            //Gets the engine type saved as per the user setting.
+            const engineType: EngineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName;
+            
+            //Instantiate the engine with the factory.
+            const engine: UciEngine = await UciEngine.getEngine(engineType);
+            
+            //Handle on it so it can be used later.
+            this.engine = engine;
+        }
     }
 
     static initializeHighlightStatuses(): Array<Array<boolean>>

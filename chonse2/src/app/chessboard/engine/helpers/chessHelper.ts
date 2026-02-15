@@ -1,9 +1,10 @@
 import { EvaluateGameParams, LineEval, PositionEval } from "../types/eval";
 //import { Game, Player } from "@/types/game";
-import { Chess, PieceSymbol, Square } from "../helpers/chess";
+import { Chess, Color, PieceSymbol, Square } from "../helpers/chess";
 import { getPositionWinPercentage } from "../helpers/winPercentage";
 //import { PieceColor } from "../../../../lib/piece-color";
 import { PieceType } from "../../../../lib/piece-type";
+import Chonse2 from "../../../../lib/chonse2";
 
 type Piece = "wP" | "wB" | "wN" | "wR" | "wQ" | "wK" | "bP" | "bB" | "bN" | "bR" | "bQ" | "bK";
 
@@ -90,8 +91,20 @@ export const uciMoveParams = (
 });
 
 //CUSTOM WRITTEN FOR CHONSE2 LIBRARY
-export const uciMoveParams2 = (uciMove: string): {from: Square; to: Square; promotion?: string | undefined;} => {
-   if (uciMove.startsWith( PieceType.ROOK ) 
+export const uciMoveParams2 = (uciMove: string, turn: Color): {from: Square; to: Square; promotion?: string | undefined;} => {
+  if (uciMove == "O-O" || uciMove == "O-O+" || uciMove == "O-O#")
+  {
+    return turn ? {from: Chonse2.WHITE_KING_SQUARE, to: Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE} 
+                : {from: Chonse2.BLACK_KING_SQUARE, to: Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE}
+  }
+
+  if (uciMove == "O-O-O" || uciMove == "O-O-O+" || uciMove == "O-O-O#")
+  {
+    return turn ? {from: Chonse2.WHITE_KING_SQUARE, to: Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE} 
+                : {from: Chonse2.BLACK_KING_SQUARE, to: Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE}
+  }
+  
+  if (uciMove.startsWith( PieceType.ROOK ) 
     || uciMove.startsWith(PieceType.KNIGHT) 
     || uciMove.startsWith(PieceType.BISHOP)
     || uciMove.startsWith(PieceType.QUEEN)
@@ -133,7 +146,27 @@ export const isSimplePieceRecapture = (
   uciMoves: [string, string]
 ): boolean => {
   const game = new Chess(fen);
-  const moves = uciMoves.map((uciMove) => uciMoveParams2(uciMove));
+  let turn: Color = game.turn();
+
+  const moves: Array<{from: Square; to: Square; promotion?: string | undefined;}> = [];
+
+  uciMoves.forEach( m =>
+  {
+    moves.push(uciMoveParams2(m, turn))
+
+    if (turn == "w")
+    {
+      turn = "b";
+    }
+
+    if (turn == "b")
+    {
+      turn = "w";
+    }
+  }
+   )
+
+  //const moves = uciMoves.map((uciMove) => uciMoveParams2(uciMove));
 
   if (moves[0].to !== moves[1].to) return false;
 
@@ -166,7 +199,7 @@ export const getIsPieceSacrifice = (
   };
   for (const move of moves) {
     try {
-      const fullMove = game.move(uciMoveParams2(move));
+      const fullMove = game.move(uciMoveParams2(move, game.turn()));
       if (fullMove.captured) {
         //capturedPieces[fullMove.color].push(fullMove.captured);
         nonCapturingMovesTemp = 1;
