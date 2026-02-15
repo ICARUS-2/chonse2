@@ -144,12 +144,12 @@ const pgn2 = `[Event "Live Chess"]
 1. e4 {[%clk 0:09:58.5]} e5 {[%clk 0:09:58.9]} 2. Nf3 {[%clk 0:09:49.6]} Nc6 {[%clk 0:09:57]} 3. Nxe5 {[%clk 0:09:45]} Nxe5 {[%clk 0:09:55.2]} 4. d4 {[%clk 0:09:43]} Nc6 {[%clk 0:09:46.2]} 5. d5 {[%clk 0:09:41.3]} Ne5 {[%clk 0:09:44.7]} 6. f4 {[%clk 0:09:38.4]} Ng6 {[%clk 0:09:35.1]} 7. f5 {[%clk 0:09:36.9]} Ne5 {[%clk 0:09:34.4]} 8. Bf4 {[%clk 0:09:32.9]} Qh4+ {[%clk 0:09:32.2]} 9. g3 {[%clk 0:09:31.2]} Qf6 {[%clk 0:09:27.7]} 10. Qd4 {[%clk 0:09:28.9]} Nf3+ {[%clk 0:09:22.8]} 0-1`
   
     
-    //const bs = BoardState.parsePGN(pgn);
-    //const engine = await UciEngine.getEngine(EngineName.Stockfish18Lite);
-    //const params = bs.getEvaluateGameParams();
-    //params.setEvaluationProgress = this.setProgress;
-    //const result: GameEval = await engine.evaluateGame(params);
-    //console.log(result);
+    // const bs = BoardState.parsePGN(pgn);
+    // const engine = await UciEngine.getEngine(EngineName.Stockfish18Lite);
+    // const params = bs.getEvaluateGameParams();
+    // params.setEvaluationProgress = this.setProgress;
+    // const result: GameEval = await engine.evaluateGame(params);
+    // console.log(result);
   }
   
   setDefaultBoard()

@@ -2,7 +2,7 @@ import Chonse2 from "../../../lib/chonse2";
 import { GameScore } from "../../../lib/game-state";
 import { PieceColor } from "../../../lib/piece-color";
 import { PieceType } from "../../../lib/piece-type";
-import { EvaluateGameParams } from "../engine/types/eval";
+import { EvaluateGameParams, GameEval } from "../engine/types/eval";
 import { Arrow } from "./arrow";
 import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
 
@@ -17,6 +17,9 @@ export default class BoardState
     divergenceStack: Array<Chonse2>;
     divergenceStackPointer: number;
     divergenceMoveStack: Array<IMoveResult>
+
+    doEvaluateGame: boolean = true;
+    eval: GameEval | undefined = undefined;
 
     squareHighlightStatuses: Array<Array<boolean>>;
     arrows: Array<Arrow>;

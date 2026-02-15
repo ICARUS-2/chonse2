@@ -4,21 +4,17 @@ import { isMultiThreadSupported, isWasmSupported } from "../helpers/shared";
 import { BASE_PATH } from "../../../../helpers/globals";
 
 export class Stockfish17_1 {
-  public static async create(lite?: boolean): Promise<UciEngine> {
+  public static async create(): Promise<UciEngine> {
     if (!Stockfish17_1.isSupported()) {
-      throw new Error("Stockfish 18 is not supported");
+      throw new Error("Stockfish 17.1 is not supported");
     }
 
     const multiThreadIsSupported = isMultiThreadSupported();
     if (!multiThreadIsSupported) console.log("Single thread mode");
 
-    const enginePath = `${BASE_PATH}/engines/stockfish-17.1/stockfish-17.1${
-      lite ? "-lite" : ""
-    }${multiThreadIsSupported ? "" : "-single"}.js`;
+    const enginePath = `${BASE_PATH}/engines/stockfish-17.1/stockfish-17.1${multiThreadIsSupported ? "" : "-single"}.js`;
 
-    const engineName = lite
-      ? EngineName.Stockfish17_1Lite
-      : EngineName.Stockfish17_1;
+    const engineName = EngineName.Stockfish17_1;
 
     return UciEngine.create(engineName, enginePath);
   }
