@@ -171,6 +171,17 @@
     z-index: 100; /* on top of board */
 }
 
+.moveClassificationIcon
+{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4vmin;
+  z-index: 10;
+  pointer-events: none;
+  transform: translate(35%, -35%);
+}
+
 @media screen and (max-width: 1200px) 
 {
   .componentContainer

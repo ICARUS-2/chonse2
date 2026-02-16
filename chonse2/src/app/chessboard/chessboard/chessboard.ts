@@ -269,6 +269,26 @@ export class Chessboard implements OnInit, AfterViewInit {
 
     return MoveClassification.None;
   }
+
+  getMoveClassificationIconSource(coord: string): string 
+  {
+    const lastEval = this.boardState.getMostRecentEval();
+    
+    if (lastEval)
+    {
+      if (lastEval.moveClassification)
+      {
+        const mostRecentMove = this.boardState.getMostRecentMove();
+
+        if (mostRecentMove.toCoord == coord)
+        {
+          return "icons/" + lastEval.moveClassification + ".png";   
+        }   
+      }
+    }
+    return "";
+  }
+
   //#endregion
 
   //Controls

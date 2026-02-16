@@ -78,6 +78,10 @@
                                 </div>
                             }
 
+                            @if(this.getMoveClassificationIconSource(this.COORDS[rankIndex][fileIndex]) != "")
+                            {
+                                <img alt="moveClassificationIcon" class="moveClassificationIcon" [src]="getMoveClassificationIconSource(this.COORDS[rankIndex][fileIndex])" draggable="false">
+                            }
                         </div>
                     }
                 </ng-container>
