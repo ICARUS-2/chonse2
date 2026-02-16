@@ -251,6 +251,23 @@ export class Chessboard implements OnInit, AfterViewInit {
     return "";
   }
 
+  getMoveClassificationForSquare(coord: string): MoveClassification 
+  {
+    const lastEval = this.boardState.getMostRecentEval();
+
+    if (lastEval)
+    {
+      const lastMove = this.boardState.getMostRecentMove();
+      const classification: MoveClassification = lastEval.moveClassification ?? MoveClassification.None;
+
+      if (lastMove.fromCoord == coord || lastMove.toCoord == coord)
+      {
+        return classification
+      }
+    }
+
+    return MoveClassification.None;
+  }
   //#endregion
 
   //Controls

@@ -53,6 +53,7 @@
                                 [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
                                 [isInCheck]="(boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState.getCurrentState().isInCheck(pieceColor.WHITE)) || (boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState.getCurrentState().isInCheck(pieceColor.BLACK)) "
                                 [isClicked]="getRightClickedStatusForSquare(this.COORDS[rankIndex][fileIndex])"
+                                [moveClassification]="getMoveClassificationForSquare(this.COORDS[rankIndex][fileIndex])"
                                 (mouseDown)="onSquareMouseDown($event)"
                                 (mouseUp)="onSquareMouseUp($event)"
                                 (leftClick)="onSquareLeftClick()">
