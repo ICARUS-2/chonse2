@@ -100,7 +100,7 @@
         <!--Show termiantion if exists -- Show either whose turn it is or the result + score.-->
         <p>{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " -- " : " -- "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</p>
 
-        <div class="d-flex">
+        <div class="d-flex movesAndAccuracies">
             <div class="algebraicContainer">
                 @for (item of boardState.mainMoveStack; track $index) 
                 {

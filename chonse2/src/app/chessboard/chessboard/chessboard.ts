@@ -237,9 +237,13 @@ export class Chessboard implements OnInit, AfterViewInit {
   {
     if (this.boardState.getMostRecentEval())
     {
-      if (this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Opening)
+      if (this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Opening ||
+        this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Best ||
+        this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Forced || 
+        this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Perfect ||
+        this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Splendid)
       {
-        return `${this.boardState.getMostRecentMove().notation} is an opening move`
+        return `${this.boardState.getMostRecentMove().notation} is ${moveClassificationLabels[this.boardState.getMostRecentEval()?.moveClassification ?? MoveClassification.None]}`
       }
 
       if (this.boardState.getPreviousMostRecentEval())

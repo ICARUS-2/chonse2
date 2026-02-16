@@ -104,7 +104,7 @@ export default class BoardState
     {
         if (this.divergenceStackPointer >= 0) 
         {
-            //return this.divergenceMoveStack[this.divergenceStackPointer];
+            return undefined;
         }
 
         //Otherwise, check the main move stack using the pointer
@@ -122,7 +122,7 @@ export default class BoardState
     {
         if (this.divergenceStackPointer >= 0) 
         {
-            //return this.divergenceMoveStack[this.divergenceStackPointer];
+            return undefined;
         }
 
         //Otherwise, check the main move stack using the pointer
@@ -567,10 +567,7 @@ export default class BoardState
 
             this.eval = evalResult;
         }
-
-        console.log(this.mainMoveStack);
-        console.log(this.eval?.positions);
-
+        
         //Sanitizes any excellent moves that also appear as best moves.
         for(let i = 0; i < this.mainMoveStack.length; i++)
         {

@@ -194,4 +194,10 @@
     width: 100%;
     height: unset;
   }
+
+  .movesAndAccuracies
+  {
+    flex-direction: column;
+    min-height: 60vmin;
+  }
 }
