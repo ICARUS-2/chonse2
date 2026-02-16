@@ -509,7 +509,7 @@ export default class BoardState
                         {
                             const currentCandidate: string = candidateFromCoordinates[i]; 
                             const legalMoves = copyOfState.getLegalMoves(currentCandidate);
-
+                            
                             if (legalMoves.includes(move.toCoordinate))
                             {
                                 passingCandidates.push(currentCandidate);
@@ -522,7 +522,7 @@ export default class BoardState
                         }
 
                         //If we got this far, it's a valid move, push it.
-                        moveResult = copyOfState.completeMove(passingCandidates[0], move.toCoordinate);
+                        moveResult = copyOfState.completeMove(passingCandidates[0], move.toCoordinate, move.promotion ?? undefined);
                         moveResult.comment = commentStr;
                         commentStr = "";
 

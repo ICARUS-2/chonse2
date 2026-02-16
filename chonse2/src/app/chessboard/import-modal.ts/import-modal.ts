@@ -24,7 +24,7 @@ export class ImportModal implements OnInit
   //PGN to return.
   pgn: string = "";
   
-  selectedDropdownOption: PgnSources = PgnSources.Chesscom;
+  selectedDropdownOption: PgnSources = PgnSources.Manual;
   dropdownOptions: Array<PgnSources> = 
   [
     PgnSources.Chesscom,

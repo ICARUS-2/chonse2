@@ -191,6 +191,7 @@ export class Chessboard implements OnInit, AfterViewInit {
         }
         catch(ex)
         {
+          console.log(ex)
           this.toastr.error("Invalid PGN data.");
         }
       }
