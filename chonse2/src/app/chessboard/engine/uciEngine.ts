@@ -35,7 +35,7 @@ export class UciEngine {
     }
   }
 
-  static readonly DEFAULT_DEPTH = 14;
+  static readonly DEFAULT_DEPTH = 16;
   public readonly name: EngineName;
   private workers: EngineWorker[] = [];
   private workerQueue: WorkerJob[] = [];
