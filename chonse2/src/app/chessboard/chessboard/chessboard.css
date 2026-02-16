@@ -165,10 +165,21 @@
 
 .animatedPiece {
     position: absolute;
-    width: 10vmin; 
+    width: 10vmin;
     height: 10vmin;
-    pointer-events: none; /* don't block clicks */
-    z-index: 100; /* on top of board */
+    pointer-events: none;
+    z-index: 100;
+}
+
+.moveClassificationIcon
+{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4vmin;
+  z-index: 10;
+  pointer-events: none;
+  transform: translate(35%, -35%);
 }
 
 @media screen and (max-width: 1200px) 
@@ -182,5 +193,11 @@
   {
     width: 100%;
     height: unset;
+  }
+
+  .movesAndAccuracies
+  {
+    flex-direction: column;
+    min-height: 60vmin;
   }
 }

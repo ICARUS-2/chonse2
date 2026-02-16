@@ -191,6 +191,7 @@ export class Chessboard implements OnInit, AfterViewInit {
         }
         catch(ex)
         {
+          console.log(ex)
           this.toastr.error("Invalid PGN data.");
         }
       }
@@ -208,6 +209,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     this.chessBoardService.deleteGame(this.gameId);
     this.chessBoardService.addGame(this.gameId, bs);
     this.boardState = this.chessBoardService.getGame(this.gameId);
+    this.arrows.length = 0;
   }
   //#endregion
 
@@ -236,9 +238,13 @@ export class Chessboard implements OnInit, AfterViewInit {
   {
     if (this.boardState.getMostRecentEval())
     {
-      if (this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Opening)
+      if (this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Opening ||
+        this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Best ||
+        this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Forced || 
+        this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Perfect ||
+        this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Splendid)
       {
-        return `${this.boardState.getMostRecentMove().notation} is an opening move`
+        return `${this.boardState.getMostRecentMove().notation} is ${moveClassificationLabels[this.boardState.getMostRecentEval()?.moveClassification ?? MoveClassification.None]}`
       }
 
       if (this.boardState.getPreviousMostRecentEval())
@@ -267,6 +273,42 @@ export class Chessboard implements OnInit, AfterViewInit {
     }
 
     return MoveClassification.None;
+  }
+
+  getMoveClassificationIconSource(coord: string): string 
+  {
+    const lastEval = this.boardState.getMostRecentEval();
+    
+    if (lastEval)
+    {
+      if (lastEval.moveClassification)
+      {
+        const mostRecentMove = this.boardState.getMostRecentMove();
+
+        if (mostRecentMove.toCoord == coord)
+        {
+          return "icons/" + lastEval.moveClassification + ".png";   
+        }   
+      }
+    }
+    return "";
+  }
+
+  getEngineArrow() : Arrow | null
+  {
+    const bestMove = this.boardState.getPreviousMostRecentEval()?.bestMove;
+
+    if (bestMove)
+    {
+      const from = bestMove[0] + bestMove[1];
+      const to = bestMove[2] + bestMove[3];
+
+      const arrow = this.createArrow(from, to, "green", ArrowContext.Engine);
+
+      return arrow;
+    }
+
+    return null;
   }
   //#endregion
 
@@ -377,7 +419,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   onSquareLeftClick = () =>
   {
     this.resetClickedSquares();
-    this.arrows.length = 0;
+    this.arrows = this.arrows.filter( a => a.context == ArrowContext.Engine );
   }
 
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: PointerEvent })
@@ -748,29 +790,31 @@ export class Chessboard implements OnInit, AfterViewInit {
     };
   }
 
+
   animateMove(from: string, to: string, piece: string) 
   {
-    this.animatedPieceCoord = from;
-    const boardOffset = this.getBoardTopLeft();
     const fromCoords = this.getPiecePixelPosition(from);
     const toCoords = this.getPiecePixelPosition(to);
-
+    this.animatedPieceCoord = from;
     this.animatedPiece = piece;
-    this.animatedPieceX = fromCoords.x + boardOffset.left;
-    this.animatedPieceY = fromCoords.y + boardOffset.top;
-    //Wait a tick so the browser registers the initial position
-    setTimeout(() => {
-        this.animatedPieceX = toCoords.x + boardOffset.left;
-        this.animatedPieceY = toCoords.y + boardOffset.top;
-    }, 0);
 
-    //Remove the animated piece after animation completes
-    setTimeout(() => {
-        this.animatedPiece = "";
-        this.animatedPieceCoord = "";
-    }, this.animationDuration);
-}
+    this.animatedPieceX = fromCoords.x;
+    this.animatedPieceY = fromCoords.y;
 
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            this.animatedPieceX = toCoords.x;
+            this.animatedPieceY = toCoords.y;
+        });
+    });
+  }
+
+
+  onAnimationEnd() 
+  {
+    this.animatedPiece = "";
+    this.animatedPieceCoord = "";
+  }
   //#endregion
   
 }

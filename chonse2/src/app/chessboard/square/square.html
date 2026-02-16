@@ -19,7 +19,7 @@
 
     @if (piece != "" && showPiece)
     {
-        <img class="pieceImage" [src]="`piece/merida/${piece}.svg`" draggable="false">
+        <img alt="pieceImage" class="pieceImage" [src]="`piece/merida/${piece}.svg`" draggable="false">
     }
 
     @if (isLegalMove && piece == "")

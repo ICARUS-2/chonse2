@@ -9,6 +9,7 @@ import { MoveClassification } from '../engine/types/enums';
   styleUrl: './square.css',
 })
 export class Square {
+  MoveClassification = MoveClassification;
 
   @Input() coordinate: string = "";
   @Input() piece: string = PieceType.NONE;

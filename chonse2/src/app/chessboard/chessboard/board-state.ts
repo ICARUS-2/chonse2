@@ -2,7 +2,7 @@ import Chonse2 from "../../../lib/chonse2";
 import { GameScore } from "../../../lib/game-state";
 import { PieceColor } from "../../../lib/piece-color";
 import { PieceType } from "../../../lib/piece-type";
-import { EngineName } from "../engine/types/enums";
+import { EngineName, MoveClassification } from "../engine/types/enums";
 import { EvaluateGameParams, GameEval, PositionEval } from "../engine/types/eval";
 import { UciEngine } from "../engine/uciEngine";
 import { Arrow } from "./arrow";
@@ -104,7 +104,7 @@ export default class BoardState
     {
         if (this.divergenceStackPointer >= 0) 
         {
-            //return this.divergenceMoveStack[this.divergenceStackPointer];
+            return undefined;
         }
 
         //Otherwise, check the main move stack using the pointer
@@ -122,7 +122,7 @@ export default class BoardState
     {
         if (this.divergenceStackPointer >= 0) 
         {
-            //return this.divergenceMoveStack[this.divergenceStackPointer];
+            return undefined;
         }
 
         //Otherwise, check the main move stack using the pointer
@@ -509,7 +509,7 @@ export default class BoardState
                         {
                             const currentCandidate: string = candidateFromCoordinates[i]; 
                             const legalMoves = copyOfState.getLegalMoves(currentCandidate);
-
+                            
                             if (legalMoves.includes(move.toCoordinate))
                             {
                                 passingCandidates.push(currentCandidate);
@@ -522,7 +522,7 @@ export default class BoardState
                         }
 
                         //If we got this far, it's a valid move, push it.
-                        moveResult = copyOfState.completeMove(passingCandidates[0], move.toCoordinate);
+                        moveResult = copyOfState.completeMove(passingCandidates[0], move.toCoordinate, move.promotion ?? undefined);
                         moveResult.comment = commentStr;
                         commentStr = "";
 
@@ -566,6 +566,22 @@ export default class BoardState
             const evalResult = await this.engine.evaluateGame(params);
 
             this.eval = evalResult;
+        }
+
+        //Sanitizes any excellent moves that also appear as best moves.
+        for(let i = 0; i < this.mainMoveStack.length; i++)
+        {
+            const mv = this.mainMoveStack[i];
+            const ev = this.eval?.positions[i];
+            const previousEv = this.eval?.positions[i + 1]
+
+            const moveCoords = mv.fromCoord+mv.toCoord;
+            const bestCoords = ev?.bestMove;
+
+            if (moveCoords == bestCoords && (previousEv?.moveClassification == MoveClassification.Excellent || previousEv?.moveClassification == MoveClassification.Okay))
+            {
+                previousEv.moveClassification = MoveClassification.Best;
+            }
         }
     }
 

@@ -2,7 +2,14 @@
     <div class="boardOuterContainer" [class]="boardState.isFlipped ? 'boardOuterContainerFlipped' : ''">
         <app-board-player-info [playerName]="boardState.pgnHeaders.black" [playerElo]="boardState.pgnHeaders.blackElo" for="b" [clock]="getClockForPlayer('b')" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-board-player-info>
         <div #board class="boardContainerInner" [class]="boardState.isFlipped ? 'boardContainerInnerFlipped' : ''">
-            
+            @if(animatedPiece)
+            {
+                <img class="animatedPiece"
+                    [src]="`piece/merida/${animatedPiece}.svg`"
+                    [style.transform]="'translate(' + animatedPieceX + 'px,' + animatedPieceY + 'px)'"
+                    [style.transition]="'all ' + animationDuration + 'ms ease-in-out'"
+                    (transitionend)="onAnimationEnd()"/>
+            }
             <!-- ARROW OVERLAY -->
             <svg
                 class="arrowOverlay"
@@ -20,7 +27,20 @@
                             stroke-width="0.13"
                             marker-end="url(#arrowhead)" />
                     </ng-container>
+                }
 
+                @if (getEngineArrow(); as engineArrow)
+                {
+                    <ng-container>
+                        <line
+                            [attr.x1]="_getArrowCoords(engineArrow).x1"
+                            [attr.y1]="_getArrowCoords(engineArrow).y1"
+                            [attr.x2]="_getArrowCoords(engineArrow).x2"
+                            [attr.y2]="_getArrowCoords(engineArrow).y2"
+                            [attr.stroke]="engineArrow.color"
+                            stroke-width="0.13"
+                            marker-end="url(#arrowhead)" />
+                    </ng-container>
                 }
 
                 <defs>
@@ -78,6 +98,10 @@
                                 </div>
                             }
 
+                            @if(this.getMoveClassificationIconSource(this.COORDS[rankIndex][fileIndex]) != "")
+                            {
+                                <img alt="moveClassificationIcon" class="moveClassificationIcon" [src]="getMoveClassificationIconSource(this.COORDS[rankIndex][fileIndex])" draggable="false">
+                            }
                         </div>
                     }
                 </ng-container>
@@ -89,7 +113,7 @@
         <!--Show termiantion if exists -- Show either whose turn it is or the result + score.-->
         <p>{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " -- " : " -- "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</p>
 
-        <div class="d-flex">
+        <div class="d-flex movesAndAccuracies">
             <div class="algebraicContainer">
                 @for (item of boardState.mainMoveStack; track $index) 
                 {
@@ -165,14 +189,5 @@
             [src]="`piece/merida/${currentlyHeldPiece}.svg`"
             [style.left.px]="mouseX"
             [style.top.px]="mouseY">
-    }
-
-    @if(animatedPiece)
-    {
-        <img class="animatedPiece"
-            [src]="`piece/merida/${animatedPiece}.svg`"
-            [style.left.px]="animatedPieceX"
-            [style.top.px]="animatedPieceY"
-            [style.transition]="`all ${animationDuration}ms ease-in-out`" />
     }
 </div>
