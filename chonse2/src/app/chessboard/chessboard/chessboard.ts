@@ -769,29 +769,31 @@ export class Chessboard implements OnInit, AfterViewInit {
     };
   }
 
+
   animateMove(from: string, to: string, piece: string) 
   {
-    this.animatedPieceCoord = from;
-    const boardOffset = this.getBoardTopLeft();
     const fromCoords = this.getPiecePixelPosition(from);
     const toCoords = this.getPiecePixelPosition(to);
-
+    this.animatedPieceCoord = from;
     this.animatedPiece = piece;
-    this.animatedPieceX = fromCoords.x + boardOffset.left;
-    this.animatedPieceY = fromCoords.y + boardOffset.top;
-    //Wait a tick so the browser registers the initial position
-    setTimeout(() => {
-        this.animatedPieceX = toCoords.x + boardOffset.left;
-        this.animatedPieceY = toCoords.y + boardOffset.top;
-    }, 0);
 
-    //Remove the animated piece after animation completes
-    setTimeout(() => {
-        this.animatedPiece = "";
-        this.animatedPieceCoord = "";
-    }, this.animationDuration);
-}
+    this.animatedPieceX = fromCoords.x;
+    this.animatedPieceY = fromCoords.y;
 
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            this.animatedPieceX = toCoords.x;
+            this.animatedPieceY = toCoords.y;
+        });
+    });
+  }
+
+
+  onAnimationEnd() 
+  {
+    this.animatedPiece = "";
+    this.animatedPieceCoord = "";
+  }
   //#endregion
   
 }

@@ -2,7 +2,14 @@
     <div class="boardOuterContainer" [class]="boardState.isFlipped ? 'boardOuterContainerFlipped' : ''">
         <app-board-player-info [playerName]="boardState.pgnHeaders.black" [playerElo]="boardState.pgnHeaders.blackElo" for="b" [clock]="getClockForPlayer('b')" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-board-player-info>
         <div #board class="boardContainerInner" [class]="boardState.isFlipped ? 'boardContainerInnerFlipped' : ''">
-            
+            @if(animatedPiece)
+            {
+                <img class="animatedPiece"
+                    [src]="`piece/merida/${animatedPiece}.svg`"
+                    [style.transform]="'translate(' + animatedPieceX + 'px,' + animatedPieceY + 'px)'"
+                    [style.transition]="'all ' + animationDuration + 'ms ease-in-out'"
+                    (transitionend)="onAnimationEnd()"/>
+            }
             <!-- ARROW OVERLAY -->
             <svg
                 class="arrowOverlay"
@@ -169,14 +176,5 @@
             [src]="`piece/merida/${currentlyHeldPiece}.svg`"
             [style.left.px]="mouseX"
             [style.top.px]="mouseY">
-    }
-
-    @if(animatedPiece)
-    {
-        <img class="animatedPiece"
-            [src]="`piece/merida/${animatedPiece}.svg`"
-            [style.left.px]="animatedPieceX"
-            [style.top.px]="animatedPieceY"
-            [style.transition]="`all ${animationDuration}ms ease-in-out`" />
     }
 </div>
