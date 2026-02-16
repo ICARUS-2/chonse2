@@ -2,7 +2,7 @@ import Chonse2 from "../../../lib/chonse2";
 import { GameScore } from "../../../lib/game-state";
 import { PieceColor } from "../../../lib/piece-color";
 import { PieceType } from "../../../lib/piece-type";
-import { EngineName } from "../engine/types/enums";
+import { EngineName, MoveClassification } from "../engine/types/enums";
 import { EvaluateGameParams, GameEval, PositionEval } from "../engine/types/eval";
 import { UciEngine } from "../engine/uciEngine";
 import { Arrow } from "./arrow";
@@ -566,6 +566,25 @@ export default class BoardState
             const evalResult = await this.engine.evaluateGame(params);
 
             this.eval = evalResult;
+        }
+
+        console.log(this.mainMoveStack);
+        console.log(this.eval?.positions);
+
+        //Sanitizes any excellent moves that also appear as best moves.
+        for(let i = 0; i < this.mainMoveStack.length; i++)
+        {
+            const mv = this.mainMoveStack[i];
+            const ev = this.eval?.positions[i];
+            const previousEv = this.eval?.positions[i + 1]
+
+            const moveCoords = mv.fromCoord+mv.toCoord;
+            const bestCoords = ev?.bestMove;
+
+            if (moveCoords == bestCoords && previousEv?.moveClassification == MoveClassification.Excellent)
+            {
+                previousEv.moveClassification = MoveClassification.Best;
+            }
         }
     }
 
