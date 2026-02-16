@@ -567,7 +567,7 @@ export default class BoardState
 
             this.eval = evalResult;
         }
-        
+
         //Sanitizes any excellent moves that also appear as best moves.
         for(let i = 0; i < this.mainMoveStack.length; i++)
         {
@@ -578,7 +578,7 @@ export default class BoardState
             const moveCoords = mv.fromCoord+mv.toCoord;
             const bestCoords = ev?.bestMove;
 
-            if (moveCoords == bestCoords && previousEv?.moveClassification == MoveClassification.Excellent)
+            if (moveCoords == bestCoords && (previousEv?.moveClassification == MoveClassification.Excellent || previousEv?.moveClassification == MoveClassification.Okay))
             {
                 previousEv.moveClassification = MoveClassification.Best;
             }
