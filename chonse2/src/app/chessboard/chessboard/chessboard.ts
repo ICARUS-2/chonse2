@@ -209,6 +209,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     this.chessBoardService.deleteGame(this.gameId);
     this.chessBoardService.addGame(this.gameId, bs);
     this.boardState = this.chessBoardService.getGame(this.gameId);
+    this.arrows.length = 0;
   }
   //#endregion
 
@@ -293,6 +294,22 @@ export class Chessboard implements OnInit, AfterViewInit {
     return "";
   }
 
+  getEngineArrow() : Arrow | null
+  {
+    const bestMove = this.boardState.getPreviousMostRecentEval()?.bestMove;
+
+    if (bestMove)
+    {
+      const from = bestMove[0] + bestMove[1];
+      const to = bestMove[2] + bestMove[3];
+
+      const arrow = this.createArrow(from, to, "green", ArrowContext.Engine);
+
+      return arrow;
+    }
+
+    return null;
+  }
   //#endregion
 
   //Controls
@@ -402,7 +419,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   onSquareLeftClick = () =>
   {
     this.resetClickedSquares();
-    this.arrows.length = 0;
+    this.arrows = this.arrows.filter( a => a.context == ArrowContext.Engine );
   }
 
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: PointerEvent })
