@@ -14,5 +14,13 @@
             (ngModelChange)="handleClickToMoveSwitchPressed($event)"
         />
     </div>
+
+    <h3 class="text-primary">Analysis Engine</h3>
+    <select [(ngModel)]="selectedEngine" class="form-select" (ngModelChange)="handleDropdownSelectionChanged()">
+        @for(engine of Object.values(EngineName); track $index)
+        {
+            <option [value]="engine">{{EngineDisplayName.get(engine)}}</option>
+        }
+    </select>
         
 </div>

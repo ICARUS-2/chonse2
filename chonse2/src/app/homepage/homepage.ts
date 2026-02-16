@@ -6,7 +6,6 @@ import { ChessBoardService } from '../chessboard/chessboard/chess-board-service'
 import BoardState from '../chessboard/chessboard/board-state';
 import { BoardNames } from '../boards';
 import ChessComAPI from '../chessboard/api/chesscom-api';
-import { ChessComGame } from '../chessboard/api/chesscom-game';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
 
@@ -22,6 +21,7 @@ export class Homepage implements OnInit{
   username: string | undefined;
   gameId: string | undefined;
 
+  //TESTING PURPOSES
   testPieceState:Array<Array<string>> = [
     [ PieceType.BLACK_KING, PieceType.NONE, PieceType.WHITE_KING, PieceType.NONE, PieceType.NONE, PieceType.NONE,PieceType.NONE, PieceType.WHITE_BISHOP],
     [ PieceType.BLACK_QUEEN, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
@@ -32,6 +32,12 @@ export class Homepage implements OnInit{
     [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
     [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE]
   ];
+
+  progress: number = 0;
+  setProgress = (n: number) =>
+  {
+    this.progress = n;
+  }
 
   BoardNames = BoardNames;
 
@@ -59,7 +65,9 @@ export class Homepage implements OnInit{
         {
           try 
           {
-            this.gameService.addGame(BoardNames.Analysis, BoardState.parsePGN(game.pgn));
+            const boardState = BoardState.parsePGN(game.pgn);
+            boardState.doEvaluateGame = true;
+            this.gameService.addGame(BoardNames.Analysis, boardState);
             this.toastrService.success("Game import successful.");
           }
           catch(ex) //If PGN parse failed.
