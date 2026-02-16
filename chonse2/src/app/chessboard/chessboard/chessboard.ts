@@ -17,7 +17,7 @@ import Sound from './sound';
 import { ImportModal } from '../import-modal.ts/import-modal';
 import { ToastrService } from 'ngx-toastr';
 import { PgnComments } from './pgn-misc';
-import { EngineDisplayName, EngineName } from '../engine/types/enums';
+import { EngineDisplayName, EngineName, MoveClassification, moveClassificationLabels } from '../engine/types/enums';
 
 @Component({
   selector: 'app-chessboard',
@@ -209,7 +209,10 @@ export class Chessboard implements OnInit, AfterViewInit {
     this.chessBoardService.addGame(this.gameId, bs);
     this.boardState = this.chessBoardService.getGame(this.gameId);
   }
+  //#endregion
 
+  //eval
+  //#region 
   getEvalProgress() : number
   {
     return Number(this.boardState.evalProgress.toFixed(2));
@@ -228,6 +231,26 @@ export class Chessboard implements OnInit, AfterViewInit {
     }
     return "what the hell are you analyzing this with then?";
   }
+
+  getEngineMoveInfoText(): string
+  {
+    if (this.boardState.getMostRecentEval())
+    {
+      if (this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Opening)
+      {
+        return `${this.boardState.getMostRecentMove().notation} is an opening move`
+      }
+
+      if (this.boardState.getPreviousMostRecentEval())
+      {
+        const latestMoveNotation = this.boardState.getMostRecentMove().notation
+        const latestMoveClassification = this.boardState.getMostRecentEval()?.moveClassification ?? MoveClassification.None;
+        return `${latestMoveNotation} is ${moveClassificationLabels[latestMoveClassification]} - ${this.boardState.getPreviousMostRecentEval()?.bestMove} was the best move`;  
+      }
+    }
+    return "";
+  }
+
   //#endregion
 
   //Controls

@@ -114,22 +114,27 @@
                     }
                 }
             </div>
+            @if (this.boardState.eval)
+            {
             <div class="evalSectionRight">
-                @if (this.boardState.eval)
-                {
-                    <div class="d-flex">
-                        <div class="badge text-bg-light border d-inline-block">
-                            <h2>{{this.boardState.eval.estimatedElo?.white?.toFixed(0)}} / {{this.boardState.eval.accuracy.white.toFixed(1)}}%</h2>
-                        </div>
-                        
-                        <div class="m-2"></div>
 
-                        <div class="badge text-bg-dark">
-                            <h2>{{this.boardState.eval.estimatedElo?.black?.toFixed(0)}} / {{this.boardState.eval.accuracy.black.toFixed(1)}}%</h2>
-                        </div>
+                <div class="d-flex">
+                    <div class="badge text-bg-light border d-inline-block">
+                        <h2>{{this.boardState.eval.estimatedElo?.white?.toFixed(0)}} / {{this.boardState.eval.accuracy.white.toFixed(1)}}%</h2>
                     </div>
-                }
+                    
+                    <div class="m-2"></div>
+
+                    <div class="badge text-bg-dark">
+                        <h2>{{this.boardState.eval.estimatedElo?.black?.toFixed(0)}} / {{this.boardState.eval.accuracy.black.toFixed(1)}}%</h2>
                     </div>
+                </div>
+
+
+                <div>{{getEngineMoveInfoText()}}</div>
+                <div></div>
+            </div>
+            }
         </div>
             <div class="d-flex w-100 justify-content-between">
             <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>

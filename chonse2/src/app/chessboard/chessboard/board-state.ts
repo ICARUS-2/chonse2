@@ -3,7 +3,7 @@ import { GameScore } from "../../../lib/game-state";
 import { PieceColor } from "../../../lib/piece-color";
 import { PieceType } from "../../../lib/piece-type";
 import { EngineName } from "../engine/types/enums";
-import { EvaluateGameParams, GameEval } from "../engine/types/eval";
+import { EvaluateGameParams, GameEval, PositionEval } from "../engine/types/eval";
 import { UciEngine } from "../engine/uciEngine";
 import { Arrow } from "./arrow";
 import LocalStorageHelper from "./local-storage-helper";
@@ -98,6 +98,42 @@ export default class BoardState
 
         //If neither stack has a move (aka starting position), return a dummy move.
         return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE, comment: ""};
+    }
+
+    getMostRecentEval() : PositionEval | undefined
+    {
+        if (this.divergenceStackPointer >= 0) 
+        {
+            //return this.divergenceMoveStack[this.divergenceStackPointer];
+        }
+
+        //Otherwise, check the main move stack using the pointer
+        if (this.mainStackPointer > 0) { 
+            if (this.eval)
+            {
+                return this.eval.positions[this.mainStackPointer];
+            }
+        }
+
+        return undefined
+    }
+
+    getPreviousMostRecentEval(): PositionEval | undefined
+    {
+        if (this.divergenceStackPointer >= 0) 
+        {
+            //return this.divergenceMoveStack[this.divergenceStackPointer];
+        }
+
+        //Otherwise, check the main move stack using the pointer
+        if (this.mainStackPointer > 0) { 
+            if (this.eval)
+            {
+                return this.eval.positions[this.mainStackPointer - 1];
+            }
+        }
+
+        return undefined
     }
 
     getFutureMove(): IMoveResult 

@@ -1,6 +1,6 @@
 import { EvaluateGameParams, LineEval, PositionEval } from "../types/eval";
 //import { Game, Player } from "@/types/game";
-import { Chess, Color, PieceSymbol, Square } from "../helpers/chess";
+import { BLACK, Chess, Color, PieceSymbol, Square, WHITE } from "../helpers/chess";
 import { getPositionWinPercentage } from "../helpers/winPercentage";
 //import { PieceColor } from "../../../../lib/piece-color";
 import { PieceType } from "../../../../lib/piece-type";
@@ -92,15 +92,16 @@ export const uciMoveParams = (
 
 //CUSTOM WRITTEN FOR CHONSE2 LIBRARY
 export const uciMoveParams2 = (uciMove: string, turn: Color): {from: Square; to: Square; promotion?: string | undefined;} => {
+
   if (uciMove == "O-O" || uciMove == "O-O+" || uciMove == "O-O#")
   {
-    return turn ? {from: Chonse2.WHITE_KING_SQUARE, to: Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE} 
+    return turn === WHITE? {from: Chonse2.WHITE_KING_SQUARE, to: Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE} 
                 : {from: Chonse2.BLACK_KING_SQUARE, to: Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE}
   }
 
   if (uciMove == "O-O-O" || uciMove == "O-O-O+" || uciMove == "O-O-O#")
   {
-    return turn ? {from: Chonse2.WHITE_KING_SQUARE, to: Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE} 
+    return turn === BLACK? {from: Chonse2.WHITE_KING_SQUARE, to: Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE} 
                 : {from: Chonse2.BLACK_KING_SQUARE, to: Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE}
   }
   
@@ -201,7 +202,7 @@ export const getIsPieceSacrifice = (
     try {
       const fullMove = game.move(uciMoveParams2(move, game.turn()));
       if (fullMove.captured) {
-        //capturedPieces[fullMove.color].push(fullMove.captured);
+        capturedPieces[fullMove.color].push(fullMove.captured);
         nonCapturingMovesTemp = 1;
       } else {
         nonCapturingMovesTemp--;

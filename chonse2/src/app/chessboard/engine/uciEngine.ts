@@ -20,6 +20,7 @@ import { Stockfish11 } from "./engines/stockfish11";
 import { Stockfish18Lite } from "./engines/stockfish18";
 import { Stockfish17_1 } from "./engines/stockfish17_1";
 
+
 export class UciEngine {
   static getEngine(engineName: EngineName)
   {
@@ -34,6 +35,7 @@ export class UciEngine {
     }
   }
 
+  static readonly DEFAULT_DEPTH = 14;
   public readonly name: EngineName;
   private workers: EngineWorker[] = [];
   private workerQueue: WorkerJob[] = [];
@@ -260,7 +262,7 @@ export class UciEngine {
   public async evaluateGame({
     fens,
     uciMoves,
-    depth = 16,
+    depth = UciEngine.DEFAULT_DEPTH,
     multiPv = this.multiPv,
     setEvaluationProgress,
     playersRatings,
@@ -351,7 +353,7 @@ export class UciEngine {
 
   private async evaluatePosition(
     fen: string,
-    depth = 16,
+    depth = UciEngine.DEFAULT_DEPTH,
     workersNb: number
   ): Promise<PositionEval> {
     /*
@@ -375,7 +377,7 @@ export class UciEngine {
 
   public async evaluatePositionWithUpdate({
     fen,
-    depth = 16,
+    depth = UciEngine.DEFAULT_DEPTH,
     multiPv = this.multiPv,
     setPartialEval,
   }: EvaluatePositionWithUpdateParams): Promise<PositionEval> {
@@ -416,7 +418,7 @@ export class UciEngine {
   public async getEngineNextMove(
     fen: string,
     elo: number,
-    depth = 16
+    depth = UciEngine.DEFAULT_DEPTH
   ): Promise<string | undefined> {
     this.throwErrorIfNotReady();
 
