@@ -1,16 +1,16 @@
 
 export enum MoveClassification 
 {
-  Blunder = "blunder",
-  Mistake = "mistake",
-  Inaccuracy = "inaccuracy",
-  Okay = "okay",
-  Excellent = "excellent",
-  Best = "best",
-  Forced = "forced",
-  Opening = "opening",
-  Perfect = "perfect",
   Splendid = "luminous",
+  Perfect = "perfect",
+  Best = "best",
+  Excellent = "excellent",
+  Okay = "okay",
+  Inaccuracy = "inaccuracy",
+  Mistake = "mistake",
+  Blunder = "blunder",
+  Opening = "opening",
+  Forced = "forced",
   None = "none"
 }
 
@@ -19,7 +19,7 @@ export const moveClassificationLabels: Record<MoveClassification, string> = {
   [MoveClassification.Opening]: "an opening move",
   [MoveClassification.Forced]: "forced",
   [MoveClassification.Splendid]: "LUMINOUS 🌕!!!",
-  [MoveClassification.Perfect]: "the only good move !",
+  [MoveClassification.Perfect]: "the only good move",
   [MoveClassification.Best]: "the best move",
   [MoveClassification.Excellent]: "excellent",
   [MoveClassification.Okay]: "an okay move",

@@ -18,7 +18,6 @@ import { ImportModal } from '../import-modal.ts/import-modal';
 import { ToastrService } from 'ngx-toastr';
 import { PgnComments } from './pgn-misc';
 import { EngineDisplayName, EngineName, MoveClassification, moveClassificationLabels } from '../engine/types/enums';
-
 @Component({
   selector: 'app-chessboard',
   imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar],
@@ -27,11 +26,14 @@ import { EngineDisplayName, EngineName, MoveClassification, moveClassificationLa
 })
 export class Chessboard implements OnInit, AfterViewInit {
   pieceType = PieceType;
-  pieceColor = PieceColor;
-  gameOverReason = GameOverReason;
-  localStorageHelper = LocalStorageHelper;
+  PieceColor = PieceColor;
+  GameOverReason = GameOverReason;
+  LocalStorageHelper = LocalStorageHelper;
   EngineName = EngineName;
   EngineDisplayName = EngineDisplayName;
+  Object = Object;
+  MoveClassification = MoveClassification;
+  Chessboard = Chessboard;
 
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
@@ -62,6 +64,21 @@ export class Chessboard implements OnInit, AfterViewInit {
   animatedPieceY: number = 0;
   animationDuration: number = 100; //ms
   animatedPieceCoord: string = "";
+  static readonly moveClassificationColors: Map<string, string> = new Map<string, string>( 
+    [
+      [MoveClassification.Opening, "Gray"],
+      [MoveClassification.Forced, "Gray"],
+      [MoveClassification.Splendid, "MediumTurquoise"],
+      [MoveClassification.Perfect, "Indigo"],
+      [MoveClassification.Best, "LimeGreen"],
+      [MoveClassification.Excellent, "LimeGreen"],
+      [MoveClassification.Okay, "OliveDrab"],
+      [MoveClassification.Inaccuracy, "Gold"],
+      [MoveClassification.Mistake, "DarkOrange"],
+      [MoveClassification.Blunder, "DarkRed"],
+      [MoveClassification.None, "None"]
+    ]
+  )
   
   //FUNCTIONAL
   clickToMove: boolean = false;
@@ -97,7 +114,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     setTimeout(() => this.updateBoardSize());
   }
 
-  completeMove(fromSquare: string, toSquare: string)
+  async completeMove(fromSquare: string, toSquare: string)
   {
     const piece = this.currentlyHeldPiece;
     if (!this.currentLegalMoves.includes(toSquare))
@@ -124,17 +141,17 @@ export class Chessboard implements OnInit, AfterViewInit {
       modalRef.componentInstance.color = promotionPieceColor;
 
       //gets the result of that dialog.
-      modalRef.result.then( (result) =>
+      modalRef.result.then( async (result) =>
       {
         //perform the move and promote to what the user selected.
         moveResult = stateCopy.completeMove(fromSquare, toSquare, result);
-        this.boardState.pushState(stateCopy, moveResult);
+        await this.boardState.pushState(stateCopy, moveResult);
       } )
-      .catch( () =>
+      .catch( async () =>
       {
         //if the dialog was forced closed, promote to queen by default.
         moveResult = stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
-        this.boardState.pushState(stateCopy, moveResult);
+        await this.boardState.pushState(stateCopy, moveResult);
       } )
       .finally()
       {
@@ -146,7 +163,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     {
 
       //perform the move
-      moveResult = stateCopy.completeMove(fromSquare, toSquare, piece);
+      moveResult = await stateCopy.completeMove(fromSquare, toSquare, piece);
       this.boardState.pushState(stateCopy, moveResult);
         
       //Resets the state of the from/to squares and current piece back to nothing.
@@ -275,7 +292,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     return MoveClassification.None;
   }
 
-  getMoveClassificationIconSource(coord: string): string 
+  getMoveClassificationIconSourceForCoord(coord: string): string 
   {
     const lastEval = this.boardState.getMostRecentEval();
     
@@ -287,11 +304,16 @@ export class Chessboard implements OnInit, AfterViewInit {
 
         if (mostRecentMove.toCoord == coord)
         {
-          return "icons/" + lastEval.moveClassification + ".png";   
+          return this.getIconSourceForMoveClassification(lastEval.moveClassification);
         }   
       }
     }
     return "";
+  }
+
+  getIconSourceForMoveClassification(classification: MoveClassification)
+  {
+    return "icons/" + classification + ".png";
   }
 
   getEngineArrow() : Arrow | null
@@ -310,6 +332,7 @@ export class Chessboard implements OnInit, AfterViewInit {
 
     return null;
   }
+
   //#endregion
 
   //Controls
@@ -365,7 +388,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   areForwardButtonsEnabled(): boolean 
   {
     //If we are deviating from the main game (by going back) then you can't logically go forward.
-    if (this.boardState.divergenceStack.length != 0)
+    if (this.boardState.divergenceStateStack.length != 0)
     {
       return false;
     }
@@ -381,7 +404,7 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   moveClicked(index: number)
   {
-    if (this.boardState.divergenceStack.length != 0)
+    if (this.boardState.divergenceStateStack.length != 0)
     { 
       this.boardState.goBackToStart();
     }
