@@ -692,7 +692,7 @@ export default class BoardState
     {
         const fens: string[] = this.mainStateStack.map( c2 => c2.getFEN() );
         const uciMoves: string[] = this.mainMoveStack.map(m => m.notation);
-        const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH);
+        const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
 
         return {fens, uciMoves, depth};
     }
