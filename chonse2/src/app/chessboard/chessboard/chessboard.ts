@@ -18,7 +18,6 @@ import { ImportModal } from '../import-modal.ts/import-modal';
 import { ToastrService } from 'ngx-toastr';
 import { PgnComments } from './pgn-misc';
 import { EngineDisplayName, EngineName, MoveClassification, moveClassificationLabels } from '../engine/types/enums';
-
 @Component({
   selector: 'app-chessboard',
   imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar],
@@ -27,11 +26,14 @@ import { EngineDisplayName, EngineName, MoveClassification, moveClassificationLa
 })
 export class Chessboard implements OnInit, AfterViewInit {
   pieceType = PieceType;
-  pieceColor = PieceColor;
-  gameOverReason = GameOverReason;
-  localStorageHelper = LocalStorageHelper;
+  PieceColor = PieceColor;
+  GameOverReason = GameOverReason;
+  LocalStorageHelper = LocalStorageHelper;
   EngineName = EngineName;
   EngineDisplayName = EngineDisplayName;
+  Object = Object;
+  MoveClassification = MoveClassification;
+  Chessboard = Chessboard;
 
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
@@ -62,6 +64,21 @@ export class Chessboard implements OnInit, AfterViewInit {
   animatedPieceY: number = 0;
   animationDuration: number = 100; //ms
   animatedPieceCoord: string = "";
+  static readonly moveClassificationColors: Map<string, string> = new Map<string, string>( 
+    [
+      [MoveClassification.Opening, "Gray"],
+      [MoveClassification.Forced, "Gray"],
+      [MoveClassification.Splendid, "MediumTurquoise"],
+      [MoveClassification.Perfect, "Indigo"],
+      [MoveClassification.Best, "LimeGreen"],
+      [MoveClassification.Excellent, "LimeGreen"],
+      [MoveClassification.Okay, "OliveDrab"],
+      [MoveClassification.Inaccuracy, "Gold"],
+      [MoveClassification.Mistake, "DarkOrange"],
+      [MoveClassification.Blunder, "DarkRed"],
+      [MoveClassification.None, "None"]
+    ]
+  )
   
   //FUNCTIONAL
   clickToMove: boolean = false;
@@ -310,6 +327,7 @@ export class Chessboard implements OnInit, AfterViewInit {
 
     return null;
   }
+
   //#endregion
 
   //Controls

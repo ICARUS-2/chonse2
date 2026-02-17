@@ -1,16 +1,16 @@
 
 export enum MoveClassification 
 {
-  Blunder = "blunder",
-  Mistake = "mistake",
-  Inaccuracy = "inaccuracy",
-  Okay = "okay",
-  Excellent = "excellent",
-  Best = "best",
-  Forced = "forced",
-  Opening = "opening",
-  Perfect = "perfect",
   Splendid = "luminous",
+  Perfect = "perfect",
+  Best = "best",
+  Excellent = "excellent",
+  Okay = "okay",
+  Inaccuracy = "inaccuracy",
+  Mistake = "mistake",
+  Blunder = "blunder",
+  Opening = "opening",
+  Forced = "forced",
   None = "none"
 }
 

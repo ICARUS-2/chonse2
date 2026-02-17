@@ -7,6 +7,7 @@ import { EvaluateGameParams, GameEval, PositionEval } from "../engine/types/eval
 import { UciEngine } from "../engine/uciEngine";
 import { Arrow } from "./arrow";
 import LocalStorageHelper from "./local-storage-helper";
+import MoveClassificationList from "./move-classification-list";
 import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
 
 export default class BoardState
@@ -28,8 +29,10 @@ export default class BoardState
     eval: GameEval | undefined = undefined;
     evalProgress: number = 0;
     engine: UciEngine | undefined = undefined;
+    whiteMoveClassificationList: MoveClassificationList = new MoveClassificationList();
+    blackMoveClassificationList: MoveClassificationList = new MoveClassificationList();
 
-    //Costmetic stuff.
+    //Cosmetic stuff.
     squareHighlightStatuses: Array<Array<boolean>>;
     arrows: Array<Arrow>;
     isFlipped: boolean;
@@ -54,6 +57,7 @@ export default class BoardState
         this.divergenceMoveStack = [];
     }
 
+    //#region STATES
     pushState(state: Chonse2, move: IMoveResult)
     {
         //If the pointer was moved back, diverge from the main path.
@@ -82,7 +86,9 @@ export default class BoardState
         //Otherwise, just get the current main state.
         return this.mainStateStack[this.mainStackPointer];    
     }
+    //#endregion
     
+    //#region MOVES
     getMostRecentMove(): IMoveResult 
     {
         //If we have any moves in the divergence stack, return the most recent one
@@ -100,6 +106,26 @@ export default class BoardState
         return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE, comment: ""};
     }
 
+    getFutureMove(): IMoveResult 
+    {
+        //If there are moves in the divergence stack ahead of the pointer
+        if (this.divergenceStackPointer + 1 < this.divergenceMoveStack.length) 
+        {
+            return this.divergenceMoveStack[this.divergenceStackPointer + 1];
+        }
+
+        //Otherwise, check the main move stack using the pointer
+        if (this.mainStackPointer < this.mainMoveStack.length) 
+        {
+            return this.mainMoveStack[this.mainStackPointer];
+        }
+
+        //If no moves ahead, return a dummy move
+        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE, comment: "" };
+    }
+    //#endregion
+
+    //#region EVAL
     getMostRecentEval() : PositionEval | undefined
     {
         if (this.divergenceStackPointer >= 0) 
@@ -135,25 +161,9 @@ export default class BoardState
 
         return undefined
     }
+    //#endregion
 
-    getFutureMove(): IMoveResult 
-    {
-        //If there are moves in the divergence stack ahead of the pointer
-        if (this.divergenceStackPointer + 1 < this.divergenceMoveStack.length) 
-        {
-            return this.divergenceMoveStack[this.divergenceStackPointer + 1];
-        }
-
-        //Otherwise, check the main move stack using the pointer
-        if (this.mainStackPointer < this.mainMoveStack.length) 
-        {
-            return this.mainMoveStack[this.mainStackPointer];
-        }
-
-        //If no moves ahead, return a dummy move
-        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE, comment: "" };
-    }
-
+    //#region STACK TRAVERSAL
     goBackToStart()
     {
         //Simply back up to the first move.
@@ -217,6 +227,7 @@ export default class BoardState
         //If we are going through the main game and we aren't at the end, go to the very end.
         this.mainStackPointer = this.mainStateStack.length - 1;
     }
+    //#endregion
 
     static parsePGN(pgn: string, setAnalyzeFlag: boolean = false): BoardState
     {
@@ -550,17 +561,21 @@ export default class BoardState
 
     async evaluateGame( /*setProgress: (value: number) => void*/ ): Promise<void> 
     {
+        //Don't evaluate it if the flag hasn't been set.
         if (!this.doEvaluateGame)
         {   
             return;
         }
 
+        //Will initialize the engine based on user preference.
         await this.setEngineIfNotExists();
 
+        //Sets up the ratings and progress setter.
         const params = this.getEvaluateGameParams();
         params.setEvaluationProgress = ( (value: number) => this.evalProgress = value);
         params.playersRatings = this.pgnHeaders.whiteElo && this.pgnHeaders.blackElo ? {white: Number(this.pgnHeaders.whiteElo), black: Number(this.pgnHeaders.blackElo)} : {}
 
+        //Evaluate the game.
         if (this.engine)
         {
             const evalResult = await this.engine.evaluateGame(params);
@@ -583,6 +598,27 @@ export default class BoardState
                 previousEv.moveClassification = MoveClassification.Best;
             }
         }
+
+        //Computes how many moves of each classification there are
+        Object.values(MoveClassification).forEach( v => 
+        {
+            this.whiteMoveClassificationList.moves.set(v, []);
+            this.blackMoveClassificationList.moves.set(v, [])
+        })
+
+        let turn = !this.mainStateStack[0].turn;
+
+        this.eval?.positions.forEach( (pos, idx) =>
+        {
+            const map = turn ? this.whiteMoveClassificationList.moves : this.blackMoveClassificationList.moves;
+
+            const correspondingArray = map.get(pos.moveClassification ?? MoveClassification.None);
+            correspondingArray?.push(idx);
+
+            turn = !turn;
+        })
+        console.log(this.whiteMoveClassificationList.moves);
+        console.log(this.blackMoveClassificationList.moves);
     }
 
     async setEngineIfNotExists()

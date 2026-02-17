@@ -72,10 +72,10 @@
                                 [isDark]="(rankIndex + fileIndex) % 2 == 1"
                                 [showFile]="rankIndex == rank.length - 1"
                                 [showRank]="fileIndex == 0"
-                                [showPiece]="animatedPieceCoord ? this.COORDS[rankIndex][fileIndex] != animatedPieceCoord : localStorageHelper.getBoolean(localStorageHelper.CLICK_TO_MOVE) ? true : this.COORDS[rankIndex][fileIndex] != fromSquare"
+                                [showPiece]="animatedPieceCoord ? this.COORDS[rankIndex][fileIndex] != animatedPieceCoord : LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE) ? true : this.COORDS[rankIndex][fileIndex] != fromSquare"
                                 [isFlipped]="boardState.isFlipped"
                                 [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
-                                [isInCheck]="(boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState.getCurrentState().isInCheck(pieceColor.WHITE)) || (boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState.getCurrentState().isInCheck(pieceColor.BLACK)) "
+                                [isInCheck]="(boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState.getCurrentState().isInCheck(PieceColor.WHITE)) || (boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState.getCurrentState().isInCheck(PieceColor.BLACK)) "
                                 [isClicked]="getRightClickedStatusForSquare(this.COORDS[rankIndex][fileIndex])"
                                 [moveClassification]="getMoveClassificationForSquare(this.COORDS[rankIndex][fileIndex])"
                                 (mouseDown)="onSquareMouseDown($event)"
@@ -128,7 +128,7 @@
             <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>
             <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
         </div> 
-        <p>{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " -- " : " -- "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</p>
+        <p>{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " - " : " - "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</p>
         <div class="d-flex movesAndAccuracies">
             <div class="algebraicContainer">
                 @for (item of boardState.mainMoveStack; track $index) 
@@ -171,14 +171,38 @@
                     </div>
                 </div>
 
+                <div class="engineMoveInfoText">{{getEngineMoveInfoText()}}</div>
 
-                <div>{{getEngineMoveInfoText()}}</div>
+                <table class="moveClassificationsList">
+                    <tr>
+                        <th>{{this.boardState.pgnHeaders.white}}</th>
+                        <th>-</th>
+                        <th>{{this.boardState.pgnHeaders.black}}</th>
+                    </tr>
+                    @for( item of Object.values(MoveClassification); track $index )
+                    {
+                        @if (item != MoveClassification.None)
+                        {
+                            <tr>
+                                <td [ngStyle]="{`color` : Chessboard.moveClassificationColors.get(item)}">
+                                    {{boardState.whiteMoveClassificationList.getFromString(item).length}}
+                                </td>
+                                <td>
+                                    <img class="moveClassificationListIcon" [src]='`icons/${item}.png`'>
+                                </td>
+                                <td [ngStyle]="{`color` : Chessboard.moveClassificationColors.get(item)}">
+                                    {{boardState.blackMoveClassificationList.getFromString(item).length}}
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
             </div>
             }
         </div>
 
 
-        <!--EVAL-->
+        <!--PROGRESS BAR-->
         @if( this.boardState.evalProgress > 0 && this.boardState.evalProgress < 97.1)
         {
             <div >

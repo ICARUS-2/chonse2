@@ -171,11 +171,6 @@
     z-index: 100;
 }
 
-.animatedPieceFlipped
-{
-  
-}
-
 .moveClassificationIcon
 {
   position: absolute;
@@ -198,6 +193,21 @@
   inset: 0; 
   pointer-events: none; 
   z-index: 2;
+}
+
+.engineMoveInfoText
+{
+  min-height: 3vmin;
+}
+
+.moveClassificationsList
+{
+  text-align: center;
+}
+
+.moveClassificationListIcon
+{
+  width: 2vmin;
 }
 
 @media screen and (max-width: 1200px) 
