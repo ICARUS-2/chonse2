@@ -207,8 +207,9 @@
                             </div>
                         </th>
                         <th>
-                            -
+                        
                         </th>
+                        <th></th>
                         <th>
                             <div class="badge text-bg-dark border d-inline-block">
                                 {{this.boardState.pgnHeaders.black}}
@@ -219,14 +220,17 @@
                     {
                         @if (item != MoveClassification.None)
                         {
-                            <tr>
-                                <td [ngStyle]="{`color` : Chessboard.moveClassificationColors.get(item)}">
+                            <tr class="align-middle" [ngStyle]="{`color` : Chessboard.moveClassificationColors.get(item)}">
+                                <td class="pe-4" style="text-align: right;">
                                     {{boardState.whiteMoveClassificationList.getFromString(item).length}}
                                 </td>
                                 <td>
                                     <img class="moveClassificationListIcon" [src]='`icons/${item}.png`'>
                                 </td>
-                                <td [ngStyle]="{`color` : Chessboard.moveClassificationColors.get(item)}">
+                                <td style="text-align: left;">
+                                    &nbsp;&nbsp;{{item}}
+                                </td>
+                                <td class="ps-4" style="text-align: left;">
                                     {{boardState.blackMoveClassificationList.getFromString(item).length}}
                                 </td>
                             </tr>

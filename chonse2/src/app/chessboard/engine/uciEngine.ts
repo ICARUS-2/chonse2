@@ -274,7 +274,7 @@ export class UciEngine {
         positionResult.moveClassification = MoveClassification.Best;
       }
     }
-    return previousPositionResult;
+    return positionResult;
   }
 
   public async evaluateGame({

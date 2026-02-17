@@ -19,7 +19,7 @@ export const moveClassificationLabels: Record<MoveClassification, string> = {
   [MoveClassification.Opening]: "an opening move",
   [MoveClassification.Forced]: "forced",
   [MoveClassification.Splendid]: "LUMINOUS 🌕!!!",
-  [MoveClassification.Perfect]: "the only good move !",
+  [MoveClassification.Perfect]: "the only good move",
   [MoveClassification.Best]: "the best move",
   [MoveClassification.Excellent]: "excellent",
   [MoveClassification.Okay]: "an okay move",
