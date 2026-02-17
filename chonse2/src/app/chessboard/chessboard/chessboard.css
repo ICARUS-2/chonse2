@@ -148,8 +148,8 @@
 {
   padding: 5px;
   border: 1px solid blue;
-  height: 40vmin;
-  width: 30vmin;
+  height: 50vmin;
+  width: 40vmin;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -207,7 +207,12 @@
 
 .moveClassificationListIcon
 {
-  width: 2vmin;
+  width: 4vmin;
+}
+
+.inlineMoveIcon
+{
+  width: 3vmin;
 }
 
 @media screen and (max-width: 1200px) 
@@ -227,5 +232,15 @@
   {
     flex-direction: column;
     min-height: 60vmin;
+  }
+
+  .evalTextData
+  {
+    font-size: small;
+  }
+
+  .algebraicContainer
+  {
+    width: 100%;
   }
 }

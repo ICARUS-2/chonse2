@@ -102,10 +102,10 @@
                                 </div>
                             }
 
-                            @if(this.getMoveClassificationIconSource(this.COORDS[rankIndex][fileIndex]) != "")
+                            @if(this.getMoveClassificationIconSourceForCoord(this.COORDS[rankIndex][fileIndex]) != "")
                             {
                                 <div class="moveClassificationIconOverlay" [ngClass]="{'moveClassificationIconOverlayFlipped': boardState.isFlipped}">
-                                    <img alt="moveClassificationIcon" class="moveClassificationIcon" [src]="getMoveClassificationIconSource(this.COORDS[rankIndex][fileIndex])" draggable="false">
+                                    <img alt="moveClassificationIcon" class="moveClassificationIcon" [src]="getMoveClassificationIconSourceForCoord(this.COORDS[rankIndex][fileIndex])" draggable="false">
                                 </div>
                             }
                         </div>
@@ -118,42 +118,62 @@
     <div class="boardControls p-2">
         <!--Show termiantion if exists -- Show either whose turn it is or the result + score.-->
         <div class="boardControlButtons">
+            <div class="btn btn-primary controlButton" (click)="handleFlipClicked()">↑↓</div>
             <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleBackButtonClicked()">&lt;&lt;-</div>
             <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleBackButtonClicked()">&lt;</div>
             <div class="btn btn-lg btn-primary controlButton" [ngClass]="areForwardButtonsEnabled() ? '' : 'disabled'" (click)="handleForwardButtonClicked()">></div>
             <div class="btn btn-lg btn-primary controlButton" [ngClass]="areForwardButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleForwardButtonClicked()">->></div>
         </div>
-        <div class="btn btn-primary controlButton" (click)="handleFlipClicked()">↑↓</div>
         <div class="d-flex w-100 justify-content-between">
             <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>
             <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
         </div> 
-        <p>{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " - " : " - "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</p>
+        <p class="evalTextData">{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " - " : " - "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</p>
         <div class="d-flex movesAndAccuracies">
             <div class="algebraicContainer">
-                @for (item of boardState.mainMoveStack; track $index) 
-                {
-                    @if ($index % 2 == 0)
+                <table class="w-100">
+                    @for (item of boardState.mainMoveStack; track $index) 
                     {
-                        <div>
-                            <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
-                            <div
-                                class="d-inline" 
-                                (click)="moveClicked($index + 1)"
-                                [ngClass]="{
-                                    'text-primary' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length == 0,
-                                    'text-danger' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length != 0}"
-                                    >{{item.notation}} 
-                                </div>
-                            <div class="d-inline" 
-                                (click)="moveClicked($index + 2)"
-                                [ngClass]="{
-                                    'text-primary' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length == 0,
-                                    'text-danger' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length != 0}"
-                                    >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index + 1].notation}} </div>
-                        </div>   
+                        @if ($index % 2 == 0)
+                        {
+                            <tr class="d-flex justify-content-between w-100">
+                                <td>
+                                    <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
+                                </td>
+
+                                <td>
+                                    <div
+                                    class="d-inline" 
+                                    (click)="moveClicked($index + 1)"
+                                    [ngClass]="{
+                                        'text-primary' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length == 0,
+                                        'text-danger' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStack.length != 0}"
+                                        >{{item.notation}} 
+                                    </div>
+
+                                    @if (this.boardState.eval)
+                                    {
+                                        <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(this.boardState.eval.positions[$index + 1].moveClassification ?? MoveClassification.None)">
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="d-inline" 
+                                    (click)="moveClicked($index + 2)"
+                                    [ngClass]="{
+                                        'text-primary' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length == 0,
+                                        'text-danger' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStack.length != 0}"
+                                        >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index].notation}} </div>
+
+                                    @if (this.boardState.eval)
+                                    {
+                                        <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(this.boardState.eval.positions[$index + 2].moveClassification ?? MoveClassification.None)">
+                                    }
+                                </td>
+                            </tr>
+                        }
                     }
-                }
+                </table>
             </div>
             @if (this.boardState.eval)
             {
@@ -161,23 +181,33 @@
 
                 <div class="d-flex">
                     <div class="badge text-bg-light border d-inline-block">
-                        <h2>{{this.boardState.eval.estimatedElo?.white?.toFixed(0)}} / {{this.boardState.eval.accuracy.white.toFixed(1)}}%</h2>
+                        <h3>{{this.boardState.eval.estimatedElo?.white?.toFixed(0)}} / {{this.boardState.eval.accuracy.white.toFixed(1)}}%</h3>
                     </div>
                     
                     <div class="m-2"></div>
 
                     <div class="badge text-bg-dark">
-                        <h2>{{this.boardState.eval.estimatedElo?.black?.toFixed(0)}} / {{this.boardState.eval.accuracy.black.toFixed(1)}}%</h2>
+                        <h3>{{this.boardState.eval.estimatedElo?.black?.toFixed(0)}} / {{this.boardState.eval.accuracy.black.toFixed(1)}}%</h3>
                     </div>
                 </div>
 
-                <div class="engineMoveInfoText">{{getEngineMoveInfoText()}}</div>
+                <div class="evalTextData engineMoveInfoText">{{getEngineMoveInfoText()}}</div>
 
                 <table class="moveClassificationsList">
                     <tr>
-                        <th>{{this.boardState.pgnHeaders.white}}</th>
-                        <th>-</th>
-                        <th>{{this.boardState.pgnHeaders.black}}</th>
+                        <th>
+                            <div class="badge text-bg-light border d-inline-block">
+                                {{this.boardState.pgnHeaders.white}}
+                            </div>
+                        </th>
+                        <th>
+                            -
+                        </th>
+                        <th>
+                            <div class="badge text-bg-dark border d-inline-block">
+                                {{this.boardState.pgnHeaders.black}}
+                            </div>
+                        </th>
                     </tr>
                     @for( item of Object.values(MoveClassification); track $index )
                     {

@@ -292,7 +292,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     return MoveClassification.None;
   }
 
-  getMoveClassificationIconSource(coord: string): string 
+  getMoveClassificationIconSourceForCoord(coord: string): string 
   {
     const lastEval = this.boardState.getMostRecentEval();
     
@@ -304,11 +304,16 @@ export class Chessboard implements OnInit, AfterViewInit {
 
         if (mostRecentMove.toCoord == coord)
         {
-          return "icons/" + lastEval.moveClassification + ".png";   
+          return this.getIconSourceForMoveClassification(lastEval.moveClassification);
         }   
       }
     }
     return "";
+  }
+
+  getIconSourceForMoveClassification(classification: MoveClassification)
+  {
+    return "icons/" + classification + ".png";
   }
 
   getEngineArrow() : Arrow | null
