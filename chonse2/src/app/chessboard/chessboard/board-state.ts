@@ -91,6 +91,14 @@ export default class BoardState
         }
         else //If the pointer is at the top of the stack, continue to add to it.
         {
+            if (this.engine)
+            {
+                const previousState = this.mainStateStack[this.mainStackPointer];
+                const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move);
+                this.eval?.positions.push(resultOfEval);
+            }
+
+
             this.mainStateStack.push(state);
             this.mainMoveStack.push(move);
             this.mainStackPointer++;
@@ -580,7 +588,7 @@ export default class BoardState
         boardState.pgnHeaders = pgnHeaders;
         boardState.mainMoveStack = moveStack;
         boardState.mainStateStack = states;
-        boardState.isReadOnly = true;
+        boardState.isReadOnly = false;
         
         boardState.doEvaluateGame = setAnalyzeFlag;
 

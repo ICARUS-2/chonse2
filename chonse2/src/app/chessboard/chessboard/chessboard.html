@@ -128,7 +128,7 @@
             <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>
             <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
         </div> 
-        <p class="evalTextData">{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " - " : " - "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</p>
+        <p class="evalTextData">{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " - " : " - "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</p>
         <div class="d-flex movesAndAccuracies">
             <div class="algebraicContainer">
                 <table class="w-100">
