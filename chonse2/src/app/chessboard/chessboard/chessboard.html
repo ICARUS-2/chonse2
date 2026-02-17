@@ -117,8 +117,18 @@
     </div>
     <div class="boardControls p-2">
         <!--Show termiantion if exists -- Show either whose turn it is or the result + score.-->
+        <div class="boardControlButtons">
+            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleBackButtonClicked()">&lt;&lt;-</div>
+            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleBackButtonClicked()">&lt;</div>
+            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areForwardButtonsEnabled() ? '' : 'disabled'" (click)="handleForwardButtonClicked()">></div>
+            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areForwardButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleForwardButtonClicked()">->></div>
+        </div>
+        <div class="btn btn-primary controlButton" (click)="handleFlipClicked()">↑↓</div>
+        <div class="d-flex w-100 justify-content-between">
+            <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>
+            <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
+        </div> 
         <p>{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " -- " : " -- "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</p>
-
         <div class="d-flex movesAndAccuracies">
             <div class="algebraicContainer">
                 @for (item of boardState.mainMoveStack; track $index) 
@@ -163,21 +173,10 @@
 
 
                 <div>{{getEngineMoveInfoText()}}</div>
-                <div></div>
             </div>
             }
         </div>
-            <div class="d-flex w-100 justify-content-between">
-            <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>
-            <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
-        </div> 
-        <div class="boardControlButtons">
-            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleBackButtonClicked()">&lt;&lt;-</div>
-            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleBackButtonClicked()">&lt;</div>
-            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areForwardButtonsEnabled() ? '' : 'disabled'" (click)="handleForwardButtonClicked()">></div>
-            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areForwardButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleForwardButtonClicked()">->></div>
-        </div>
-        <div class="btn btn-primary controlButton" (click)="handleFlipClicked()">↑↓</div>
+
 
         <!--EVAL-->
         @if( this.boardState.evalProgress > 0 && this.boardState.evalProgress < 97.1)
