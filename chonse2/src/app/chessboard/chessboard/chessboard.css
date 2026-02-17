@@ -171,6 +171,11 @@
     z-index: 100;
 }
 
+.animatedPieceFlipped
+{
+  
+}
+
 .moveClassificationIcon
 {
   position: absolute;
@@ -180,6 +185,19 @@
   z-index: 10;
   pointer-events: none;
   transform: translate(35%, -35%);
+}
+
+.moveClassificationIconOverlayFlipped 
+{
+  transform: rotate(180deg);
+}
+
+.moveClassificationIconOverlay
+{
+  position: absolute; 
+  inset: 0; 
+  pointer-events: none; 
+  z-index: 2;
 }
 
 @media screen and (max-width: 1200px) 

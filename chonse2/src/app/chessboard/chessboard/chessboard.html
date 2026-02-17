@@ -5,8 +5,12 @@
             @if(animatedPiece)
             {
                 <img class="animatedPiece"
+                    [ngClass]="{'animatedPieceFlipped': boardState.isFlipped}"
                     [src]="`piece/merida/${animatedPiece}.svg`"
-                    [style.transform]="'translate(' + animatedPieceX + 'px,' + animatedPieceY + 'px)'"
+                    [style.transform]="'
+                        translate(' + animatedPieceX + 'px,' + animatedPieceY + 'px)' 
+                        + (boardState.isFlipped ? ' rotate(180deg)' : '')"
+
                     [style.transition]="'all ' + animationDuration + 'ms ease-in-out'"
                     (transitionend)="onAnimationEnd()"/>
             }
@@ -100,7 +104,9 @@
 
                             @if(this.getMoveClassificationIconSource(this.COORDS[rankIndex][fileIndex]) != "")
                             {
-                                <img alt="moveClassificationIcon" class="moveClassificationIcon" [src]="getMoveClassificationIconSource(this.COORDS[rankIndex][fileIndex])" draggable="false">
+                                <div class="moveClassificationIconOverlay" [ngClass]="{'moveClassificationIconOverlayFlipped': boardState.isFlipped}">
+                                    <img alt="moveClassificationIcon" class="moveClassificationIcon" [src]="getMoveClassificationIconSource(this.COORDS[rankIndex][fileIndex])" draggable="false">
+                                </div>
                             }
                         </div>
                     }
