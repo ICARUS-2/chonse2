@@ -775,15 +775,6 @@ export class Chessboard implements OnInit, AfterViewInit {
     const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coordinate);
     const squareSize = this.getSquarePixelSize();
 
-    //If board is flipped
-    if (this.boardState.isFlipped) 
-    {
-      return {
-          x: (7 - colIndex) * squareSize,
-          y: (7 - rowIndex) * squareSize
-      };
-    }
-
     return {
         x: colIndex * squareSize,
         y: rowIndex * squareSize
