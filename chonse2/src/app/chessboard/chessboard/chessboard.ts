@@ -114,7 +114,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     setTimeout(() => this.updateBoardSize());
   }
 
-  completeMove(fromSquare: string, toSquare: string)
+  async completeMove(fromSquare: string, toSquare: string)
   {
     const piece = this.currentlyHeldPiece;
     if (!this.currentLegalMoves.includes(toSquare))
@@ -141,17 +141,17 @@ export class Chessboard implements OnInit, AfterViewInit {
       modalRef.componentInstance.color = promotionPieceColor;
 
       //gets the result of that dialog.
-      modalRef.result.then( (result) =>
+      modalRef.result.then( async (result) =>
       {
         //perform the move and promote to what the user selected.
         moveResult = stateCopy.completeMove(fromSquare, toSquare, result);
-        this.boardState.pushState(stateCopy, moveResult);
+        await this.boardState.pushState(stateCopy, moveResult);
       } )
-      .catch( () =>
+      .catch( async () =>
       {
         //if the dialog was forced closed, promote to queen by default.
         moveResult = stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
-        this.boardState.pushState(stateCopy, moveResult);
+        await this.boardState.pushState(stateCopy, moveResult);
       } )
       .finally()
       {
@@ -163,7 +163,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     {
 
       //perform the move
-      moveResult = stateCopy.completeMove(fromSquare, toSquare, piece);
+      moveResult = await stateCopy.completeMove(fromSquare, toSquare, piece);
       this.boardState.pushState(stateCopy, moveResult);
         
       //Resets the state of the from/to squares and current piece back to nothing.
@@ -388,7 +388,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   areForwardButtonsEnabled(): boolean 
   {
     //If we are deviating from the main game (by going back) then you can't logically go forward.
-    if (this.boardState.divergenceStack.length != 0)
+    if (this.boardState.divergenceStateStack.length != 0)
     {
       return false;
     }
@@ -404,7 +404,7 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   moveClicked(index: number)
   {
-    if (this.boardState.divergenceStack.length != 0)
+    if (this.boardState.divergenceStateStack.length != 0)
     { 
       this.boardState.goBackToStart();
     }

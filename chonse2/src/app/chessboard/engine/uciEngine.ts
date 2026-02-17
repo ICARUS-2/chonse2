@@ -1,4 +1,4 @@
-import { EngineName } from "./types/enums";
+import { EngineName, MoveClassification } from "./types/enums";
 import {
   EvaluateGameParams,
   EvaluatePositionWithUpdateParams,
@@ -257,6 +257,24 @@ export class UciEngine {
     await Promise.all(
       new Array(workersNbToCreate).fill(0).map(() => this.addNewWorker())
     );
+  }
+
+  public async evaluateMove(beforeFen: string, afterFen: string, move: IMoveResult): Promise<PositionEval>
+  {
+    const evalResult = await this.evaluateGame({fens: [beforeFen, afterFen], uciMoves: [move.notation]});
+    const previousPositionResult = evalResult.positions[0];
+    const positionResult = evalResult.positions[1];
+
+    const formattedMove = move.fromCoord + move.toCoord
+    
+    if (formattedMove == previousPositionResult.bestMove)
+    {
+      if (positionResult.moveClassification == MoveClassification.Excellent || positionResult.moveClassification == MoveClassification.Okay)
+      {
+        positionResult.moveClassification = MoveClassification.Best;
+      }
+    }
+    return previousPositionResult;
   }
 
   public async evaluateGame({
