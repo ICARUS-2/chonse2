@@ -3,7 +3,7 @@ import { GameScore } from "../../../lib/game-state";
 import { PieceColor } from "../../../lib/piece-color";
 import { PieceType } from "../../../lib/piece-type";
 import { EngineName, MoveClassification } from "../engine/types/enums";
-import { EvaluateGameParams, EvaluatePositionWithUpdateParams, GameEval, PositionEval } from "../engine/types/eval";
+import { EvaluateGameParams, GameEval, PositionEval } from "../engine/types/eval";
 import { UciEngine } from "../engine/uciEngine";
 import { Arrow } from "./arrow";
 import LocalStorageHelper from "./local-storage-helper";
@@ -80,7 +80,8 @@ export default class BoardState
 
                 if (this.engine)
                 {
-                    const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move);
+                    const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
+                    const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move, depth);
                     this.divergenceEvalStack.push(resultOfEval); 
                 }
             }
@@ -94,10 +95,10 @@ export default class BoardState
             if (this.engine)
             {
                 const previousState = this.mainStateStack[this.mainStackPointer];
-                const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move);
+                const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
+                const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move, depth);
                 this.eval?.positions.push(resultOfEval);
             }
-
 
             this.mainStateStack.push(state);
             this.mainMoveStack.push(move);
@@ -588,7 +589,7 @@ export default class BoardState
         boardState.pgnHeaders = pgnHeaders;
         boardState.mainMoveStack = moveStack;
         boardState.mainStateStack = states;
-        boardState.isReadOnly = false;
+        boardState.isReadOnly = true;
         
         boardState.doEvaluateGame = setAnalyzeFlag;
 
@@ -691,7 +692,8 @@ export default class BoardState
     {
         const fens: string[] = this.mainStateStack.map( c2 => c2.getFEN() );
         const uciMoves: string[] = this.mainMoveStack.map(m => m.notation);
+        const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH);
 
-        return {fens, uciMoves};
+        return {fens, uciMoves, depth};
     }
 }

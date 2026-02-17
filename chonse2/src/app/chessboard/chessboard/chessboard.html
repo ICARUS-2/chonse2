@@ -136,12 +136,19 @@
                     {
                         @if ($index % 2 == 0)
                         {
-                            <tr class="d-flex justify-content-between w-100">
+                            <tr class="">
                                 <td>
                                     <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
                                 </td>
 
                                 <td>
+                                    @if (this.boardState.eval)
+                                    {
+                                        @if (this.boardState.eval.positions[$index + 1])
+                                        {
+                                            <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(this.boardState.eval.positions[$index + 1].moveClassification ?? MoveClassification.None)">
+                                        }
+                                    }
                                     <div
                                     class="d-inline" 
                                     (click)="moveClicked($index + 1)"
@@ -150,24 +157,9 @@
                                         'text-danger' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStateStack.length != 0}"
                                         >{{item.notation}} 
                                     </div>
-
-                                    @if (this.boardState.eval)
-                                    {
-                                        @if (this.boardState.eval.positions[$index + 1])
-                                        {
-                                            <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(this.boardState.eval.positions[$index + 1].moveClassification ?? MoveClassification.None)">
-                                        }
-                                    }
                                 </td>
 
                                 <td>
-                                    <div class="d-inline" 
-                                    (click)="moveClicked($index + 2)"
-                                    [ngClass]="{
-                                        'text-primary' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStateStack.length == 0,
-                                        'text-danger' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStateStack.length != 0}"
-                                        >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index].notation}} </div>
-
                                     @if (this.boardState.eval)
                                     {
                                         @if (this.boardState.eval.positions[$index + 2])
@@ -175,6 +167,13 @@
                                             <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(this.boardState.eval.positions[$index + 2].moveClassification ?? MoveClassification.None)">
                                         }
                                     }
+                                    <div class="d-inline" 
+                                    (click)="boardState.mainMoveStack[$index + 1] == null ? moveClicked($index + 1) : moveClicked($index + 2)"
+                                    [ngClass]="{
+                                        'text-primary' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStateStack.length == 0,
+                                        'text-danger' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStateStack.length != 0}"
+                                        >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index].notation}} </div>
+
                                 </td>
                             </tr>
                         }

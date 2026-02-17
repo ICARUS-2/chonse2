@@ -35,7 +35,7 @@ export class UciEngine {
     }
   }
 
-  static readonly DEFAULT_DEPTH = 12;
+  static readonly DEFAULT_DEPTH = 16;
   public readonly name: EngineName;
   private workers: EngineWorker[] = [];
   private workerQueue: WorkerJob[] = [];
@@ -259,9 +259,9 @@ export class UciEngine {
     );
   }
 
-  public async evaluateMove(beforeFen: string, afterFen: string, move: IMoveResult): Promise<PositionEval>
+  public async evaluateMove(beforeFen: string, afterFen: string, move: IMoveResult, depth=UciEngine.DEFAULT_DEPTH): Promise<PositionEval>
   {
-    const evalResult = await this.evaluateGame({fens: [beforeFen, afterFen], uciMoves: [move.notation]});
+    const evalResult = await this.evaluateGame({fens: [beforeFen, afterFen], uciMoves: [move.notation], depth});
     const previousPositionResult = evalResult.positions[0];
     const positionResult = evalResult.positions[1];
 

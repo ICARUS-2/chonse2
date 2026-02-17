@@ -3,8 +3,8 @@
     <h1 class="text-primary">Settings</h1>
     <hr>
 
-
-    <h3 class="text-primary">Click to move</h3>
+    <h2 class="text-primary">Board</h2>
+    <h4 class="text-secondary">Click to move</h4>
     <div class="form-check form-switch">
         <input
             class="form-check-input"
@@ -15,12 +15,21 @@
         />
     </div>
 
-    <h3 class="text-primary">Analysis Engine</h3>
-    <select [(ngModel)]="selectedEngine" class="form-select" (ngModelChange)="handleDropdownSelectionChanged()">
+    <hr>
+    <h2 class="text-primary">Engine</h2>
+    <h4 class="text-secondary">Select Engine</h4>
+    <select [(ngModel)]="selectedEngine" class="form-select" (ngModelChange)="handleEngineDropdownSelectionChanged()">
         @for(engine of Object.values(EngineName); track $index)
         {
             <option [value]="engine">{{EngineDisplayName.get(engine)}}</option>
         }
     </select>
         
+    <div class="m-4"></div>
+
+    <h4 class="text-secondary">Engine Depth</h4>
+    <div class="d-flex">
+        <input (ngModelChange)="handleEngineDepthChanged()" [(ngModel)]="engineDepth" type="range" class="form-range" min="10" max="30" id="range2">
+        <p>{{engineDepth}}</p>
+    </div>
 </div>

@@ -3,7 +3,9 @@ export default class LocalStorageHelper
     static readonly CLICK_TO_MOVE = "Chonse2_ClickToMove";
     static readonly SAVED_USERNAMES = "Chonse2_SavedUsernames";
     static readonly SELECTED_ENGINE = "Chonse2_SelectedEngine";
+    static readonly ENGINE_DEPTH = "Chonse2_EngineDepth";
 
+    //bool
     static getBoolean(key: string, defaultVal = false): boolean
     {
         const returnVal = window.localStorage.getItem(key);
@@ -22,6 +24,7 @@ export default class LocalStorageHelper
         window.localStorage.setItem(key, value.toString());
     }
     
+    //str arr
     static getStringArray(key: string, defaultVal = []): Array<string> 
     {
         const returnVal = window.localStorage.getItem(key);
@@ -40,6 +43,7 @@ export default class LocalStorageHelper
         window.localStorage.setItem(key, JSON.stringify(value));
     }
 
+    //str
     static getString(key: string, defaultVal = ""): string 
     {
         const returnVal = window.localStorage.getItem(key);
@@ -56,5 +60,24 @@ export default class LocalStorageHelper
     static setString(key: string, value: string): void
     {
         window.localStorage.setItem(key, value);
+    }
+
+    //number
+    static getNumber(key: string, defaultVal = 0): number 
+    {
+        const returnVal = window.localStorage.getItem(key);
+
+        if (!returnVal)
+        {
+            LocalStorageHelper.setString(key, defaultVal.toString());
+            return defaultVal;
+        }
+
+        return Number(returnVal);
+    }
+
+    static setNumber(key: string, value: number): void
+    {
+        window.localStorage.setItem(key, value.toString());
     }
 }

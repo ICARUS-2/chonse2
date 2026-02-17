@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import LocalStorageHelper from '../chessboard/chessboard/local-storage-helper';
 import { EngineDisplayName, EngineName } from '../chessboard/engine/types/enums';
+import { UciEngine } from '../chessboard/engine/uciEngine';
 
 @Component({
   selector: 'app-settings',
@@ -10,26 +11,37 @@ import { EngineDisplayName, EngineName } from '../chessboard/engine/types/enums'
   styleUrl: './settings.css',
 })
 export class Settings {
-  localStorage = LocalStorageHelper;
+  LocalStorageHelper = LocalStorageHelper;
+  EngineName = EngineName;
+  EngineDisplayName = EngineDisplayName;
+  Object = Object;
+
 
   //Click-move
   clickToMove: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, false);
 
   //Engine
-  //Looks stupid, but is used so that it can be accessed in the HTML.
-  EngineName = EngineName;
-  EngineDisplayName = EngineDisplayName;
-  Object = Object;
   selectedEngine: EngineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName;
 
+  //Engine depth
+  engineDepth: number = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
+
+  //Click to move.
   handleClickToMoveSwitchPressed(val: boolean)
   {
     LocalStorageHelper.setBoolean(LocalStorageHelper.CLICK_TO_MOVE, val);
     this.clickToMove = val;
   }
 
-  handleDropdownSelectionChanged()
+  //Pick engine setting
+  handleEngineDropdownSelectionChanged()
   {
     LocalStorageHelper.setString(LocalStorageHelper.SELECTED_ENGINE, this.selectedEngine);
+  }
+
+  //Engine depth.
+  handleEngineDepthChanged()
+  {
+    LocalStorageHelper.setNumber(LocalStorageHelper.ENGINE_DEPTH, this.engineDepth);
   }
 }
