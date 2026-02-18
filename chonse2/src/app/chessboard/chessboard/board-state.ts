@@ -32,6 +32,8 @@ export default class BoardState
     engine: UciEngine | undefined = undefined;
     whiteMoveClassificationList: MoveClassificationList = new MoveClassificationList();
     blackMoveClassificationList: MoveClassificationList = new MoveClassificationList();
+    private evalQueue: Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult}> = [];
+    private isEvaluating: boolean = false;
 
     //Cosmetic stuff.
     squareHighlightStatuses: Array<Array<boolean>>;
@@ -65,44 +67,38 @@ export default class BoardState
         //If the pointer was moved back, diverge from the main path.
         if (this.mainStackPointer != this.mainStateStack.length - 1 || this.isReadOnly)
         {
-            if (this.doEvaluateGame)
+            let previousState: Chonse2;
+
+            if (this.divergenceMoveStack.length != 0)
             {
-                let previousState: Chonse2;
-
-                if (this.divergenceMoveStack.length != 0)
-                {
-                    previousState = this.divergenceStateStack[this.divergenceStateStack.length - 1];
-                }
-                else 
-                {
-                    previousState = this.mainStateStack[this.mainStackPointer];
-                }
-
-                if (this.engine)
-                {
-                    const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
-                    const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move, depth);
-                    this.divergenceEvalStack.push(resultOfEval); 
-                }
+                previousState = this.divergenceStateStack[this.divergenceStateStack.length - 1];
+            }
+            else 
+            {
+                previousState = this.mainStateStack[this.mainStackPointer];
             }
 
             this.divergenceStateStack.push(state);
             this.divergenceMoveStack.push(move);
             this.divergenceStackPointer++;
+
+            if (this.engine && this.doEvaluateGame)
+            {
+                this.enqueueEvaluation(previousState, state, move);
+            }
         }
         else //If the pointer is at the top of the stack, continue to add to it.
         {
-            if (this.engine)
-            {
-                const previousState = this.mainStateStack[this.mainStackPointer];
-                const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
-                const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move, depth);
-                this.eval?.positions.push(resultOfEval);
-            }
+            let previousState: Chonse2 = this.mainStateStack[this.mainStackPointer];
 
             this.mainStateStack.push(state);
             this.mainMoveStack.push(move);
             this.mainStackPointer++;
+
+            if (this.engine && this.doEvaluateGame)
+            {
+                this.enqueueEvaluation(previousState, state, move);
+            }
         }
     }
 
@@ -177,7 +173,12 @@ export default class BoardState
 
     getPreviousMostRecentEval(): PositionEval | undefined
     {
-        if (this.divergenceStackPointer >= 0) 
+        if (this.divergenceEvalStack.length == 1)
+        {
+            return this.eval?.positions[this.mainStackPointer];
+        }
+
+        if (this.divergenceEvalStack.length > 1) 
         {
             return this.divergenceEvalStack[this.divergenceStackPointer - 1];
         }
@@ -192,6 +193,55 @@ export default class BoardState
 
         return undefined
     }
+
+    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: IMoveResult)
+    {
+        this.evalQueue.push({ previousState, state, move });
+        this.processEvaluationQueue();
+    }
+    private async processEvaluationQueue()
+    {
+        if (!this.engine || this.isEvaluating || this.evalQueue.length == 0)
+        {
+            return;
+        } 
+        
+        this.isEvaluating = true;
+
+        const { previousState, state, move } = this.evalQueue.shift()!;
+
+        try
+        {
+            const depth = LocalStorageHelper.getNumber
+            (
+                LocalStorageHelper.ENGINE_DEPTH,
+                UciEngine.DEFAULT_DEPTH
+            );
+
+            const resultOfEval = await this.engine.evaluateMove
+            (
+                previousState.getFEN(),
+                state.getFEN(),
+                move,
+                depth
+            );
+
+            if (this.mainStackPointer != this.mainStateStack.length - 1 || this.isReadOnly)
+            {
+                this.divergenceEvalStack.push(resultOfEval);
+            }
+            else
+            {
+                this.eval?.positions.push(resultOfEval);
+            }
+        }
+        finally
+        {
+            this.isEvaluating = false;
+            this.processEvaluationQueue(); //Process next item in the queue.
+        }
+    }
+
     //#endregion
 
     //#region STACK TRAVERSAL
@@ -630,7 +680,15 @@ export default class BoardState
             const moveCoords = mv.fromCoord+mv.toCoord;
             const bestCoords = ev?.bestMove;
 
-            if (moveCoords == bestCoords && (previousEv?.moveClassification == MoveClassification.Excellent || previousEv?.moveClassification == MoveClassification.Okay))
+            if (moveCoords == bestCoords 
+                && (previousEv?.moveClassification == MoveClassification.Excellent 
+                    || previousEv?.moveClassification == MoveClassification.Okay))
+            {
+                previousEv.moveClassification = MoveClassification.Best;
+            }
+
+            //Accounts for promotion.
+            if (bestCoords?.replace("x", "").startsWith(moveCoords) && mv.notation.endsWith(PieceType.QUEEN) && bestCoords.endsWith(PieceType.QUEEN.toLowerCase()) && previousEv?.moveClassification == MoveClassification.Excellent)
             {
                 previousEv.moveClassification = MoveClassification.Best;
             }

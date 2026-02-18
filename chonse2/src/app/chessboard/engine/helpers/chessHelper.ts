@@ -101,7 +101,7 @@ export const uciMoveParams2 = (uciMove: string, turn: Color): {from: Square; to:
 
   if (uciMove == "O-O-O" || uciMove == "O-O-O+" || uciMove == "O-O-O#")
   {
-    return turn === BLACK? {from: Chonse2.WHITE_KING_SQUARE, to: Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE} 
+    return turn === WHITE? {from: Chonse2.WHITE_KING_SQUARE, to: Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE} 
                 : {from: Chonse2.BLACK_KING_SQUARE, to: Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE}
   }
   
@@ -137,6 +137,18 @@ export const uciMoveParams2 = (uciMove: string, turn: Color): {from: Square; to:
     {
       const splitToPromotion = uciMove.split("=");
       promotion = splitToPromotion[1];
+    }
+
+    //Accounts for the difference in engine line move format vs Chonse2
+    const lastChar = uciMove[uciMove.length - 1];
+    if (lastChar == "q" || lastChar == "r" || lastChar == "b" || lastChar == "n")
+    {
+      promotion = lastChar;
+    }
+
+    if (promotion)
+    {
+      promotion = promotion.toLowerCase();
     }
 
     return {from, to, promotion};
@@ -198,6 +210,7 @@ export const getIsPieceSacrifice = (
     w: [],
     b: [],
   };
+
   for (const move of moves) {
     try {
       const fullMove = game.move(uciMoveParams2(move, game.turn()));
