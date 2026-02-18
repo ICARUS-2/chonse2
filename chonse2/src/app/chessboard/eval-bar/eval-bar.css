@@ -1,0 +1,52 @@
+.evalBarContainer
+{
+    width: 4vmin;
+    position: relative;
+    border: 2px solid blue
+}
+
+
+.progress-vertical {
+    height: 82vmin;        /* total height */
+    display: flex;
+    align-items: flex-end; /* makes it fill from bottom */
+    border-radius: 0;
+}
+
+.progress-bar 
+{
+  transition: height 0.3s ease;
+}
+
+.progress-vertical .progress-bar 
+{
+  width: 100%;
+}
+
+.evalLabel {
+  position: absolute;
+  width: 100%;
+  font-size: large;
+  text-align: center;
+  pointer-events: none;
+}
+
+.evalLabel.top {
+  top: 0;
+  transform: translateY(0%);
+  color: white;
+}
+
+.evalLabel.bottom {
+  bottom: 0;
+  transform: translateY(0%);
+  color: black;
+}
+
+@media screen and (max-width: 1200px) 
+{
+    .evalLabel
+    {
+        font-size: x-small;
+    }
+}

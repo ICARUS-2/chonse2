@@ -5,6 +5,7 @@ import { getPositionWinPercentage } from "../helpers/winPercentage";
 //import { PieceColor } from "../../../../lib/piece-color";
 import { PieceType } from "../../../../lib/piece-type";
 import Chonse2 from "../../../../lib/chonse2";
+import { GameScore } from "../../../../lib/game-state";
 
 type Piece = "wP" | "wB" | "wN" | "wR" | "wQ" | "wK" | "bP" | "bB" | "bN" | "bR" | "bQ" | "bK";
 
@@ -61,6 +62,49 @@ export const getEvaluationBarValue = (
   let label = pEval.toFixed(1);
 
   if (label.toString().length > 3) {
+    label = pEval.toFixed(0);
+  }
+
+  return { whiteBarPercentage, label };
+};
+
+//Redesigned to account for score.
+export const getEvaluationBarValue2 = (
+  position: PositionEval,
+  gameScore: GameScore
+): { whiteBarPercentage: number; label: string } => {
+
+  if (gameScore == GameScore.WHITE_WON)
+  {
+    return {whiteBarPercentage: 100, label: GameScore.WHITE_WON};
+  }
+
+  if (gameScore == GameScore.BLACK_WON)
+  {
+    return {whiteBarPercentage: 0, label: GameScore.BLACK_WON};
+  }
+
+  if (gameScore == GameScore.DRAW)
+  {
+    return {whiteBarPercentage: 50, label: GameScore.DRAW};
+  }
+
+  const whiteBarPercentage = getPositionWinPercentage(position);
+  const bestLine = position.lines[0];
+
+  if (bestLine.mate) 
+  {
+    return { label: `M${Math.abs(bestLine.mate)}`, whiteBarPercentage };
+  }
+
+  const cp = bestLine.cp;
+  if (!cp) return { whiteBarPercentage, label: "0.0" };
+
+  const pEval = Math.abs(cp) / 100;
+  let label = pEval.toFixed(1);
+
+  if (label.toString().length > 3) 
+  {
     label = pEval.toFixed(0);
   }
 

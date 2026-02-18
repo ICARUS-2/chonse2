@@ -17,11 +17,13 @@ import Sound from './sound';
 import { ImportModal } from '../import-modal.ts/import-modal';
 import { ToastrService } from 'ngx-toastr';
 import { PgnComments } from './pgn-misc';
+import { EvalBar } from '../eval-bar/eval-bar';
 import { EngineDisplayName, EngineName, MoveClassification, moveClassificationLabels } from '../engine/types/enums';
 import MoveClassificationList from './move-classification-list';
+import { getEvaluationBarValue2 } from '../engine/helpers/chessHelper';
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar],
+  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
 })
@@ -334,6 +336,19 @@ export class Chessboard implements OnInit, AfterViewInit {
     return null;
   }
 
+  getEvalBarData(): {whiteBarPercentage: number, label: string}
+  {
+    const e = this.boardState.getMostRecentEval();
+    const state = this.boardState.getCurrentState();
+
+    if (e)
+    {
+      const data = getEvaluationBarValue2(e, state.gameState.gameScore);
+      return data;
+    }
+
+    return {whiteBarPercentage: 51, label: "0.4"};
+  }
   //#endregion
 
   //Controls
