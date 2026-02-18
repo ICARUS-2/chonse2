@@ -1762,9 +1762,6 @@ export class Chess {
       if (typeof move === 'string') {
         throw new Error(`Invalid move: ${move}`)
       } else {
-        //console.log(this.turn());
-        //console.log(move);
-        //console.log(this.fen());
         throw new Error(`Invalid move: ${JSON.stringify(move)}`)
       }
     }

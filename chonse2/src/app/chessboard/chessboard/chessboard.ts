@@ -325,7 +325,7 @@ export class Chessboard implements OnInit, AfterViewInit {
       const from = bestMove[0] + bestMove[1];
       const to = bestMove[2] + bestMove[3];
 
-      const arrow = this.createArrow(from, to, "green", ArrowContext.Engine);
+      const arrow = this.createArrow(from, to, "rgba(0,128,0,0.6)", ArrowContext.Engine);
 
       return arrow;
     }

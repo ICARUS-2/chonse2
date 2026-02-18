@@ -32,6 +32,8 @@ export default class BoardState
     engine: UciEngine | undefined = undefined;
     whiteMoveClassificationList: MoveClassificationList = new MoveClassificationList();
     blackMoveClassificationList: MoveClassificationList = new MoveClassificationList();
+    private evalQueue: Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult}> = [];
+    private isEvaluating: boolean = false;
 
     //Cosmetic stuff.
     squareHighlightStatuses: Array<Array<boolean>>;
@@ -82,9 +84,7 @@ export default class BoardState
 
             if (this.engine && this.doEvaluateGame)
             {
-                const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
-                const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move, depth);
-                this.divergenceEvalStack.push(resultOfEval); 
+                this.enqueueEvaluation(previousState, state, move);
             }
         }
         else //If the pointer is at the top of the stack, continue to add to it.
@@ -97,9 +97,7 @@ export default class BoardState
 
             if (this.engine && this.doEvaluateGame)
             {
-                const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
-                const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move, depth);
-                this.eval?.positions.push(resultOfEval);
+                this.enqueueEvaluation(previousState, state, move);
             }
         }
     }
@@ -190,6 +188,55 @@ export default class BoardState
 
         return undefined
     }
+
+    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: IMoveResult)
+    {
+        this.evalQueue.push({ previousState, state, move });
+        this.processEvaluationQueue();
+    }
+    private async processEvaluationQueue()
+    {
+        if (!this.engine || this.isEvaluating || this.evalQueue.length == 0)
+        {
+            return;
+        } 
+        
+        this.isEvaluating = true;
+
+        const { previousState, state, move } = this.evalQueue.shift()!;
+
+        try
+        {
+            const depth = LocalStorageHelper.getNumber
+            (
+                LocalStorageHelper.ENGINE_DEPTH,
+                UciEngine.DEFAULT_DEPTH
+            );
+
+            const resultOfEval = await this.engine.evaluateMove
+            (
+                previousState.getFEN(),
+                state.getFEN(),
+                move,
+                depth
+            );
+
+            if (this.mainStackPointer != this.mainStateStack.length - 1 || this.isReadOnly)
+            {
+                this.divergenceEvalStack.push(resultOfEval);
+            }
+            else
+            {
+                this.eval?.positions.push(resultOfEval);
+            }
+        }
+        finally
+        {
+            this.isEvaluating = false;
+            this.processEvaluationQueue(); //Process next item in the queue.
+        }
+    }
+
     //#endregion
 
     //#region STACK TRAVERSAL
