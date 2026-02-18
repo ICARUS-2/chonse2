@@ -19,6 +19,7 @@ import { getEngineWorker, sendCommandsToWorker } from "./worker";
 import { Stockfish11 } from "./engines/stockfish11";
 import { Stockfish18Lite } from "./engines/stockfish18";
 import { Stockfish17_1 } from "./engines/stockfish17_1";
+import { PieceType } from "../../../lib/piece-type";
 
 
 export class UciEngine {
@@ -266,13 +267,22 @@ export class UciEngine {
     const positionResult = evalResult.positions[1];
 
     const formattedMove = move.fromCoord + move.toCoord
-    
-    if (formattedMove == previousPositionResult.bestMove)
+
+    //Sanitizes excellent moves that may appear as best moves.
+    if (formattedMove == previousPositionResult.bestMove?.replace("x", ""))
     {
       if (positionResult.moveClassification == MoveClassification.Excellent || positionResult.moveClassification == MoveClassification.Okay)
       {
         positionResult.moveClassification = MoveClassification.Best;
       }
+    }
+
+    if (previousPositionResult.bestMove?.replace("x", "").startsWith(formattedMove) 
+      && positionResult.moveClassification == MoveClassification.Excellent 
+      && previousPositionResult.bestMove.endsWith("q")
+      && move.notation.endsWith(PieceType.QUEEN))
+    {
+      positionResult.moveClassification = MoveClassification.Best;
     }
     return positionResult;
   }

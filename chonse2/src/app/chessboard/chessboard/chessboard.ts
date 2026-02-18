@@ -253,22 +253,22 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   getEngineMoveInfoText(): string
   {
-    if (this.boardState.getMostRecentEval())
+    const mostRecentEval = this.boardState.getMostRecentEval();
+    const previousMostRecentEval = this.boardState.getPreviousMostRecentEval();
+    
+    if (mostRecentEval)
     {
-      if (this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Opening ||
-        this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Best ||
-        this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Forced || 
-        this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Perfect ||
-        this.boardState.getMostRecentEval()?.moveClassification == MoveClassification.Splendid)
+      if (mostRecentEval.moveClassification == MoveClassification.Opening ||
+        mostRecentEval.moveClassification == MoveClassification.Best ||
+        mostRecentEval.moveClassification == MoveClassification.Forced || 
+        mostRecentEval.moveClassification == MoveClassification.Perfect ||
+        mostRecentEval.moveClassification == MoveClassification.Splendid)
       {
-        return `${this.boardState.getMostRecentMove().notation} is ${moveClassificationLabels[this.boardState.getMostRecentEval()?.moveClassification ?? MoveClassification.None]}`
+        return `${this.boardState.getMostRecentMove().notation} is ${moveClassificationLabels[mostRecentEval.moveClassification ?? MoveClassification.None]}`
       }
-
-      if (this.boardState.getPreviousMostRecentEval())
+      else 
       {
-        const latestMoveNotation = this.boardState.getMostRecentMove().notation
-        const latestMoveClassification = this.boardState.getMostRecentEval()?.moveClassification ?? MoveClassification.None;
-        return `${latestMoveNotation} is ${moveClassificationLabels[latestMoveClassification]} - ${this.boardState.getPreviousMostRecentEval()?.bestMove} was the best move`;  
+        return `${this.boardState.getMostRecentMove().notation} is ${moveClassificationLabels[mostRecentEval.moveClassification ?? MoveClassification.None]} - ${previousMostRecentEval?.bestMove} was the best move`
       }
     }
     return "";

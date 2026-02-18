@@ -173,7 +173,12 @@ export default class BoardState
 
     getPreviousMostRecentEval(): PositionEval | undefined
     {
-        if (this.divergenceStackPointer >= 0) 
+        if (this.divergenceEvalStack.length == 1)
+        {
+            return this.eval?.positions[this.mainStackPointer];
+        }
+
+        if (this.divergenceEvalStack.length > 1) 
         {
             return this.divergenceEvalStack[this.divergenceStackPointer - 1];
         }
@@ -675,7 +680,15 @@ export default class BoardState
             const moveCoords = mv.fromCoord+mv.toCoord;
             const bestCoords = ev?.bestMove;
 
-            if (moveCoords == bestCoords && (previousEv?.moveClassification == MoveClassification.Excellent || previousEv?.moveClassification == MoveClassification.Okay))
+            if (moveCoords == bestCoords 
+                && (previousEv?.moveClassification == MoveClassification.Excellent 
+                    || previousEv?.moveClassification == MoveClassification.Okay))
+            {
+                previousEv.moveClassification = MoveClassification.Best;
+            }
+
+            //Accounts for promotion.
+            if (bestCoords?.replace("x", "").startsWith(moveCoords) && mv.notation.endsWith(PieceType.QUEEN) && bestCoords.endsWith(PieceType.QUEEN.toLowerCase()) && previousEv?.moveClassification == MoveClassification.Excellent)
             {
                 previousEv.moveClassification = MoveClassification.Best;
             }
