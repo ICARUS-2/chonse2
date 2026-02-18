@@ -1,9 +1,8 @@
 .evalBarContainer
 {
     width: 4vmin;
-    border: 1px solid blue;
-    border-radius: 6px;
     position: relative;
+    border: 2px solid blue
 }
 
 
@@ -11,6 +10,7 @@
     height: 82vmin;        /* total height */
     display: flex;
     align-items: flex-end; /* makes it fill from bottom */
+    border-radius: 0;
 }
 
 .progress-bar 
@@ -26,7 +26,7 @@
 .evalLabel {
   position: absolute;
   width: 100%;
-  font-size: x-large;
+  font-size: large;
   text-align: center;
   pointer-events: none;
 }
@@ -41,4 +41,12 @@
   bottom: 0;
   transform: translateY(0%);
   color: black;
+}
+
+@media screen and (max-width: 1200px) 
+{
+    .evalLabel
+    {
+        font-size: x-small;
+    }
 }
