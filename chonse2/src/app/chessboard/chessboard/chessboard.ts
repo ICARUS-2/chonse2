@@ -18,6 +18,7 @@ import { ImportModal } from '../import-modal.ts/import-modal';
 import { ToastrService } from 'ngx-toastr';
 import { PgnComments } from './pgn-misc';
 import { EngineDisplayName, EngineName, MoveClassification, moveClassificationLabels } from '../engine/types/enums';
+import MoveClassificationList from './move-classification-list';
 @Component({
   selector: 'app-chessboard',
   imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar],
@@ -410,6 +411,26 @@ export class Chessboard implements OnInit, AfterViewInit {
     }
 
     this.boardState.mainStackPointer = index;
+  }
+
+  moveClassificationClicked(color: PieceColor, classification : MoveClassification)
+  {
+    const list: MoveClassificationList = color == PieceColor.WHITE ? this.boardState.whiteMoveClassificationList : this.boardState.blackMoveClassificationList;
+    
+    const entry = list.moves.get(classification);
+    
+    if (entry)
+    {
+      if (entry.arr.length == 0)
+      {
+        return;
+      }
+
+      const idx = entry.arr[entry.ptr];
+      entry.ptr = (entry.ptr + 1) % entry.arr.length;
+
+      this.moveClicked(idx);
+    }
   }
 
   getClockForPlayer(color: string) : string

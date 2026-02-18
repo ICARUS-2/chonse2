@@ -697,8 +697,8 @@ export default class BoardState
         //Computes how many moves of each classification there are
         Object.values(MoveClassification).forEach( v => 
         {
-            this.whiteMoveClassificationList.moves.set(v, []);
-            this.blackMoveClassificationList.moves.set(v, [])
+            this.whiteMoveClassificationList.moves.set(v, {arr: [], ptr: 0});
+            this.blackMoveClassificationList.moves.set(v, {arr: [], ptr: 0})
         })
 
         let turn = !this.mainStateStack[0].turn;
@@ -708,7 +708,7 @@ export default class BoardState
             const map = turn ? this.whiteMoveClassificationList.moves : this.blackMoveClassificationList.moves;
 
             const correspondingArray = map.get(pos.moveClassification ?? MoveClassification.None);
-            correspondingArray?.push(idx);
+            correspondingArray?.arr.push(idx);
 
             turn = !turn;
         })

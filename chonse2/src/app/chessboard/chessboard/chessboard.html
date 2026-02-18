@@ -220,7 +220,7 @@
                         @if (item != MoveClassification.None)
                         {
                             <tr class="align-middle" [ngStyle]="{`color` : Chessboard.moveClassificationColors.get(item)}">
-                                <td class="pe-4" style="text-align: right;">
+                                <td class="pe-4" style="text-align: right;" (click)="moveClassificationClicked(PieceColor.WHITE, item)">
                                     {{boardState.whiteMoveClassificationList.getFromString(item).length}}
                                 </td>
                                 <td>
@@ -229,7 +229,7 @@
                                 <td style="text-align: left;">
                                     &nbsp;&nbsp;{{item}}
                                 </td>
-                                <td class="ps-4" style="text-align: left;">
+                                <td class="ps-4" style="text-align: left;" (click)="moveClassificationClicked(PieceColor.BLACK, item)">
                                     {{boardState.blackMoveClassificationList.getFromString(item).length}}
                                 </td>
                             </tr>
