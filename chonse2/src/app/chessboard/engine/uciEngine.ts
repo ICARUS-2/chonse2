@@ -277,7 +277,7 @@ export class UciEngine {
       }
     }
 
-    if (previousPositionResult.bestMove?.replace("x", "").startsWith(formattedMove) 
+    if (previousPositionResult.bestMove?.replace("x", "").replace(/^[NKRBQ]/, '').startsWith(formattedMove) 
       && positionResult.moveClassification == MoveClassification.Excellent 
       && previousPositionResult.bestMove.endsWith("q")
       && move.notation.endsWith(PieceType.QUEEN))
