@@ -65,44 +65,42 @@ export default class BoardState
         //If the pointer was moved back, diverge from the main path.
         if (this.mainStackPointer != this.mainStateStack.length - 1 || this.isReadOnly)
         {
-            if (this.doEvaluateGame)
+            let previousState: Chonse2;
+
+            if (this.divergenceMoveStack.length != 0)
             {
-                let previousState: Chonse2;
-
-                if (this.divergenceMoveStack.length != 0)
-                {
-                    previousState = this.divergenceStateStack[this.divergenceStateStack.length - 1];
-                }
-                else 
-                {
-                    previousState = this.mainStateStack[this.mainStackPointer];
-                }
-
-                if (this.engine)
-                {
-                    const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
-                    const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move, depth);
-                    this.divergenceEvalStack.push(resultOfEval); 
-                }
+                previousState = this.divergenceStateStack[this.divergenceStateStack.length - 1];
+            }
+            else 
+            {
+                previousState = this.mainStateStack[this.mainStackPointer];
             }
 
             this.divergenceStateStack.push(state);
             this.divergenceMoveStack.push(move);
             this.divergenceStackPointer++;
+
+            if (this.engine && this.doEvaluateGame)
+            {
+                const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
+                const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move, depth);
+                this.divergenceEvalStack.push(resultOfEval); 
+            }
         }
         else //If the pointer is at the top of the stack, continue to add to it.
         {
-            if (this.engine)
-            {
-                const previousState = this.mainStateStack[this.mainStackPointer];
-                const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
-                const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move, depth);
-                this.eval?.positions.push(resultOfEval);
-            }
+            let previousState: Chonse2 = this.mainStateStack[this.mainStackPointer];
 
             this.mainStateStack.push(state);
             this.mainMoveStack.push(move);
             this.mainStackPointer++;
+
+            if (this.engine && this.doEvaluateGame)
+            {
+                const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
+                const resultOfEval = await this.engine.evaluateMove(previousState.getFEN(), state.getFEN(), move, depth);
+                this.eval?.positions.push(resultOfEval);
+            }
         }
     }
 

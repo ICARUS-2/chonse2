@@ -1743,7 +1743,7 @@ export class Chess {
       moveObj = this._moveFromSan(SAN_NULLMOVE, strict)
     } else if (typeof move === 'object') {
       const moves = this._moves()
-
+      
       // convert the pretty move object to an ugly move object
       for (let i = 0, len = moves.length; i < len; i++) {
         if (
@@ -1762,6 +1762,9 @@ export class Chess {
       if (typeof move === 'string') {
         throw new Error(`Invalid move: ${move}`)
       } else {
+        //console.log(this.turn());
+        //console.log(move);
+        //console.log(this.fen());
         throw new Error(`Invalid move: ${JSON.stringify(move)}`)
       }
     }
