@@ -1,4 +1,8 @@
 <div class="componentContainer">
+    @if(this.boardState.doEvaluateGame)
+    {
+        <app-eval-bar [data]="getEvalBarData()"></app-eval-bar>
+    }
     <div class="boardOuterContainer" [class]="boardState.isFlipped ? 'boardOuterContainerFlipped' : ''">
         <app-board-player-info [playerName]="boardState.pgnHeaders.black" [playerElo]="boardState.pgnHeaders.blackElo" for="b" [clock]="getClockForPlayer('b')" [capturedPieces]="boardState.getCurrentState().piecesBlackCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-board-player-info>
         <div #board class="boardContainerInner" [class]="boardState.isFlipped ? 'boardContainerInnerFlipped' : ''">
