@@ -203,6 +203,7 @@
 .moveClassificationsList
 {
   text-align: center;
+  user-select: none;
 }
 
 .moveClassificationListIcon
