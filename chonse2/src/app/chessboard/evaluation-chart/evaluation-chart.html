@@ -1,1 +1,8 @@
-<p>evaluation-chart works!</p>
+<div class="componentContainer">
+  <canvas baseChart
+    [data]="getChartData()"
+    [options]="this.lineChartOptions"
+    [type]="'line'">
+      
+  </canvas>
+</div>

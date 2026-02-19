@@ -1,35 +1,71 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ChartItemData } from './chart-item-data';
 import { PositionEval } from '../engine/types/eval';
 import { MoveClassification } from '../engine/types/enums';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartOptions } from 'chart.js';
 
 @Component({
   selector: 'app-evaluation-chart',
-  imports: [],
+  imports: [BaseChartDirective],
   templateUrl: './evaluation-chart.html',
   styleUrl: './evaluation-chart.css',
 })
-export class EvaluationChart {
+export class EvaluationChart implements OnInit {
 
   @Input() arr: PositionEval[] = [];
 
-  getChartData()
+  lineChartOptions: ChartConfiguration<'line'>['options'] = {
+    responsive: true,
+    animation: false,
+    maintainAspectRatio: false,
+    plugins: 
+    {
+      legend: { display: false }
+    },
+    scales: 
+    {
+      x: 
+      {
+        type: 'category',
+        display: false,
+      },
+      y: 
+      {
+        display: false,
+        min: 0,
+        max: 20
+      },
+    },
+  };
+
+  constructor()
   {
-    return this.arr.map(this._formatSingleEvalToChartData);
+
   }
 
-  getBestDotIndeces()
+  ngOnInit(): void 
   {
-    const bestItems = this.getChartData().filter(
-      (item) => item.moveClassification === MoveClassification.Best
-    );
-    const count = Math.ceil(bestItems.length * 0.15);
-    const indices = bestItems.map((item) => item.moveNb);
-    for (let i = indices.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [indices[i], indices[j]] = [indices[j], indices[i]];
+    
+  }
+
+  getChartData()
+  {
+    const chartItems = this.arr.map(this._formatSingleEvalToChartData);
+    
+    const lineChartData: ChartConfiguration<"line">['data'] = 
+    {
+      labels: chartItems.map(i => i.moveNb.toString()),
+      datasets: 
+      [
+        {
+          data: chartItems.map( i => i.value ),
+          fill: true,
+        }
+      ],
     }
-    return new Set(indices.slice(0, count));
+
+    return lineChartData;
   }
 
   private _formatSingleEvalToChartData = (

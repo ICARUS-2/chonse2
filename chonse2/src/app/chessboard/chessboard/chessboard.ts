@@ -21,9 +21,10 @@ import { EvalBar } from '../eval-bar/eval-bar';
 import { EngineDisplayName, EngineName, MoveClassification, moveClassificationLabels } from '../engine/types/enums';
 import MoveClassificationList from './move-classification-list';
 import { getEvaluationBarValue2 } from '../engine/helpers/chessHelper';
+import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar],
+  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
 })

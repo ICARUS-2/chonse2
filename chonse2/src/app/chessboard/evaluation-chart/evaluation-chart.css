@@ -1,0 +1,7 @@
+.componentContainer
+{
+    height: 10vmin;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
