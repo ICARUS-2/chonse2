@@ -255,6 +255,13 @@
             </div>
         }
         <!---->
+
+        @if(this.boardState.doEvaluateGame && this.boardState.eval?.positions)
+        {
+            <div class="w-100">
+                <app-evaluation-chart [arr]="this.boardState.eval?.positions ?? []"></app-evaluation-chart>
+            </div>
+        }
     </div>
 
     @if(currentlyHeldPiece != "")

@@ -21,9 +21,10 @@ import { EvalBar } from '../eval-bar/eval-bar';
 import { EngineDisplayName, EngineName, MoveClassification, moveClassificationLabels } from '../engine/types/enums';
 import MoveClassificationList from './move-classification-list';
 import { getEvaluationBarValue2 } from '../engine/helpers/chessHelper';
+import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar],
+  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
 })
@@ -345,6 +346,15 @@ export class Chessboard implements OnInit, AfterViewInit {
     {
       const data = getEvaluationBarValue2(e, state.gameState.gameScore);
       return data;
+    }
+    else 
+    {
+      const pe = this.boardState.getPreviousMostRecentEval();
+      if (pe)
+      {
+        const data = getEvaluationBarValue2(pe, state.gameState.gameScore);
+        return data;
+      }
     }
 
     return {whiteBarPercentage: 51, label: "0.4"};
