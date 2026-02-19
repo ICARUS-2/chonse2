@@ -346,6 +346,15 @@ export class Chessboard implements OnInit, AfterViewInit {
       const data = getEvaluationBarValue2(e, state.gameState.gameScore);
       return data;
     }
+    else 
+    {
+      const pe = this.boardState.getPreviousMostRecentEval();
+      if (pe)
+      {
+        const data = getEvaluationBarValue2(pe, state.gameState.gameScore);
+        return data;
+      }
+    }
 
     return {whiteBarPercentage: 51, label: "0.4"};
   }
