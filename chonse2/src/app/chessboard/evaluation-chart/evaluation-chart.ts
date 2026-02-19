@@ -3,7 +3,7 @@ import { ChartItemData } from './chart-item-data';
 import { PositionEval } from '../engine/types/eval';
 import { MoveClassification } from '../engine/types/enums';
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartOptions } from 'chart.js';
+import { Chart, ChartConfiguration, ChartOptions } from 'chart.js';
 
 @Component({
   selector: 'app-evaluation-chart',
@@ -15,13 +15,42 @@ export class EvaluationChart implements OnInit {
 
   @Input() arr: PositionEval[] = [];
 
+
   lineChartOptions: ChartConfiguration<'line'>['options'] = {
     responsive: true,
     animation: false,
     maintainAspectRatio: false,
     plugins: 
     {
-      legend: { display: false }
+      legend: { display: false },
+      tooltip: 
+      {
+        callbacks: 
+        {
+          label: (tooltipItem) => 
+          {
+            //tooltipItem.datasetIndex and tooltipItem.dataIndex give you the index
+            const dataset = tooltipItem.dataset;
+            const dataIndex = tooltipItem.dataIndex!;
+            
+            //Access chart data
+            const chartData = dataset.data as number[];
+            const value = chartData[dataIndex];
+            
+            //Access custom properties
+            const chartItem = this.getChartData().datasets[0].data[dataIndex] as any;
+
+            // Build tooltip text
+            const cp = chartItem.cp ?? '';
+            const mate = chartItem.mate ?? '';
+            const moveClass = chartItem.moveClassification ?? '';
+            const y = chartItem.y;
+            const val = mate ? ("M"+mate) : (cp / 100).toFixed(1);
+
+            return `${val} Move: ${moveClass}`;
+          }
+        }
+      }
     },
     scales: 
     {
@@ -37,6 +66,10 @@ export class EvaluationChart implements OnInit {
         max: 20
       },
     },
+    layout: 
+    {
+      padding: 0
+    },
   };
 
   constructor()
@@ -46,7 +79,7 @@ export class EvaluationChart implements OnInit {
 
   ngOnInit(): void 
   {
-    
+    //console.log(this.arr);
   }
 
   getChartData()
@@ -59,8 +92,12 @@ export class EvaluationChart implements OnInit {
       datasets: 
       [
         {
-          data: chartItems.map( i => i.value ),
+          data: chartItems.map( i => ({ y: i.value, x: i.moveNb, cp: i.cp, mate: i.mate, moveClassification: i.moveClassification })),
           fill: true,
+          backgroundColor: "white",
+          pointRadius: 0,
+          pointHoverRadius: 1,
+          pointHitRadius: 20,
         }
       ],
     }
@@ -73,7 +110,7 @@ export class EvaluationChart implements OnInit {
     index: number
   ): ChartItemData => {
     const line = position.lines[0];
-  
+
     const chartItem: ChartItemData = {
       moveNb: index,
       value: 10,
