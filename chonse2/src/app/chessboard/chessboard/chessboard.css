@@ -144,11 +144,16 @@
   margin: 5px;
 }
 
+.movesAndAccuracies
+{
+  height: 52vmin;
+}
+
 .algebraicContainer
 {
   padding: 5px;
   border: 1px solid blue;
-  height: 40vmin;
+  height: 35vmin;
   width: 40vmin;
   overflow-y: auto;
   overflow-x: hidden;
@@ -161,6 +166,7 @@
   align-items: center;
   flex-direction: column;
   width: 100%;
+  border: 1px solid blue
 }
 
 .animatedPiece {
@@ -200,15 +206,22 @@
   min-height: 3vmin;
 }
 
+.engineMoveInfoText img
+{
+  height: 2vmin;
+}
+
 .moveClassificationsList
 {
   text-align: center;
   user-select: none;
+  table-layout: fixed;
+  width: 100%;
 }
 
 .moveClassificationListIcon
 {
-  width: 4vmin;
+  width: 3.7vmin;
 }
 
 .inlineMoveIcon
@@ -219,6 +232,7 @@
 .engineLinesContainer
 {
   flex: 1;
+  border: 1px solid blue;
 }
 
 .engineLineDisplayIcon

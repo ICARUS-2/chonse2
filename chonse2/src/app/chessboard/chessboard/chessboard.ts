@@ -38,6 +38,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   Object = Object;
   MoveClassification = MoveClassification;
   Chessboard = Chessboard;
+  Math = Math;
 
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
@@ -173,7 +174,7 @@ export class Chessboard implements OnInit, AfterViewInit {
       //Resets the state of the from/to squares and current piece back to nothing.
       this.resetMoveState();
     }
-
+    
     Sound.playSoundForMove(moveResult.notation);
   }
 
@@ -253,29 +254,6 @@ export class Chessboard implements OnInit, AfterViewInit {
       }
     }
     return "what the hell are you analyzing this with then?";
-  }
-
-  getEngineMoveInfoText(): string
-  {
-    const mostRecentEval = this.boardState.getMostRecentEval();
-    const previousMostRecentEval = this.boardState.getPreviousMostRecentEval();
-    
-    if (mostRecentEval)
-    {
-      if (mostRecentEval.moveClassification == MoveClassification.Opening ||
-        mostRecentEval.moveClassification == MoveClassification.Best ||
-        mostRecentEval.moveClassification == MoveClassification.Forced || 
-        mostRecentEval.moveClassification == MoveClassification.Perfect ||
-        mostRecentEval.moveClassification == MoveClassification.Splendid)
-      {
-        return `${this.boardState.getMostRecentMove().notation} is ${moveClassificationLabels[mostRecentEval.moveClassification ?? MoveClassification.None]}`
-      }
-      else 
-      {
-        return `${this.boardState.getMostRecentMove().notation} is ${moveClassificationLabels[mostRecentEval.moveClassification ?? MoveClassification.None]} - ${previousMostRecentEval?.bestMove} was the best move`
-      }
-    }
-    return "";
   }
 
   getMoveClassificationForSquare(coord: string): MoveClassification 
@@ -398,7 +376,6 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   handleForwardButtonClicked()
   {
-    console.log(this.boardState.getMostRecentEval());
     const mostRecentMove = this.boardState.getFutureMove();
     this.animateMove(mostRecentMove.fromCoord, mostRecentMove.toCoord, mostRecentMove.piece);
     setTimeout( () =>
