@@ -136,55 +136,67 @@
         </div> 
         <p class="evalTextData">{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " - " : " - "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</p>
         <div class="d-flex movesAndAccuracies">
-            <div class="algebraicContainer">
-                <table class="w-100">
-                    @for (item of boardState.mainMoveStack; track $index) 
-                    {
-                        @if ($index % 2 == 0)
+            <div class="evalSectionLeft d-flex flex-column">
+                <div class="algebraicContainer">
+                    <!--Moves table-->
+                    <table class="w-100">
+                        @for (item of boardState.mainMoveStack; track $index) 
                         {
-                            <tr class="">
-                                <td>
-                                    <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
-                                </td>
+                            @if ($index % 2 == 0)
+                            {
+                                <tr class="">
+                                    <td>
+                                        <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
+                                    </td>
 
-                                <td>
-                                    @if (this.boardState.eval)
-                                    {
-                                        @if (this.boardState.eval.positions[$index + 1])
+                                    <td>
+                                        @if (this.boardState.eval)
                                         {
-                                            <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(this.boardState.eval.positions[$index + 1].moveClassification ?? MoveClassification.None)">
+                                            @if (this.boardState.eval.positions[$index + 1])
+                                            {
+                                                <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(this.boardState.eval.positions[$index + 1].moveClassification ?? MoveClassification.None)">
+                                            }
                                         }
-                                    }
-                                    <div
-                                    class="d-inline" 
-                                    (click)="moveClicked($index + 1)"
-                                    [ngClass]="{
-                                        'text-primary' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStateStack.length == 0,
-                                        'text-danger' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStateStack.length != 0}"
-                                        >{{item.notation}} 
-                                    </div>
-                                </td>
+                                        <div
+                                        class="d-inline" 
+                                        (click)="moveClicked($index + 1)"
+                                        [ngClass]="{
+                                            'text-primary' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStateStack.length == 0,
+                                            'text-danger' : $index == boardState.mainStackPointer - 1 && boardState.divergenceStateStack.length != 0}"
+                                            >{{item.notation}} 
+                                        </div>
+                                    </td>
 
-                                <td>
-                                    @if (this.boardState.eval)
-                                    {
-                                        @if (this.boardState.eval.positions[$index + 2])
+                                    <td>
+                                        @if (this.boardState.eval)
                                         {
-                                            <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(this.boardState.eval.positions[$index + 2].moveClassification ?? MoveClassification.None)">
+                                            @if (this.boardState.eval.positions[$index + 2])
+                                            {
+                                                <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(this.boardState.eval.positions[$index + 2].moveClassification ?? MoveClassification.None)">
+                                            }
                                         }
-                                    }
-                                    <div class="d-inline" 
-                                    (click)="boardState.mainMoveStack[$index + 1] == null ? moveClicked($index + 1) : moveClicked($index + 2)"
-                                    [ngClass]="{
-                                        'text-primary' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStateStack.length == 0,
-                                        'text-danger' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStateStack.length != 0}"
-                                        >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index + 1].notation}} </div>
+                                        <div class="d-inline" 
+                                        (click)="boardState.mainMoveStack[$index + 1] == null ? moveClicked($index + 1) : moveClicked($index + 2)"
+                                        [ngClass]="{
+                                            'text-primary' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStateStack.length == 0,
+                                            'text-danger' : $index == boardState.mainStackPointer - 2 && boardState.divergenceStateStack.length != 0}"
+                                            >{{boardState.mainMoveStack[$index + 1] == null ? "-" : boardState.mainMoveStack[$index + 1].notation}} </div>
 
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
+                            }
                         }
+                    </table>
+                </div>
+                <div class="engineLinesContainer d-flex flex-column justify-content-between pt-1 pb-1">
+                    @for(engineLine of boardState.getMostRecentEval()?.lines ; track $index)
+                    {
+                        <div class="engineLineDisplay d-flex align-items-center">
+                            <img class="engineLineDisplayIcon" [src]="`icons/${$index == 0 ? MoveClassification.Best : ($index == 1 ? MoveClassification.Excellent : MoveClassification.Okay)}.png`">
+                            {{engineLine.pv[0]}}
+                        </div>
                     }
-                </table>
+                </div>
             </div>
             @if (this.boardState.eval)
             {

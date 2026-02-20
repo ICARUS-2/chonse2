@@ -148,7 +148,7 @@
 {
   padding: 5px;
   border: 1px solid blue;
-  height: 50vmin;
+  height: 40vmin;
   width: 40vmin;
   overflow-y: auto;
   overflow-x: hidden;
@@ -214,6 +214,16 @@
 .inlineMoveIcon
 {
   width: 3vmin;
+}
+
+.engineLinesContainer
+{
+  flex: 1;
+}
+
+.engineLineDisplayIcon
+{
+  height: 3vmin;
 }
 
 @media screen and (max-width: 1200px) 

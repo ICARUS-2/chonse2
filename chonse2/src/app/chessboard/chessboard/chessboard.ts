@@ -398,6 +398,7 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   handleForwardButtonClicked()
   {
+    console.log(this.boardState.getMostRecentEval());
     const mostRecentMove = this.boardState.getFutureMove();
     this.animateMove(mostRecentMove.fromCoord, mostRecentMove.toCoord, mostRecentMove.piece);
     setTimeout( () =>
