@@ -157,6 +157,7 @@
   width: 40vmin;
   overflow-y: auto;
   overflow-x: hidden;
+  user-select: none;
 }
 
 .evalSectionRight
@@ -256,12 +257,18 @@
   .movesAndAccuracies
   {
     flex-direction: column;
-    min-height: 60vmin;
+    height: auto;
+    min-height: unset;
   }
 
   .evalTextData
   {
     font-size: small;
+  }
+
+  .engineLinesContainer 
+  {
+    flex: unset;
   }
 
   .algebraicContainer

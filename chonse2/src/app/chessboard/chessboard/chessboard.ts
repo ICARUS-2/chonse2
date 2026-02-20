@@ -22,6 +22,7 @@ import { EngineDisplayName, EngineName, MoveClassification, moveClassificationLa
 import MoveClassificationList from './move-classification-list';
 import { getEvaluationBarValue2 } from '../engine/helpers/chessHelper';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
+import { PositionEval } from '../engine/types/eval';
 @Component({
   selector: 'app-chessboard',
   imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart],
@@ -344,6 +345,51 @@ export class Chessboard implements OnInit, AfterViewInit {
     {
       this.moveClicked(idx);
     } )
+  }
+
+  getImageSourceForEnginePiece(coord: string) : string
+  {
+    if (coord.length < 2)
+    {
+      return "";
+    }
+
+    const fromCoord: string = coord[0] + coord[1];
+    const idx = Chonse2.findIndexFromCoordinate(fromCoord);
+
+    const piece: string = this.boardState.getCurrentState().pieceState[idx.rowIndex][idx.colIndex];
+
+    return `piece/merida/${piece}.svg`;
+  }
+
+  getOpeningDisplay() : string
+  {
+    if (!this.boardState.eval)
+    {
+      return "-";
+    }
+
+    const recentEval: PositionEval | undefined = this.boardState.getMostRecentEval();
+
+    if (!recentEval)
+    {
+      return "-";
+    }
+    else 
+    {
+      if (recentEval.opening)
+      {
+        return recentEval.opening;
+      }
+      else 
+      {
+        if (this.boardState.eval.positions)
+        {
+          return this.boardState.eval.positions[this.boardState.eval.positions.length - 1].opening ?? "";
+        }
+      }
+    }
+    return "-";
   }
   //#endregion
 

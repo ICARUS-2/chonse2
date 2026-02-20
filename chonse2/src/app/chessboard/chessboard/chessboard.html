@@ -135,7 +135,7 @@
         </div> 
         <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
         <div class="evalTextData d-flex flex-column justify-content-center">{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " - " : " - "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</div>
-        <div class="evalTextData d-flex flex-column justify-content-center mb-1">{{this.boardState.getMostRecentEval()?.opening ? this.boardState.getMostRecentEval()?.opening : "-"}}</div>
+        <div class="evalTextData d-flex flex-column justify-content-center mb-1">{{this.getOpeningDisplay()}}</div>
         <div class="d-flex movesAndAccuracies">
             <div class="evalSectionLeft d-flex flex-column">
                 <div class="algebraicContainer">
@@ -189,11 +189,14 @@
                         }
                     </table>
                 </div>
-                <div class="engineLinesContainer d-flex flex-column justify-content-around">
+                @if(this.boardState.eval)
+                {
+                    <div class="engineLinesContainer d-flex flex-column justify-content-around">
                     @for(engineLine of boardState.getMostRecentEval()?.lines ; track $index)
                     {
                         <div class="engineLineDisplay d-flex align-items-center p-2">
                             <img class="engineLineDisplayIcon me-2" [src]="`icons/${$index == 0 ? MoveClassification.Best : ($index == 1 ? MoveClassification.Excellent : MoveClassification.Okay)}.png`">
+                            <img class="engineLineDisplayIcon me-2" [src]="getImageSourceForEnginePiece(engineLine.pv[0])">
                             {{engineLine.pv[0]}}
                             @if (engineLine.cp; as cp)
                             {
@@ -213,6 +216,8 @@
                         </div>
                     }
                 </div>
+                }
+
             </div>
             @if (this.boardState.eval)
             {
@@ -231,7 +236,6 @@
                 </div>
 
                 <div class="evalTextData engineMoveInfoText d-flex flex-column justify-content-center">
-                    <!-- {{getEngineMoveInfoText()}} -->
                     @if (this.boardState.getMostRecentEval(); as mostRecentEval)
                     {
                         @if(this.boardState.getMostRecentMove().notation; as notation)

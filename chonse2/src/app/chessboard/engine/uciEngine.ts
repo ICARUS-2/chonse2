@@ -265,7 +265,7 @@ export class UciEngine {
     const evalResult = await this.evaluateGame({fens: [beforeFen, afterFen], uciMoves: [move.notation], depth});
     const previousPositionResult = evalResult.positions[0];
     const positionResult = evalResult.positions[1];
-
+    
     const formattedMove = move.fromCoord + move.toCoord
 
     //Sanitizes excellent moves that may appear as best moves.
