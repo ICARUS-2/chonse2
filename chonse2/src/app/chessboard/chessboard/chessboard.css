@@ -144,14 +144,20 @@
   margin: 5px;
 }
 
+.movesAndAccuracies
+{
+  height: 52vmin;
+}
+
 .algebraicContainer
 {
   padding: 5px;
   border: 1px solid blue;
-  height: 50vmin;
+  height: 35vmin;
   width: 40vmin;
   overflow-y: auto;
   overflow-x: hidden;
+  user-select: none;
 }
 
 .evalSectionRight
@@ -161,6 +167,7 @@
   align-items: center;
   flex-direction: column;
   width: 100%;
+  border: 1px solid blue
 }
 
 .animatedPiece {
@@ -200,20 +207,38 @@
   min-height: 3vmin;
 }
 
+.engineMoveInfoText img
+{
+  height: 2vmin;
+}
+
 .moveClassificationsList
 {
   text-align: center;
   user-select: none;
+  table-layout: fixed;
+  width: 100%;
 }
 
 .moveClassificationListIcon
 {
-  width: 4vmin;
+  width: 3.7vmin;
 }
 
 .inlineMoveIcon
 {
   width: 3vmin;
+}
+
+.engineLinesContainer
+{
+  flex: 1;
+  border: 1px solid blue;
+}
+
+.engineLineDisplayIcon
+{
+  height: 3vmin;
 }
 
 @media screen and (max-width: 1200px) 
@@ -232,12 +257,18 @@
   .movesAndAccuracies
   {
     flex-direction: column;
-    min-height: 60vmin;
+    height: auto;
+    min-height: unset;
   }
 
   .evalTextData
   {
     font-size: small;
+  }
+
+  .engineLinesContainer 
+  {
+    flex: unset;
   }
 
   .algebraicContainer

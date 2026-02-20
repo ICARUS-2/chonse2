@@ -130,7 +130,7 @@ export default class BoardState
         }
 
         //If neither stack has a move (aka starting position), return a dummy move.
-        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE, comment: ""};
+        return { result: false, notation: "", fromCoord: "", toCoord: "", piece: PieceType.NONE, comment: ""};
     }
 
     getFutureMove(): IMoveResult 
@@ -161,7 +161,7 @@ export default class BoardState
         }
 
         //Otherwise, check the main move stack using the pointer
-        if (this.mainStackPointer > 0) { 
+        if (this.mainStackPointer >= 0) { 
             if (this.eval)
             {
                 return this.eval.positions[this.mainStackPointer];
@@ -646,7 +646,7 @@ export default class BoardState
         return boardState;
     }
 
-    async evaluateGame( /*setProgress: (value: number) => void*/ ): Promise<void> 
+    async evaluateGame(): Promise<void> 
     {
         //Don't evaluate it if the flag hasn't been set.
         if (!this.doEvaluateGame)
@@ -700,9 +700,7 @@ export default class BoardState
             this.whiteMoveClassificationList.moves.set(v, {arr: [], ptr: 0});
             this.blackMoveClassificationList.moves.set(v, {arr: [], ptr: 0})
         })
-
         let turn = !this.mainStateStack[0].turn;
-
         this.eval?.positions.forEach( (pos, idx) =>
         {
             const map = turn ? this.whiteMoveClassificationList.moves : this.blackMoveClassificationList.moves;
@@ -712,6 +710,8 @@ export default class BoardState
 
             turn = !turn;
         })
+
+        console.log(this.eval);
     }
 
     async setEngineIfNotExists()
