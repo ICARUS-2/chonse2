@@ -1,9 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ChartItemData } from './chart-item-data';
 import { PositionEval } from '../engine/types/eval';
 import { MoveClassification } from '../engine/types/enums';
 import { BaseChartDirective } from 'ng2-charts';
-import { Chart, ChartConfiguration, ChartOptions } from 'chart.js';
+import { ActiveElement, Chart, ChartConfiguration, ChartEvent, ChartOptions } from 'chart.js';
 
 @Component({
   selector: 'app-evaluation-chart',
@@ -14,7 +14,30 @@ import { Chart, ChartConfiguration, ChartOptions } from 'chart.js';
 export class EvaluationChart implements OnInit {
 
   @Input() arr: PositionEval[] = [];
+  @Input() selectedIndex = 0;
+  @Output() pointClicked: EventEmitter<number> = new EventEmitter<number>();
 
+  verticalLinePlugin = 
+  {
+    id: 'verticalLinePlugin',
+    afterDraw: (chart: any) => {
+      if (this.selectedIndex === null) return;
+
+      const ctx = chart.ctx;
+      const xScale = chart.scales.x;
+
+      const x = xScale.getPixelForValue(this.selectedIndex);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, chart.chartArea.top);
+      ctx.lineTo(x, chart.chartArea.bottom);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = this.getVerticalLineColor();
+      ctx.stroke();
+      ctx.restore();
+    }
+  };
 
   lineChartOptions: ChartConfiguration<'line'>['options'] = {
     responsive: true,
@@ -25,11 +48,13 @@ export class EvaluationChart implements OnInit {
       legend: { display: false },
       tooltip: 
       {
+        displayColors: false,
         callbacks: 
         {
+          title: () => {},
           label: (tooltipItem) => 
           {
-            //tooltipItem.datasetIndex and tooltipItem.dataIndex give you the index
+            //tooltipItem.datasetIndex and tooltipItem.dataIndex give the index
             const dataset = tooltipItem.dataset;
             const dataIndex = tooltipItem.dataIndex!;
             
@@ -40,14 +65,14 @@ export class EvaluationChart implements OnInit {
             //Access custom properties
             const chartItem = this.getChartData().datasets[0].data[dataIndex] as any;
 
-            // Build tooltip text
+            //Build tooltip text
             const cp = chartItem.cp ?? '';
             const mate = chartItem.mate ?? '';
             const moveClass = chartItem.moveClassification ?? '';
             const y = chartItem.y;
             const val = mate ? ("M"+mate) : (cp / 100).toFixed(1);
 
-            return `${val} Move: ${moveClass}`;
+            return `${val} - ${moveClass}`;
           }
         }
       }
@@ -70,6 +95,25 @@ export class EvaluationChart implements OnInit {
     {
       padding: 0
     },
+
+    onClick: (event: ChartEvent, elements: ActiveElement[], chart: Chart) =>
+    {
+      if (!elements)
+      {
+        return;
+      }
+
+      const firstElement = elements[0];
+
+      if (!firstElement)
+      {
+        return;
+      }
+
+      const idx = firstElement.index;
+      
+      this.pointClicked.emit(idx);
+    }
   };
 
   constructor()
@@ -81,7 +125,7 @@ export class EvaluationChart implements OnInit {
   {
     //console.log(this.arr);
   }
-
+  
   getChartData()
   {
     const chartItems = this.arr.map(this._formatSingleEvalToChartData);
@@ -92,17 +136,83 @@ export class EvaluationChart implements OnInit {
       datasets: 
       [
         {
-          data: chartItems.map( i => ({ y: i.value, x: i.moveNb, cp: i.cp, mate: i.mate, moveClassification: i.moveClassification })),
+          data: chartItems.map(i => ({
+            y: i.value,
+            x: i.moveNb,
+            cp: i.cp,
+            mate: i.mate,
+            moveClassification: i.moveClassification
+          })),
           fill: true,
           backgroundColor: "white",
-          pointRadius: 0,
-          pointHoverRadius: 1,
-          pointHitRadius: 20,
+          pointHoverRadius: 6,
+
+          pointRadius: (ctx) => {
+            const p = ctx.raw as any;
+            return p.moveClassification ? 6 : 0;
+          },
+
+          pointBackgroundColor: (ctx) => 
+          {
+            const p = ctx.raw as any;
+
+            return this.getPointColor(p);
+          },
+
+          pointBorderWidth: 0,
         }
-      ],
+      ]
     }
 
     return lineChartData;
+  }
+
+  private getPointColor(p: any)
+  {
+    switch (p.moveClassification) 
+    {
+      case MoveClassification.Blunder: 
+        return 'red';
+      case MoveClassification.Mistake: 
+        return 'orange';
+      case MoveClassification.Best: 
+        return 'lime';
+      case MoveClassification.Perfect: 
+        return 'purple';
+      case MoveClassification.Splendid: 
+        return 'cyan';
+      default: 
+        return 'transparent';
+    }
+  }
+
+  private getVerticalLineColor()
+  {
+    switch (this.arr[this.selectedIndex].moveClassification) 
+    {
+      case MoveClassification.Blunder: 
+        return 'red';
+      case MoveClassification.Mistake: 
+        return 'orange';
+      case MoveClassification.Best: 
+        return 'lime';
+      case MoveClassification.Excellent:
+        return 'lime';
+      case MoveClassification.Okay:
+        return 'yellowgreen';
+      case MoveClassification.Inaccuracy:
+        return 'yellow'
+      case MoveClassification.Perfect: 
+        return 'purple';
+      case MoveClassification.Splendid: 
+        return 'aquamarine';
+      case MoveClassification.Forced:
+        return 'gray';
+      case MoveClassification.Opening:
+        return 'lightgray';
+      default: 
+        return 'transparent';
+    }
   }
 
   private _formatSingleEvalToChartData = (

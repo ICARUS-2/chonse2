@@ -2,7 +2,8 @@
   <canvas baseChart
     [data]="getChartData()"
     [options]="this.lineChartOptions"
-    [type]="'line'">
+    [type]="'line'"
+    [plugins]="[verticalLinePlugin]">
       
   </canvas>
 </div>
