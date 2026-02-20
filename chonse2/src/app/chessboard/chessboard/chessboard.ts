@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, NgZone, OnInit, ViewChild } from '@angular/core';
 import { PieceType } from '../../../lib/piece-type';
 import { Square } from '../square/square';
 import { PieceColor } from '../../../lib/piece-color';
@@ -87,7 +87,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   //FUNCTIONAL
   clickToMove: boolean = false;
 
-  constructor(private modalService: NgbModal, private chessBoardService: ChessBoardService, private toastr: ToastrService)
+  constructor(private ngZone: NgZone, private modalService: NgbModal, private chessBoardService: ChessBoardService, private toastr: ToastrService)
   {
     //Board state stored in service to persist across routerlink changes.
     const boardState: BoardState = this.chessBoardService.getGame(this.gameId);
@@ -359,6 +359,14 @@ export class Chessboard implements OnInit, AfterViewInit {
 
     return {whiteBarPercentage: 51, label: "0.4"};
   }
+
+  onGraphClicked(idx: number)
+  {
+    this.ngZone.run( () =>
+    {
+      this.moveClicked(idx);
+    } )
+  }
   //#endregion
 
   //Controls
@@ -428,6 +436,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     return true;
   }
 
+  
   moveClicked(index: number)
   {
     if (this.boardState.divergenceStateStack.length != 0)
