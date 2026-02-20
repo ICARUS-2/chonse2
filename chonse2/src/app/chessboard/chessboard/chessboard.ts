@@ -349,6 +349,11 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   getImageSourceForEnginePiece(coord: string) : string
   {
+    if (!coord)
+    {
+      return "";
+    }
+
     if (coord.length < 2)
     {
       return "";

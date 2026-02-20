@@ -196,8 +196,14 @@
                     {
                         <div class="engineLineDisplay d-flex align-items-center p-2">
                             <img class="engineLineDisplayIcon me-2" [src]="`icons/${$index == 0 ? MoveClassification.Best : ($index == 1 ? MoveClassification.Excellent : MoveClassification.Okay)}.png`">
-                            <img class="engineLineDisplayIcon me-2" [src]="getImageSourceForEnginePiece(engineLine.pv[0])">
-                            {{engineLine.pv[0]}}
+                            
+                            <div>
+                                @if(getImageSourceForEnginePiece(engineLine.pv[0]); as pieceImgSrc)
+                                {
+                                    <img class="engineLineDisplayIcon me-2" [src]="pieceImgSrc">
+                                }
+                                {{engineLine.pv[0]}}
+                            </div>
                             @if (engineLine.cp; as cp)
                             {
                                 ->
