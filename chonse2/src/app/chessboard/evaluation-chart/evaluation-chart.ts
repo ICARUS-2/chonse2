@@ -33,7 +33,7 @@ export class EvaluationChart implements OnInit {
       ctx.moveTo(x, chart.chartArea.top);
       ctx.lineTo(x, chart.chartArea.bottom);
       ctx.lineWidth = 2;
-      ctx.strokeStyle = '#00ccff';
+      ctx.strokeStyle = this.getVerticalLineColor();
       ctx.stroke();
       ctx.restore();
     }
@@ -48,8 +48,10 @@ export class EvaluationChart implements OnInit {
       legend: { display: false },
       tooltip: 
       {
+        displayColors: false,
         callbacks: 
         {
+          title: () => {},
           label: (tooltipItem) => 
           {
             //tooltipItem.datasetIndex and tooltipItem.dataIndex give the index
@@ -70,7 +72,7 @@ export class EvaluationChart implements OnInit {
             const y = chartItem.y;
             const val = mate ? ("M"+mate) : (cp / 100).toFixed(1);
 
-            return `${val} Move: ${moveClass}`;
+            return `${val} - ${moveClass}`;
           }
         }
       }
@@ -179,6 +181,35 @@ export class EvaluationChart implements OnInit {
         return 'purple';
       case MoveClassification.Splendid: 
         return 'cyan';
+      default: 
+        return 'transparent';
+    }
+  }
+
+  private getVerticalLineColor()
+  {
+    switch (this.arr[this.selectedIndex].moveClassification) 
+    {
+      case MoveClassification.Blunder: 
+        return 'red';
+      case MoveClassification.Mistake: 
+        return 'orange';
+      case MoveClassification.Best: 
+        return 'lime';
+      case MoveClassification.Excellent:
+        return 'lime';
+      case MoveClassification.Okay:
+        return 'yellowgreen';
+      case MoveClassification.Inaccuracy:
+        return 'yellow'
+      case MoveClassification.Perfect: 
+        return 'purple';
+      case MoveClassification.Splendid: 
+        return 'aquamarine';
+      case MoveClassification.Forced:
+        return 'gray';
+      case MoveClassification.Opening:
+        return 'lightgray';
       default: 
         return 'transparent';
     }
