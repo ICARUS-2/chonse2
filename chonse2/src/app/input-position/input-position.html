@@ -1,48 +1,19 @@
-<!--
-<div class="componentContainer">
-    <div class="boardOuterContainer" [class]="boardState.isFlipped ? 'boardOuterContainerFlipped' : ''">
-            <div #board class="boardContainerInner" [class]="boardState.isFlipped ? 'boardContainerInnerFlipped' : ''">
-                @if(animatedPiece)
-                {
-                    <img class="animatedPiece"
-                        [ngClass]="{'animatedPieceFlipped': boardState.isFlipped}"
-                        [src]="`piece/merida/${animatedPiece}.svg`"
-                        [style.transform]="'
-                            translate(' + animatedPieceX + 'px,' + animatedPieceY + 'px)' 
-                            + (boardState.isFlipped ? ' rotate(180deg)' : '')"
-
-                        [style.transition]="'all ' + animationDuration + 'ms ease-in-out'"
-                        (transitionend)="onAnimationEnd()"/>
-                }
-
-
-                @for( rank of boardState.getCurrentState().pieceState; let rankIndex = $index; track rankIndex)
-                {
-                    <ng-container>
-                        @for ( piece of rank; let fileIndex = $index; track fileIndex; )
-                        {
-                            <div style="position: relative; width: 100%; height: 100%;">
-                                <app-square 
-                                    [coordinate]="this.COORDS[rankIndex][fileIndex]" 
-                                    [piece]="boardState.getCurrentState().pieceState[rankIndex][fileIndex]"
-                                    [isDark]="(rankIndex + fileIndex) % 2 == 1"
-                                    [showFile]="rankIndex == rank.length - 1"
-                                    [showRank]="fileIndex == 0"
-                                    [showPiece]="animatedPieceCoord ? this.COORDS[rankIndex][fileIndex] != animatedPieceCoord : LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE) ? true : this.COORDS[rankIndex][fileIndex] != fromSquare"
-                                    [isFlipped]="boardState.isFlipped"
-                                    [isLegalMove]="currentLegalMoves.includes(this.COORDS[rankIndex][fileIndex])"
-                                    [isInCheck]="(boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState.getCurrentState().isInCheck(PieceColor.WHITE)) || (boardState.getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState.getCurrentState().isInCheck(PieceColor.BLACK)) "
-                                    [isClicked]="getRightClickedStatusForSquare(this.COORDS[rankIndex][fileIndex])"
-                                    [moveClassification]="getMoveClassificationForSquare(this.COORDS[rankIndex][fileIndex])"
-                                    (mouseDown)="onSquareMouseDown($event)"
-                                    (mouseUp)="onSquareMouseUp($event)"
-                                    (leftClick)="onSquareLeftClick()">
-                                </app-square>
-                            </div>
-                        }
-                    </ng-container>
-                }
+<div class="container">
+    <div class="innerContainer w-100 d-flex justify-content-center">
+        @if(this.ips.getGame(BoardNames.InputPosition))
+        {
+            <app-input-position-board [stateId]="BoardNames.InputPosition"></app-input-position-board>
+        }
+        @else 
+        {
+            <div class="alert alert-primary d-flex align-items-center justify-content-center" role="alert">
+                <div class="spinner-border">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div>
+                    Loading Game.
+                </div>
             </div>
-        </div>
+        }
     </div>
-    -->
+</div>
