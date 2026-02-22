@@ -84,9 +84,14 @@ export class ImportModal implements OnInit
       return;
     }
 
-    if (this.savedUsernames.includes(name))
+    for(let i = 0; i < this.savedUsernames.length; i++)
     {
-      return;
+      const su = this.savedUsernames[i];
+
+      if (su.toLowerCase() == name.toLowerCase())
+      {
+        return;
+      }
     }
 
     this.savedUsernames.push(name);
@@ -129,7 +134,7 @@ export class ImportModal implements OnInit
 
     if (score == GameScore.WHITE_WON)
     {
-      if (game.white.username == this.siteUsername)
+      if (game.white.username.toLowerCase() == this.siteUsername.toLowerCase())
       {
         return "text-bg-success";
       }
@@ -139,7 +144,7 @@ export class ImportModal implements OnInit
 
     if (score == GameScore.BLACK_WON)
     {
-      if (game.black.username == this.siteUsername)
+      if (game.black.username.toLowerCase() == this.siteUsername.toLowerCase())
       {
         return "text-bg-success";
       }
