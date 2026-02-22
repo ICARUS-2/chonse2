@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { BoardNames } from '../boards';
 import { InputPositionBoard } from "./input-position-board/input-position-board";
 import { InputPositionService } from './input-position-service';
 import InputPositionState from './input-position-state';
+import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 
 @Component({
   selector: 'app-input-position',
@@ -10,10 +11,10 @@ import InputPositionState from './input-position-state';
   templateUrl: './input-position.html',
   styleUrl: './input-position.css',
 })
-export class InputPosition implements OnInit{
+export class InputPosition implements OnInit {
   BoardNames = BoardNames;
 
-  constructor(public ips: InputPositionService)
+  constructor(public ips: InputPositionService, public boardService: ChessBoardService)
   {
 
   }
@@ -22,4 +23,6 @@ export class InputPosition implements OnInit{
   {
     this.ips.addGame(BoardNames.InputPosition, new InputPositionState());
   }
+
+
 }
