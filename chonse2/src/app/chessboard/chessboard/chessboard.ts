@@ -299,7 +299,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     return "icons/" + classification + ".png";
   }
 
-  getEngineArrow() : Arrow | null
+  getPastEngineArrow() : Arrow | null
   {
     const bestMove = this.boardState.getPreviousMostRecentEval()?.bestMove;
 
@@ -309,6 +309,23 @@ export class Chessboard implements OnInit, AfterViewInit {
       const to = bestMove[2] + bestMove[3];
 
       const arrow = this.createArrow(from, to, "rgba(0,128,0,0.6)", ArrowContext.Engine);
+
+      return arrow;
+    }
+
+    return null;
+  }
+
+  getFutureEngineArrow(): Arrow | null 
+  {
+    const bestMove = this.boardState.getMostRecentEval()?.bestMove;
+
+    if (bestMove)
+    {
+      const from = bestMove[0] + bestMove[1];
+      const to = bestMove[2] + bestMove[3];
+
+      const arrow = this.createArrow(from, to, "rgba(0, 183, 255, 0.6)", ArrowContext.Engine);
 
       return arrow;
     }
