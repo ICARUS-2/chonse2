@@ -8,7 +8,7 @@ import AlgebraicNotationMaker from "./algebraic-notation-builder";
 
 export default class Chonse2
 {
-  static DEFAULT_PIECE_STATE: Array<Array<string>> = 
+  static readonly DEFAULT_PIECE_STATE: ReadonlyArray<ReadonlyArray<string>> =
   [
       [ PieceType.BLACK_ROOK, PieceType.BLACK_KNIGHT, PieceType.BLACK_BISHOP, PieceType.BLACK_QUEEN, PieceType.BLACK_KING, PieceType.BLACK_BISHOP,PieceType.BLACK_KNIGHT, PieceType.BLACK_ROOK],
       [ PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN],
@@ -111,7 +111,7 @@ export default class Chonse2
   private _previousPositionMap: Map<string, number> = new Map<string, number>();
 
   //instantiates with either a passed game state or the default one.
-  constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE)
+  constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]))
   {
     this.pieceState = passedState;
 

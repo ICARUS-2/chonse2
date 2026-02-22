@@ -67,13 +67,21 @@ export class InputPositionBoard {
   }
 
   async completeMove(fromSquare: string, toSquare: string)
-  {
+  {    
     const piece = this.currentlyHeldPiece;
-    if (!this.currentLegalMoves.includes(toSquare))
+    if (!this.fromSquare || !this.toSquare)
     {
+      this.resetMoveState();
       return;
     }
+    const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
+    const toIdx = Chonse2.findIndexFromCoordinate(toSquare);
     
+    this.model.game.pieceState[fromIdx.rowIndex][fromIdx.colIndex] = "";
+    this.model.game.pieceState[toIdx.rowIndex][toIdx.colIndex] = piece;
+
+    this.currentlyHeldPiece = "";
+    this.resetMoveState();
   }
 
 
@@ -139,7 +147,6 @@ export class InputPositionBoard {
   {
     if (event.mouse.button == 0)
     {
-      //If it is not click to move mode:
       //sets the square in the UI to where the player is dropping the piece.
       this.toSquare = event.coordinate;
 
