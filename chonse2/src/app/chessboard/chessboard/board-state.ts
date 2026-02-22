@@ -710,8 +710,6 @@ export default class BoardState
 
             turn = !turn;
         })
-
-        console.log(this.eval);
     }
 
     async setEngineIfNotExists()

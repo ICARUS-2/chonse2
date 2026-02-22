@@ -1,0 +1,19 @@
+<div class="container">
+    <div class="innerContainer w-100 d-flex justify-content-center">
+        @if(this.ips.getGame(BoardNames.InputPosition))
+        {
+            <app-input-position-board [stateId]="BoardNames.InputPosition"></app-input-position-board>
+        }
+        @else 
+        {
+            <div class="alert alert-primary d-flex align-items-center justify-content-center" role="alert">
+                <div class="spinner-border">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div>
+                    Loading Game.
+                </div>
+            </div>
+        }
+    </div>
+</div>
