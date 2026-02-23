@@ -82,15 +82,69 @@
         <hr>
 
         <h4>Castling Rights</h4>
-        <div>
+        <div class="d-flex justify-content-between user-select-none">
+            <!--White castling rights-->
+            <div>
+                <p>White</p>
+                @if(getPotentialForCastlingRights(true, true))
+                {
+                    <div class="form-check form-switch">
+                        <label>Kingside</label>
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="this.model.game.whiteCastlingRights.kingSide">
+                    </div>
+                }
 
+                @if(getPotentialForCastlingRights(true, false))
+                {
+                    <div class="form-check form-switch">
+                        <label>Queenside</label>
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="this.model.game.whiteCastlingRights.queenSide">
+                    </div>
+                }
+            </div>
+
+            <!--Black castling rights-->
+            <div>
+                <p>Black</p>
+                @if(getPotentialForCastlingRights(false, true))
+                {
+                    <div class="form-check form-switch">
+                        <label>Kingside</label>
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="this.model.game.blackCastlingRights.kingSide">
+                    </div>
+                }
+
+                @if(getPotentialForCastlingRights(false, false))
+                {
+                    <div class="form-check form-switch">
+                        <label>Queenside</label>
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="this.model.game.blackCastlingRights.queenSide">
+                    </div>
+                }
+            </div>
         </div>
 
         <hr>
 
         <h4>En Passant</h4>
         <div>
-
+            @if(getPotentialEnPassantSquares(); as potentialEpSquares)
+            {
+                @if (potentialEpSquares.length > 0)
+                {
+                    <div>Select</div>
+                    <select [(ngModel)]="this.model.game.enPassantSquare">
+                        @for(square of potentialEpSquares; track $index)
+                        {
+                            <option [ngValue]="square">{{square}}</option>
+                        }
+                    </select>
+                }
+                @else
+                {
+                    N/A
+                }
+            }
         </div>
 
         <hr>
@@ -99,6 +153,12 @@
         <div>
             {{this.model.game.getFEN()}}
         </div>
+
+        <hr>
+        @if (this.model.game.gameState.isGameOver)
+        {
+            <div class="">{{this.model.game.gameState.reason}} {{this.model.game.gameState.gameScore}}</div>
+        }
     </div>
     @if(currentlyHeldPiece != "")
     {

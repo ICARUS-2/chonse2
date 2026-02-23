@@ -7,10 +7,11 @@ import { InputPositionService } from '../input-position-service';
 import { Arrow, ArrowContext } from '../../chessboard/chessboard/arrow';
 import { MoveClassification } from '../../chessboard/engine/types/enums';
 import { PieceColor } from '../../../lib/piece-color';
-import { GameOverReason } from '../../../lib/game-state';
+import { GameOverReason, GameState } from '../../../lib/game-state';
 import { Square } from '../../chessboard/square/square';
 import { PieceSelector } from "../piece-selector/piece-selector";
 import { FormsModule } from '@angular/forms';
+import { NgbCarousel } from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-input-position-board',
@@ -93,11 +94,11 @@ export class InputPositionBoard {
     if (this.fromSquare)
     {
       const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
-      this.model.game.pieceState[fromIdx.rowIndex][fromIdx.colIndex] = "";
+      this.setPieceOnBoard(fromIdx.rowIndex, fromIdx.colIndex, "");
     }
     
     const toIdx = Chonse2.findIndexFromCoordinate(toSquare);    
-    this.model.game.pieceState[toIdx.rowIndex][toIdx.colIndex] = piece;
+    this.setPieceOnBoard(toIdx.rowIndex, toIdx.colIndex, piece);
 
     this.currentlyHeldPiece = "";
     this.resetMoveState();
@@ -121,11 +122,18 @@ export class InputPositionBoard {
   handleResetClicked()
   {
     this.model.game.pieceState = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]);
+    this.model.game.whiteCastlingRights.kingSide = true;
+    this.model.game.whiteCastlingRights.queenSide = true;
+    this.model.game.blackCastlingRights.kingSide = true;
+    this.model.game.blackCastlingRights.queenSide = true;
+    this.model.game.enPassantSquare = "";
+    this._afterStateChanged();
   }
 
   handleClearClicked()
   {
     this.model.game.pieceState = InputPositionBoard.CLEARED_BOARD.map(rank => [...rank]);
+    this._afterStateChanged();
   }
 
   
@@ -259,7 +267,7 @@ export class InputPositionBoard {
     {
       const idx = Chonse2.findIndexFromCoordinate(this.fromSquare);
 
-      this.model.game.pieceState[idx.rowIndex][idx.colIndex] = "";
+      this.setPieceOnBoard(idx.rowIndex, idx.colIndex, "");
       this.resetMoveState();
     }
   }
@@ -267,6 +275,84 @@ export class InputPositionBoard {
   onTurnChanged(event: boolean)
   {
     this.model.game.turn = event;
+    this.model.game.enPassantSquare = "";
+  }
+
+  getPotentialEnPassantSquares(): Array<string>
+  {
+    const arr: string[] = [];
+
+    //The indeces of both the ranks the pawn moves to and the ones where the capture takes place.
+    const rankIndex = this.model.game.turn ? 3 : 4;
+    const previousRankIndex = this.model.game.turn ? 2 : 5;
+
+    //The ranks where the pawn is located (two spaces) and the en passant rank beneath it.
+    const pawnRank = this.model.game.pieceState[rankIndex];
+    const enPassantSquareRank = this.model.game.pieceState[previousRankIndex];
+
+    //Check every possible space for en passant.
+    for(let i = 0; i < pawnRank.length; i++)
+    {
+      //Square the pawn is on and the one beneath it the capturer moves to.
+      const pawnRankSquareContent = pawnRank[i];
+      const potentialEnPassantSquareContent = enPassantSquareRank[i];
+
+      //If there is a pawn that has moved two spaces AND there is nothing underneath it.
+      if (this.model.game.turn ? pawnRankSquareContent == PieceType.BLACK_PAWN : pawnRankSquareContent == PieceType.WHITE_PAWN)
+      {
+        if (potentialEnPassantSquareContent == "")
+        {
+          arr.push(Chonse2.COORDS[previousRankIndex][i]);
+        }
+      }
+    }
+
+    return arr;
+  }
+
+  getPotentialForCastlingRights(isWhite: boolean, isKingside: boolean): boolean
+  {
+    //Where the king is on the board.
+    const king = this.model.game.getKingCoordinate( isWhite ? PieceColor.WHITE : PieceColor.BLACK );
+    
+    //To have castling rights you need to have a king on the board (obviously) and the rook needs to be in its place.
+    if (king && ( isWhite ? king == Chonse2.WHITE_KING_SQUARE : king == Chonse2.BLACK_KING_SQUARE ))
+    {
+      const rookCoord = isWhite ? (isKingside ? Chonse2.WHITE_KINGSIDE_ROOK_SQUARE : Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE) : (isKingside ? Chonse2.BLACK_KINGSIDE_ROOK_SQUARE : Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE);
+      const rookSquareIndex = Chonse2.findIndexFromCoordinate(rookCoord);
+      const rookSquareContent = this.model.game.pieceState[rookSquareIndex.rowIndex][rookSquareIndex.colIndex];
+      const rookPiece = isWhite ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
+
+      //If there is no rook in that place, no castling rights can potentially exist there.
+      if (rookSquareContent != rookPiece)
+      {
+        isWhite ? (isKingside ? this.model.game.whiteCastlingRights.kingSide = false : this.model.game.whiteCastlingRights.queenSide = false) : (isKingside ? this.model.game.blackCastlingRights.kingSide = false : this.model.game.blackCastlingRights.queenSide = false);
+      }
+      else 
+      {
+        //If the king exists and the rook piece is in its spot, then you have castling rights.
+        return true; 
+      }
+    }
+    else 
+    {
+      //If there is no king or the king has moved, strip both.
+      isWhite ? this.model.game.whiteCastlingRights.removeBothCastlingRights() : this.model.game.blackCastlingRights.removeBothCastlingRights();
+    }
+
+    //If any check failed, castling rights cannot exist.
+    return false;
+  }
+
+  setPieceOnBoard(rowIndex: number, colIndex: number, piece: string)
+  {
+    this.model.game.pieceState[rowIndex][colIndex] = piece;
+    this._afterStateChanged();
+  }
+
+  _afterStateChanged()
+  {
+
   }
   //#endregion
 

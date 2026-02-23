@@ -39,7 +39,7 @@ export class PieceSelector {
   
   pieceSquareMouseDown(piece: string, event: PointerEvent)
   {
-    if (!this.isKingActive)
+    if (!this.isKingActive && (piece == PieceType.WHITE_KING || piece == PieceType.BLACK_KING))
     {
       return;
     }
