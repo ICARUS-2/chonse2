@@ -9,16 +9,17 @@ import { MoveClassification } from '../../chessboard/engine/types/enums';
 import { PieceColor } from '../../../lib/piece-color';
 import { GameOverReason } from '../../../lib/game-state';
 import { Square } from '../../chessboard/square/square';
+import { PieceSelector } from "../piece-selector/piece-selector";
 
 @Component({
   selector: 'app-input-position-board',
-  imports: [Square],
+  imports: [Square, PieceSelector],
   templateUrl: './input-position-board.html',
   styleUrl: './input-position-board.css',
 })
 
 export class InputPositionBoard {
- pieceType = PieceType;
+  pieceType = PieceType;
   PieceColor = PieceColor;
   GameOverReason = GameOverReason;
   Object = Object;

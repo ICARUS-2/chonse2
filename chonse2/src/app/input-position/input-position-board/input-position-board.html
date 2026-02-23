@@ -1,5 +1,6 @@
 <div class="componentContainer">
     <div class="boardOuterContainer" [class]="model.isFlipped ? 'boardOuterContainerFlipped' : ''">
+        <app-piece-selector [for]="PieceColor.BLACK"></app-piece-selector>
         <div #board class="boardContainerInner" [class]="model.isFlipped ? 'boardContainerInnerFlipped' : ''">
             <!-- ARROW OVERLAY -->
             <svg
@@ -60,6 +61,7 @@
                 </ng-container>
             }
         </div>
+        <app-piece-selector [for]="PieceColor.WHITE"></app-piece-selector>
     </div>
 
     @if(currentlyHeldPiece != "")
