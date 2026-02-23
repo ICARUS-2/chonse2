@@ -87,6 +87,14 @@
     z-index: 10;
 }
 
+.boardControls 
+{
+  border: 1px solid blue;
+  height: 75vmin;
+  padding: 2vmin;
+  width: 40vmin;
+}
+
 @media screen and (max-width: 1200px) 
 {
   .componentContainer

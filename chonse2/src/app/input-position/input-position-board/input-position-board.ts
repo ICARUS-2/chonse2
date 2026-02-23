@@ -1,4 +1,4 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, NgZone } from '@angular/core';
 import Chonse2 from '../../../lib/chonse2';
 import { PieceType } from '../../../lib/piece-type';
 import { ToastrService } from 'ngx-toastr';
@@ -10,10 +10,11 @@ import { PieceColor } from '../../../lib/piece-color';
 import { GameOverReason } from '../../../lib/game-state';
 import { Square } from '../../chessboard/square/square';
 import { PieceSelector } from "../piece-selector/piece-selector";
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-input-position-board',
-  imports: [Square, PieceSelector],
+  imports: [Square, PieceSelector, FormsModule],
   templateUrl: './input-position-board.html',
   styleUrl: './input-position-board.css',
 })
@@ -27,6 +28,18 @@ export class InputPositionBoard {
   Math = Math;
 
   COORDS: Array<Array<string>> = Chonse2.COORDS;
+
+  static readonly CLEARED_BOARD: ReadonlyArray<ReadonlyArray<string>> =   
+  [
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.BLACK_KING, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.WHITE_KING, PieceType.NONE, PieceType.NONE, PieceType.NONE]
+  ];
 
   //Game service ID
   @Input({required: true}) stateId: string = "";
@@ -98,18 +111,6 @@ export class InputPositionBoard {
     this.currentLegalMoves = [];
   }
 
-  //Import/Reset
-  //#region 
-
-  handleResetClicked()
-  {
-    const bs: InputPositionState = new InputPositionState();
-    this.ips.deleteGame(this.stateId);
-    this.ips.addGame(this.stateId, bs);
-    this.model = this.ips.getGame(this.stateId);
-  }
-  //#endregion
-
   //Controls
   //#region 
   handleFlipClicked()
@@ -117,6 +118,17 @@ export class InputPositionBoard {
     this.model.isFlipped = !this.model.isFlipped;
   }
 
+  handleResetClicked()
+  {
+    this.model.game.pieceState = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]);
+  }
+
+  handleClearClicked()
+  {
+    this.model.game.pieceState = InputPositionBoard.CLEARED_BOARD.map(rank => [...rank]);
+  }
+
+  
   //#endregion
 
   //Left click/pointer
@@ -153,6 +165,11 @@ export class InputPositionBoard {
   {
     if (event.mouse.button == 0)
     {
+      if (!this.currentlyHeldPiece)
+      {
+        return;
+      }
+
       //sets the square in the UI to where the player is dropping the piece.
       this.toSquare = event.coordinate;
 
@@ -245,6 +262,11 @@ export class InputPositionBoard {
       this.model.game.pieceState[idx.rowIndex][idx.colIndex] = "";
       this.resetMoveState();
     }
+  }
+
+  onTurnChanged(event: boolean)
+  {
+    this.model.game.turn = event;
   }
   //#endregion
 

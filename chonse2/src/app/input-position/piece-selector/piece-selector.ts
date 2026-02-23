@@ -16,6 +16,8 @@ export class PieceSelector {
   PieceSelector = PieceSelector;
   
   @Input() for: PieceColor = PieceColor.WHITE;
+  @Input() isKingActive: boolean = true;
+
   @Output() pieceSquareMouseDownEvent: EventEmitter<{piece: string, event: PointerEvent}> = new EventEmitter<{piece: string, event: PointerEvent}>();
   @Output() deleteSquareMouseUpEvent: EventEmitter<string> = new EventEmitter<string>();
   
@@ -37,6 +39,11 @@ export class PieceSelector {
   
   pieceSquareMouseDown(piece: string, event: PointerEvent)
   {
+    if (!this.isKingActive)
+    {
+      return;
+    }
+
     this.pieceSquareMouseDownEvent.emit({piece, event});
   }
 

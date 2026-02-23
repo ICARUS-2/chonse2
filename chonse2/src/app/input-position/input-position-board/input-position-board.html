@@ -1,6 +1,6 @@
 <div class="componentContainer">
     <div class="boardOuterContainer" [class]="model.isFlipped ? 'boardOuterContainerFlipped' : ''">
-        <app-piece-selector [for]="PieceColor.BLACK" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
+        <app-piece-selector [for]="PieceColor.BLACK" [isKingActive]="model.game.getKingCoordinate(PieceColor.BLACK) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
         <div #board class="boardContainerInner" [class]="model.isFlipped ? 'boardContainerInnerFlipped' : ''">
             <!-- ARROW OVERLAY -->
             <svg
@@ -61,9 +61,45 @@
                 </ng-container>
             }
         </div>
-        <app-piece-selector [for]="PieceColor.WHITE" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
+        <app-piece-selector [for]="PieceColor.WHITE" [isKingActive]="model.game.getKingCoordinate(PieceColor.WHITE) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
     </div>
 
+    <div class="boardControls">
+        <h2>Board Editor</h2>
+        <div class="d-flex justify-content-evenly">
+            <div class="btn btn-primary" (click)="handleResetClicked()">Reset</div>
+            <div class="btn btn-primary" (click)="handleClearClicked()">Clear</div>
+        </div>
+
+        <hr>
+
+        <h4>Turn</h4>
+        <select [(ngModel)]="this.model.game.turn" (ngModelChange)="onTurnChanged($event)">
+            <option [ngValue]="true">White to move</option>
+            <option [ngValue]="false">Black to move</option>
+        </select>
+        
+        <hr>
+
+        <h4>Castling Rights</h4>
+        <div>
+
+        </div>
+
+        <hr>
+
+        <h4>En Passant</h4>
+        <div>
+
+        </div>
+
+        <hr>
+
+        <h4>FEN</h4>
+        <div>
+            {{this.model.game.getFEN()}}
+        </div>
+    </div>
     @if(currentlyHeldPiece != "")
     {
         <img class="currentlyHeldPiece"
