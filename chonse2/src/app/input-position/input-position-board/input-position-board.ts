@@ -70,15 +70,20 @@ export class InputPositionBoard {
   async completeMove(fromSquare: string, toSquare: string)
   {    
     const piece = this.currentlyHeldPiece;
-    if (!this.fromSquare || !this.toSquare)
+
+    if (!this.toSquare)
     {
       this.resetMoveState();
       return;
     }
-    const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
-    const toIdx = Chonse2.findIndexFromCoordinate(toSquare);
+
+    if (this.fromSquare)
+    {
+      const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
+      this.model.game.pieceState[fromIdx.rowIndex][fromIdx.colIndex] = "";
+    }
     
-    this.model.game.pieceState[fromIdx.rowIndex][fromIdx.colIndex] = "";
+    const toIdx = Chonse2.findIndexFromCoordinate(toSquare);    
     this.model.game.pieceState[toIdx.rowIndex][toIdx.colIndex] = piece;
 
     this.currentlyHeldPiece = "";
@@ -214,6 +219,32 @@ export class InputPositionBoard {
     this.mouseY = 0;
 
     this.resetMoveState();
+  }
+
+  onPieceSelectorMouseDown(e: {piece: string, event: PointerEvent})
+  {
+    //If the square was left clicked
+    if (e.event.button == 0)
+    {
+      //update the square that the piece is dragged from
+      this.currentlyHeldPiece = e.piece;
+
+      if (e.piece != "")
+      {
+        this.handleDragImage(e.event);
+      }    
+    }
+  }
+
+  onPieceSelectorDeleteMouseUp()
+  {
+    if (this.fromSquare)
+    {
+      const idx = Chonse2.findIndexFromCoordinate(this.fromSquare);
+
+      this.model.game.pieceState[idx.rowIndex][idx.colIndex] = "";
+      this.resetMoveState();
+    }
   }
   //#endregion
 

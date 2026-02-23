@@ -1,9 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import LocalStorageHelper from '../chessboard/chessboard/local-storage-helper';
 import { EngineDisplayName, EngineName } from '../chessboard/engine/types/enums';
 import { UciEngine } from '../chessboard/engine/uciEngine';
-
 @Component({
   selector: 'app-settings',
   imports: [FormsModule, FormsModule],
@@ -15,7 +14,6 @@ export class Settings {
   EngineName = EngineName;
   EngineDisplayName = EngineDisplayName;
   Object = Object;
-
 
   //Click-move
   clickToMove: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, false);
