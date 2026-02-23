@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, NgZone } from '@angular/core';
+import { Component, Input, NgZone } from '@angular/core';
 import Chonse2 from '../../../lib/chonse2';
 import { PieceType } from '../../../lib/piece-type';
 import { ToastrService } from 'ngx-toastr';
@@ -11,11 +11,11 @@ import { GameOverReason, GameState } from '../../../lib/game-state';
 import { Square } from '../../chessboard/square/square';
 import { PieceSelector } from "../piece-selector/piece-selector";
 import { FormsModule } from '@angular/forms';
-import { NgbCarousel } from "@ng-bootstrap/ng-bootstrap";
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-input-position-board',
-  imports: [Square, PieceSelector, FormsModule],
+  imports: [Square, PieceSelector, FormsModule, CommonModule],
   templateUrl: './input-position-board.html',
   styleUrl: './input-position-board.css',
 })
@@ -60,8 +60,10 @@ export class InputPositionBoard {
   private readonly _ARROW_PULLBACK = 0.18;
   mouseX: number = 0;
   mouseY: number = 0;
-  //FUNCTIONAL
   
+  private static readonly X_VECTOR = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
+  private static readonly Y_VECTOR = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
+
   constructor(private ngZone: NgZone, private toastr: ToastrService, private ips: InputPositionService)
   {
     //Board state stored in service to persist across routerlink changes.
@@ -353,6 +355,78 @@ export class InputPositionBoard {
   _afterStateChanged()
   {
 
+  }
+
+  doesValidationPass(): boolean
+  {
+    const game = this.model.game;
+
+    //One king per side.
+    const flattenedPieceState = game.pieceState.flat();
+    const whiteKings = flattenedPieceState.filter(p => p == PieceType.WHITE_KING);
+    const blackKings = flattenedPieceState.filter(p => p == PieceType.BLACK_KING);
+
+    if (whiteKings.length != 1 || blackKings.length != 1)
+    {
+      return false;
+    }
+
+    //Kings are not adjacent.
+    const whiteKing = game.getKingCoordinate(PieceColor.WHITE);
+    const whiteKingIdx = Chonse2.findIndexFromCoordinate(whiteKing);
+    for(let i = 0; i < InputPositionBoard.X_VECTOR.length; i++)
+    {
+      const xComponent = InputPositionBoard.X_VECTOR[i] + whiteKingIdx.rowIndex;
+      const yComponent = InputPositionBoard.Y_VECTOR[i] + whiteKingIdx.colIndex;
+      const rank = game.pieceState[xComponent]
+      
+      if (rank)
+      {
+        const squareContent = rank[yComponent];
+        if (squareContent != undefined)
+        {
+          if (squareContent == PieceType.BLACK_KING)
+          {
+            return false;
+          }
+        } 
+      }
+    }
+
+    //Pawns are not on the first or eighth rank.
+    const firstRank = game.pieceState[0];
+    const lastRank = game.pieceState[game.pieceState.length - 1];
+
+    for(let i: number = 0; i < firstRank.length; i++)
+    {
+      const firstRankSquare: string = firstRank[i];
+      const lastRankSquare: string = lastRank[i];
+
+      if (firstRankSquare == PieceType.WHITE_PAWN ||
+         firstRankSquare == PieceType.BLACK_PAWN || 
+         lastRankSquare == PieceType.WHITE_PAWN || 
+         lastRankSquare == PieceType.BLACK_PAWN)
+      {
+        return false;
+      }
+    }
+
+    //Both kings cannot be in check.
+    const isWhiteInCheck: boolean = game.isInCheck(PieceColor.WHITE);
+    const isBlackInCheck: boolean = game.isInCheck(PieceColor.BLACK);
+
+    if (isWhiteInCheck && isBlackInCheck)
+    {
+      return false;
+    }
+
+    //White to move -> Black cannot be in check. Black to move -> White cannot be in check.
+    if ((game.turn && isBlackInCheck) || !game.turn && isWhiteInCheck)
+    {
+      return false;
+    }
+
+    return true;
   }
   //#endregion
 

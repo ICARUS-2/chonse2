@@ -155,10 +155,8 @@
         </div>
 
         <hr>
-        @if (this.model.game.gameState.isGameOver)
-        {
-            <div class="">{{this.model.game.gameState.reason}} {{this.model.game.gameState.gameScore}}</div>
-        }
+
+        <div class="btn btn-lg btn-primary" [ngClass]="{'disabled' : !doesValidationPass()}">Analyze</div>
     </div>
     @if(currentlyHeldPiece != "")
     {
