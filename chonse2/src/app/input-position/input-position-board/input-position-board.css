@@ -1,14 +1,14 @@
 .componentContainer
 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .boardOuterContainer
 {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .boardOuterContainerFlipped
@@ -22,8 +22,8 @@
   display: grid;
   grid-template-rows: repeat(8, 1fr);
   grid-template-columns: repeat(8, 1fr);
-  width: 82vmin; /* scale board to viewport, always square */
-  height: 82vmin;
+  width: 75vmin; /* scale board to viewport, always square */
+  height: 75vmin;
   gap: 0;
   border: 1px solid;
   user-select: none;
@@ -37,32 +37,11 @@
 
 .currentlyHeldPiece
 {
-    width: 10vmin;
-    height: 10vmin;
-    position: fixed;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-}
-
-.endgameSquareOverlay
-{
-    position: absolute; 
-    inset: 0; 
-    pointer-events: none; 
-    z-index: 2;
-}
-
-.endgameSquareBackground
-{
-    position: absolute;
-    inset: 0; 
-    z-index: 2;
-}
-
-.endgameSquareImage
-{
-    position: absolute;
-    z-index: 3;
+  width: 9vmin;
+  height: 9vmin;
+  position: fixed;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
 }
 
 .endgameSquareOverlayFlipped
@@ -99,19 +78,6 @@
     animation-delay: 0.5s;
 }
 
-.corner-text
-{
-    position: absolute;
-    width: 14vmin;
-    font-size: 2vmin;
-    transform: translate(50%, -50%);
-    padding: 10px;
-    z-index: 2;
-    text-align: center;
-    color: white;
-    border-radius: 10px;
-}
-
 .arrowOverlay {
     position: absolute;
     inset: 0;
@@ -121,124 +87,12 @@
     z-index: 10;
 }
 
-.boardControls
+.boardControls 
 {
-  display: flex;
   border: 1px solid blue;
-  flex-direction: column;
-  height: 82vmin;
-  width: 82vmin;
-  touch-action: manipulation;
-}
-
-.boardControlButtons
-{
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.controlButton
-{
-  touch-action: manipulation;
-  margin: 5px;
-}
-
-.movesAndAccuracies
-{
-  height: 52vmin;
-}
-
-.algebraicContainer
-{
-  padding: 5px;
-  border: 1px solid blue;
-  height: 35vmin;
+  height: 75vmin;
+  padding: 2vmin;
   width: 40vmin;
-  overflow-y: auto;
-  overflow-x: hidden;
-  user-select: none;
-}
-
-.evalSectionRight
-{
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  border: 1px solid blue
-}
-
-.animatedPiece {
-    position: absolute;
-    width: 10vmin;
-    height: 10vmin;
-    pointer-events: none;
-    z-index: 100;
-}
-
-.moveClassificationIcon
-{
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 4vmin;
-  z-index: 10;
-  pointer-events: none;
-  transform: translate(35%, -35%);
-}
-
-.moveClassificationIconOverlayFlipped 
-{
-  transform: rotate(180deg);
-}
-
-.moveClassificationIconOverlay
-{
-  position: absolute; 
-  inset: 0; 
-  pointer-events: none; 
-  z-index: 2;
-}
-
-.engineMoveInfoText
-{
-  min-height: 3vmin;
-}
-
-.engineMoveInfoText img
-{
-  height: 2vmin;
-}
-
-.moveClassificationsList
-{
-  text-align: center;
-  user-select: none;
-  table-layout: fixed;
-  width: 100%;
-}
-
-.moveClassificationListIcon
-{
-  width: 3.7vmin;
-}
-
-.inlineMoveIcon
-{
-  width: 3vmin;
-}
-
-.engineLinesContainer
-{
-  flex: 1;
-  border: 1px solid blue;
-}
-
-.engineLineDisplayIcon
-{
-  height: 3vmin;
 }
 
 @media screen and (max-width: 1200px) 
@@ -248,31 +102,10 @@
     flex-direction: column;
   }    
 
-  .boardControls
+  .boardControls 
   {
-    width: 100%;
     height: unset;
-  }
-
-  .movesAndAccuracies
-  {
-    flex-direction: column;
-    height: auto;
-    min-height: unset;
-  }
-
-  .evalTextData
-  {
-    font-size: small;
-  }
-
-  .engineLinesContainer 
-  {
-    flex: unset;
-  }
-
-  .algebraicContainer
-  {
-    width: 100%;
+    width: 75vmin;
+    word-wrap: break-word;
   }
 }

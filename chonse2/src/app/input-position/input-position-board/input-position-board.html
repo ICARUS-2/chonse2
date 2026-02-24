@@ -1,5 +1,6 @@
 <div class="componentContainer">
     <div class="boardOuterContainer" [class]="model.isFlipped ? 'boardOuterContainerFlipped' : ''">
+        <app-piece-selector [for]="PieceColor.BLACK" [isKingActive]="model.game.getKingCoordinate(PieceColor.BLACK) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
         <div #board class="boardContainerInner" [class]="model.isFlipped ? 'boardContainerInnerFlipped' : ''">
             <!-- ARROW OVERLAY -->
             <svg
@@ -38,7 +39,10 @@
                 <ng-container>
                     @for ( piece of rank; let fileIndex = $index; track fileIndex; )
                     {
-                        <div style="position: relative; width: 100%; height: 100%;">
+                        <div
+                            style="position: relative; width: 100%; height: 100%;"
+                            [attr.data-coordinate]="this.COORDS[rankIndex][fileIndex]"
+                        >
                             <app-square 
                                 [coordinate]="this.COORDS[rankIndex][fileIndex]" 
                                 [piece]="model.game.pieceState[rankIndex][fileIndex]"
@@ -60,8 +64,102 @@
                 </ng-container>
             }
         </div>
+        <app-piece-selector [for]="PieceColor.WHITE" [isKingActive]="model.game.getKingCoordinate(PieceColor.WHITE) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
     </div>
 
+    <div class="boardControls">
+        <h2>Board Editor</h2>
+        <div class="d-flex justify-content-between">
+            <div class="btn btn-lg btn-primary" (click)="handleResetClicked()">Reset</div>
+            <div class="btn btn-lg btn-primary" (click)="handleClearClicked()">Clear</div>
+            <div class="btn btn-lg btn-primary" [ngClass]="{'disabled' : !doesValidationPass()}" (click)="submitButtonClicked()">Analyze</div>
+        </div>
+
+        <hr>
+
+        <h4>Turn</h4>
+        <select [(ngModel)]="this.model.game.turn" (ngModelChange)="onTurnChanged($event)">
+            <option [ngValue]="true">White to move</option>
+            <option [ngValue]="false">Black to move</option>
+        </select>
+        
+        <hr>
+
+        <h4>Castling Rights</h4>
+        <div class="d-flex justify-content-between user-select-none">
+            <!--White castling rights-->
+            <div>
+                <p>White</p>
+                @if(getPotentialForCastlingRights(true, true))
+                {
+                    <div class="form-check form-switch">
+                        <label>Kingside</label>
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="this.model.game.whiteCastlingRights.kingSide">
+                    </div>
+                }
+
+                @if(getPotentialForCastlingRights(true, false))
+                {
+                    <div class="form-check form-switch">
+                        <label>Queenside</label>
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="this.model.game.whiteCastlingRights.queenSide">
+                    </div>
+                }
+            </div>
+
+            <!--Black castling rights-->
+            <div>
+                <p>Black</p>
+                @if(getPotentialForCastlingRights(false, true))
+                {
+                    <div class="form-check form-switch">
+                        <label>Kingside</label>
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="this.model.game.blackCastlingRights.kingSide">
+                    </div>
+                }
+
+                @if(getPotentialForCastlingRights(false, false))
+                {
+                    <div class="form-check form-switch">
+                        <label>Queenside</label>
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="this.model.game.blackCastlingRights.queenSide">
+                    </div>
+                }
+            </div>
+        </div>
+
+        <hr>
+
+        <h4>En Passant</h4>
+        <div>
+            @if(getPotentialEnPassantSquares(); as potentialEpSquares)
+            {
+                @if (potentialEpSquares.length > 0)
+                {
+                    <div>Select</div>
+                    <select [(ngModel)]="this.model.game.enPassantSquare">
+                        @for(square of potentialEpSquares; track $index)
+                        {
+                            <option [ngValue]="square">{{square}}</option>
+                        }
+                    </select>
+                }
+                @else
+                {
+                    N/A
+                }
+            }
+        </div>
+
+        <hr>
+
+        <h4>FEN</h4>
+        <div>
+            {{this.model.game.getFEN()}}
+        </div>
+
+        <hr>
+    </div>
     @if(currentlyHeldPiece != "")
     {
         <img class="currentlyHeldPiece"

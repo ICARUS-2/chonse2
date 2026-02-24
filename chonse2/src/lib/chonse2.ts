@@ -452,7 +452,7 @@ export default class Chonse2
     }
 
     //check for checkmate, stalemate, etc
-    this._checkIsGameOver();
+    this.checkIsGameOver();
 
     //If there is a checkmate, append it to the notation.
     if (this.gameState.isGameOver && this.gameState.reason == GameOverReason.Checkmate)
@@ -1260,7 +1260,7 @@ export default class Chonse2
     return copy;
   }
 
-  private _checkIsGameOver()
+  checkIsGameOver()
   {
     const nextPlayerHasLegalMoves = this._playerHasLegalMoves(this.turn);
     const playerColor: string = this.turn ? PieceColor.WHITE : PieceColor.BLACK;

@@ -8,6 +8,7 @@ export enum RouteConstants {
     ROUTE_SITE = "site",
     ROUTE_USERNAME = "username",
     ROUTE_GAMEID = "gameId",
+    ROUTE_INPUTTED_POSITION = "inputtedPosition"
 }
 
 export const routes: Routes = [

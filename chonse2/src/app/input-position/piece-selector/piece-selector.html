@@ -1,1 +1,11 @@
-<p>piece-selector works!</p>
+<div class="d-flex align-items-center justify-content-around componentContainer m-1">
+    @for(piece of PieceSelector.pieceOrder; track $index)
+    {
+        <div class="square border" (pointerdown)="pieceSquareMouseDown(for == PieceColor.WHITE ? piece.white : piece.black, $event)">
+            <app-square [isDark]="for != PieceColor.WHITE" [piece]="for == PieceColor.WHITE ? piece.white : piece.black"></app-square>
+        </div>
+    }
+  <div class="square border deleteSquare d-flex justify-content-center align-items-center bg-info" (pointerup)="deleteMouseUp()">
+    <i class="bi deleteIcon" [ngClass]="{'bi-trash': for == PieceColor.WHITE, 'bi-trash-fill': for == PieceColor.BLACK}"></i>
+  </div>
+</div>

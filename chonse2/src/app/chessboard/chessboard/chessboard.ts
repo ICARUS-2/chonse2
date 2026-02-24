@@ -407,7 +407,7 @@ export class Chessboard implements OnInit, AfterViewInit {
       {
         if (this.boardState.eval.positions)
         {
-          return this.boardState.eval.positions[this.boardState.eval.positions.length - 1].opening ?? "";
+          return this.boardState.eval.positions[this.boardState.eval.positions.length - 1].opening ?? "-";
         }
       }
     }

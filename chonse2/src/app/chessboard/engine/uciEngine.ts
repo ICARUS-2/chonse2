@@ -263,27 +263,9 @@ export class UciEngine {
   public async evaluateMove(beforeFen: string, afterFen: string, move: IMoveResult, depth=UciEngine.DEFAULT_DEPTH): Promise<PositionEval>
   {
     const evalResult = await this.evaluateGame({fens: [beforeFen, afterFen], uciMoves: [move.notation], depth});
-    const previousPositionResult = evalResult.positions[0];
+    //const previousPositionResult = evalResult.positions[0];
     const positionResult = evalResult.positions[1];
     
-    const formattedMove = move.fromCoord + move.toCoord
-
-    //Sanitizes excellent moves that may appear as best moves.
-    if (formattedMove == previousPositionResult.bestMove?.replace("x", ""))
-    {
-      if (positionResult.moveClassification == MoveClassification.Excellent || positionResult.moveClassification == MoveClassification.Okay)
-      {
-        positionResult.moveClassification = MoveClassification.Best;
-      }
-    }
-
-    if (previousPositionResult.bestMove?.replace("x", "").replace(/^[NKRBQ]/, '').startsWith(formattedMove) 
-      && positionResult.moveClassification == MoveClassification.Excellent 
-      && previousPositionResult.bestMove.endsWith("q")
-      && move.notation.endsWith(PieceType.QUEEN))
-    {
-      positionResult.moveClassification = MoveClassification.Best;
-    }
     return positionResult;
   }
 
