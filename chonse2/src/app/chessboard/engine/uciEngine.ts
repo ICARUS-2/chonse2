@@ -17,7 +17,7 @@ import { computeEstimatedElo } from "./helpers/estimateElo";
 import { EngineWorker, WorkerJob } from "./types/engine";
 import { getEngineWorker, sendCommandsToWorker } from "./worker";
 import { Stockfish11 } from "./engines/stockfish11";
-import { Stockfish18Lite } from "./engines/stockfish18";
+import { Stockfish18 } from "./engines/stockfish18";
 import { Stockfish17_1 } from "./engines/stockfish17_1";
 import { PieceType } from "../../../lib/piece-type";
 
@@ -27,15 +27,22 @@ export class UciEngine {
   {
     switch (engineName) 
     {
-      case EngineName.Stockfish17_1:
-        return Stockfish17_1.create();
+      case EngineName.Stockfish18:
+        return Stockfish18.create(false);
       case EngineName.Stockfish18Lite:
-        return Stockfish18Lite.create();
+        return Stockfish18.create(true);
+      case EngineName.Stockfish17_1:
+        return Stockfish17_1.create(false);
+      case EngineName.Stockfish17_1Lite:
+        return Stockfish17_1.create(true);
       case EngineName.Stockfish11:
         return Stockfish11.create();
     }
   }
 
+  static readonly DEFAULT_ENGINE: EngineName.Stockfish18Lite;
+
+  
   static readonly DEFAULT_DEPTH = 16;
   public readonly name: EngineName;
   private workers: EngineWorker[] = [];
