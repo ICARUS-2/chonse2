@@ -1350,6 +1350,7 @@ export default class Chonse2
         )
       {
         this.gameState.isGameOver = true;
+        this.gameState.gameScore = GameScore.DRAW
         this.gameState.reason = GameOverReason.InsufficientMaterial;
       }
 

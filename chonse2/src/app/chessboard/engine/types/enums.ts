@@ -29,8 +29,9 @@ export const moveClassificationLabels: Record<MoveClassification, string> = {
 };
 
 export enum EngineName {
-  Stockfish18Lite="stockfish_18_lite",
+  Stockfish18Lite="stockfish_18lite",
   Stockfish17_1="stockfish_17_1",
+  Stockfish17_1Lite="stockfish_17_1lite",
   Stockfish11 = "stockfish_11",
 }
 
@@ -39,6 +40,7 @@ export const EngineDisplayName: Map<EngineName, string> = new Map<EngineName, st
   [
     [EngineName.Stockfish18Lite, "Stockfish 18 Lite"],
     [EngineName.Stockfish17_1, "Stockfish 17.1"],
+    [EngineName.Stockfish17_1Lite, "Stockfish 17.1 Lite"],
     [EngineName.Stockfish11, "Stockfish 11 HCE"]
   ] 
 )

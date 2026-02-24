@@ -25,10 +25,11 @@ export const isMobileDevice = () =>
 
 export const isEngineSupported = (name: EngineName): boolean => {
   switch (name) {
-    case EngineName.Stockfish17_1:
-      return Stockfish17_1.isSupported();
     case EngineName.Stockfish18Lite:
       return Stockfish18Lite.isSupported();
+    case EngineName.Stockfish17_1:
+    case EngineName.Stockfish17_1Lite:
+      return Stockfish17_1.isSupported();
     case EngineName.Stockfish11:
       return Stockfish11.isSupported();
   }
