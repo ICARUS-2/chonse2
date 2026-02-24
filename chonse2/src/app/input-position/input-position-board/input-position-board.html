@@ -39,7 +39,10 @@
                 <ng-container>
                     @for ( piece of rank; let fileIndex = $index; track fileIndex; )
                     {
-                        <div style="position: relative; width: 100%; height: 100%;">
+                        <div
+                            style="position: relative; width: 100%; height: 100%;"
+                            [attr.data-coordinate]="this.COORDS[rankIndex][fileIndex]"
+                        >
                             <app-square 
                                 [coordinate]="this.COORDS[rankIndex][fileIndex]" 
                                 [piece]="model.game.pieceState[rankIndex][fileIndex]"

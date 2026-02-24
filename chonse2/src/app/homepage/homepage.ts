@@ -20,6 +20,7 @@ export class Homepage implements OnInit{
   site: string | undefined;
   username: string | undefined;
   gameId: string | undefined;
+  inputtedPosition: Chonse2 | undefined;
 
   //TESTING PURPOSES
   testPieceState:Array<Array<string>> = [
@@ -87,6 +88,10 @@ export class Homepage implements OnInit{
         this.toastrService.error("Import failed - Invalid source.");
         this.setDefaultBoard();
       }
+    }
+    else if (this.inputtedPosition)
+    {
+      
     }
     else 
     {

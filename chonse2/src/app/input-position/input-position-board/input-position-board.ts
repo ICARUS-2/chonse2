@@ -12,6 +12,7 @@ import { Square } from '../../chessboard/square/square';
 import { PieceSelector } from "../piece-selector/piece-selector";
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-input-position-board',
@@ -64,7 +65,7 @@ export class InputPositionBoard {
   private static readonly X_VECTOR = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
   private static readonly Y_VECTOR = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
 
-  constructor(private ngZone: NgZone, private toastr: ToastrService, private ips: InputPositionService)
+  constructor(private router: Router , private ips: InputPositionService)
   {
     //Board state stored in service to persist across routerlink changes.
     const boardState: InputPositionState = this.ips.getGame(this.stateId);
@@ -354,7 +355,12 @@ export class InputPositionBoard {
 
   _afterStateChanged()
   {
+    const epArr = this.getPotentialEnPassantSquares();
 
+    if (!epArr.includes(this.model.game.enPassantSquare))
+    {
+      this.model.game.enPassantSquare = "";
+    }
   }
 
   doesValidationPass(): boolean
@@ -427,6 +433,19 @@ export class InputPositionBoard {
     }
 
     return true;
+  }
+  
+  submitButtonClicked()
+  {
+    if (!this.doesValidationPass())
+    {
+      return;
+    }
+
+    const copy = this.model.game.getFullDeepCopy();
+    copy.checkIsGameOver();
+
+    this.router.navigate(['/'], {state: { "inputtedPosition" : copy }})
   }
   //#endregion
 

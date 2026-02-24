@@ -44,6 +44,8 @@ export class PieceSelector {
       return;
     }
 
+    (event.target as Element).releasePointerCapture?.(event.pointerId);
+
     this.pieceSquareMouseDownEvent.emit({piece, event});
   }
 

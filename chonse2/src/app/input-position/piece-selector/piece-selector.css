@@ -8,3 +8,8 @@
 {
     font-size: 6vmin;    
 }
+
+.componentContainer 
+{
+    touch-action: none;
+}
