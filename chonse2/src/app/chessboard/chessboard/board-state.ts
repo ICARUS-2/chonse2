@@ -225,6 +225,16 @@ export default class BoardState
                 move,
                 depth
             );
+            
+            //Sanitizes for moe classification consistency across different evaluations.
+            const previousEval = this.getPreviousMostRecentEval();
+            if (previousEval?.bestMove)
+            {
+                if (move.notation.replace(/[+#x]/g, '').endsWith(previousEval.bestMove) && (resultOfEval.moveClassification == MoveClassification.Excellent || MoveClassification.Okay))
+                {
+                    resultOfEval.moveClassification = MoveClassification.Best;
+                }
+            }
 
             if (this.mainStackPointer != this.mainStateStack.length - 1 || this.isReadOnly)
             {

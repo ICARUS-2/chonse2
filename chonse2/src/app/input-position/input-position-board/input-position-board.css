@@ -101,4 +101,11 @@
   {
     flex-direction: column;
   }    
+
+  .boardControls 
+  {
+    height: unset;
+    width: 75vmin;
+    word-wrap: break-word;
+  }
 }

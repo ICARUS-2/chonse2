@@ -44,6 +44,7 @@ export class PieceSelector {
       return;
     }
 
+    //Fixes drag issue on mobile.
     (event.target as Element).releasePointerCapture?.(event.pointerId);
 
     this.pieceSquareMouseDownEvent.emit({piece, event});

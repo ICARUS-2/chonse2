@@ -188,6 +188,11 @@ export class EvaluationChart implements OnInit {
 
   private getVerticalLineColor()
   {
+    if (!this.arr[this.selectedIndex])
+    {
+      return "transparent";
+    }
+    
     switch (this.arr[this.selectedIndex].moveClassification) 
     {
       case MoveClassification.Blunder: 

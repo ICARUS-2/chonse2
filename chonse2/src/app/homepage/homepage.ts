@@ -8,6 +8,7 @@ import { BoardNames } from '../boards';
 import ChessComAPI from '../chessboard/api/chesscom-api';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
+import { GameState } from '../../lib/game-state';
 
 @Component({
   selector: 'app-homepage',
@@ -55,6 +56,7 @@ export class Homepage implements OnInit{
     this.site = state.site;
     this.username = state.username;
     this.gameId = state.gameId;
+    this.inputtedPosition = state.inputtedPosition;
 
     if (this.site && this.username && this.gameId)
     {
@@ -91,7 +93,18 @@ export class Homepage implements OnInit{
     }
     else if (this.inputtedPosition)
     {
-      
+      //Reconstructs the passed data into a Chonse2 object and reinitializes the game state.
+      const restoredPosition = Object.assign(new Chonse2(), this.inputtedPosition);
+      restoredPosition.gameState = new GameState();
+
+      restoredPosition.checkIsGameOver();
+
+      //Places it into a valid board state and adds it.
+      const boardState = new BoardState([restoredPosition]);
+      boardState.doEvaluateGame = true;
+
+      this.gameService.deleteGame(BoardNames.Analysis);
+      this.gameService.addGame(BoardNames.Analysis, boardState);
     }
     else 
     {

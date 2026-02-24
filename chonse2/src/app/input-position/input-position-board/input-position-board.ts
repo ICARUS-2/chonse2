@@ -442,8 +442,7 @@ export class InputPositionBoard {
       return;
     }
 
-    const copy = this.model.game.getFullDeepCopy();
-    copy.checkIsGameOver();
+    const copy: Chonse2 = this.model.game.getFullDeepCopy();
 
     this.router.navigate(['/'], {state: { "inputtedPosition" : copy }})
   }
