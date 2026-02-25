@@ -1,5 +1,6 @@
 export enum BoardNames
 {
     Analysis = "Analysis",
-    InputPosition = "InputPosition"
+    InputPosition = "InputPosition",
+    VsAi = "VsAi",
 }
