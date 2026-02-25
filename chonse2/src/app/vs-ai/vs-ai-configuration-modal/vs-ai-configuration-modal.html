@@ -1,0 +1,28 @@
+<div class="componentContainer d-flex flex-column p-5">
+    <h2 class="text-primary">Configure game vs AI</h2>
+
+    <hr>
+
+    <div class="">
+        <label>Set AI Elo</label>
+        <input [(ngModel)]="this.eloSliderValue" type="range" class="form-range" [min]="UciEngine.MIN_ELO" [max]="UciEngine.MAX_ELO" id="range2">
+        <p>{{this.eloSliderValue}}</p>
+    </div>
+
+    <div class="m-3"></div>
+
+    <div class="">
+        <label>I play as white.</label>
+        <div class="form-check form-switch">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                [(ngModel)]="humanPlayerIsWhite"
+            />
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="btn btn-primary w-50" (click)="submitClicked()">Begin</div>
+</div>

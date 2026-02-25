@@ -14,6 +14,7 @@ export class VsAi implements OnInit{
 
   BoardNames = BoardNames;
 
+
   constructor(public gameService: ChessBoardService)
   {
 
@@ -21,6 +22,8 @@ export class VsAi implements OnInit{
 
   ngOnInit(): void 
   {
-    this.gameService.addGame(BoardNames.VsAi, new BoardState())
+    const bs: BoardState = new BoardState();
+    bs.isVsAi = true;
+    this.gameService.addGame(BoardNames.VsAi, bs);
   }
 }
