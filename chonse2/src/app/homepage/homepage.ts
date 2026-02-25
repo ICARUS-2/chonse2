@@ -9,6 +9,8 @@ import ChessComAPI from '../chessboard/api/chesscom-api';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
 import { GameState } from '../../lib/game-state';
+import { RouteConstants } from '../app.routes';
+import { PgnHeaders } from '../chessboard/chessboard/pgn-misc';
 
 @Component({
   selector: 'app-homepage',
@@ -23,17 +25,10 @@ export class Homepage implements OnInit{
   gameId: string | undefined;
   inputtedPosition: Chonse2 | undefined;
 
-  //TESTING PURPOSES
-  testPieceState:Array<Array<string>> = [
-    [ PieceType.BLACK_KING, PieceType.NONE, PieceType.WHITE_KING, PieceType.NONE, PieceType.NONE, PieceType.NONE,PieceType.NONE, PieceType.WHITE_BISHOP],
-    [ PieceType.BLACK_QUEEN, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.BLACK_BISHOP],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE]
-  ];
+  vsAiStates: Array<Chonse2> | undefined;
+  vsAiGameStates: Array<GameState> | undefined;
+  vsAiMoves: Array<IMoveResult> | undefined;
+  vsAiPgnHeaders: PgnHeaders | undefined;
 
   progress: number = 0;
   setProgress = (n: number) =>
@@ -48,15 +43,21 @@ export class Homepage implements OnInit{
 
   }
 
-  //testGame: Chonse2 = new Chonse2(this.testPieceState);
-  testGame: Chonse2 = new Chonse2();
-
   async ngOnInit(){
+    //Router data.
     const state = history.state;
-    this.site = state.site;
-    this.username = state.username;
-    this.gameId = state.gameId;
-    this.inputtedPosition = state.inputtedPosition;
+
+    //Import game.
+    this.site = state[RouteConstants.ROUTE_SITE];
+    this.username = state[RouteConstants.ROUTE_USERNAME];
+    this.gameId = state[RouteConstants.ROUTE_GAMEID];
+    this.inputtedPosition = state[RouteConstants.ROUTE_INPUTTED_POSITION];
+
+    //Game vs AI.
+    this.vsAiStates = state[RouteConstants.ROUTE_VSAI_STATES];
+    this.vsAiGameStates = state[RouteConstants.ROUTE_VSAI_GAMESTATES];
+    this.vsAiMoves = state[RouteConstants.ROUTE_VSAI_MOVES];
+    this.vsAiPgnHeaders = state[RouteConstants.ROUTE_VSAI_PGNHEADERS];
 
     if (this.site && this.username && this.gameId)
     {
@@ -105,6 +106,31 @@ export class Homepage implements OnInit{
 
       this.gameService.deleteGame(BoardNames.Analysis);
       this.gameService.addGame(BoardNames.Analysis, boardState);
+    }
+    else if (this.vsAiMoves && this.vsAiStates && this.vsAiGameStates && this.vsAiPgnHeaders)
+    {
+      //Set up board state.
+      const bs = new BoardState();
+      bs.isReadOnly = true;
+      bs.doEvaluateGame = true;
+      
+      //Set positions.
+      const restoredPositions = this.vsAiStates.map( s => Object.assign(new Chonse2, s) );
+      bs.mainStateStack = restoredPositions;
+
+      //Set game states for the positions.
+      const restoredGameStates = this.vsAiGameStates?.map( s => Object.assign(new GameState, s) );
+      restoredPositions.forEach( (s: Chonse2, idx: number) => s.gameState = restoredGameStates[idx]);
+  
+      //Set move stack.
+      bs.mainMoveStack = this.vsAiMoves;
+
+      //Set pgn headers.
+      bs.pgnHeaders = this.vsAiPgnHeaders;
+
+      //Add game to service.
+      this.gameService.deleteGame(BoardNames.Analysis);
+      this.gameService.addGame(BoardNames.Analysis, bs);
     }
     else 
     {

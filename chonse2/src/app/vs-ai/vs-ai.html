@@ -1,0 +1,19 @@
+<div class="container">
+    <div class="innerContainer w-100 d-flex justify-content-center">
+        @if(this.gameService.getGame(BoardNames.VsAi))
+        {
+            <app-chessboard [gameId]="BoardNames.VsAi"></app-chessboard>
+        }
+        @else 
+        {
+            <div class="alert alert-primary d-flex align-items-center justify-content-center" role="alert">
+                <div class="spinner-border">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div>
+                    Loading Play Vs AI
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -35,6 +35,11 @@ export default class BoardState
     private evalQueue: Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult}> = [];
     private isEvaluating: boolean = false;
 
+    //Vs ai stuff
+    isVsAi: boolean = false;
+    humanPlayerIsWhite: boolean = true;
+    aiElo: number = UciEngine.MIN_ELO;
+
     //Cosmetic stuff.
     squareHighlightStatuses: Array<Array<boolean>>;
     arrows: Array<Arrow>;

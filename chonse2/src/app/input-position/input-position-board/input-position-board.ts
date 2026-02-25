@@ -446,6 +446,18 @@ export class InputPositionBoard {
 
     this.router.navigate(['/'], {state: { "inputtedPosition" : copy }})
   }
+
+  playVsAiButtonClicked()
+  {
+    if (!this.doesValidationPass())
+    {
+      return;
+    }
+
+    const copy: Chonse2 = this.model.game.getFullDeepCopy();
+
+    this.router.navigate(['/vs-ai'], {state: { "inputtedPosition" : copy }})
+  }
   //#endregion
 
   //Square highlight logic

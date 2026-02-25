@@ -40,7 +40,8 @@ export class UciEngine {
   }
 
   static readonly DEFAULT_ENGINE: EngineName.Stockfish18Lite;
-
+  static readonly MIN_ELO: number = 1320;
+  static readonly MAX_ELO: number = 3190;
 
   static readonly DEFAULT_DEPTH = 16;
   public readonly name: EngineName;
@@ -124,7 +125,7 @@ export class UciEngine {
   private async setElo(elo: number) {
     if (elo === this.elo) return;
 
-    if (elo < 1320 || elo > 3190) {
+    if (elo < UciEngine.MIN_ELO || elo > UciEngine.MAX_ELO) {
       throw new Error(`Invalid Elo value : ${elo}`);
     }
 

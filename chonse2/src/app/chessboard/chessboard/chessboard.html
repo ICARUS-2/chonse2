@@ -143,10 +143,31 @@
             <div class="btn btn-lg btn-primary controlButton" [ngClass]="areForwardButtonsEnabled() ? '' : 'disabled'" (click)="handleForwardButtonClicked()">></div>
             <div class="btn btn-lg btn-primary controlButton" [ngClass]="areForwardButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleForwardButtonClicked()">->></div>
         </div>
-        <div class="d-flex w-100 justify-content-between">
-            <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>
-            <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
-        </div> 
+        @if(!this.boardState.isVsAi)
+        {
+            <div class="d-flex w-100 justify-content-between">
+                <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>
+                <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
+            </div> 
+        }
+        @else 
+        {
+            <div class="d-flex w-100 justify-content-between">
+            @if (!this.getMostCurrentMainState().gameState.isGameOver && this.boardState.engine)
+            {
+                <div class="btn btn-primary w-50 m-1" (click)="resignVsAiClicked()">Resign</div>
+            }
+            @else 
+            {
+                <div class="btn btn-primary w-50 m-1" (click)="beginGameVsAiClicked()">New game vs AI</div>
+
+                @if (this.boardState.mainStateStack.length > 1)
+                {
+                    <div class="btn btn-primary w-50 m-1" (click)="analyzeAiGameClicked()">Analyze Game</div>
+                }
+            }
+            </div> 
+        }
         <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
         <div class="evalTextData d-flex flex-column justify-content-center">{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " - " : " - "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</div>
         <div class="evalTextData d-flex flex-column justify-content-center mb-1">{{this.getOpeningDisplay()}}</div>
