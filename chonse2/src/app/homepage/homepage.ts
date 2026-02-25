@@ -9,6 +9,7 @@ import ChessComAPI from '../chessboard/api/chesscom-api';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
 import { GameState } from '../../lib/game-state';
+import { RouteConstants } from '../app.routes';
 
 @Component({
   selector: 'app-homepage',
@@ -23,6 +24,10 @@ export class Homepage implements OnInit{
   gameId: string | undefined;
   inputtedPosition: Chonse2 | undefined;
 
+  vsAiStates: Array<Chonse2> | undefined;
+  vsAiGameStates: Array<GameState> | undefined;
+  vsAiMoves: Array<IMoveResult> | undefined;
+
   progress: number = 0;
   setProgress = (n: number) =>
   {
@@ -35,15 +40,21 @@ export class Homepage implements OnInit{
   {
 
   }
-  
-  testGame: Chonse2 = new Chonse2();
 
   async ngOnInit(){
+    //Router data.
     const state = history.state;
-    this.site = state.site;
-    this.username = state.username;
-    this.gameId = state.gameId;
-    this.inputtedPosition = state.inputtedPosition;
+
+    //Import game.
+    this.site = state[RouteConstants.ROUTE_SITE];
+    this.username = state[RouteConstants.ROUTE_USERNAME];
+    this.gameId = state[RouteConstants.ROUTE_GAMEID];
+    this.inputtedPosition = state[RouteConstants.ROUTE_INPUTTED_POSITION];
+
+    //Game vs AI.
+    this.vsAiStates = state[RouteConstants.ROUTE_VSAI_STATES];
+    this.vsAiGameStates = state[RouteConstants.ROUTE_VSAI_GAMESTATES];
+    this.vsAiMoves = state[RouteConstants.ROUTE_VSAI_MOVES];
 
     if (this.site && this.username && this.gameId)
     {
@@ -92,6 +103,23 @@ export class Homepage implements OnInit{
 
       this.gameService.deleteGame(BoardNames.Analysis);
       this.gameService.addGame(BoardNames.Analysis, boardState);
+    }
+    else if (this.vsAiMoves && this.vsAiStates && this.vsAiGameStates)
+    {
+      const bs = new BoardState();
+      bs.isReadOnly = true;
+      bs.doEvaluateGame = true;
+      
+      const restoredPositions = this.vsAiStates.map( s => Object.assign(new Chonse2, s) );
+      bs.mainStateStack = restoredPositions;
+
+      const restoredGameStates = this.vsAiGameStates?.map( s => Object.assign(new GameState, s) );
+      restoredPositions.forEach( (s: Chonse2, idx: number) => s.gameState = restoredGameStates[idx]);
+
+      bs.mainMoveStack = this.vsAiMoves;
+
+      this.gameService.deleteGame(BoardNames.Analysis);
+      this.gameService.addGame(BoardNames.Analysis, bs);
     }
     else 
     {

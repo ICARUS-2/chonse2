@@ -28,6 +28,7 @@ import VsAiConfig from '../../vs-ai/vs-ai-config';
 import { BoardNames } from '../../boards';
 import { UciEngine } from '../engine/uciEngine';
 import { zip } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-chessboard',
@@ -95,7 +96,12 @@ export class Chessboard implements OnInit, AfterViewInit {
   //FUNCTIONAL
   clickToMove: boolean = false;
 
-  constructor(private ngZone: NgZone, private modalService: NgbModal, private chessBoardService: ChessBoardService, private toastr: ToastrService)
+  constructor(
+    private ngZone: NgZone, 
+    private modalService: NgbModal, 
+    private chessBoardService: ChessBoardService, 
+    private toastr: ToastrService,
+    private router: Router)
   {
     //Board state stored in service to persist across routerlink changes.
     const boardState: BoardState = this.chessBoardService.getGame(this.gameId);
@@ -584,7 +590,11 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   analyzeAiGameClicked()
   {
+    const states = this.boardState.mainStateStack.map( s => s.getFullDeepCopy() );
+    const gameStates = this.boardState.mainStateStack.map( s => structuredClone(s.gameState) );
+    const moves = this.boardState.mainMoveStack.map(m => structuredClone(m));
 
+    this.router.navigate(['/'], {state: { "vsAiStates": states, "vsAiGameStates": gameStates, "vsAiMoves": moves}});
   }
 
   getMostCurrentMainState()
