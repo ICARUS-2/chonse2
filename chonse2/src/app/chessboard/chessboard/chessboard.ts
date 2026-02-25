@@ -6,7 +6,7 @@ import { BoardPlayerInfo } from "../board-player-info/board-player-info";
 import { NgbModal, NgbProgressbar } from '@ng-bootstrap/ng-bootstrap';
 import { PromotionModal } from '../promotion-modal/promotion-modal';
 import Chonse2 from '../../../lib/chonse2';
-import { GameOverReason } from '../../../lib/game-state';
+import { GameOverReason, GameScore } from '../../../lib/game-state';
 import { CommonModule } from '@angular/common';
 import LocalStorageHelper from './local-storage-helper';
 import { FormsModule } from '@angular/forms';
@@ -27,6 +27,7 @@ import { VsAiConfigurationModal } from '../../vs-ai/vs-ai-configuration-modal/vs
 import VsAiConfig from '../../vs-ai/vs-ai-config';
 import { BoardNames } from '../../boards';
 import { UciEngine } from '../engine/uciEngine';
+import { zip } from 'rxjs';
 
 @Component({
   selector: 'app-chessboard',
@@ -175,13 +176,27 @@ export class Chessboard implements OnInit, AfterViewInit {
       {
         //perform the move and promote to what the user selected.
         moveResult = stateCopy.completeMove(fromSquare, toSquare, result);
+
         await this.boardState.pushState(stateCopy, moveResult);
+        
+        if (this.boardState.isVsAi && this.getMostCurrentMainState() == this.boardState.getCurrentState())
+        {
+          this.playAIMove();
+        }
+
       } )
       .catch( async () =>
       {
         //if the dialog was forced closed, promote to queen by default.
         moveResult = stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
+
         await this.boardState.pushState(stateCopy, moveResult);
+
+                
+        if (this.boardState.isVsAi && this.getMostCurrentMainState() == this.boardState.getCurrentState())
+        {
+          this.playAIMove();
+        }
       } )
       .finally()
       {
@@ -196,16 +211,16 @@ export class Chessboard implements OnInit, AfterViewInit {
       moveResult = await stateCopy.completeMove(fromSquare, toSquare, piece);
       this.boardState.pushState(stateCopy, moveResult);
         
+      if (this.boardState.isVsAi && this.getMostCurrentMainState() == this.boardState.getCurrentState())
+      {
+        this.playAIMove();
+      }
+
       //Resets the state of the from/to squares and current piece back to nothing.
       this.resetMoveState();
     }
     
     Sound.playSoundForMove(moveResult.notation);
-
-    if (this.boardState.isVsAi && this.getMostCurrentMainState() == this.boardState.getCurrentState())
-    {
-      this.playAIMove();
-    }
   }
 
 
@@ -492,7 +507,13 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   resignVsAiClicked()
   {
-    
+    const gameState = this.getMostCurrentMainState().gameState;
+
+    gameState.isGameOver = true;
+    gameState.reason = GameOverReason.Resignation;
+    gameState.gameScore = this.boardState.humanPlayerIsWhite ? GameScore.BLACK_WON : GameScore.WHITE_WON;
+
+    this.toastr.warning("You resigned.");
   }
 
   beginGameVsAiClicked()
@@ -511,22 +532,41 @@ export class Chessboard implements OnInit, AfterViewInit {
           const bs: BoardState = new BoardState();
           bs.isVsAi = true;
           bs.humanPlayerIsWhite = isHumanWhite;
-          bs.aiElo = result.getElo()
-          await bs.setEngineIfNotExists();
+          bs.aiElo = result.getElo();
 
-          this.chessBoardService.deleteGame(BoardNames.VsAi);
-          this.chessBoardService.addGame(BoardNames.VsAi, bs);
-          this.boardState = this.chessBoardService.getGame(BoardNames.VsAi);
-
-          this.toastr.success(`Starting game vs Stockfish ${engineElo}`);
-
-          //If stockfish is white, play the first move.
           if (!isHumanWhite)
           {
-            if (this.boardState.engine)
+            bs.isFlipped = true;
+          }
+
+          await bs.setEngineIfNotExists();
+
+          if (bs.engine)
+          {
+            const engineDisplayName = EngineDisplayName.get(bs.engine.name)?.toString() ?? "-";
+
+            isHumanWhite ? (bs.pgnHeaders.black = engineDisplayName) : (bs.pgnHeaders.white = engineDisplayName)
+            isHumanWhite ? (bs.pgnHeaders.blackElo = engineElo) : (bs.pgnHeaders.whiteElo = engineElo);
+            isHumanWhite ? (bs.pgnHeaders.white = "You") : (bs.pgnHeaders.black = "You");
+
+            this.chessBoardService.deleteGame(BoardNames.VsAi);
+            this.chessBoardService.addGame(BoardNames.VsAi, bs);
+            this.boardState = this.chessBoardService.getGame(BoardNames.VsAi);
+
+            this.toastr.success(`Starting game vs Stockfish ${engineElo}`);
+
+            //If stockfish is white, play the first move.
+            if (!isHumanWhite)
             {
-              this.playAIMove();
+              if (this.boardState.engine)
+              {
+                this.playAIMove();
+              }
             }
+          }
+          else 
+          {
+            throw("Engine not initialized");
           }
         }
         catch(ex)
@@ -537,7 +577,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     )
     .catch(c => 
     {
-      this.toastr.info("vs AI - Operation cancelled");
+      //this.toastr.info("vs AI - Operation cancelled");
     }
     )
   }
