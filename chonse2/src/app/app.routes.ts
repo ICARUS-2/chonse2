@@ -14,7 +14,8 @@ export enum RouteConstants {
 
     ROUTE_VSAI_STATES = "vsAiStates",
     ROUTE_VSAI_MOVES = "vsAiMoves",
-    ROUTE_VSAI_GAMESTATES = "vsAiGameStates"
+    ROUTE_VSAI_GAMESTATES = "vsAiGameStates",
+    ROUTE_VSAI_PGNHEADERS = "vsAiPgnHeaders"
 }
 
 export const routes: Routes = [

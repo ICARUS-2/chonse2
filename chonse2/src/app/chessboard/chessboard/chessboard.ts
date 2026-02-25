@@ -593,8 +593,9 @@ export class Chessboard implements OnInit, AfterViewInit {
     const states = this.boardState.mainStateStack.map( s => s.getFullDeepCopy() );
     const gameStates = this.boardState.mainStateStack.map( s => structuredClone(s.gameState) );
     const moves = this.boardState.mainMoveStack.map(m => structuredClone(m));
+    const pgnHeaders = structuredClone(this.boardState.pgnHeaders);
 
-    this.router.navigate(['/'], {state: { "vsAiStates": states, "vsAiGameStates": gameStates, "vsAiMoves": moves}});
+    this.router.navigate(['/'], {state: { "vsAiStates": states, "vsAiGameStates": gameStates, "vsAiMoves": moves, "vsAiPgnHeaders": pgnHeaders}});
   }
 
   getMostCurrentMainState()
