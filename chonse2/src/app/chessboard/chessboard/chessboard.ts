@@ -29,6 +29,7 @@ import { BoardNames } from '../../boards';
 import { UciEngine } from '../engine/uciEngine';
 import { zip } from 'rxjs';
 import { Router } from '@angular/router';
+import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-helper';
 
 @Component({
   selector: 'app-chessboard',
@@ -469,6 +470,11 @@ export class Chessboard implements OnInit, AfterViewInit {
   //#region
   async playAIMove()
   {
+    if (this.getMostCurrentMainState().gameState.isGameOver)
+    {
+      return;
+    }
+
     //Can't play an engine move if there is no engine.
     if (!this.boardState.engine)
     {
@@ -524,6 +530,8 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   beginGameVsAiClicked()
   {
+    VsAiConfigurationModalHelper.doModal(this.modalService, this.chessBoardService, this.toastr, this);
+    /*
     const modalRef = this.modalService.open(VsAiConfigurationModal, {size: 'lg'})
 
     modalRef.result.then( async (result) =>
@@ -586,6 +594,7 @@ export class Chessboard implements OnInit, AfterViewInit {
       //this.toastr.info("vs AI - Operation cancelled");
     }
     )
+    */
   }
 
   analyzeAiGameClicked()
