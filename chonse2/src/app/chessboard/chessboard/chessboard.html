@@ -148,6 +148,7 @@
             <div class="d-flex w-100 justify-content-around">
                 <div class="btn btn-primary m-1" (click)="handleImportClicked()">Import Game</div>
                 <div class="btn btn-primary m-1" (click)="handleResetClicked()">Reset</div>
+                <div class="btn btn-primary m-1" (click)="copyPGNClicked()">Copy PGN</div>
                 @if(!this.boardState.doEvaluateGame && this.boardState.mainStateStack.length > 1)
                 {
                     <div class="btn btn-primary m-1" (click)="handleAnalyzeClicked()">Analyze</div>

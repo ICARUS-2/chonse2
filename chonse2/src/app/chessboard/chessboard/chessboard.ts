@@ -238,7 +238,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     this.currentLegalMoves = [];
   }
 
-  //Import/Reset/Analyze
+  //Import/Reset/Analyze/Copy PGN
   //#region 
   handleImportClicked()
   {
@@ -292,6 +292,20 @@ export class Chessboard implements OnInit, AfterViewInit {
     this.boardState.doEvaluateGame = true;
     this.boardState.evaluateGame();
     this.boardState.isReadOnly = true;
+  }
+
+  async copyPGNClicked(): Promise<void>
+  {
+    try 
+    {
+      const exportedPgn = this.boardState.exportPGN();
+      await navigator.clipboard.writeText(exportedPgn);
+      this.toastr.info("PGN copied");
+    }
+    catch(ex)
+    {
+      this.toastr.error("Error obtaining PGN: " + ex);
+    }
   }
 
   //eval

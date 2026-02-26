@@ -331,6 +331,7 @@ export default class BoardState
     }
     //#endregion
 
+    //#region Eval/PGN
     static parsePGN(pgn: string, setAnalyzeFlag: boolean = false): BoardState
     {
         //States and PGN headers to be returned.
@@ -767,4 +768,63 @@ export default class BoardState
 
         return {fens, uciMoves, depth};
     }
+
+    exportPGN(): string
+    {
+        let str: string = "";
+
+        //Required fields
+        str += `[${PgnFields.Event} "${this.pgnHeaders.event}"]\n`;
+        str += `[${PgnFields.Site} "${this.pgnHeaders.site}"]\n`;
+        str += `[${PgnFields.Date} "${this.pgnHeaders.date}"]\n`;
+        str += `[${PgnFields.Round} "${this.pgnHeaders.round}"]\n`;
+        str += `[${PgnFields.White} "${this.pgnHeaders.white}"]\n`;
+        str += `[${PgnFields.Black} "${this.pgnHeaders.black}"]\n`;
+        str += `[${PgnFields.Result} "${this.pgnHeaders.result}"]\n`;
+
+        //Optional fields (only if present)
+        if (this.pgnHeaders.whiteElo)
+            str += `[${PgnFields.WhiteElo} "${this.pgnHeaders.whiteElo}"]\n`;
+
+        if (this.pgnHeaders.blackElo)
+            str += `[${PgnFields.BlackElo} "${this.pgnHeaders.blackElo}"]\n`;
+
+        if (this.pgnHeaders.eco)
+            str += `[${PgnFields.ECO} "${this.pgnHeaders.eco}"]\n`;
+
+        if (this.pgnHeaders.termination)
+            str += `[${PgnFields.Termination} "${this.pgnHeaders.termination}"]\n`;
+
+        if (this.pgnHeaders.timeControl)
+            str += `[${PgnFields.TimeControl} "${this.pgnHeaders.timeControl}"]\n`;
+
+        //Other custom fields
+        this.pgnHeaders.otherFields.forEach((value, key) => {
+            str += `[${key} "${value}"]\n`;
+        });
+
+        //Empty line after headers
+        str += "\n";
+
+        this.mainMoveStack.forEach((mv, idx) =>
+        {
+            // Add move number before White moves
+            if (idx % 2 === 0)
+            {
+                const moveNumber = Math.floor(idx / 2) + 1;
+                str += `${moveNumber}. `;
+            }
+
+            str += `${mv.notation} `;
+
+        });
+
+        //Append result at end of the PGN.
+        if (this.pgnHeaders.result)
+        {
+            str += this.pgnHeaders.result;
+        }
+        return str;
+    }
+    //#endregion
 }
