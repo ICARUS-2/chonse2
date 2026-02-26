@@ -238,7 +238,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     this.currentLegalMoves = [];
   }
 
-  //Import/Reset
+  //Import/Reset/Analyze
   //#region 
   handleImportClicked()
   {
@@ -286,6 +286,13 @@ export class Chessboard implements OnInit, AfterViewInit {
     this.arrows.length = 0;
   }
   //#endregion
+
+  handleAnalyzeClicked()
+  {
+    this.boardState.doEvaluateGame = true;
+    this.boardState.evaluateGame();
+    this.boardState.isReadOnly = true;
+  }
 
   //eval
   //#region 
@@ -531,70 +538,6 @@ export class Chessboard implements OnInit, AfterViewInit {
   beginGameVsAiClicked()
   {
     VsAiConfigurationModalHelper.doModal(this.modalService, this.chessBoardService, this.toastr, this);
-    /*
-    const modalRef = this.modalService.open(VsAiConfigurationModal, {size: 'lg'})
-
-    modalRef.result.then( async (result) =>
-      {
-        try 
-        {
-          //Configure board state and stockfish.
-
-          const isHumanWhite = result.getIsHumanPlayerWhite();
-          const engineElo = result.getElo()
-
-          const bs: BoardState = new BoardState();
-          bs.isVsAi = true;
-          bs.humanPlayerIsWhite = isHumanWhite;
-          bs.aiElo = result.getElo();
-
-          if (!isHumanWhite)
-          {
-            bs.isFlipped = true;
-          }
-
-          await bs.setEngineIfNotExists();
-
-          if (bs.engine)
-          {
-            const engineDisplayName = EngineDisplayName.get(bs.engine.name)?.toString() ?? "-";
-
-            isHumanWhite ? (bs.pgnHeaders.black = engineDisplayName) : (bs.pgnHeaders.white = engineDisplayName)
-            isHumanWhite ? (bs.pgnHeaders.blackElo = engineElo) : (bs.pgnHeaders.whiteElo = engineElo);
-            isHumanWhite ? (bs.pgnHeaders.white = "You") : (bs.pgnHeaders.black = "You");
-
-            this.chessBoardService.deleteGame(BoardNames.VsAi);
-            this.chessBoardService.addGame(BoardNames.VsAi, bs);
-            this.boardState = this.chessBoardService.getGame(BoardNames.VsAi);
-
-            this.toastr.success(`Starting game vs Stockfish ${engineElo}`);
-
-            //If stockfish is white, play the first move.
-            if (!isHumanWhite)
-            {
-              if (this.boardState.engine)
-              {
-                this.playAIMove();
-              }
-            }
-          }
-          else 
-          {
-            throw("Engine not initialized");
-          }
-        }
-        catch(ex)
-        {
-          this.toastr.error("Error starting game: " + ex)
-        }
-      }
-    )
-    .catch(c => 
-    {
-      //this.toastr.info("vs AI - Operation cancelled");
-    }
-    )
-    */
   }
 
   analyzeAiGameClicked()

@@ -145,9 +145,13 @@
         </div>
         @if(!this.boardState.isVsAi)
         {
-            <div class="d-flex w-100 justify-content-between">
-                <div class="btn btn-primary w-50 m-1" (click)="handleImportClicked()">Import Game</div>
-                <div class="btn btn-primary w-50 m-1" (click)="handleResetClicked()">Reset</div>
+            <div class="d-flex w-100 justify-content-around">
+                <div class="btn btn-primary m-1" (click)="handleImportClicked()">Import Game</div>
+                <div class="btn btn-primary m-1" (click)="handleResetClicked()">Reset</div>
+                @if(!this.boardState.doEvaluateGame && this.boardState.mainStateStack.length > 1)
+                {
+                    <div class="btn btn-primary m-1" (click)="handleAnalyzeClicked()">Analyze</div>
+                }
             </div> 
         }
         @else 
