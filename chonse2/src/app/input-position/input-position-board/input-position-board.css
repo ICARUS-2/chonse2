@@ -92,7 +92,7 @@
   border: 1px solid blue;
   height: 75vmin;
   padding: 2vmin;
-  width: 40vmin;
+  width: 60vmin;
 }
 
 @media screen and (max-width: 1200px) 
@@ -100,12 +100,19 @@
   .componentContainer
   {
     flex-direction: column;
+    width: 100%;
   }    
+
+  .boardContainerInner 
+  {
+    width: 80vmin;
+    height: 80vmin;
+  }
 
   .boardControls 
   {
     height: unset;
-    width: 75vmin;
+    width: unset;
     word-wrap: break-word;
   }
 }

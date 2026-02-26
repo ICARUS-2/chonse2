@@ -23,7 +23,7 @@ export class LichessAPI
 
             
             const games = rawGames.map( g => new LichessGame(g) );
-            console.log(games);
+
             return games;
         }
         catch(ex)
