@@ -2,6 +2,7 @@ export default class LocalStorageHelper
 {
     static readonly CLICK_TO_MOVE = "Chonse2_ClickToMove";
     static readonly SAVED_USERNAMES = "Chonse2_SavedUsernames";
+    static readonly SAVED_LICHESS_USERNAMES = "Chonse2_SavedLichessUsernames";
     static readonly SELECTED_ENGINE = "Chonse2_SelectedEngine";
     static readonly ENGINE_DEPTH = "Chonse2_EngineDepth";
 

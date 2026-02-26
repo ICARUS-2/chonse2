@@ -3,6 +3,7 @@ import { BASE_PATH } from "../../../helpers/globals";
 export default class GameLinkHelper
 {
     static readonly CHESSCOM_SOURCE = "chesscom";
+    static readonly LICHESS_SOURCE = "lichess"
 
     static generateGameUrl(site: string, gameId: string, username: string): string
     {

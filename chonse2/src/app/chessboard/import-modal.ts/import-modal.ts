@@ -3,12 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PgnSources } from '../chessboard/pgn-misc';
 import LocalStorageHelper from '../chessboard/local-storage-helper';
-import ChessComAPI from '../api/chesscom-api';
-import { ChessComGame } from '../api/chesscom-game';
+import {ChessComAPI, ChessComGame} from '../api/chesscom-api';;
 import { CommonModule } from '@angular/common';
 import { GameScore } from '../../../lib/game-state';
 import GameLinkHelper from '../chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
+import { LichessAPI, LichessGame } from '../api/lichess-api';
 
 @Component({
   selector: 'app-import-modal',
@@ -28,14 +28,17 @@ export class ImportModal implements OnInit
   dropdownOptions: Array<PgnSources> = 
   [
     PgnSources.Chesscom,
+    PgnSources.Lichess,
     PgnSources.Manual
   ];
 
   siteUsername: string = "";
-  savedUsernames: string[] = [];
+  savedChesscomUsernames: string[] = [];
+  savedLichessUsernames: string[] = [];
   isUsernameInputFocused: boolean = false;
 
   chessComGames: Array<ChessComGame> = [];
+  lichessGames: Array<LichessGame> = [];
   
   constructor(private activeModal: NgbActiveModal, private toastr: ToastrService)
   {
@@ -45,7 +48,8 @@ export class ImportModal implements OnInit
   //On init, get the list of saved usernames.
   ngOnInit(): void 
   {
-    this.savedUsernames = LocalStorageHelper.getStringArray(LocalStorageHelper.SAVED_USERNAMES);
+    this.savedChesscomUsernames = LocalStorageHelper.getStringArray(LocalStorageHelper.SAVED_USERNAMES);
+    this.savedLichessUsernames = LocalStorageHelper.getStringArray(LocalStorageHelper.SAVED_LICHESS_USERNAMES);
   }
 
   //Close and resolve with selected PGN.
@@ -60,33 +64,35 @@ export class ImportModal implements OnInit
     this.activeModal.close(g.pgn);
   }
 
+  //#region Username stuff
   //Used to set the username when selecting from dropdown.
   selectUsername(name: string)
   {
     this.siteUsername = name;
   }
 
+  //Chesscom
   //Removes the username in the array and sets it in local storage.
-  handleRemoveUsernameClicked(name: string)
+  handleRemoveChessComUsernameClicked(name: string)
   { 
-    const newArr = this.savedUsernames.filter( n => n != name );
+    const newArr = this.savedChesscomUsernames.filter( n => n != name );
 
-    this.savedUsernames = newArr;
+    this.savedChesscomUsernames = newArr;
     this.siteUsername = "";
     LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_USERNAMES, newArr);
   }
 
   //Saves a username in local storage if not duplicate.
-  saveUsername(name: string)
+  saveChesscomUsername(name: string)
   {
     if (name == "")
     {
       return;
     }
 
-    for(let i = 0; i < this.savedUsernames.length; i++)
+    for(let i = 0; i < this.savedChesscomUsernames.length; i++)
     {
-      const su = this.savedUsernames[i];
+      const su = this.savedChesscomUsernames[i];
 
       if (su.toLowerCase() == name.toLowerCase())
       {
@@ -94,24 +100,54 @@ export class ImportModal implements OnInit
       }
     }
 
-    this.savedUsernames.push(name);
-    LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_USERNAMES, this.savedUsernames);
+    this.savedChesscomUsernames.push(name);
+    LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_USERNAMES, this.savedChesscomUsernames);
   }
 
-  //Search API.
-  async handleGoPressed()
+  //Lichess 
+
+  saveLichessUsername(name: string)
   {
-    this.saveUsername(this.siteUsername);
-    
-    if (this.selectedDropdownOption == PgnSources.Chesscom)
+    if (name == "")
     {
-      this.chessComGames = await ChessComAPI.getGamesForUser(this.siteUsername);
+      return;
     }
 
-    //potentially add support for lichess in the future
+    for(let i = 0; i < this.savedLichessUsernames.length; i++)
+    {
+      const su = this.savedLichessUsernames[i];
+
+      if (su.toLowerCase() == name.toLowerCase())
+      {
+        return;
+      }
+    }
+
+    this.savedLichessUsernames.push(name);
+    LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_LICHESS_USERNAMES, this.savedLichessUsernames);
   }
 
-  async handleChessComGameLinkCliked(event: PointerEvent, game: ChessComGame)
+  handleRemoveLichessUsernameClicked(name: string)
+  {
+    const newArr = this.savedLichessUsernames.filter( n => n != name );
+
+    this.savedLichessUsernames = newArr;
+    this.siteUsername = "";
+    LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_LICHESS_USERNAMES, newArr);
+  }
+  //#endregion
+
+
+  //Search API.
+  //Chesscom.
+  async handleChessComGoPressed()
+  {
+    this.saveChesscomUsername(this.siteUsername);
+
+    this.chessComGames = await ChessComAPI.getGamesForUser(this.siteUsername);
+  }
+
+  async handleChessComGameLinkClicked(event: PointerEvent, game: ChessComGame)
   {
     event.stopPropagation();
     const splitUrl = game.url.split("/");
@@ -145,6 +181,61 @@ export class ImportModal implements OnInit
     if (score == GameScore.BLACK_WON)
     {
       if (game.black.username.toLowerCase() == this.siteUsername.toLowerCase())
+      {
+        return "text-bg-success";
+      }
+
+      return "text-bg-danger";
+    }
+
+    return "text-bg-info text-light";
+  }
+
+  //Lichess
+  async handleLichessGoPressed()
+  {
+    this.saveLichessUsername(this.siteUsername);
+
+    this.lichessGames = await LichessAPI.getGamesForUser(this.siteUsername);
+  }
+
+  handleLichessGameClicked(game: LichessGame)
+  {
+    this.activeModal.close(game.pgn);
+  }
+
+  async handleLichessGameLinkClicked(event: PointerEvent, game: LichessGame)
+  {
+    event.stopPropagation();
+
+    try 
+    {
+      await navigator.clipboard.writeText(GameLinkHelper.generateGameUrl(GameLinkHelper.LICHESS_SOURCE, game.id, this.siteUsername));
+      this.toastr.info(`Successfully copied game for ${this.siteUsername}.`);
+    }
+    catch(ex)
+    {
+      this.toastr.error("Game link copy failed.");
+    }
+  }
+
+  getResultClassForLichessGame(game:LichessGame)
+  {
+    const score = game.getScore();
+
+    if (score == GameScore.WHITE_WON)
+    {
+      if (game.players.white.name.toLowerCase() == this.siteUsername.toLowerCase())
+      {
+        return "text-bg-success";
+      }
+
+      return "text-bg-danger";
+    }
+
+    if (score == GameScore.BLACK_WON)
+    {
+      if (game.players.black.name.toLowerCase() == this.siteUsername.toLowerCase())
       {
         return "text-bg-success";
       }
