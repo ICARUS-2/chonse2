@@ -1,17 +1,58 @@
-<nav class="navbar bg-primary navbar-expand p-2">
-    <a class="navbar-brand text-light" routerLink="/">CHONSE2</a>
+<nav class="navbar navbar-expand-lg bg-primary p-2 navbar-dark">
+  <div class="container-fluid">
 
-    <ul class="navbar-nav">
+    <!-- Brand -->
+    <a class="navbar-brand text-light link-underline link-underline-0" routerLink="/">
+      CHONSE2
+    </a>
+
+    <!-- Hamburger button (mobile) -->
+    <button 
+      class="navbar-toggler text-light border-0" 
+      type="button" 
+      data-bs-toggle="collapse" 
+      data-bs-target="#mainNavbar"
+      aria-controls="mainNavbar" 
+      aria-expanded="false" 
+      aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="mainNavbar">
+
+      <!-- Left side links -->
+      <ul class="navbar-nav">
         <li class="nav-item">
-            <a routerLink="/input-position" class="text-light nav-link">Input Position</a>
+          <a routerLink="/" class="nav-link text-light">Analysis</a>
+        </li>
+
+        <li class="nav-item">
+          <a routerLink="/editor" class="nav-link text-light">Board Editor</a>
         </li>
         
         <li class="nav-item">
-            <a routerLink="/vs-ai" class="text-light nav-link">Play vs AI</a>
+          <a routerLink="/vs-ai" class="nav-link text-light">Play vs AI</a>
+        </li>
+      </ul>
+
+      <!-- Right side icons -->
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a routerLink="/settings" class="nav-link text-light">
+            <i class="bi bi-gear fs-3"></i>
+          </a>
         </li>
 
         <li class="nav-item">
-            <a routerLink="/settings" class="text-light nav-link">Settings</a>
+          <a href="https://github.com/ICARUS-2/chonse2/" 
+             class="nav-link text-light" 
+             target="_blank">
+            <i class="bi bi-github fs-3"></i>
+          </a>
         </li>
-    </ul>
+      </ul>
+
+    </div>
+  </div>
 </nav>

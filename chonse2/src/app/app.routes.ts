@@ -21,7 +21,7 @@ export enum RouteConstants {
 export const routes: Routes = [
     {path: "", component: Homepage},
     {path: "settings", component: Settings},
-    {path: "input-position", component: InputPosition},
+    {path: "editor", component: InputPosition},
     {path: `game/:${RouteConstants.ROUTE_SITE}/:${RouteConstants.ROUTE_USERNAME}/:${RouteConstants.ROUTE_GAMEID}`, component: LoadGame},
     {path: `vs-ai`, component: VsAi}
 ];
