@@ -39,5 +39,7 @@ export enum GameOverReason
     Timeout = "Timeout",
     Abandon = "Abandon",
     TimeVsInsufficient = "Timeout vs insufficient material",
-    DrawAgreed = "Agreement"
+    DrawAgreed = "Agreement",
+    Aborted = "Abort",
+    Cheating = "Cheating"
 }

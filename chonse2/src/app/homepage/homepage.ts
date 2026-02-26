@@ -5,12 +5,13 @@ import Chonse2 from '../../lib/chonse2';
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import BoardState from '../chessboard/chessboard/board-state';
 import { BoardNames } from '../boards';
-import ChessComAPI from '../chessboard/api/chesscom-api';
+import { ChessComAPI }from '../chessboard/api/chesscom-api';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
 import { GameState } from '../../lib/game-state';
 import { RouteConstants } from '../app.routes';
 import { PgnHeaders } from '../chessboard/chessboard/pgn-misc';
+import { LichessAPI } from '../chessboard/api/lichess-api';
 
 @Component({
   selector: 'app-homepage',
@@ -64,6 +65,31 @@ export class Homepage implements OnInit{
       if (this.site == GameLinkHelper.CHESSCOM_SOURCE)
       {
         const game = await ChessComAPI.getUserGameById(this.username, this.gameId);
+
+        if (game)
+        {
+          try 
+          {
+            const boardState = BoardState.parsePGN(game.pgn);
+            boardState.doEvaluateGame = true;
+            this.gameService.addGame(BoardNames.Analysis, boardState);
+            this.toastrService.success("Game import successful.");
+          }
+          catch(ex) //If PGN parse failed.
+          {
+            this.toastrService.error("Import failed - PGN parse failed.")
+            this.setDefaultBoard();
+          }
+        }
+        else //If the game was not found.
+        {
+          this.toastrService.error("Import failed - Game not found.")
+          this.setDefaultBoard();
+        }
+      }
+      else if (this.site == GameLinkHelper.LICHESS_SOURCE)
+      {
+        const game = await LichessAPI.getUserGameById(this.username, this.gameId);
 
         if (game)
         {

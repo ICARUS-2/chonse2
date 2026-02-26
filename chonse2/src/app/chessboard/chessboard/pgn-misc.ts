@@ -57,5 +57,6 @@ export interface SanMove {
 export enum PgnSources
 {
     Chesscom = "Chess.com",
-    Manual = "Manual PGN"
+    Lichess = "Lichess",
+    Manual = "Manual PGN",
 }

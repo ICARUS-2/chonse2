@@ -174,7 +174,7 @@
             </div> 
         }
         <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
-        <div class="evalTextData d-flex flex-column justify-content-center">{{this.boardState.pgnHeaders.termination ? this.boardState.pgnHeaders.termination + " - " : " - "}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</div>
+        <div class="evalTextData d-flex flex-column justify-content-center">{{this.boardState.pgnHeaders.termination ? ( this.boardState.pgnHeaders.termination != "Normal" ? this.boardState.pgnHeaders.termination + " - " : this.boardState.pgnHeaders.result + " - ") : "-"}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</div>
         <div class="evalTextData d-flex flex-column justify-content-center mb-1">{{this.getOpeningDisplay()}}</div>
         <div class="d-flex movesAndAccuracies">
             <div class="evalSectionLeft d-flex flex-column">

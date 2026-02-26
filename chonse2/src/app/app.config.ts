@@ -9,7 +9,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideToastr({progressBar: true, closeButton: true, positionClass: "toast-bottom-right", timeOut: 1000}),
+    provideToastr({progressBar: true, closeButton: true, positionClass: "toast-bottom-right", timeOut: 2000}),
     provideCharts(withDefaultRegisterables())
   ]
 };

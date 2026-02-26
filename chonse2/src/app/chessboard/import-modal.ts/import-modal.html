@@ -18,7 +18,7 @@
             <div>
                 <input 
                     type="text" 
-                    (keydown.enter)="handleGoPressed()" 
+                    (keydown.enter)="handleChessComGoPressed()" 
                     class="form-control usernameInput" 
                     placeholder="Search username" 
                     [(ngModel)]="siteUsername"
@@ -28,14 +28,14 @@
                 @if(isUsernameInputFocused)
                 {
                     <ul class="list-group position-absolute savedUsernames">
-                        @for(username of savedUsernames; track $index)
+                        @for(username of savedChesscomUsernames; track $index)
                         {
                             <li 
                                 class="list-group-item list-group-item-action"
-                                (pointerdown)="selectUsername(username); handleGoPressed()"
+                                (pointerdown)="selectUsername(username); handleChessComGoPressed()"
                             >
                                 {{ username }}
-                                <div class="btn btn-danger" (pointerdown)="handleRemoveUsernameClicked(username); $event.stopPropagation()">X</div>
+                                <div class="btn btn-danger" (pointerdown)="handleRemoveChessComUsernameClicked(username); $event.stopPropagation()">X</div>
                             </li>
                         }
                     </ul>
@@ -44,7 +44,41 @@
             
             <div class="m-1"></div>
 
-            <div class="btn btn-primary" (click)="handleGoPressed()">Go</div>
+            <div class="btn btn-primary" (click)="handleChessComGoPressed()">Go</div>
+        }
+
+        @if (selectedDropdownOption == PgnSources.Lichess)
+        {
+            <div>
+                <input 
+                    type="text" 
+                    (keydown.enter)="handleLichessGoPressed()" 
+                    class="form-control usernameInput" 
+                    placeholder="Search username" 
+                    [(ngModel)]="siteUsername"
+                    (focus)="isUsernameInputFocused = true;"
+                    (blur)="isUsernameInputFocused = false">
+                
+                @if(isUsernameInputFocused)
+                {
+                    <ul class="list-group position-absolute savedUsernames">
+                        @for(username of savedLichessUsernames; track $index)
+                        {
+                            <li 
+                                class="list-group-item list-group-item-action"
+                                (pointerdown)="selectUsername(username); handleLichessGoPressed()"
+                            >
+                                {{ username }}
+                                <div class="btn btn-danger" (pointerdown)="handleRemoveLichessUsernameClicked(username); $event.stopPropagation()">X</div>
+                            </li>
+                        }
+                    </ul>
+                } 
+            </div>
+            
+            <div class="m-1"></div>
+
+            <div class="btn btn-primary" (click)="handleLichessGoPressed()">Go</div>
         }
     </div>
 
@@ -67,13 +101,51 @@
                         <div class="m-1"></div>
 
                         <div class="badge rounded-pill text-bg-primary">
-                            <i class="bi bi-hash"></i>
+                            <i class="bi bi-calendar"></i>
                             <p class="d-inline">&nbsp;{{game.formatDate()}}</p>
                         </div>
                     </div>
                     <div class="m-1"></div>
 
-                    <div class="btn btn-info text-light" (click)="handleChessComGameLinkCliked($event, game)">
+                    <div class="btn btn-info text-light" (click)="handleChessComGameLinkClicked($event, game)">
+                            Copy Link
+                    </div> 
+                </div>
+            </button>
+        }
+    }
+
+    @if(selectedDropdownOption == PgnSources.Lichess && lichessGames.length != 0)
+    {
+        @for(game of lichessGames; track $index)
+        {
+            <button class="siteResult card mb-2 w-100" style="text-align: left;" (click)="handleLichessGameClicked(game)">
+                <div class="card-body siteResultInner">
+                    <p>{{ game.players.white.name }} [{{game.players.white.rating}}] vs {{game.players.black.name}} [{{game.players.black.rating}}] <span class="badge rounded-pill" [ngClass]="getResultClassForLichessGame(game)">{{game.getScore()}} {{game.getReason()}}</span></p>
+                    
+                    <div class="d-flex align-items-center">
+                        <div class="badge rounded-pill text-bg-primary">
+                            <i class="bi bi-clock"></i>
+                            <p class="d-inline">&nbsp;&nbsp;{{game.variant}} {{game.formatTimeControl()}} {{game.perf}}</p>
+                        </div>
+
+                        <div class="m-1"></div>
+
+                        <div class="badge rounded-pill text-bg-primary">
+                            <i class="bi bi-hash"></i>
+                            <p class="d-inline">&nbsp;{{game.formatDate()}}</p>
+                        </div>
+
+                        <div class="m-1"></div>
+
+                        <div class="badge rounded-pill text-bg-primary">
+                            <i class="bi bi-hash"></i>
+                            <p class="d-inline">&nbsp;{{game.moves.split(" ").length}}</p>
+                        </div>
+                    </div>
+                    <div class="m-1"></div>
+
+                    <div class="btn btn-info text-light" (click)="handleLichessGameLinkClicked($event, game)">
                             Copy Link
                     </div> 
                 </div>
