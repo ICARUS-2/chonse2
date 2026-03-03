@@ -5,6 +5,7 @@ export default class LocalStorageHelper
     static readonly SAVED_LICHESS_USERNAMES = "Chonse2_SavedLichessUsernames";
     static readonly SELECTED_ENGINE = "Chonse2_SelectedEngine";
     static readonly ENGINE_DEPTH = "Chonse2_EngineDepth";
+    static readonly SELECTED_THEME = "Chonse2_SelectedTheme";
 
     //bool
     static getBoolean(key: string, defaultVal = false): boolean

@@ -33,6 +33,17 @@
     </div>
     <hr>
 
+    <h2 class="text-primary">Appearance</h2>
+    <h4 class="text-secondary">Select Theme</h4>
+    <select [(ngModel)]="selectedTheme" class="form-select" (ngModelChange)="handleThemeDropdownSelectionChanged()">
+        @for(theme of Object.values(Themes); track $index)
+        {
+            <option [value]="theme">{{theme}}</option>
+        }
+    </select>
+
+    <hr>
+
     <h1 class="text-primary">Credits</h1>
     <h4>- Created by <a class="link-underline link-underline-opacity-0" href="https://icarus-2.github.io/" target="_blank">ICARUS_2</a>.</h4>
     <h4>- Coded in  <a class="link-underline link-underline-opacity-0" href="https://v21.angular.dev/overview" target="_blank">Angular 21</a>.</h4>

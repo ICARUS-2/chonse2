@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import ThemeService from '../themes/theme-service';
 
 @Component({
   selector: 'app-navbar',
@@ -8,5 +9,10 @@ import { RouterLink } from '@angular/router';
   styleUrl: './navbar.css',
 })
 export class Navbar {
+
+  constructor(public themeService: ThemeService)
+  {
+
+  }
 
 }

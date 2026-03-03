@@ -1,4 +1,4 @@
-import { BASE_PATH } from "../../../helpers/globals";
+import { BASE_PATH } from "../../../globals/globals";
 
 export default class GameLinkHelper
 {

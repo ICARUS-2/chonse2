@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms';
 import LocalStorageHelper from '../chessboard/chessboard/local-storage-helper';
 import { EngineDisplayName, EngineName } from '../chessboard/engine/types/enums';
 import { UciEngine } from '../chessboard/engine/uciEngine';
+import { Themes } from '../themes/themes';
+import ThemeService from '../themes/theme-service';
 @Component({
   selector: 'app-settings',
   imports: [FormsModule, FormsModule],
@@ -14,6 +16,12 @@ export class Settings {
   EngineName = EngineName;
   EngineDisplayName = EngineDisplayName;
   Object = Object;
+  Themes = Themes;
+
+  constructor(private themeService: ThemeService)
+  {
+
+  }
 
   //Click-move
   clickToMove: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, false);
@@ -23,6 +31,9 @@ export class Settings {
 
   //Engine depth
   engineDepth: number = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
+
+  //Theme
+  selectedTheme: Themes = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_THEME, ThemeService.DEFAULT_THEME) as Themes;
 
   //Click to move.
   handleClickToMoveSwitchPressed(val: boolean)
@@ -41,5 +52,12 @@ export class Settings {
   handleEngineDepthChanged()
   {
     LocalStorageHelper.setNumber(LocalStorageHelper.ENGINE_DEPTH, this.engineDepth);
+  }
+
+  //Theme select
+  handleThemeDropdownSelectionChanged()
+  {
+    LocalStorageHelper.setString(LocalStorageHelper.SELECTED_THEME, this.selectedTheme);
+    this.themeService.setTheme(this.selectedTheme);
   }
 }

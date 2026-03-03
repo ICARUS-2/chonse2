@@ -23,17 +23,14 @@ import MoveClassificationList from './move-classification-list';
 import { getEvaluationBarValue2 } from '../engine/helpers/chessHelper';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
 import { PositionEval } from '../engine/types/eval';
-import { VsAiConfigurationModal } from '../../vs-ai/vs-ai-configuration-modal/vs-ai-configuration-modal';
-import VsAiConfig from '../../vs-ai/vs-ai-config';
-import { BoardNames } from '../../boards';
 import { UciEngine } from '../engine/uciEngine';
-import { zip } from 'rxjs';
 import { Router } from '@angular/router';
 import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-helper';
+import { BootstrapButton } from '../../bootstrap-button/bootstrap-button';
 
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart],
+  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart, BootstrapButton],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
 })

@@ -141,7 +141,6 @@
 .controlButton
 {
   touch-action: manipulation;
-  margin: 5px;
 }
 
 .movesAndAccuracies
