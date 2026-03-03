@@ -687,7 +687,7 @@ export class Chessboard implements OnInit, AfterViewInit {
         continue;
       }
 
-      if (move.piece.startsWith(color))
+      if (!move.piece.startsWith(color))
       {
         if (move.comment.startsWith(PgnComments.CLOCK))
         {
