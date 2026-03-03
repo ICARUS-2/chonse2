@@ -4,6 +4,7 @@ export default interface IAppTheme
     getHoverColor(): string;
     getBackgroundColor(): string;
     getTextColor(): string;
+    getBorderColor(): string;
 
     getChessboardLightColor(): string
     getChessboardDarkColor(): string

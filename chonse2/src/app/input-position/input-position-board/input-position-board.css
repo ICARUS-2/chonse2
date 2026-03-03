@@ -95,6 +95,11 @@
   width: 60vmin;
 }
 
+.custom-switch:checked {
+  background-color: var(--switch-color) !important;
+  border-color: var(--switch-color) !important;
+}
+
 @media screen and (max-width: 1200px) 
 {
   .componentContainer

@@ -1,21 +1,25 @@
 
 <div class="container">
-    <h1 class="text-primary">Settings</h1>
+    <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Settings</h1>
     <hr>
 
-    <h2 class="text-primary">Board</h2>
+    <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Board</h2>
     <h4 class="text-secondary">Click to move</h4>
-    <div class="form-check form-switch">
-        <input
-            class="form-check-input"
-            type="checkbox"
-            [(ngModel)]="clickToMove"
-            (ngModelChange)="handleClickToMoveSwitchPressed($event)"
-        />
-    </div>
 
+    <div
+    class="form-check form-switch"
+    [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+    >
+    <input
+        class="form-check-input custom-switch"
+        type="checkbox"
+        [(ngModel)]="clickToMove"
+        (ngModelChange)="handleClickToMoveSwitchPressed($event)"
+    />
+    </div>
+    
     <hr>
-    <h2 class="text-primary">Engine</h2>
+    <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Engine</h2>
     <h4 class="text-secondary">Select Engine</h4>
     <select [(ngModel)]="selectedEngine" class="form-select" (ngModelChange)="handleEngineDropdownSelectionChanged()">
         @for(engine of Object.values(EngineName); track $index)
@@ -27,13 +31,13 @@
     <div class="m-4"></div>
 
     <h4 class="text-secondary">Engine Depth</h4>
-    <div class="d-flex">
-        <input (ngModelChange)="handleEngineDepthChanged()" [(ngModel)]="engineDepth" type="range" class="form-range" min="10" max="30" id="range2">
+    <div class="d-flex" [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
+        <input (ngModelChange)="handleEngineDepthChanged()" [(ngModel)]="engineDepth" type="range" class="form-range custom-range" min="10" max="30" id="range2">
         <p>{{engineDepth}}</p>
     </div>
     <hr>
 
-    <h2 class="text-primary">Appearance</h2>
+    <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Appearance</h2>
     <h4 class="text-secondary">Select Theme</h4>
     <select [(ngModel)]="selectedTheme" class="form-select" (ngModelChange)="handleThemeDropdownSelectionChanged()">
         @for(theme of Object.values(Themes); track $index)
@@ -44,8 +48,8 @@
 
     <hr>
 
-    <h1 class="text-primary">Credits</h1>
-    <h4>- Created by <a class="link-underline link-underline-opacity-0" href="https://icarus-2.github.io/" target="_blank">ICARUS_2</a>.</h4>
-    <h4>- Coded in  <a class="link-underline link-underline-opacity-0" href="https://v21.angular.dev/overview" target="_blank">Angular 21</a>.</h4>
-    <h4>- Engine code adapted from <a class="link-underline link-underline-opacity-0" href="https://github.com/GuillaumeSD/Chesskit" target="_blank">GuillaumeSD/Chesskit</a>.</h4>
+    <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Credits</h1>
+    <h4>- Created by <a class="link-underline link-underline-opacity-0" [style.color]="themeService.getThemeInstance().getPrimaryColor()" href="https://icarus-2.github.io/" target="_blank">ICARUS_2</a>.</h4>
+    <h4>- Coded in  <a class="link-underline link-underline-opacity-0" [style.color]="themeService.getThemeInstance().getPrimaryColor()" href="https://v21.angular.dev/overview" target="_blank">Angular 21</a>.</h4>
+    <h4>- Engine code adapted from <a class="link-underline link-underline-opacity-0" [style.color]="themeService.getThemeInstance().getPrimaryColor()" href="https://github.com/GuillaumeSD/Chesskit" target="_blank">GuillaumeSD/Chesskit</a>.</h4>
 </div>

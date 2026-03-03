@@ -17,6 +17,11 @@ export default class WhiteBlueTheme implements IAppTheme
         return "white";
     }
 
+    getBorderColor(): string 
+    {
+        return "blue";
+    }
+
     getTextColor(): string 
     {
         return "white";
@@ -29,7 +34,7 @@ export default class WhiteBlueTheme implements IAppTheme
 
     getChessboardDarkColor(): string 
     {
-        return "rgb(13,110,253)";
+        return "rgb(85,150,242)";
     }
     
 }

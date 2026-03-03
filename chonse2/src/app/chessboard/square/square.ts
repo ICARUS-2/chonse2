@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PieceType } from '../../../lib/piece-type';
 import { MoveClassification } from '../engine/types/enums';
+import ThemeService from '../../themes/theme-service';
 
 @Component({
   selector: 'app-square',
@@ -68,9 +69,10 @@ export class Square {
     ]
    )
 
-  constructor()
+  constructor(public themeService: ThemeService)
   {
-
+    this.lightColor = themeService.getThemeInstance().getChessboardLightColor();
+    this.darkColor = themeService.getThemeInstance().getChessboardDarkColor();
   }
 
   getColor(): string

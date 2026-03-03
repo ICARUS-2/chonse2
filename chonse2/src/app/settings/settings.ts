@@ -5,9 +5,10 @@ import { EngineDisplayName, EngineName } from '../chessboard/engine/types/enums'
 import { UciEngine } from '../chessboard/engine/uciEngine';
 import { Themes } from '../themes/themes';
 import ThemeService from '../themes/theme-service';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-settings',
-  imports: [FormsModule, FormsModule],
+  imports: [FormsModule, FormsModule, CommonModule],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
 })
@@ -18,7 +19,7 @@ export class Settings {
   Object = Object;
   Themes = Themes;
 
-  constructor(private themeService: ThemeService)
+  constructor(public themeService: ThemeService)
   {
 
   }

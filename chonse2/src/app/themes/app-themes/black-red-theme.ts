@@ -16,17 +16,25 @@ export default class BlackRedTheme implements IAppTheme
     {
         return "black";
     }
+
+    getBorderColor(): string
+    {
+        return "red";
+    }
+
     getTextColor(): string 
     {
         return "white";
     }
+
     getChessboardLightColor(): string 
     {
         return "rgb(220,53,69)";
     }
+
     getChessboardDarkColor(): string 
     {
-        return "black";
+        return "rgb(75,75,75)";
     }
     
 }

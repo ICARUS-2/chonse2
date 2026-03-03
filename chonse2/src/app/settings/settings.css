@@ -1,0 +1,16 @@
+.custom-switch:checked {
+  background-color: var(--switch-color) !important;
+  border-color: var(--switch-color) !important;
+}
+
+.custom-range {
+  --bs-form-range-thumb-bg: var(--slider-color);
+}
+
+.custom-range::-webkit-slider-thumb {
+  background-color: var(--slider-color);
+}
+
+.custom-range::-moz-range-thumb {
+  background-color: var(--slider-color);
+}
