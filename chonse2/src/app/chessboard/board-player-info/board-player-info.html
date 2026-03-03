@@ -18,7 +18,7 @@
 
     @if(getAbsoluteAdvantage() > 0)
     {
-        <p class="text-primary m-0">+{{getAbsoluteAdvantage()}}</p>
+        <p class="m-0" [style.color]="themeService.getThemeInstance().getPrimaryColor()">+{{getAbsoluteAdvantage()}}</p>
     }
     
     <div class="m-1"></div>

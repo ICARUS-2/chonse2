@@ -9,10 +9,12 @@ import { GameScore } from '../../../lib/game-state';
 import GameLinkHelper from '../chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
 import { LichessAPI, LichessGame } from '../api/lichess-api';
+import ThemeService from '../../themes/theme-service';
+import { BootstrapButton } from "../../bootstrap-button/bootstrap-button";
 
 @Component({
   selector: 'app-import-modal',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, BootstrapButton],
   templateUrl: './import-modal.html',
   styleUrl: './import-modal.css',
 })
@@ -40,7 +42,7 @@ export class ImportModal implements OnInit
   chessComGames: Array<ChessComGame> = [];
   lichessGames: Array<LichessGame> = [];
   
-  constructor(private activeModal: NgbActiveModal, private toastr: ToastrService)
+  constructor(private activeModal: NgbActiveModal, private toastr: ToastrService, public themeService: ThemeService)
   {
     //LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_USERNAMES, []);
   }

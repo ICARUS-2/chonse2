@@ -14,7 +14,7 @@ export class BootstrapButton {
   @Input() disabled: boolean = false;
   @Input() extraClasses: string = "";
 
-  @Output() buttonClick: EventEmitter<void> = new EventEmitter();
+  @Output() buttonClick: EventEmitter<PointerEvent> = new EventEmitter();
   constructor(public themeService: ThemeService)
   {
     
