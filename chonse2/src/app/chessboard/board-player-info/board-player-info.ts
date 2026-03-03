@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { PieceColor } from '../../../lib/piece-color';
+import ThemeService from '../../themes/theme-service';
 
 @Component({
   selector: 'app-board-player-info',
@@ -15,6 +16,11 @@ export class BoardPlayerInfo {
   @Input() playerElo: string = "";
   @Input() clock: string = "";
   
+  constructor(public themeService: ThemeService)
+  {
+    
+  }
+
   //Positive number indicates an advantage for white, negative for black. Only display the advantage if there is one for this color.
   getAbsoluteAdvantage(): number
   {

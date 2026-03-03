@@ -124,7 +124,6 @@
 .boardControls
 {
   display: flex;
-  border: 1px solid blue;
   flex-direction: column;
   height: 82vmin;
   width: 82vmin;
@@ -151,7 +150,6 @@
 .algebraicContainer
 {
   padding: 5px;
-  border: 1px solid blue;
   height: 35vmin;
   width: 40vmin;
   overflow-y: auto;
@@ -166,7 +164,6 @@
   align-items: center;
   flex-direction: column;
   width: 100%;
-  border: 1px solid blue
 }
 
 .animatedPiece {
@@ -232,7 +229,6 @@
 .engineLinesContainer
 {
   flex: 1;
-  border: 1px solid blue;
 }
 
 .engineLineDisplayIcon

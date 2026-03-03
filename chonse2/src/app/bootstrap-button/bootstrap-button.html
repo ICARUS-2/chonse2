@@ -1,7 +1,7 @@
 <button class="btn button" 
     [style.--btn-bg]="themeService.getThemeInstance().getPrimaryColor()"
     [style.--btn-hover]="themeService.getThemeInstance().getHoverColor()"
-    [style.color]="themeService.getThemeInstance().getTextColor()"
+    [style.color]="'white'"
     [ngClass]="[extraClasses]"
     [disabled]="disabled"
     (click)="onButtonClicked()">{{label}}</button>

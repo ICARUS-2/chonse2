@@ -135,7 +135,7 @@
             <app-board-player-info [playerName]="boardState.pgnHeaders.white" [playerElo]="boardState.pgnHeaders.whiteElo" for="w" [clock]="getClockForPlayer('w')" [capturedPieces]="boardState.getCurrentState().piecesWhiteCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-board-player-info>
         </div>
     </div>
-    <div class="boardControls p-2">
+    <div class="boardControls p-2" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
         <div class="boardControlButtons">
 
             <app-bootstrap-button 
@@ -236,11 +236,11 @@
             </div> 
         }
         <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
-        <div class="evalTextData d-flex flex-column justify-content-center">{{this.boardState.pgnHeaders.termination ? ( this.boardState.pgnHeaders.termination != "Normal" ? this.boardState.pgnHeaders.termination + " - " : this.boardState.pgnHeaders.result + " - ") : "-"}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</div>
-        <div class="evalTextData d-flex flex-column justify-content-center mb-1">{{this.getOpeningDisplay()}}</div>
-        <div class="d-flex movesAndAccuracies">
+        <div [style.color]="themeService.getThemeInstance().getTextColor()" class="evalTextData d-flex flex-column justify-content-center">{{this.boardState.pgnHeaders.termination ? ( this.boardState.pgnHeaders.termination != "Normal" ? this.boardState.pgnHeaders.termination + " - " : this.boardState.pgnHeaders.result + " - ") : "-"}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</div>
+        <div [style.color]="themeService.getThemeInstance().getTextColor()" class="evalTextData d-flex flex-column justify-content-center mb-1">{{this.getOpeningDisplay()}}</div>
+        <div [style.color]="themeService.getThemeInstance().getTextColor()" class="d-flex movesAndAccuracies">
             <div class="evalSectionLeft d-flex flex-column">
-                <div class="algebraicContainer">
+                <div class="algebraicContainer" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
                     <!--Moves table-->
                     <table class="w-100">
                         @for (item of boardState.mainMoveStack; track $index) 
@@ -293,7 +293,7 @@
                 </div>
                 @if(this.boardState.eval)
                 {
-                    <div class="engineLinesContainer d-flex flex-column justify-content-around">
+                    <div class="engineLinesContainer d-flex flex-column justify-content-around" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
                     @for(engineLine of boardState.getMostRecentEval()?.lines ; track $index)
                     {
                         <div class="engineLineDisplay d-flex align-items-center p-2">
@@ -329,7 +329,7 @@
             </div>
             @if (this.boardState.eval)
             {
-            <div class="evalSectionRight p-2">
+            <div class="evalSectionRight p-2" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
 
                 <div class="d-flex">
                     <div class="badge text-bg-light border d-inline-block">

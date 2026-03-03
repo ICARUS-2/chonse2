@@ -27,6 +27,7 @@ import { UciEngine } from '../engine/uciEngine';
 import { Router } from '@angular/router';
 import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-helper';
 import { BootstrapButton } from '../../bootstrap-button/bootstrap-button';
+import ThemeService from '../../themes/theme-service';
 
 @Component({
   selector: 'app-chessboard',
@@ -99,7 +100,8 @@ export class Chessboard implements OnInit, AfterViewInit {
     private modalService: NgbModal, 
     private chessBoardService: ChessBoardService, 
     private toastr: ToastrService,
-    private router: Router)
+    private router: Router,
+    public themeService: ThemeService)
   {
     //Board state stored in service to persist across routerlink changes.
     const boardState: BoardState = this.chessBoardService.getGame(this.gameId);

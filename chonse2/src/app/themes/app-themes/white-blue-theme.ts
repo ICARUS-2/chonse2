@@ -24,7 +24,7 @@ export default class WhiteBlueTheme implements IAppTheme
 
     getTextColor(): string 
     {
-        return "white";
+        return "black";
     }
 
     getChessboardLightColor(): string 

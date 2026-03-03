@@ -1,6 +1,6 @@
 <div class="boardPlayerInfoContainer d-flex align-items-center">
     
-    <p>{{playerName}} {{playerElo ? `(${playerElo})` : ""}}</p>
+    <p [style.color]="themeService.getThemeInstance().getTextColor()">{{playerName}} {{playerElo ? `(${playerElo})` : ""}}</p>
     
     <div class="m-1"></div>
 

@@ -67,8 +67,10 @@
         <app-piece-selector [for]="PieceColor.WHITE" [isKingActive]="model.game.getKingCoordinate(PieceColor.WHITE) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
     </div>
 
-    <div class="boardControls">
-        <h2>Board Editor</h2>
+    <div class="boardControls" 
+        [style.color]="themeService.getThemeInstance().getTextColor()"
+        [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Board Editor</h2>
         <div class="d-flex justify-content-between">
             <app-bootstrap-button (buttonClick)="handleResetClicked()" label="Reset"></app-bootstrap-button>
             <app-bootstrap-button (buttonClick)="handleClearClicked()" label="Clear"></app-bootstrap-button>
@@ -78,7 +80,7 @@
 
         <hr>
 
-        <h4>Turn</h4>
+        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Turn</h4>
         <select [(ngModel)]="this.model.game.turn" (ngModelChange)="onTurnChanged($event)">
             <option [ngValue]="true">White to move</option>
             <option [ngValue]="false">Black to move</option>
@@ -86,7 +88,7 @@
         
         <hr>
 
-        <h4>Castling Rights</h4>
+        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Castling Rights</h4>
         <div class="d-flex justify-content-between user-select-none">
             <!--White castling rights-->
             <div>
@@ -140,7 +142,7 @@
 
         <hr>
 
-        <h4>En Passant</h4>
+        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">En Passant</h4>
         <div>
             @if(getPotentialEnPassantSquares(); as potentialEpSquares)
             {
@@ -163,7 +165,7 @@
 
         <hr>
 
-        <h4>FEN</h4>
+        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">FEN</h4>
         <div>
             {{this.model.game.getFEN()}}
         </div>
