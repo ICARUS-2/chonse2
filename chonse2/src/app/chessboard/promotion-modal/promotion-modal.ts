@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PieceType } from '../../../lib/piece-type';
 import { PieceColor } from '../../../lib/piece-color';
+import ThemeService from '../../themes/theme-service';
 
 @Component({
   selector: 'app-promotion-modal',
@@ -17,7 +18,7 @@ export class PromotionModal {
   bishopOption: string = PieceType.BISHOP;
   knightOption: string = PieceType.KNIGHT;
   
-  constructor(private activeModal: NgbActiveModal)
+  constructor(private activeModal: NgbActiveModal, public themeService: ThemeService)
   {
 
   }

@@ -5,7 +5,7 @@
             <app-square [isDark]="for != PieceColor.WHITE" [piece]="for == PieceColor.WHITE ? piece.white : piece.black"></app-square>
         </div>
     }
-  <div class="square border deleteSquare d-flex justify-content-center align-items-center bg-info" (pointerup)="deleteMouseUp()">
+  <div class="square border deleteSquare d-flex justify-content-center align-items-center bg-white" (pointerup)="deleteMouseUp()">
     <i class="bi deleteIcon" [ngClass]="{'bi-trash': for == PieceColor.WHITE, 'bi-trash-fill': for == PieceColor.BLACK}"></i>
   </div>
 </div>

@@ -23,17 +23,15 @@ import MoveClassificationList from './move-classification-list';
 import { getEvaluationBarValue2 } from '../engine/helpers/chessHelper';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
 import { PositionEval } from '../engine/types/eval';
-import { VsAiConfigurationModal } from '../../vs-ai/vs-ai-configuration-modal/vs-ai-configuration-modal';
-import VsAiConfig from '../../vs-ai/vs-ai-config';
-import { BoardNames } from '../../boards';
 import { UciEngine } from '../engine/uciEngine';
-import { zip } from 'rxjs';
 import { Router } from '@angular/router';
 import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-helper';
+import { BootstrapButton } from '../../bootstrap-button/bootstrap-button';
+import ThemeService from '../../themes/theme-service';
 
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart],
+  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart, BootstrapButton],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
 })
@@ -102,7 +100,8 @@ export class Chessboard implements OnInit, AfterViewInit {
     private modalService: NgbModal, 
     private chessBoardService: ChessBoardService, 
     private toastr: ToastrService,
-    private router: Router)
+    private router: Router,
+    public themeService: ThemeService)
   {
     //Board state stored in service to persist across routerlink changes.
     const boardState: BoardState = this.chessBoardService.getGame(this.gameId);

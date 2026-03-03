@@ -67,18 +67,20 @@
         <app-piece-selector [for]="PieceColor.WHITE" [isKingActive]="model.game.getKingCoordinate(PieceColor.WHITE) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
     </div>
 
-    <div class="boardControls">
-        <h2>Board Editor</h2>
+    <div class="boardControls" 
+        [style.color]="themeService.getThemeInstance().getTextColor()"
+        [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Board Editor</h2>
         <div class="d-flex justify-content-between">
-            <div class="btn btn-primary" (click)="handleResetClicked()">Reset</div>
-            <div class="btn btn-primary" (click)="handleClearClicked()">Clear</div>
-            <div class="btn btn-primary" [ngClass]="{'disabled' : !doesValidationPass()}" (click)="submitButtonClicked()">Analyze</div>
-            <div class="btn btn-primary" [ngClass]="{'disabled' : !doesValidationPass()}" (click)="playVsAiButtonClicked()">Play vs AI</div>
+            <app-bootstrap-button (buttonClick)="handleResetClicked()" label="Reset"></app-bootstrap-button>
+            <app-bootstrap-button (buttonClick)="handleClearClicked()" label="Clear"></app-bootstrap-button>
+            <app-bootstrap-button (buttonClick)="submitButtonClicked()" label="Analyze" [disabled]="!doesValidationPass()"></app-bootstrap-button>
+            <app-bootstrap-button (buttonClick)="playVsAiButtonClicked()" label="Play vs AI" [disabled]="!doesValidationPass()"></app-bootstrap-button>
         </div>
 
         <hr>
 
-        <h4>Turn</h4>
+        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Turn</h4>
         <select [(ngModel)]="this.model.game.turn" (ngModelChange)="onTurnChanged($event)">
             <option [ngValue]="true">White to move</option>
             <option [ngValue]="false">Black to move</option>
@@ -86,24 +88,29 @@
         
         <hr>
 
-        <h4>Castling Rights</h4>
+        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Castling Rights</h4>
         <div class="d-flex justify-content-between user-select-none">
             <!--White castling rights-->
             <div>
                 <p>White</p>
                 @if(getPotentialForCastlingRights(true, true))
                 {
-                    <div class="form-check form-switch">
+                    <div 
+                        class="form-check form-switch" 
+                        [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+                        >
                         <label>Kingside</label>
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="this.model.game.whiteCastlingRights.kingSide">
+                        <input class="form-check-input custom-switch" type="checkbox" [(ngModel)]="this.model.game.whiteCastlingRights.kingSide">
                     </div>
                 }
 
                 @if(getPotentialForCastlingRights(true, false))
                 {
-                    <div class="form-check form-switch">
+                    <div 
+                        class="form-check form-switch"
+                        [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
                         <label>Queenside</label>
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="this.model.game.whiteCastlingRights.queenSide">
+                        <input class="form-check-input custom-switch" type="checkbox" [(ngModel)]="this.model.game.whiteCastlingRights.queenSide">
                     </div>
                 }
             </div>
@@ -113,17 +120,21 @@
                 <p>Black</p>
                 @if(getPotentialForCastlingRights(false, true))
                 {
-                    <div class="form-check form-switch">
+                    <div 
+                        class="form-check form-switch"
+                        [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
                         <label>Kingside</label>
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="this.model.game.blackCastlingRights.kingSide">
+                        <input class="form-check-input custom-switch" type="checkbox" [(ngModel)]="this.model.game.blackCastlingRights.kingSide">
                     </div>
                 }
 
                 @if(getPotentialForCastlingRights(false, false))
                 {
-                    <div class="form-check form-switch">
+                    <div 
+                        class="form-check form-switch"
+                        [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
                         <label>Queenside</label>
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="this.model.game.blackCastlingRights.queenSide">
+                        <input class="form-check-input custom-switch" type="checkbox" [(ngModel)]="this.model.game.blackCastlingRights.queenSide">
                     </div>
                 }
             </div>
@@ -131,7 +142,7 @@
 
         <hr>
 
-        <h4>En Passant</h4>
+        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">En Passant</h4>
         <div>
             @if(getPotentialEnPassantSquares(); as potentialEpSquares)
             {
@@ -154,7 +165,7 @@
 
         <hr>
 
-        <h4>FEN</h4>
+        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">FEN</h4>
         <div>
             {{this.model.game.getFEN()}}
         </div>

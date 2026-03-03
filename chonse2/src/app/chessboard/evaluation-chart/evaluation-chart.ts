@@ -4,6 +4,7 @@ import { PositionEval } from '../engine/types/eval';
 import { MoveClassification } from '../engine/types/enums';
 import { BaseChartDirective } from 'ng2-charts';
 import { ActiveElement, Chart, ChartConfiguration, ChartEvent, ChartOptions } from 'chart.js';
+import ThemeService from '../../themes/theme-service';
 
 @Component({
   selector: 'app-evaluation-chart',
@@ -116,7 +117,7 @@ export class EvaluationChart implements OnInit {
     }
   };
 
-  constructor()
+  constructor(public themeService: ThemeService)
   {
 
   }

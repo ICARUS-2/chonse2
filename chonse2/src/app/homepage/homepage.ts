@@ -12,6 +12,7 @@ import { GameState } from '../../lib/game-state';
 import { RouteConstants } from '../app.routes';
 import { PgnHeaders } from '../chessboard/chessboard/pgn-misc';
 import { LichessAPI } from '../chessboard/api/lichess-api';
+import ThemeService from '../themes/theme-service';
 
 @Component({
   selector: 'app-homepage',
@@ -39,7 +40,7 @@ export class Homepage implements OnInit{
 
   BoardNames = BoardNames;
 
-  constructor(public gameService: ChessBoardService, private toastrService: ToastrService)
+  constructor(public gameService: ChessBoardService, private toastrService: ToastrService, public themeService: ThemeService)
   {
 
   }

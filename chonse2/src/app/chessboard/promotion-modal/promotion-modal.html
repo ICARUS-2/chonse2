@@ -1,5 +1,5 @@
-<div class="d-flex justify-content-center align-items-center flex-column">
-    <h2 class="text-primary">Promotion - Select Piece</h2>
+<div class="d-flex justify-content-center align-items-center flex-column" [style.background-color]="`${themeService.getThemeInstance().getBackgroundColor()}`">
+    <h2 class="" [style.color]="`${themeService.getThemeInstance().getPrimaryColor()}`">Promotion - Select Piece</h2>
 
     <div>
         <img class="squarePieceButton" [src]="getSrc(getQueen())" (click)="confirmSelection(queenOption)"/>

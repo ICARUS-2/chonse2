@@ -1,6 +1,6 @@
 import { EngineName } from "../types/enums";
 import { UciEngine } from "../uciEngine";
-import { BASE_PATH } from "../../../../helpers/globals";
+import { BASE_PATH } from "../../../../globals/globals";
 
 export class Stockfish11 {
   public static async create(): Promise<UciEngine> {

@@ -135,50 +135,112 @@
             <app-board-player-info [playerName]="boardState.pgnHeaders.white" [playerElo]="boardState.pgnHeaders.whiteElo" for="w" [clock]="getClockForPlayer('w')" [capturedPieces]="boardState.getCurrentState().piecesWhiteCaptured" [advantage]="boardState.getCurrentState().getMaterialAdvantage()"></app-board-player-info>
         </div>
     </div>
-    <div class="boardControls p-2">
+    <div class="boardControls p-2" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
         <div class="boardControlButtons">
-            <div class="btn btn-primary controlButton" (click)="handleFlipClicked()">↑↓</div>
-            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleBackButtonClicked()">&lt;&lt;-</div>
-            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areBackButtonsEnabled() ? '' : 'disabled'" (click)="handleBackButtonClicked()">&lt;</div>
-            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areForwardButtonsEnabled() ? '' : 'disabled'" (click)="handleForwardButtonClicked()">></div>
-            <div class="btn btn-lg btn-primary controlButton" [ngClass]="areForwardButtonsEnabled() ? '' : 'disabled'" (click)="handleDoubleForwardButtonClicked()">->></div>
+
+            <app-bootstrap-button 
+                (buttonClick)="handleFlipClicked()" 
+                label="↑↓"
+                extraClasses="btn-lg">
+            </app-bootstrap-button>
+
+            <app-bootstrap-button 
+                (buttonClick)="handleDoubleBackButtonClicked()" 
+                [disabled]="!areBackButtonsEnabled()" 
+                label="&lt;&lt;-" 
+                extraClasses="btn-lg">
+            </app-bootstrap-button>
+            
+            <app-bootstrap-button 
+                (buttonClick)="handleBackButtonClicked()" 
+                [disabled]="!areBackButtonsEnabled()" 
+                label="&lt;" 
+                extraClasses="btn-lg">
+            </app-bootstrap-button>
+            
+            <app-bootstrap-button 
+                (buttonClick)="handleForwardButtonClicked()" 
+                [disabled]="!areForwardButtonsEnabled()" 
+                label=">" 
+                extraClasses="btn-lg">
+            </app-bootstrap-button>
+            
+            <app-bootstrap-button 
+                (buttonClick)="handleDoubleForwardButtonClicked()" 
+                [disabled]="!areForwardButtonsEnabled()" 
+                label="->>" 
+                extraClasses="btn-lg"></app-bootstrap-button>
         </div>
         @if(!this.boardState.isVsAi)
         {
-            <div class="d-flex w-100 justify-content-around">
-                <div class="btn btn-primary m-1" (click)="handleImportClicked()">Import Game</div>
-                <div class="btn btn-primary m-1" (click)="handleResetClicked()">Reset</div>
-                <div class="btn btn-primary m-1" (click)="copyPGNClicked()">Copy PGN</div>
-                @if(!this.boardState.doEvaluateGame && this.boardState.mainStateStack.length > 1)
+            <div class="d-flex w-100 justify-content-around mt-2">
+
+                <app-bootstrap-button
+                    label="Import Game"
+                    extraClasses="me-1"
+                    (buttonClick)="handleImportClicked()">
+                </app-bootstrap-button>
+
+                <app-bootstrap-button
+                    label="Reset"
+                    extraClasses="me-1"
+                    (buttonClick)="handleResetClicked()">
+                </app-bootstrap-button>
+
+                <app-bootstrap-button
+                    label="Copy PGN"
+                    extraClasses="me-1"
+                    (buttonClick)="copyPGNClicked()">
+                </app-bootstrap-button>
+
+                @if(!boardState.doEvaluateGame && boardState.mainStateStack.length > 1)
                 {
-                    <div class="btn btn-primary m-1" (click)="handleAnalyzeClicked()">Analyze</div>
+                    <app-bootstrap-button
+                        label="Analyze"
+                        extraClasses=""
+                        (buttonClick)="handleAnalyzeClicked()">
+                    </app-bootstrap-button>
                 }
-            </div> 
+            </div>
         }
         @else 
         {
-            <div class="d-flex w-100 justify-content-between">
-            @if (!this.getMostCurrentMainState().gameState.isGameOver && this.boardState.engine)
-            {
-                <div class="btn btn-primary w-50 m-1" (click)="resignVsAiClicked()">Resign</div>
-            }
-            @else 
-            {
-                <div class="btn btn-primary w-50 m-1" (click)="beginGameVsAiClicked()">New game vs AI</div>
+            <div class="d-flex w-100 justify-content-start mt-2">
 
-                @if (this.boardState.mainStateStack.length > 1)
+                @if (!getMostCurrentMainState().gameState.isGameOver && boardState.engine)
                 {
-                    <div class="btn btn-primary w-50 m-1" (click)="analyzeAiGameClicked()">Analyze Game</div>
+                    <app-bootstrap-button
+                        label="Resign"
+                        (buttonClick)="resignVsAiClicked()"
+                        extraClasses="me-1">
+                    </app-bootstrap-button>
                 }
-            }
+                @else 
+                {
+                    <app-bootstrap-button
+                        label="New game vs AI"
+                        extraClasses="me-1"
+                        (buttonClick)="beginGameVsAiClicked()">
+                    </app-bootstrap-button>
+
+                    @if (boardState.mainStateStack.length > 1)
+                    {
+                        <app-bootstrap-button
+                            label="Analyze Game"
+                            extraClasses=""
+                            (buttonClick)="analyzeAiGameClicked()">
+                        </app-bootstrap-button>
+                    }
+                }
+
             </div> 
         }
         <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
-        <div class="evalTextData d-flex flex-column justify-content-center">{{this.boardState.pgnHeaders.termination ? ( this.boardState.pgnHeaders.termination != "Normal" ? this.boardState.pgnHeaders.termination + " - " : this.boardState.pgnHeaders.result + " - ") : "-"}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</div>
-        <div class="evalTextData d-flex flex-column justify-content-center mb-1">{{this.getOpeningDisplay()}}</div>
-        <div class="d-flex movesAndAccuracies">
+        <div [style.color]="themeService.getThemeInstance().getTextColor()" class="evalTextData d-flex flex-column justify-content-center">{{this.boardState.pgnHeaders.termination ? ( this.boardState.pgnHeaders.termination != "Normal" ? this.boardState.pgnHeaders.termination + " - " : this.boardState.pgnHeaders.result + " - ") : "-"}} {{this.boardState.getCurrentState().gameState.isGameOver ? this.boardState.getCurrentState().gameState.reason + " " + this.boardState.getCurrentState().gameState.gameScore: boardState.getCurrentState().turn ? "White to move" : "Black to move"}}</div>
+        <div [style.color]="themeService.getThemeInstance().getTextColor()" class="evalTextData d-flex flex-column justify-content-center mb-1">{{this.getOpeningDisplay()}}</div>
+        <div [style.color]="themeService.getThemeInstance().getTextColor()" class="d-flex movesAndAccuracies">
             <div class="evalSectionLeft d-flex flex-column">
-                <div class="algebraicContainer">
+                <div class="algebraicContainer" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
                     <!--Moves table-->
                     <table class="w-100">
                         @for (item of boardState.mainMoveStack; track $index) 
@@ -231,7 +293,7 @@
                 </div>
                 @if(this.boardState.eval)
                 {
-                    <div class="engineLinesContainer d-flex flex-column justify-content-around">
+                    <div class="engineLinesContainer d-flex flex-column justify-content-around" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
                     @for(engineLine of boardState.getMostRecentEval()?.lines ; track $index)
                     {
                         <div class="engineLineDisplay d-flex align-items-center p-2">
@@ -267,7 +329,7 @@
             </div>
             @if (this.boardState.eval)
             {
-            <div class="evalSectionRight p-2">
+            <div class="evalSectionRight p-2" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
 
                 <div class="d-flex">
                     <div class="badge text-bg-light border d-inline-block">

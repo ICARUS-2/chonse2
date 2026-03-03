@@ -1,21 +1,22 @@
-<div class="componentContainer d-flex flex-column p-5">
-    <h2 class="text-primary">Configure game vs AI</h2>
+<div class="componentContainer d-flex flex-column p-5"  [style.background-color]="`${themeService.getThemeInstance().getBackgroundColor()}`" [style.color]="themeService.getThemeInstance().getTextColor()">
+    <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Configure game vs AI</h2>
 
     <hr>
 
-    <div class="">
+    <div [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
         <label>Set AI Elo</label>
-        <input [(ngModel)]="this.eloSliderValue" type="range" class="form-range" [min]="UciEngine.MIN_ELO" [max]="UciEngine.MAX_ELO" id="range2">
+        <input [(ngModel)]="this.eloSliderValue" type="range" class="form-range custom-range" [min]="UciEngine.MIN_ELO" [max]="UciEngine.MAX_ELO" id="range2">
         <p>{{this.eloSliderValue}}</p>
     </div>
-
+ 
     <div class="m-3"></div>
 
     <div class="">
         <label>I play as white.</label>
-        <div class="form-check form-switch">
+        <div class="form-check form-switch"
+        [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
             <input
-                class="form-check-input"
+                class="form-check-input custom-switch"
                 type="checkbox"
                 [(ngModel)]="humanPlayerIsWhite"
             />
@@ -24,5 +25,5 @@
 
     <hr>
 
-    <div class="btn btn-primary w-50" (click)="submitClicked()">Begin</div>
+    <app-bootstrap-button (buttonClick)="submitClicked()" label="Begin Game"></app-bootstrap-button>
 </div>

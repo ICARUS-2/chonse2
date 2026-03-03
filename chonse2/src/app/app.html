@@ -1,2 +1,4 @@
-<app-navbar></app-navbar>
-<router-outlet></router-outlet>
+<div [style.background-color]="themeService.getThemeInstance().getBackgroundColor()" style="min-height: 100vh;">
+    <app-navbar></app-navbar>
+    <router-outlet></router-outlet>
+</div>

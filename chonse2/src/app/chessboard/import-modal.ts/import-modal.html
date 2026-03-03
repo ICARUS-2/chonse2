@@ -1,5 +1,5 @@
-<div class="container componentContainer">
-    <h1 class="text-primary">Import Game</h1>
+<div class="container componentContainer" [style.background-color]="`${themeService.getThemeInstance().getBackgroundColor()}`">
+    <h1 class="" [style.color]="`${themeService.getThemeInstance().getPrimaryColor()}`">Import Game</h1>
 
     <div class="m-4"></div>
 
@@ -44,7 +44,7 @@
             
             <div class="m-1"></div>
 
-            <div class="btn btn-primary" (click)="handleChessComGoPressed()">Go</div>
+            <app-bootstrap-button (buttonClick)="handleChessComGoPressed()" label="Go"></app-bootstrap-button>
         }
 
         @if (selectedDropdownOption == PgnSources.Lichess)
@@ -78,7 +78,7 @@
             
             <div class="m-1"></div>
 
-            <div class="btn btn-primary" (click)="handleLichessGoPressed()">Go</div>
+            <app-bootstrap-button (buttonClick)="handleLichessGoPressed()" label="Go"></app-bootstrap-button>
         }
     </div>
 
@@ -93,14 +93,14 @@
                     <p>{{ game.white.username }} [{{game.white.rating}}] vs {{game.black.username}} [{{game.black.rating}}] <span class="badge rounded-pill" [ngClass]="getResultClassForChessComGame(game)">{{game.getScore()}} {{game.getReason()}}</span></p>
                     
                     <div class="d-flex align-items-center">
-                        <div class="badge rounded-pill text-bg-primary">
+                        <div class="badge rounded-pill" [style.background-color]="`${themeService.getThemeInstance().getPrimaryColor()}`">
                             <i class="bi bi-clock"></i>
                             <p class="d-inline">&nbsp;&nbsp;{{game.formatTimeControl()}} {{game.time_class}}</p>
                         </div>
 
                         <div class="m-1"></div>
 
-                        <div class="badge rounded-pill text-bg-primary">
+                        <div class="badge rounded-pill" [style.background-color]="`${themeService.getThemeInstance().getPrimaryColor()}`">
                             <i class="bi bi-calendar"></i>
                             <p class="d-inline">&nbsp;{{game.formatDate()}}</p>
                         </div>
@@ -108,7 +108,7 @@
                     <div class="m-1"></div>
 
                     <div class="btn btn-info text-light" (click)="handleChessComGameLinkClicked($event, game)">
-                            Copy Link
+                        Copy Link
                     </div> 
                 </div>
             </button>
@@ -124,21 +124,21 @@
                     <p>{{ game.players.white.name }} [{{game.players.white.rating}}] vs {{game.players.black.name}} [{{game.players.black.rating}}] <span class="badge rounded-pill" [ngClass]="getResultClassForLichessGame(game)">{{game.getScore()}} {{game.getReason()}}</span></p>
                     
                     <div class="d-flex align-items-center">
-                        <div class="badge rounded-pill text-bg-primary">
+                        <div class="badge rounded-pill" [style.background-color]="`${themeService.getThemeInstance().getPrimaryColor()}`">
                             <i class="bi bi-clock"></i>
                             <p class="d-inline">&nbsp;&nbsp;{{game.variant}} {{game.formatTimeControl()}} {{game.perf}}</p>
                         </div>
 
                         <div class="m-1"></div>
 
-                        <div class="badge rounded-pill text-bg-primary">
+                        <div class="badge rounded-pill" [style.background-color]="`${themeService.getThemeInstance().getPrimaryColor()}`">
                             <i class="bi bi-hash"></i>
                             <p class="d-inline">&nbsp;{{game.formatDate()}}</p>
                         </div>
 
                         <div class="m-1"></div>
 
-                        <div class="badge rounded-pill text-bg-primary">
+                        <div class="badge rounded-pill" [style.background-color]="`${themeService.getThemeInstance().getPrimaryColor()}`">
                             <i class="bi bi-hash"></i>
                             <p class="d-inline">&nbsp;{{game.moves.split(" ").length}}</p>
                         </div>
@@ -158,6 +158,6 @@
         <textarea [(ngModel)]="pgn" class="manualPgnField d-block w-100"></textarea>
         <div class="m-4"></div>
 
-        <div class="btn btn-primary" (click)="handleSubmitClicked()">Submit</div>
+        <app-bootstrap-button (click)="handleSubmitClicked()" label="Submit"></app-bootstrap-button>
     }
 </div>

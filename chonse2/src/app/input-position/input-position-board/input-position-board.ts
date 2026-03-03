@@ -13,10 +13,12 @@ import { PieceSelector } from "../piece-selector/piece-selector";
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { BootstrapButton } from '../../bootstrap-button/bootstrap-button';
+import ThemeService from '../../themes/theme-service';
 
 @Component({
   selector: 'app-input-position-board',
-  imports: [Square, PieceSelector, FormsModule, CommonModule],
+  imports: [Square, PieceSelector, FormsModule, CommonModule, BootstrapButton],
   templateUrl: './input-position-board.html',
   styleUrl: './input-position-board.css',
 })
@@ -65,7 +67,7 @@ export class InputPositionBoard {
   private static readonly X_VECTOR = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
   private static readonly Y_VECTOR = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
 
-  constructor(private router: Router , private ips: InputPositionService)
+  constructor(private router: Router , private ips: InputPositionService, public themeService: ThemeService)
   {
     //Board state stored in service to persist across routerlink changes.
     const boardState: InputPositionState = this.ips.getGame(this.stateId);

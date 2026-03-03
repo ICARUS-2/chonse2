@@ -1,0 +1,15 @@
+.btn
+{
+  background-color: var(--btn-bg);
+  transition: background-color 0.2s ease;
+}
+
+.btn:hover 
+{
+  background-color: var(--btn-hover);
+}
+
+.button
+{
+  touch-action: manipulation;
+}
