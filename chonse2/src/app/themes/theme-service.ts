@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 import IAppTheme from "./app-themes/i-app-theme";
 import { Themes } from "./themes";
 import LocalStorageHelper from "../chessboard/chessboard/local-storage-helper";
@@ -10,13 +10,13 @@ export default class ThemeService
 {
     public static readonly DEFAULT_THEME = Themes.WhiteAndBlue;
 
-    private _themeInstance: IAppTheme
+    private _themeInstance = signal<IAppTheme>(this._createThemeInstance(LocalStorageHelper.getString( LocalStorageHelper.SELECTED_THEME, ThemeService.DEFAULT_THEME )));
+
+    private theme = this._themeInstance.asReadonly();
 
     constructor()
     {
-        const themeValue = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_THEME, ThemeService.DEFAULT_THEME);
 
-        this._themeInstance = this._createThemeInstance(themeValue);
     }
 
     private _createThemeInstance(val: string): IAppTheme
@@ -25,7 +25,7 @@ export default class ThemeService
         {
             case Themes.WhiteAndBlue:
                 return new WhiteBlueTheme();
-            case Themes.BlackAndRed:
+            case Themes.BlackAndRed: 
                 return new BlackRedTheme();
         }
 
@@ -34,11 +34,13 @@ export default class ThemeService
 
     getThemeInstance()
     {
-        return this._themeInstance;
+        return this.theme();
     }
 
     setTheme(val: string)
     {
-        this._themeInstance = this._createThemeInstance(val);
+        LocalStorageHelper.setString(LocalStorageHelper.SELECTED_THEME, val);
+
+        this._themeInstance.set(this._createThemeInstance(val));
     }
 }
