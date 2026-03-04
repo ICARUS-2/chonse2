@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import { BoardNames } from '../boards';
 import { Chessboard } from '../chessboard/chessboard/chessboard';
@@ -15,6 +15,7 @@ import { GameState } from '../../lib/game-state';
   imports: [Chessboard],
   templateUrl: './vs-ai.html',
   styleUrl: './vs-ai.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VsAi implements OnInit, AfterViewInit{
 

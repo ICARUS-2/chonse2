@@ -51,7 +51,7 @@ export default class VsAiConfigurationModalHelper
 
                     chessBoardService.deleteGame(BoardNames.VsAi);
                     chessBoardService.addGame(BoardNames.VsAi, bs);
-                    componentInstance.boardState = chessBoardService.getGame(BoardNames.VsAi);
+                    componentInstance.boardState.set(chessBoardService.getGame(BoardNames.VsAi));
 
                     toastr.success(`Starting game vs Stockfish ${engineElo}`);
 
@@ -67,7 +67,7 @@ export default class VsAiConfigurationModalHelper
                     {
                         if (!isHumanWhite)
                         {
-                            if (componentInstance.boardState.engine)
+                            if (componentInstance.boardState().engine)
                             {
                                 componentInstance.playAIMove();
                             }

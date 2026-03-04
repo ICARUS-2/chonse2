@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PgnSources } from '../chessboard/pgn-misc';
@@ -17,6 +17,7 @@ import { BootstrapButton } from "../../bootstrap-button/bootstrap-button";
   imports: [FormsModule, CommonModule, BootstrapButton],
   templateUrl: './import-modal.html',
   styleUrl: './import-modal.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImportModal implements OnInit
 {

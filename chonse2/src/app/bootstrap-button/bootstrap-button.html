@@ -2,6 +2,6 @@
     [style.--btn-bg]="themeService.getThemeInstance().getPrimaryColor()"
     [style.--btn-hover]="themeService.getThemeInstance().getHoverColor()"
     [style.color]="'white'"
-    [ngClass]="[extraClasses]"
-    [disabled]="disabled"
-    (click)="onButtonClicked()">{{label}}</button>
+    [ngClass]="[extraClasses()]"
+    [disabled]="disabled()"
+    (click)="onButtonClicked($event)">{{label()}}</button>

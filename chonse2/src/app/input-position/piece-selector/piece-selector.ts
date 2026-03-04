@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { PieceColor } from '../../../lib/piece-color';
 import { Square } from "../../chessboard/square/square";
 import { PieceType } from '../../../lib/piece-type';
@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
   imports: [Square, CommonModule],
   templateUrl: './piece-selector.html',
   styleUrl: './piece-selector.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PieceSelector {
   PieceType = PieceType;

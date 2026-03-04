@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { PieceType } from '../../../lib/piece-type';
 import { MoveClassification } from '../engine/types/enums';
 import ThemeService from '../../themes/theme-service';
@@ -8,6 +8,7 @@ import ThemeService from '../../themes/theme-service';
   imports: [],
   templateUrl: './square.html',
   styleUrl: './square.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Square {
   MoveClassification = MoveClassification;

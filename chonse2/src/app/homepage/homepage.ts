@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { PieceType } from '../../lib/piece-type';
 import Chonse2 from '../../lib/chonse2';
@@ -19,6 +19,7 @@ import ThemeService from '../themes/theme-service';
   imports: [Chessboard],
   templateUrl: './homepage.html',
   styleUrl: './homepage.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Homepage implements OnInit{
 

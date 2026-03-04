@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouteConstants } from '../app.routes';
 
@@ -7,6 +7,7 @@ import { RouteConstants } from '../app.routes';
   imports: [],
   templateUrl: './load-game.html',
   styleUrl: './load-game.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoadGame implements OnInit {
   site!: string;

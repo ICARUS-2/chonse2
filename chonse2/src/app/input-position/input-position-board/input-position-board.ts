@@ -1,4 +1,4 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, NgZone } from '@angular/core';
 import Chonse2 from '../../../lib/chonse2';
 import { PieceType } from '../../../lib/piece-type';
 import { ToastrService } from 'ngx-toastr';
@@ -21,6 +21,7 @@ import ThemeService from '../../themes/theme-service';
   imports: [Square, PieceSelector, FormsModule, CommonModule, BootstrapButton],
   templateUrl: './input-position-board.html',
   styleUrl: './input-position-board.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class InputPositionBoard {

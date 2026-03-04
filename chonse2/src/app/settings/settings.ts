@@ -1,4 +1,4 @@
-import { Component, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import LocalStorageHelper from '../chessboard/chessboard/local-storage-helper';
 import { EngineDisplayName, EngineName } from '../chessboard/engine/types/enums';
@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
   imports: [FormsModule, FormsModule, CommonModule],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Settings {
   LocalStorageHelper = LocalStorageHelper;
