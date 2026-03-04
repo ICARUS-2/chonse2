@@ -116,7 +116,7 @@
   .boardControls 
   {
     height: unset;
-    width: unset;
+    width: 80vmin;
     word-wrap: break-word;
   }
 }
