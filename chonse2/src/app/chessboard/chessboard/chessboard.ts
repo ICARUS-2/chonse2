@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, ElementRef, Input, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, Input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { PieceType } from '../../../lib/piece-type';
 import { Square } from '../square/square';
 import { PieceColor } from '../../../lib/piece-color';
@@ -36,7 +36,7 @@ import ThemeService from '../../themes/theme-service';
   styleUrl: './chessboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Chessboard implements OnInit, AfterViewInit {
+export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   pieceType = PieceType;
   PieceColor = PieceColor;
   GameOverReason = GameOverReason;
@@ -66,6 +66,7 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   //COSMETIC
   private readonly _ARROW_PULLBACK = 0.18;
+  private resizeObserver: ResizeObserver;
   mouseX = signal(0);
   mouseY = signal(0);
   arrows = signal<Arrow[]>([]);
@@ -101,12 +102,19 @@ export class Chessboard implements OnInit, AfterViewInit {
     private chessBoardService: ChessBoardService, 
     private toastr: ToastrService,
     private router: Router,
-    public themeService: ThemeService)
+    public themeService: ThemeService,
+    private cdr: ChangeDetectorRef)
   {
     //Board state stored in service to persist across routerlink changes.
     const boardState: BoardState = this.chessBoardService.getGame(this.gameId);
 
     this.boardState.set(boardState);
+
+    this.resizeObserver = new ResizeObserver( () =>
+    {
+      this.updateBoardSize();
+    } )
+
   }
 
   ngOnInit(): void {
@@ -128,9 +136,22 @@ export class Chessboard implements OnInit, AfterViewInit {
     }
   }
 
-ngAfterViewInit(): void {
-  requestAnimationFrame(() => this.updateBoardSize());
-}
+  ngAfterViewInit(): void 
+  {
+    if (this.boardElement)
+    {
+      this.resizeObserver.observe(this.boardElement.nativeElement);
+
+      this.updateBoardSize();
+    }
+    //requestAnimationFrame(() => this.updateBoardSize());
+  }
+
+  ngOnDestroy(): void 
+  {
+    this.resizeObserver.disconnect();  
+  }
+
   async completeMove(fromSquare: string, toSquare: string)
   {
     //If the game is vs AI and there is no engine, don't move anything
@@ -1039,6 +1060,7 @@ ngAfterViewInit(): void {
     }
 
     this.boardPixelSize.set(this.boardElement.nativeElement.getBoundingClientRect().width);
+    this.cdr.markForCheck();
   }
   
   getBoardTopLeft = computed( (): { left: number; top: number }  => 
