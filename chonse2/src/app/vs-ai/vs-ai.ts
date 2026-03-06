@@ -70,7 +70,7 @@ export class VsAi implements OnInit, AfterViewInit{
   setDefault()
   {
     const bs: BoardState = new BoardState();
-    bs.isVsAi = true;
+    bs.isVsAi.set(true);
     this.gameService.addGame(BoardNames.VsAi, bs);
   } 
 }

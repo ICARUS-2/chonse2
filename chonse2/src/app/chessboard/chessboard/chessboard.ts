@@ -127,7 +127,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
     this.boardState.set(boardState);
 
-    if (this.boardState().doEvaluateGame)
+    if (this.boardState().doEvaluateGame())
     {
       if (!this.boardState().engine)
       {
@@ -144,7 +144,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
       this.updateBoardSize();
     }
-    //requestAnimationFrame(() => this.updateBoardSize());
   }
 
   ngOnDestroy(): void 
@@ -155,18 +154,18 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   async completeMove(fromSquare: string, toSquare: string)
   {
     //If the game is vs AI and there is no engine, don't move anything
-    if (this.boardState().isVsAi && !this.boardState().engine)
+    if (this.boardState().isVsAi() && !this.boardState().engine)
     {
       return;
     }
 
     //Can't move if, in AI mode, it isn't the player's turn.
-    if (this.boardState().isVsAi)
+    if (this.boardState().isVsAi())
     {
       //If we aren't diverging:
       if (this.getMostCurrentMainState() == this.boardState().getCurrentState())
       {
-        if ((this.getMostCurrentMainState().turn && !this.boardState().humanPlayerIsWhite) || (!this.getMostCurrentMainState().turn && this.boardState().humanPlayerIsWhite))
+        if ((this.getMostCurrentMainState().turn && !this.boardState().humanPlayerIsWhite()) || (!this.getMostCurrentMainState().turn && this.boardState().humanPlayerIsWhite()))
         {
           return;
         }
@@ -205,7 +204,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
         await this.boardState().pushState(stateCopy, moveResult);
         
-        if (this.boardState().isVsAi && this.getMostCurrentMainState() == this.boardState().getCurrentState())
+        if (this.boardState().isVsAi() && this.getMostCurrentMainState() == this.boardState().getCurrentState())
         {
           this.playAIMove();
         }
@@ -219,7 +218,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         await this.boardState().pushState(stateCopy, moveResult);
 
                 
-        if (this.boardState().isVsAi && this.getMostCurrentMainState() == this.boardState().getCurrentState())
+        if (this.boardState().isVsAi() && this.getMostCurrentMainState() == this.boardState().getCurrentState())
         {
           this.playAIMove();
         }
@@ -237,7 +236,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       moveResult = await stateCopy.completeMove(fromSquare, toSquare, piece());
       this.boardState().pushState(stateCopy, moveResult);
         
-      if (this.boardState().isVsAi && this.getMostCurrentMainState() == this.boardState().getCurrentState())
+      if (this.boardState().isVsAi() && this.getMostCurrentMainState() == this.boardState().getCurrentState())
       {
         this.playAIMove();
       }
@@ -269,7 +268,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         {
           //Create a new instance to put the game in.
           const newBoard: BoardState = BoardState.parsePGN(result);
-          newBoard.doEvaluateGame = true;
+          newBoard.doEvaluateGame.set(true);
           
           //Remove the old one and add the new one.
           this.chessBoardService.deleteGame(this.gameId);
@@ -308,9 +307,9 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   handleAnalyzeClicked()
   {
-    this.boardState().doEvaluateGame = true;
+    this.boardState().doEvaluateGame.set(true);
     this.boardState().evaluateGame();
-    this.boardState().isReadOnly = true;
+    this.boardState().isReadOnly.set(true);
   }
 
   async copyPGNClicked(): Promise<void>
@@ -338,7 +337,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     if (this.boardState().engine)
     {
-      const eName = EngineDisplayName.get(this.boardState().engine?.name ?? UciEngine.DEFAULT_ENGINE);
+      const eName = EngineDisplayName.get(this.boardState().engine()?.name ?? UciEngine.DEFAULT_ENGINE);
 
       if (eName)
       {
@@ -494,17 +493,16 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       }
       else 
       {
-        const evaluation = this.boardState().eval;
+        const evaluation = this.boardState().eval();
         if (evaluation?.positions)
         {
           const l = evaluation.positions.length - 1;
-          return this.boardState().eval?.positions[l].opening ?? "-";
+          return evaluation.positions[l].opening ?? "-";
         }
       }
     }
     return "-";
   } )
-
   //#endregion
 
   //VS AI
@@ -516,7 +514,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const engine = this.boardState().engine;
+    const engine = this.boardState().engine();
 
     //Can't play an engine move if there is no engine.
     if (!engine)
@@ -528,7 +526,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     //Sets up the params to query the engine.
     const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
     const fen = this.getMostCurrentMainState().getFEN();
-    const elo = this.boardState().aiElo;
+    const elo = this.boardState().aiElo();
               
     //Asks the engine for its move.
     const engineResult = await engine.getEngineNextMove(fen, elo, depth);
@@ -566,7 +564,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     gameState.isGameOver = true;
     gameState.reason = GameOverReason.Resignation;
-    gameState.gameScore = this.boardState().humanPlayerIsWhite ? GameScore.BLACK_WON : GameScore.WHITE_WON;
+    gameState.gameScore = this.boardState().humanPlayerIsWhite() ? GameScore.BLACK_WON : GameScore.WHITE_WON;
 
     this.toastr.warning("You resigned.");
   }
@@ -578,9 +576,9 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   analyzeAiGameClicked()
   {
-    const states = this.boardState().mainStateStack.map( s => s.getFullDeepCopy() );
-    const gameStates = this.boardState().mainStateStack.map( s => structuredClone(s.gameState) );
-    const moves = this.boardState().mainMoveStack.map(m => structuredClone(m));
+    const states = this.boardState().mainStateStack().map( s => s.getFullDeepCopy() );
+    const gameStates = this.boardState().mainStateStack().map( s => structuredClone(s.gameState) );
+    const moves = this.boardState().mainMoveStack().map(m => structuredClone(m));
     const pgnHeaders = structuredClone(this.boardState().pgnHeaders);
 
     this.router.navigate(['/'], {state: { "vsAiStates": states, "vsAiGameStates": gameStates, "vsAiMoves": moves, "vsAiPgnHeaders": pgnHeaders}});
@@ -588,14 +586,16 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   getMostCurrentMainState()
   {
-    return this.boardState().mainStateStack[this.boardState().mainStateStack.length - 1];
+    return this.boardState().mainStateStack()[this.boardState().mainStateStack().length - 1];
   }
 
   forcePushState(state: Chonse2, moveResult: IMoveResult)
   {
-    this.boardState().mainStateStack.push(state);
-    this.boardState().mainMoveStack.push(moveResult);
-    this.boardState().mainStackPointer++;
+    this.boardState().mainStateStack.update( stack => [...stack, state]);
+    
+    this.boardState().mainMoveStack.update( stack => [...stack, moveResult] );
+    
+    this.boardState().mainStackPointer.update(score => score + 1);
   }
   //#endregion
 
@@ -603,7 +603,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //#region 
   handleFlipClicked()
   {
-    this.boardState().isFlipped = !this.boardState().isFlipped;
+    this.boardState().isFlipped.update( f => !f );
   }
 
   handleDoubleBackButtonClicked()
@@ -646,19 +646,19 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //Should the back buttons be enabled
   areBackButtonsEnabled = computed( (): boolean  =>
   {
-    return this.boardState().mainStackPointer != 0 || this.boardState().divergenceStackPointer != -1;
+    return this.boardState().mainStackPointer() != 0 || this.boardState().divergenceStackPointer() != -1;
   })
 
   areForwardButtonsEnabled = computed( (): boolean =>
   {
     //If we are deviating from the main game (by going back) then you can't logically go forward.
-    if (this.boardState().divergenceStateStack.length != 0)
+    if (this.boardState().divergenceStateStack().length != 0)
     {
       return false;
     }
 
     //If there are no more moves left after this, then you can't go back.
-    if (this.boardState().mainStackPointer == this.boardState().mainStateStack.length - 1)
+    if (this.boardState().mainStackPointer() == this.boardState().mainStateStack().length - 1)
     {
       return false;
     }
@@ -668,17 +668,17 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   
   moveClicked(index: number)
   {
-    if (this.boardState().divergenceStateStack.length != 0)
+    if (this.boardState().divergenceStateStack().length != 0)
     { 
       this.boardState().goBackToStart();
     }
 
-    this.boardState().mainStackPointer = index;
+    this.boardState().mainStackPointer.set(index);
   }
 
   moveClassificationClicked(color: PieceColor, classification : MoveClassification)
   {
-    const list: MoveClassificationList = color == PieceColor.WHITE ? this.boardState().whiteMoveClassificationList : this.boardState().blackMoveClassificationList;
+    const list: MoveClassificationList = color == PieceColor.WHITE ? this.boardState().whiteMoveClassificationList() : this.boardState().blackMoveClassificationList();
     
     const entry = list.moves.get(classification);
     
@@ -698,8 +698,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   getClockForPlayer = (color: string) => computed ( (): string =>
   {
-    const stackPtr = this.boardState().mainStackPointer;
-    const moveStack = this.boardState().mainMoveStack;
+    const stackPtr = this.boardState().mainStackPointer();
+    const moveStack = this.boardState().mainMoveStack();
 
     for(let i = stackPtr; i > 0; i--)
     {
@@ -776,7 +776,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
           this.currentLegalMoves.set(this.boardState().getCurrentState().getLegalMoves(this.fromSquare()));
 
           //If it has no legal moves, reset the state to reduce the number of clicks required when switching to another piece.
-          if (this.currentLegalMoves.length == 0)
+          if (this.currentLegalMoves().length == 0)
           {
             this.resetMoveState();
           }
@@ -824,7 +824,12 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         const idx = Chonse2.findIndexFromCoordinate(this.toRightClickSquare());
 
         //Sets the status telling it to change color.
-        this.boardState().squareHighlightStatuses[idx.rowIndex][idx.colIndex] = !this.boardState().squareHighlightStatuses[idx.rowIndex][idx.colIndex];
+        this.boardState().squareHighlightStatuses.update(grid =>
+        {
+            const copy = grid.map(r => [...r]);
+            copy[idx.rowIndex][idx.colIndex] = !copy[idx.rowIndex][idx.colIndex];
+            return copy;
+        });
       }
       else //If the squares are different, they are drawing an arrow.
       {
@@ -881,7 +886,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const idx = Chonse2.findIndexFromCoordinate(coordinate);
     
-    return this.boardState().squareHighlightStatuses[idx.rowIndex][idx.colIndex];
+    return this.boardState().squareHighlightStatuses()[idx.rowIndex][idx.colIndex];
   } )
 
   //Sets all the right clicked statuses to false, clearing any right clicked squares.
@@ -896,19 +901,19 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         {
           rank.push(false);
         }
-        this.boardState().squareHighlightStatuses.push(rank);
+        this.boardState().squareHighlightStatuses.update( st => [...st, rank] );
       }
     }
     else 
     {
       for(let i = 0; i < Chonse2.SIZE; i++)
       {
-        const rank = this.boardState().squareHighlightStatuses[i];
+        const rank = this.boardState().squareHighlightStatuses()[i];
         for(let j = 0; j < Chonse2.SIZE; j++)
         {
           rank[j] = false;
         }
-        this.boardState().squareHighlightStatuses.push(rank);
+        this.boardState().squareHighlightStatuses.update( st => [...st, rank] );
       }
     }
   }
@@ -1060,7 +1065,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.boardPixelSize.set(this.boardElement.nativeElement.getBoundingClientRect().width);
-    this.cdr.markForCheck();
   }
   
   getBoardTopLeft = computed( (): { left: number; top: number }  => 

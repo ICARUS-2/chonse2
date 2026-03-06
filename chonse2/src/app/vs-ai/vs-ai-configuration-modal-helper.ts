@@ -1,7 +1,7 @@
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { VsAiConfigurationModal } from "./vs-ai-configuration-modal/vs-ai-configuration-modal";
 import BoardState from "../chessboard/chessboard/board-state";
-import { EngineDisplayName } from "../chessboard/engine/types/enums";
+import { EngineDisplayName, EngineName } from "../chessboard/engine/types/enums";
 import { ChessBoardService } from "../chessboard/chessboard/chess-board-service";
 import { BoardNames } from "../boards";
 import { Chessboard } from "../chessboard/chessboard/chessboard";
@@ -27,23 +27,24 @@ export default class VsAiConfigurationModalHelper
                 //If the board editor passed in a state, set it.
                 if (startingState)
                 {
-                    bs.mainStateStack = [startingState]
+                    bs.mainStateStack.set([startingState])
                 }
 
-                bs.isVsAi = true;
+                bs.isVsAi.set(true);
                 bs.humanPlayerIsWhite = isHumanWhite;
                 bs.aiElo = result.getElo();
 
                 if (!isHumanWhite)
                 {
-                    bs.isFlipped = true;
+                    bs.isFlipped.set(true);
                 }
 
                 await bs.setEngineIfNotExists();
 
-                if (bs.engine)
+                const engine = bs.engine;
+                if (engine)
                 {
-                    const engineDisplayName = EngineDisplayName.get(bs.engine.name)?.toString() ?? "-";
+                    const engineDisplayName = EngineDisplayName.get(engine.name as EngineName)?.toString() ?? "-";
 
                     isHumanWhite ? (bs.pgnHeaders.black = engineDisplayName) : (bs.pgnHeaders.white = engineDisplayName)
                     isHumanWhite ? (bs.pgnHeaders.blackElo = engineElo) : (bs.pgnHeaders.whiteElo = engineElo);
@@ -67,7 +68,7 @@ export default class VsAiConfigurationModalHelper
                     {
                         if (!isHumanWhite)
                         {
-                            if (componentInstance.boardState().engine)
+                            if (componentInstance.boardState().engine())
                             {
                                 componentInstance.playAIMove();
                             }

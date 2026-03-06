@@ -1,3 +1,4 @@
+import { signal, WritableSignal } from "@angular/core";
 import Chonse2 from "../../../lib/chonse2";
 import { GameScore } from "../../../lib/game-state";
 import { PieceColor } from "../../../lib/piece-color";
@@ -9,98 +10,101 @@ import { Arrow } from "./arrow";
 import LocalStorageHelper from "./local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
 import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
+import { zip } from "rxjs";
 
 export default class BoardState
 {
     pgnHeaders: PgnHeaders;
 
     //For the moves actually being performed.
-    mainStateStack: Array<Chonse2>;    
-    mainStackPointer: number;
-    mainMoveStack: Array<IMoveResult>;
+    mainStateStack: WritableSignal<Array<Chonse2>>;     
+    mainStackPointer: WritableSignal<number>;
+    mainMoveStack: WritableSignal<Array<IMoveResult>>;
     
     //For going back and playing out what move COULD have been made.
-    divergenceStateStack: Array<Chonse2>;
-    divergenceStackPointer: number;
-    divergenceMoveStack: Array<IMoveResult>
-    divergenceEvalStack: Array<PositionEval>
+    divergenceStateStack: WritableSignal<Array<Chonse2>>;
+    divergenceStackPointer: WritableSignal<number>;
+    divergenceMoveStack: WritableSignal<Array<IMoveResult>>;
+    divergenceEvalStack: WritableSignal<Array<PositionEval>>;
 
     //Eval stuff.
-    doEvaluateGame: boolean = false;
-    eval: GameEval | undefined = undefined;
+    doEvaluateGame: WritableSignal<boolean> = signal(false);
+    eval: WritableSignal<GameEval | undefined> = signal(undefined);
     evalProgress: number = 0;
-    engine: UciEngine | undefined = undefined;
-    whiteMoveClassificationList: MoveClassificationList = new MoveClassificationList();
-    blackMoveClassificationList: MoveClassificationList = new MoveClassificationList();
-    private evalQueue: Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult}> = [];
-    private isEvaluating: boolean = false;
+    engine: WritableSignal<UciEngine | undefined> = signal(undefined);
+    whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
+    blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
+    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult}>> = signal([]);
+    private isEvaluating: WritableSignal<boolean> = signal(false);
 
     //Vs ai stuff
-    isVsAi: boolean = false;
-    humanPlayerIsWhite: boolean = true;
-    aiElo: number = UciEngine.MIN_ELO;
+    isVsAi: WritableSignal<boolean> = signal(false);
+    humanPlayerIsWhite: WritableSignal<boolean> = signal(true);
+    aiElo: WritableSignal<number> = signal(UciEngine.MIN_ELO);
 
     //Cosmetic stuff.
-    squareHighlightStatuses: Array<Array<boolean>>;
-    arrows: Array<Arrow>;
-    isFlipped: boolean;
+    squareHighlightStatuses: WritableSignal<Array<Array<boolean>>>;
+    arrows: WritableSignal<Array<Arrow>>;
+    isFlipped: WritableSignal<boolean>;
 
-    isReadOnly: boolean = false;
+    isReadOnly: WritableSignal<boolean> = signal(false);
 
     constructor(startingStates: Array<Chonse2> = [new Chonse2()], headers: PgnHeaders = new PgnHeaders())
     {
         this.pgnHeaders = headers;
 
-        this.squareHighlightStatuses = BoardState.initializeHighlightStatuses();
-        this.arrows = [];
-        this.isFlipped = false;
+        this.squareHighlightStatuses = signal(BoardState.initializeHighlightStatuses());
+        this.arrows = signal([]);
+        this.isFlipped = signal(false);
 
-        this.mainStateStack = [];
-        this.mainStateStack.push(...startingStates);
-        this.mainStackPointer = 0;
-        this.mainMoveStack = [];
+        this.mainStateStack = signal([]);
+        this.mainStateStack.update(s => [...s, ...startingStates]);
+        this.mainStackPointer = signal(0);
+        this.mainMoveStack = signal([]);
 
-        this.divergenceStateStack = [];
-        this.divergenceStackPointer = -1;
-        this.divergenceMoveStack = [];
-        this.divergenceEvalStack = [];
+        this.divergenceStateStack = signal([]);
+        this.divergenceStackPointer = signal(-1);
+        this.divergenceMoveStack = signal([]);
+        this.divergenceEvalStack = signal([]);
     }
 
     //#region STATES
     async pushState(state: Chonse2, move: IMoveResult)
     {
         //If the pointer was moved back, diverge from the main path.
-        if (this.mainStackPointer != this.mainStateStack.length - 1 || this.isReadOnly)
+        if (this.mainStackPointer() != this.mainStateStack().length - 1 || this.isReadOnly())
         {
             let previousState: Chonse2;
 
             if (this.divergenceMoveStack.length != 0)
             {
-                previousState = this.divergenceStateStack[this.divergenceStateStack.length - 1];
+                //previousState = this.divergenceStateStack[this.divergenceStateStack.length - 1];
+                previousState = this.divergenceStateStack()[this.divergenceStateStack().length - 1];
             }
             else 
             {
-                previousState = this.mainStateStack[this.mainStackPointer];
+               previousState = this.mainStateStack()[this.mainStackPointer()];
             }
 
-            this.divergenceStateStack.push(state);
-            this.divergenceMoveStack.push(move);
-            this.divergenceStackPointer++;
+            this.divergenceStateStack.update(stack => [...stack, state]);
+            this.divergenceMoveStack.update(stack => [...stack, move]);
+            this.divergenceStackPointer.update(ptr => ptr + 1);
 
-            if (this.engine && this.doEvaluateGame)
+            if (this.engine() && this.doEvaluateGame())
             {
                 this.enqueueEvaluation(previousState, state, move);
             }
         }
         else //If the pointer is at the top of the stack, continue to add to it.
         {
-            let previousState: Chonse2 = this.mainStateStack[this.mainStackPointer];
+            let previousState: Chonse2 = this.mainStateStack()[this.mainStackPointer()];
 
-            this.mainStateStack.push(state);
-            this.mainMoveStack.push(move);
-            this.mainStackPointer++;
+            //this.mainStateStack.push(state);
+            this.mainStateStack.update( stack => [...stack, state] );
+            this.mainMoveStack.update( stack => [...stack, move] );
+            this.mainStackPointer.update( ptr => ptr + 1 );
 
-            if (this.engine && this.doEvaluateGame)
+            if (this.engine() && this.doEvaluateGame())
             {
                 this.enqueueEvaluation(previousState, state, move);
             }
@@ -112,11 +116,11 @@ export default class BoardState
         //If we are diverging from the main game, return what was pushed to the secondary stack.
         if (this.divergenceStateStack.length != 0)
         {
-            return this.divergenceStateStack[this.divergenceStackPointer];
+            return this.divergenceStateStack()[this.divergenceStackPointer()];
         }
 
         //Otherwise, just get the current main state.
-        return this.mainStateStack[this.mainStackPointer];    
+        return this.mainStateStack()[this.mainStackPointer()];    
     }
     //#endregion
     
@@ -124,14 +128,14 @@ export default class BoardState
     getMostRecentMove(): IMoveResult 
     {
         //If we have any moves in the divergence stack, return the most recent one
-        if (this.divergenceStackPointer >= 0) 
+        if (this.divergenceStackPointer() >= 0) 
         {
-            return this.divergenceMoveStack[this.divergenceStackPointer];
+            return this.divergenceMoveStack()[this.divergenceStackPointer()];
         }
 
         //Otherwise, check the main move stack using the pointer
-        if (this.mainStackPointer > 0) { 
-            return this.mainMoveStack[this.mainStackPointer - 1];
+        if (this.mainStackPointer() > 0) { 
+            return this.mainMoveStack()[this.mainStackPointer() - 1];
         }
 
         //If neither stack has a move (aka starting position), return a dummy move.
@@ -141,15 +145,15 @@ export default class BoardState
     getFutureMove(): IMoveResult 
     {
         //If there are moves in the divergence stack ahead of the pointer
-        if (this.divergenceStackPointer + 1 < this.divergenceMoveStack.length) 
+        if (this.divergenceStackPointer() + 1 < this.divergenceMoveStack().length) 
         {
-            return this.divergenceMoveStack[this.divergenceStackPointer + 1];
+            return this.divergenceMoveStack()[this.divergenceStackPointer() + 1];
         }
 
         //Otherwise, check the main move stack using the pointer
-        if (this.mainStackPointer < this.mainMoveStack.length) 
+        if (this.mainStackPointer() < this.mainMoveStack().length) 
         {
-            return this.mainMoveStack[this.mainStackPointer];
+            return this.mainMoveStack()[this.mainStackPointer()];
         }
 
         //If no moves ahead, return a dummy move
@@ -160,16 +164,17 @@ export default class BoardState
     //#region EVAL
     getMostRecentEval() : PositionEval | undefined
     {
-        if (this.divergenceStackPointer >= 0) 
+        if (this.divergenceStackPointer() >= 0) 
         {
-            return this.divergenceEvalStack[this.divergenceStackPointer];
+            return this.divergenceEvalStack()[this.divergenceStackPointer()];
         }
 
         //Otherwise, check the main move stack using the pointer
-        if (this.mainStackPointer >= 0) { 
-            if (this.eval)
+        if (this.mainStackPointer() >= 0) { 
+            const ev = this.eval();
+            if (ev)
             {
-                return this.eval.positions[this.mainStackPointer];
+                return ev.positions[this.mainStackPointer()];
             }
         }
 
@@ -178,21 +183,28 @@ export default class BoardState
 
     getPreviousMostRecentEval(): PositionEval | undefined
     {
+        const ev = this.eval();
         if (this.divergenceEvalStack.length == 1)
         {
-            return this.eval?.positions[this.mainStackPointer];
+            if (ev)
+            {
+                return ev.positions[this.mainStackPointer()];
+            }
         }
 
         if (this.divergenceEvalStack.length > 1) 
         {
-            return this.divergenceEvalStack[this.divergenceStackPointer - 1];
+            if (ev)
+            {
+                return this.divergenceEvalStack()[this.divergenceStackPointer() - 1];
+            }
         }
 
         //Otherwise, check the main move stack using the pointer
-        if (this.mainStackPointer > 0) { 
-            if (this.eval)
+        if (this.mainStackPointer() > 0) { 
+            if (ev)
             {
-                return this.eval.positions[this.mainStackPointer - 1];
+                return ev.positions[this.mainStackPointer() - 1];
             }
         }
 
@@ -201,58 +213,69 @@ export default class BoardState
 
     private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: IMoveResult)
     {
-        this.evalQueue.push({ previousState, state, move });
+        this.evalQueue.update( q => [...q, {previousState, state, move}] );
+
         this.processEvaluationQueue();
     }
     private async processEvaluationQueue()
     {
-        if (!this.engine || this.isEvaluating || this.evalQueue.length == 0)
+        if (!this.engine() || this.isEvaluating() || this.evalQueue().length == 0)
         {
             return;
         } 
         
-        this.isEvaluating = true;
+        this.isEvaluating.set(true);
 
-        const { previousState, state, move } = this.evalQueue.shift()!;
+        const { previousState, state, move } = this.evalQueue().shift()!;
 
         try
         {
-            const depth = LocalStorageHelper.getNumber
-            (
-                LocalStorageHelper.ENGINE_DEPTH,
-                UciEngine.DEFAULT_DEPTH
-            );
+            const engine = this.engine();
 
-            const resultOfEval = await this.engine.evaluateMove
-            (
-                previousState.getFEN(),
-                state.getFEN(),
-                move,
-                depth
-            );
-            
-            //Sanitizes for moe classification consistency across different evaluations.
-            const previousEval = this.getPreviousMostRecentEval();
-            if (previousEval?.bestMove)
+            if (engine)
             {
-                if (move.notation.replace(/[+#x]/g, '').endsWith(previousEval.bestMove) && (resultOfEval.moveClassification == MoveClassification.Excellent || MoveClassification.Okay))
+                const depth = LocalStorageHelper.getNumber
+                (
+                    LocalStorageHelper.ENGINE_DEPTH,
+                    UciEngine.DEFAULT_DEPTH
+                );
+
+                const resultOfEval = await engine.evaluateMove
+                (
+                    previousState.getFEN(),
+                    state.getFEN(),
+                    move,
+                    depth
+                );
+                
+                //Sanitizes for moe classification consistency across different evaluations.
+                const previousEval = this.getPreviousMostRecentEval();
+                if (previousEval?.bestMove)
                 {
-                    resultOfEval.moveClassification = MoveClassification.Best;
+                    if (move.notation.replace(/[+#x]/g, '').endsWith(previousEval.bestMove) && (resultOfEval.moveClassification == MoveClassification.Excellent || MoveClassification.Okay))
+                    {
+                        resultOfEval.moveClassification = MoveClassification.Best;
+                    }
                 }
-            }
 
-            if (this.mainStackPointer != this.mainStateStack.length - 1 || this.isReadOnly)
-            {
-                this.divergenceEvalStack.push(resultOfEval);
-            }
-            else
-            {
-                this.eval?.positions.push(resultOfEval);
+                if (this.mainStackPointer() != this.mainStateStack().length - 1 || this.isReadOnly())
+                {
+                    this.divergenceEvalStack.update( stack => [...stack, resultOfEval] );
+                }
+                else
+                {
+                    const ev = this.eval();
+
+                    if (ev)
+                    {
+                        ev.positions.push(resultOfEval);
+                    }
+                }
             }
         }
         finally
         {
-            this.isEvaluating = false;
+            this.isEvaluating.set(false);
             this.processEvaluationQueue(); //Process next item in the queue.
         }
     }
@@ -263,71 +286,71 @@ export default class BoardState
     goBackToStart()
     {
         //Simply back up to the first move.
-        this.mainStackPointer = 0;
-        this.divergenceStateStack.length = 0;
-        this.divergenceMoveStack.length = 0;
-        this.divergenceEvalStack.length = 0;
-        this.divergenceStackPointer = -1;
+        this.mainStackPointer.set(0);
+        this.divergenceStateStack.set([]);
+        this.divergenceMoveStack.set([]);
+        this.divergenceEvalStack.set([]);
+        this.divergenceStackPointer.set(-1);
     }
 
     goBack()
     {
         //If we aren't diverging from the main game, just move the pointer back by 1.
-        if (this.divergenceStateStack.length == 0)
+        if (this.divergenceStateStack().length == 0)
         {
             //Cannot go back if we are already at the first move.
-            if (this.mainStackPointer == 0)
+            if (this.mainStackPointer() == 0)
             {
                 return;
             }
 
             //If we are somewhere past the first move, go back one.
-            this.mainStackPointer--;
+            this.mainStackPointer.update(ptr => ptr - 1);
         }
         else //If we are diverging, just get rid of the state entirely.
         {
-            if (this.eval)
+            if (this.eval())
             {
-                this.divergenceEvalStack.pop();
+                this.divergenceEvalStack.update(stack => { stack.pop(); return stack; });
             }
 
-            this.divergenceStateStack.pop();
-            this.divergenceMoveStack.pop();
-            this.divergenceStackPointer --;
+            this.divergenceStateStack.update(stack => { stack.pop(); return stack; });
+            this.divergenceMoveStack.update(stack => { stack.pop(); return stack; });
+            this.divergenceStackPointer.update(ptr => ptr - 1);
         }
     }
 
     goForward()
     {
         //If we are deviating from the main game, don't go forward (can't see the future).
-        if (this.divergenceStateStack.length != 0)
+        if (this.divergenceStateStack().length != 0)
         {
             return;
         }
 
         //If the stack pointer isn't already at the end, then go up by one.
-        if (this.mainStackPointer != this.mainStateStack.length - 1)
+        if (this.mainStackPointer() != this.mainStateStack().length - 1)
         {
-            this.mainStackPointer++;
+            this.mainStackPointer.update(ptr => ptr + 1);
         }
     }
 
     goForwardToEnd()
     {
         //If we are deviating from the main game, can't see into the future.
-        if (this.divergenceStateStack.length != 0)
+        if (this.divergenceStateStack().length != 0)
         {
             return;
         }
 
         //If we are already at the final move, don't do anything.
-        if (this.mainStackPointer == this.mainStateStack.length - 1)
+        if (this.mainStackPointer() == this.mainStateStack().length - 1)
         {
             return;
         }
 
         //If we are going through the main game and we aren't at the end, go to the very end.
-        this.mainStackPointer = this.mainStateStack.length - 1;
+        this.mainStackPointer.set(this.mainStateStack().length - 1);
     }
     //#endregion
 
@@ -653,11 +676,11 @@ export default class BoardState
         }
 
         boardState.pgnHeaders = pgnHeaders;
-        boardState.mainMoveStack = moveStack;
-        boardState.mainStateStack = states;
-        boardState.isReadOnly = true;
+        boardState.mainMoveStack.set(moveStack);
+        boardState.mainStateStack.set(states);
+        boardState.isReadOnly.set(true);
         
-        boardState.doEvaluateGame = setAnalyzeFlag;
+        boardState.doEvaluateGame.set(setAnalyzeFlag);
 
         return boardState;
     }
@@ -679,19 +702,21 @@ export default class BoardState
         params.playersRatings = this.pgnHeaders.whiteElo && this.pgnHeaders.blackElo ? {white: Number(this.pgnHeaders.whiteElo), black: Number(this.pgnHeaders.blackElo)} : {}
 
         //Evaluate the game.
-        if (this.engine)
+        const engine = this.engine();
+        if (engine)
         {
-            const evalResult = await this.engine.evaluateGame(params);
+            const evalResult = await engine.evaluateGame(params);
 
-            this.eval = evalResult;
+            this.eval.set(evalResult);
         }
+
 
         //Sanitizes any excellent moves that also appear as best moves.
         for(let i = 0; i < this.mainMoveStack.length; i++)
         {
-            const mv = this.mainMoveStack[i];
-            const ev = this.eval?.positions[i];
-            const previousEv = this.eval?.positions[i + 1]
+            const mv = this.mainMoveStack()[i];
+            const ev = this.eval()?.positions[i];
+            const previousEv = this.eval()?.positions[i + 1]
 
             const moveCoords = mv.fromCoord+mv.toCoord;
             const bestCoords = ev?.bestMove;
@@ -713,13 +738,26 @@ export default class BoardState
         //Computes how many moves of each classification there are
         Object.values(MoveClassification).forEach( v => 
         {
-            this.whiteMoveClassificationList.moves.set(v, {arr: [], ptr: 0});
-            this.blackMoveClassificationList.moves.set(v, {arr: [], ptr: 0})
+            this.whiteMoveClassificationList.update(list => 
+            {
+                list.moves = new Map(list.moves); // copy map
+                list.moves.set(v, { arr: [], ptr: 0 });
+                return list;
+            });
+
+            this.blackMoveClassificationList.update(list => 
+            {
+                list.moves = new Map(list.moves);
+                list.moves.set(v, { arr: [], ptr: 0 });
+                return list;
+            });
         })
-        let turn = !this.mainStateStack[0].turn;
-        this.eval?.positions.forEach( (pos, idx) =>
+        
+        let turn = !this.mainStateStack()[0].turn;
+
+        this.eval()?.positions.forEach( (pos, idx) =>
         {
-            const map = turn ? this.whiteMoveClassificationList.moves : this.blackMoveClassificationList.moves;
+            const map = turn ? this.whiteMoveClassificationList().moves : this.blackMoveClassificationList().moves;
 
             const correspondingArray = map.get(pos.moveClassification ?? MoveClassification.None);
             correspondingArray?.arr.push(idx);
@@ -730,7 +768,7 @@ export default class BoardState
 
     async setEngineIfNotExists()
     {
-        if (!this.engine)
+        if (!this.engine())
         {
             //Gets the engine type saved as per the user setting.
             const engineType: EngineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName;
@@ -739,7 +777,7 @@ export default class BoardState
             const engine: UciEngine = await UciEngine.getEngine(engineType);
             
             //Handle on it so it can be used later.
-            this.engine = engine;
+            this.engine.set(engine);
         }
     }
 
@@ -762,8 +800,8 @@ export default class BoardState
 
     getEvaluateGameParams(): EvaluateGameParams
     {
-        const fens: string[] = this.mainStateStack.map( c2 => c2.getFEN() );
-        const uciMoves: string[] = this.mainMoveStack.map(m => m.notation);
+        const fens: string[] = this.mainStateStack().map( c2 => c2.getFEN() );
+        const uciMoves: string[] = this.mainMoveStack().map(m => m.notation);
         const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
 
         return {fens, uciMoves, depth};
@@ -806,7 +844,7 @@ export default class BoardState
         //Empty line after headers
         str += "\n";
 
-        this.mainMoveStack.forEach((mv, idx) =>
+        this.mainMoveStack().forEach((mv, idx) =>
         {
             // Add move number before White moves
             if (idx % 2 === 0)
