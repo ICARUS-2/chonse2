@@ -31,8 +31,8 @@ export default class VsAiConfigurationModalHelper
                 }
 
                 bs.isVsAi.set(true);
-                bs.humanPlayerIsWhite = isHumanWhite;
-                bs.aiElo = result.getElo();
+                bs.humanPlayerIsWhite.set(isHumanWhite);
+                bs.aiElo.set(result.getElo());
 
                 if (!isHumanWhite)
                 {
@@ -41,14 +41,14 @@ export default class VsAiConfigurationModalHelper
 
                 await bs.setEngineIfNotExists();
 
-                const engine = bs.engine;
+                const engine = bs.engine();
                 if (engine)
                 {
                     const engineDisplayName = EngineDisplayName.get(engine.name as EngineName)?.toString() ?? "-";
 
-                    isHumanWhite ? (bs.pgnHeaders.black = engineDisplayName) : (bs.pgnHeaders.white = engineDisplayName)
-                    isHumanWhite ? (bs.pgnHeaders.blackElo = engineElo) : (bs.pgnHeaders.whiteElo = engineElo);
-                    isHumanWhite ? (bs.pgnHeaders.white = "You") : (bs.pgnHeaders.black = "You");
+                    isHumanWhite ? (bs.pgnHeaders().black = engineDisplayName) : (bs.pgnHeaders().white = engineDisplayName)
+                    isHumanWhite ? (bs.pgnHeaders().blackElo = engineElo) : (bs.pgnHeaders().whiteElo = engineElo);
+                    isHumanWhite ? (bs.pgnHeaders().white = "You") : (bs.pgnHeaders().black = "You");
 
                     chessBoardService.deleteGame(BoardNames.VsAi);
                     chessBoardService.addGame(BoardNames.VsAi, bs);

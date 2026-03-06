@@ -13,7 +13,7 @@ import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
 
 export default class BoardState
 {
-    pgnHeaders: PgnHeaders;
+    pgnHeaders: WritableSignal<PgnHeaders>;
 
     //For the moves actually being performed.
     mainStateStack: WritableSignal<Array<Chonse2>>;     
@@ -50,7 +50,7 @@ export default class BoardState
 
     constructor(startingStates: Array<Chonse2> = [new Chonse2()], headers: PgnHeaders = new PgnHeaders())
     {
-        this.pgnHeaders = headers;
+        this.pgnHeaders = signal(headers);
 
         this.squareHighlightStatuses = signal(BoardState.initializeHighlightStatuses());
         this.arrows = signal([]);
@@ -674,7 +674,7 @@ export default class BoardState
             throw("PGN parse invalid");
         }
 
-        boardState.pgnHeaders = pgnHeaders;
+        boardState.pgnHeaders.set(pgnHeaders);
         boardState.mainMoveStack.set(moveStack);
         boardState.mainStateStack.set(states);
         boardState.isReadOnly.set(true);
@@ -698,7 +698,7 @@ export default class BoardState
         //Sets up the ratings and progress setter.
         const params = this.getEvaluateGameParams();
         params.setEvaluationProgress = ( (value: number) => this.evalProgress.set(value));
-        params.playersRatings = this.pgnHeaders.whiteElo && this.pgnHeaders.blackElo ? {white: Number(this.pgnHeaders.whiteElo), black: Number(this.pgnHeaders.blackElo)} : {}
+        params.playersRatings = this.pgnHeaders().whiteElo && this.pgnHeaders().blackElo ? {white: Number(this.pgnHeaders().whiteElo), black: Number(this.pgnHeaders().blackElo)} : {}
 
         //Evaluate the game.
         const engine = this.engine();
@@ -811,32 +811,32 @@ export default class BoardState
         let str: string = "";
 
         //Required fields
-        str += `[${PgnFields.Event} "${this.pgnHeaders.event}"]\n`;
-        str += `[${PgnFields.Site} "${this.pgnHeaders.site}"]\n`;
-        str += `[${PgnFields.Date} "${this.pgnHeaders.date}"]\n`;
-        str += `[${PgnFields.Round} "${this.pgnHeaders.round}"]\n`;
-        str += `[${PgnFields.White} "${this.pgnHeaders.white}"]\n`;
-        str += `[${PgnFields.Black} "${this.pgnHeaders.black}"]\n`;
-        str += `[${PgnFields.Result} "${this.pgnHeaders.result}"]\n`;
+        str += `[${PgnFields.Event} "${this.pgnHeaders().event}"]\n`;
+        str += `[${PgnFields.Site} "${this.pgnHeaders().site}"]\n`;
+        str += `[${PgnFields.Date} "${this.pgnHeaders().date}"]\n`;
+        str += `[${PgnFields.Round} "${this.pgnHeaders().round}"]\n`;
+        str += `[${PgnFields.White} "${this.pgnHeaders().white}"]\n`;
+        str += `[${PgnFields.Black} "${this.pgnHeaders().black}"]\n`;
+        str += `[${PgnFields.Result} "${this.pgnHeaders().result}"]\n`;
 
         //Optional fields (only if present)
-        if (this.pgnHeaders.whiteElo)
-            str += `[${PgnFields.WhiteElo} "${this.pgnHeaders.whiteElo}"]\n`;
+        if (this.pgnHeaders().whiteElo)
+            str += `[${PgnFields.WhiteElo} "${this.pgnHeaders().whiteElo}"]\n`;
 
-        if (this.pgnHeaders.blackElo)
-            str += `[${PgnFields.BlackElo} "${this.pgnHeaders.blackElo}"]\n`;
+        if (this.pgnHeaders().blackElo)
+            str += `[${PgnFields.BlackElo} "${this.pgnHeaders().blackElo}"]\n`;
 
-        if (this.pgnHeaders.eco)
-            str += `[${PgnFields.ECO} "${this.pgnHeaders.eco}"]\n`;
+        if (this.pgnHeaders().eco)
+            str += `[${PgnFields.ECO} "${this.pgnHeaders().eco}"]\n`;
 
-        if (this.pgnHeaders.termination)
-            str += `[${PgnFields.Termination} "${this.pgnHeaders.termination}"]\n`;
+        if (this.pgnHeaders().termination)
+            str += `[${PgnFields.Termination} "${this.pgnHeaders().termination}"]\n`;
 
-        if (this.pgnHeaders.timeControl)
-            str += `[${PgnFields.TimeControl} "${this.pgnHeaders.timeControl}"]\n`;
+        if (this.pgnHeaders().timeControl)
+            str += `[${PgnFields.TimeControl} "${this.pgnHeaders().timeControl}"]\n`;
 
         //Other custom fields
-        this.pgnHeaders.otherFields.forEach((value, key) => {
+        this.pgnHeaders().otherFields.forEach((value, key) => {
             str += `[${key} "${value}"]\n`;
         });
 
@@ -857,9 +857,9 @@ export default class BoardState
         });
 
         //Append result at end of the PGN.
-        if (this.pgnHeaders.result)
+        if (this.pgnHeaders().result)
         {
-            str += this.pgnHeaders.result;
+            str += this.pgnHeaders().result;
         }
         return str;
     }

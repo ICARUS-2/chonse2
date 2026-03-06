@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, Input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, input, Input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { PieceType } from '../../../lib/piece-type';
 import { Square } from '../square/square';
 import { PieceColor } from '../../../lib/piece-color';
@@ -51,8 +51,9 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
   //Game service ID
-  @Input({required: true}) gameId: string = "";
-  
+  //@Input({required: true}) gameId: string = "";
+  gameId = input<string>("")
+
   //State
   boardState = signal<BoardState>(null!);
 
@@ -106,7 +107,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef)
   {
     //Board state stored in service to persist across routerlink changes.
-    const boardState: BoardState = this.chessBoardService.getGame(this.gameId);
+    const boardState: BoardState = this.chessBoardService.getGame(this.gameId());
 
     this.boardState.set(boardState);
 
@@ -119,7 +120,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
 
-    const boardState: BoardState | undefined = this.chessBoardService.getGame(this.gameId);
+    const boardState: BoardState | undefined = this.chessBoardService.getGame(this.gameId());
     if (!boardState) {
         //Not loading component if there is no game.
         console.warn(`Game ${this.gameId} not found yet`);
@@ -129,10 +130,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.boardState().doEvaluateGame())
     {
-      if (!this.boardState().engine)
-      {
-        this.boardState().evaluateGame();
-      }
+      this.boardState().evaluateGame();
     }
   }
 
@@ -154,7 +152,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   async completeMove(fromSquare: string, toSquare: string)
   {
     //If the game is vs AI and there is no engine, don't move anything
-    if (this.boardState().isVsAi() && !this.boardState().engine)
+    if (this.boardState().isVsAi() && !this.boardState().engine())
     {
       return;
     }
@@ -172,7 +170,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
-    const piece = this.currentlyHeldPiece;
+    const piece = this.currentlyHeldPiece();
     if (!this.currentLegalMoves().includes(toSquare))
     {
       return;
@@ -233,7 +231,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     {
 
       //perform the move
-      moveResult = await stateCopy.completeMove(fromSquare, toSquare, piece());
+      moveResult = await stateCopy.completeMove(fromSquare, toSquare, piece);
       this.boardState().pushState(stateCopy, moveResult);
         
       if (this.boardState().isVsAi() && this.getMostCurrentMainState() == this.boardState().getCurrentState())
@@ -271,11 +269,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
           newBoard.doEvaluateGame.set(true);
           
           //Remove the old one and add the new one.
-          this.chessBoardService.deleteGame(this.gameId);
-          this.chessBoardService.addGame(this.gameId, newBoard);
+          this.chessBoardService.deleteGame(this.gameId());
+          this.chessBoardService.addGame(this.gameId(), newBoard);
 
           //Update current component state.
-          this.boardState.set(this.chessBoardService.getGame(this.gameId));
+          this.boardState.set(this.chessBoardService.getGame(this.gameId()));
           this.boardState().evaluateGame();
 
           //User feedback
@@ -298,9 +296,9 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   handleResetClicked()
   {
     const bs: BoardState = new BoardState();
-    this.chessBoardService.deleteGame(this.gameId);
-    this.chessBoardService.addGame(this.gameId, bs);
-    this.boardState.set(this.chessBoardService.getGame(this.gameId));
+    this.chessBoardService.deleteGame(this.gameId());
+    this.chessBoardService.addGame(this.gameId(), bs);
+    this.boardState.set(this.chessBoardService.getGame(this.gameId()));
     this.arrows.set([]);
   }
   //#endregion
@@ -579,7 +577,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const states = this.boardState().mainStateStack().map( s => s.getFullDeepCopy() );
     const gameStates = this.boardState().mainStateStack().map( s => structuredClone(s.gameState) );
     const moves = this.boardState().mainMoveStack().map(m => structuredClone(m));
-    const pgnHeaders = structuredClone(this.boardState().pgnHeaders);
+    const pgnHeaders = structuredClone(this.boardState().pgnHeaders());
 
     this.router.navigate(['/'], {state: { "vsAiStates": states, "vsAiGameStates": gameStates, "vsAiMoves": moves, "vsAiPgnHeaders": pgnHeaders}});
   }
@@ -821,7 +819,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       this.toRightClickSquare.set(event.coordinate);
 
       //If the squares are the same, the user is highlighting a sqaure.
-      if (this.fromRightClickSquare == this.toRightClickSquare)
+      if (this.fromRightClickSquare() == this.toRightClickSquare())
       {
         //Gets the index of the square to highlight.
         const idx = Chonse2.findIndexFromCoordinate(this.toRightClickSquare());

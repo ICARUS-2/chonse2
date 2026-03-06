@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, Input, NgZone, signal, WritableSignal } from '@angular/core';
 import Chonse2 from '../../../lib/chonse2';
 import { PieceType } from '../../../lib/piece-type';
 import { ToastrService } from 'ngx-toastr';
@@ -47,23 +47,21 @@ export class InputPositionBoard {
   ];
 
   //Game service ID
-  @Input({required: true}) stateId: string = "";
-  
+  stateId = input<string>('');
   //State
-  model: InputPositionState;
+  model: WritableSignal<InputPositionState>;
 
   //MOVE PROPERTIES
-  currentLegalMoves: string[] = [];
-  currentlyHeldPiece: string = "";
-  fromSquare: string = "";
-  toSquare: string = "";
-  fromRightClickSquare: string = "";
-  toRightClickSquare: string = "";
+  currentlyHeldPiece = signal<string>('');
+  fromSquare = signal<string>('');
+  toSquare = signal<string>('');
+  fromRightClickSquare = signal<string>('');
+  toRightClickSquare = signal<string>('');
 
   //COSMETIC
   private readonly _ARROW_PULLBACK = 0.18;
-  mouseX: number = 0;
-  mouseY: number = 0;
+  mouseX = signal<number>(0);
+  mouseY = signal<number>(0);
   
   private static readonly X_VECTOR = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
   private static readonly Y_VECTOR = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
@@ -71,33 +69,33 @@ export class InputPositionBoard {
   constructor(private router: Router , private ips: InputPositionService, public themeService: ThemeService)
   {
     //Board state stored in service to persist across routerlink changes.
-    const boardState: InputPositionState = this.ips.getGame(this.stateId);
+    const boardState: InputPositionState = this.ips.getGame(this.stateId());
 
-    this.model = boardState;
+    this.model = signal<InputPositionState>(boardState);
   }
 
   ngOnInit(): void {
 
-    const modelState: InputPositionState | undefined = this.ips.getGame(this.stateId);
+    const modelState: InputPositionState | undefined = this.ips.getGame(this.stateId());
     if (!modelState) {
         //Not loading component if there is no game.
         console.warn(`Game ${this.stateId} not found yet`);
         return;
     }
-    this.model = modelState;
+    this.model.set(modelState);
   }
 
   async completeMove(fromSquare: string, toSquare: string)
   {    
-    const piece = this.currentlyHeldPiece;
+    const piece = this.currentlyHeldPiece();
 
-    if (!this.toSquare)
+    if (!this.toSquare())
     {
       this.resetMoveState();
       return;
     }
 
-    if (this.fromSquare)
+    if (this.fromSquare())
     {
       const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
       this.setPieceOnBoard(fromIdx.rowIndex, fromIdx.colIndex, "");
@@ -106,39 +104,38 @@ export class InputPositionBoard {
     const toIdx = Chonse2.findIndexFromCoordinate(toSquare);    
     this.setPieceOnBoard(toIdx.rowIndex, toIdx.colIndex, piece);
 
-    this.currentlyHeldPiece = "";
+    this.currentlyHeldPiece.set("");
     this.resetMoveState();
   }
 
 
   resetMoveState()
   {
-    this.fromSquare = "";
-    this.toSquare = "";
-    this.currentLegalMoves = [];
+    this.fromSquare.set("");
+    this.toSquare.set("");
   }
 
   //Controls
   //#region 
   handleFlipClicked()
   {
-    this.model.isFlipped = !this.model.isFlipped;
+    this.model().isFlipped.update( f => !f);
   }
 
   handleResetClicked()
   {
-    this.model.game.pieceState = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]);
-    this.model.game.whiteCastlingRights.kingSide = true;
-    this.model.game.whiteCastlingRights.queenSide = true;
-    this.model.game.blackCastlingRights.kingSide = true;
-    this.model.game.blackCastlingRights.queenSide = true;
-    this.model.game.enPassantSquare = "";
+    this.model().game().pieceState = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]);
+    this.model().game().whiteCastlingRights.kingSide = true;
+    this.model().game().whiteCastlingRights.queenSide = true;
+    this.model().game().blackCastlingRights.kingSide = true;
+    this.model().game().blackCastlingRights.queenSide = true;
+    this.model().game().enPassantSquare = "";
     this._afterStateChanged();
   }
 
   handleClearClicked()
   {
-    this.model.game.pieceState = InputPositionBoard.CLEARED_BOARD.map(rank => [...rank]);
+    this.model().game().pieceState = InputPositionBoard.CLEARED_BOARD.map(rank => [...rank]);
     this._afterStateChanged();
   }
 
@@ -150,7 +147,7 @@ export class InputPositionBoard {
   onSquareLeftClick = () =>
   {
     this.resetClickedSquares();
-    this.model.arrows.length = 0;
+    this.model().arrows.set([]);
   }
 
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: PointerEvent })
@@ -159,8 +156,8 @@ export class InputPositionBoard {
     if (event.mouse.button == 0)
     {
       //update the square that the piece is dragged from
-      this.fromSquare = event.coordinate;
-      this.currentlyHeldPiece = event.piece;
+      this.fromSquare.set(event.coordinate);
+      this.currentlyHeldPiece.set(event.piece);
 
       if (event.piece != "")
       {
@@ -171,7 +168,7 @@ export class InputPositionBoard {
     //Right click for square highlight or arrow drawing
     if (event.mouse.button == 2)
     {
-      this.fromRightClickSquare = event.coordinate;
+      this.fromRightClickSquare.set(event.coordinate);
     }
   }
 
@@ -185,47 +182,47 @@ export class InputPositionBoard {
       }
 
       //sets the square in the UI to where the player is dropping the piece.
-      this.toSquare = event.coordinate;
+      this.toSquare.set(event.coordinate);
 
       const fromSquare = this.fromSquare;
       const toSquare = event.coordinate;
 
-      this.completeMove(fromSquare, toSquare);
+      this.completeMove(fromSquare(), toSquare);
     }
 
     if (event.mouse.button == 2)
     {
-      this.toRightClickSquare = event.coordinate;
+      this.toRightClickSquare.set(event.coordinate);
 
       //If the squares are the same, the user is highlighting a sqaure.
       if (this.fromRightClickSquare == this.toRightClickSquare)
       {
         //Gets the index of the square to highlight.
-        const idx = Chonse2.findIndexFromCoordinate(this.toRightClickSquare);
+        const idx = Chonse2.findIndexFromCoordinate(this.toRightClickSquare());
 
         //Sets the status telling it to change color.
-        this.model.squareHighlightStatuses[idx.rowIndex][idx.colIndex] = !this.model.squareHighlightStatuses[idx.rowIndex][idx.colIndex];
+        this.model().squareHighlightStatuses()[idx.rowIndex][idx.colIndex] = !this.model().squareHighlightStatuses()[idx.rowIndex][idx.colIndex];
       }
       else //If the squares are different, they are drawing an arrow.
       {
-        const arrow = this.createArrow(this.fromRightClickSquare, this.toRightClickSquare);
+        const arrow = this.createArrow(this.fromRightClickSquare(), this.toRightClickSquare());
         
         if (arrow)
         {
-          this.model.arrows.push(arrow); 
+          this.model().arrows().push(arrow); 
         }
       }
 
-      this.fromRightClickSquare = "";
-      this.toRightClickSquare = "";
+      this.fromRightClickSquare.set("");
+      this.toRightClickSquare.set("");
     }
   }
 
   handleDragImage(mouse: PointerEvent)
   {
     //Adds sets the current mouse position in the UI so it can be tracked.
-    this.mouseX = mouse.clientX;
-    this.mouseY = mouse.clientY;
+    this.mouseX.set(mouse.clientX);
+    this.mouseY.set(mouse.clientY);
 
     //Adds events to continuously track the movement of the piece.
     document.addEventListener('pointermove', this.onMouseMove);
@@ -235,8 +232,8 @@ export class InputPositionBoard {
   //When the mouse moves, tell the UI where it is.
   onMouseMove = (event: PointerEvent) => 
   {
-    this.mouseX = event.clientX; 
-    this.mouseY = event.clientY;
+    this.mouseX.set(event.clientX); 
+    this.mouseY.set(event.clientY);
   }
 
   //When the mouse is released, remove the event listeners and reset the from/to/stored legal moves.
@@ -245,9 +242,9 @@ export class InputPositionBoard {
     document.removeEventListener('pointermove', this.onMouseMove);
     document.removeEventListener('pointerup', this.onMouseUp);
 
-    this.currentlyHeldPiece = "";
-    this.mouseX = 0;
-    this.mouseY = 0;
+    this.currentlyHeldPiece.set("");
+    this.mouseX.set(0);
+    this.mouseY.set(0);
 
     this.resetMoveState();
   }
@@ -258,7 +255,7 @@ export class InputPositionBoard {
     if (e.event.button == 0)
     {
       //update the square that the piece is dragged from
-      this.currentlyHeldPiece = e.piece;
+      this.currentlyHeldPiece.set(e.piece);
 
       if (e.piece != "")
       {
@@ -271,7 +268,7 @@ export class InputPositionBoard {
   {
     if (this.fromSquare)
     {
-      const idx = Chonse2.findIndexFromCoordinate(this.fromSquare);
+      const idx = Chonse2.findIndexFromCoordinate(this.fromSquare());
 
       this.setPieceOnBoard(idx.rowIndex, idx.colIndex, "");
       this.resetMoveState();
@@ -280,8 +277,8 @@ export class InputPositionBoard {
 
   onTurnChanged(event: boolean)
   {
-    this.model.game.turn = event;
-    this.model.game.enPassantSquare = "";
+    this.model().game().turn = event;
+    this.model().game().enPassantSquare = "";
   }
 
   getPotentialEnPassantSquares(): Array<string>
@@ -289,12 +286,12 @@ export class InputPositionBoard {
     const arr: string[] = [];
 
     //The indeces of both the ranks the pawn moves to and the ones where the capture takes place.
-    const rankIndex = this.model.game.turn ? 3 : 4;
-    const previousRankIndex = this.model.game.turn ? 2 : 5;
+    const rankIndex = this.model().game().turn ? 3 : 4;
+    const previousRankIndex = this.model().game().turn ? 2 : 5;
 
     //The ranks where the pawn is located (two spaces) and the en passant rank beneath it.
-    const pawnRank = this.model.game.pieceState[rankIndex];
-    const enPassantSquareRank = this.model.game.pieceState[previousRankIndex];
+    const pawnRank = this.model().game().pieceState[rankIndex];
+    const enPassantSquareRank = this.model().game().pieceState[previousRankIndex];
 
     //Check every possible space for en passant.
     for(let i = 0; i < pawnRank.length; i++)
@@ -304,7 +301,7 @@ export class InputPositionBoard {
       const potentialEnPassantSquareContent = enPassantSquareRank[i];
 
       //If there is a pawn that has moved two spaces AND there is nothing underneath it.
-      if (this.model.game.turn ? pawnRankSquareContent == PieceType.BLACK_PAWN : pawnRankSquareContent == PieceType.WHITE_PAWN)
+      if (this.model().game().turn ? pawnRankSquareContent == PieceType.BLACK_PAWN : pawnRankSquareContent == PieceType.WHITE_PAWN)
       {
         if (potentialEnPassantSquareContent == "")
         {
@@ -319,20 +316,20 @@ export class InputPositionBoard {
   getPotentialForCastlingRights(isWhite: boolean, isKingside: boolean): boolean
   {
     //Where the king is on the board.
-    const king = this.model.game.getKingCoordinate( isWhite ? PieceColor.WHITE : PieceColor.BLACK );
+    const king = this.model().game().getKingCoordinate( isWhite ? PieceColor.WHITE : PieceColor.BLACK );
     
     //To have castling rights you need to have a king on the board (obviously) and the rook needs to be in its place.
     if (king && ( isWhite ? king == Chonse2.WHITE_KING_SQUARE : king == Chonse2.BLACK_KING_SQUARE ))
     {
       const rookCoord = isWhite ? (isKingside ? Chonse2.WHITE_KINGSIDE_ROOK_SQUARE : Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE) : (isKingside ? Chonse2.BLACK_KINGSIDE_ROOK_SQUARE : Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE);
       const rookSquareIndex = Chonse2.findIndexFromCoordinate(rookCoord);
-      const rookSquareContent = this.model.game.pieceState[rookSquareIndex.rowIndex][rookSquareIndex.colIndex];
+      const rookSquareContent = this.model().game().pieceState[rookSquareIndex.rowIndex][rookSquareIndex.colIndex];
       const rookPiece = isWhite ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
 
       //If there is no rook in that place, no castling rights can potentially exist there.
       if (rookSquareContent != rookPiece)
       {
-        isWhite ? (isKingside ? this.model.game.whiteCastlingRights.kingSide = false : this.model.game.whiteCastlingRights.queenSide = false) : (isKingside ? this.model.game.blackCastlingRights.kingSide = false : this.model.game.blackCastlingRights.queenSide = false);
+        isWhite ? (isKingside ? this.model().game().whiteCastlingRights.kingSide = false : this.model().game().whiteCastlingRights.queenSide = false) : (isKingside ? this.model().game().blackCastlingRights.kingSide = false : this.model().game().blackCastlingRights.queenSide = false);
       }
       else 
       {
@@ -343,7 +340,7 @@ export class InputPositionBoard {
     else 
     {
       //If there is no king or the king has moved, strip both.
-      isWhite ? this.model.game.whiteCastlingRights.removeBothCastlingRights() : this.model.game.blackCastlingRights.removeBothCastlingRights();
+      isWhite ? this.model().game().whiteCastlingRights.removeBothCastlingRights() : this.model().game().blackCastlingRights.removeBothCastlingRights();
     }
 
     //If any check failed, castling rights cannot exist.
@@ -352,7 +349,7 @@ export class InputPositionBoard {
 
   setPieceOnBoard(rowIndex: number, colIndex: number, piece: string)
   {
-    this.model.game.pieceState[rowIndex][colIndex] = piece;
+    this.model().game().pieceState[rowIndex][colIndex] = piece;
     this._afterStateChanged();
   }
 
@@ -360,18 +357,18 @@ export class InputPositionBoard {
   {
     const epArr = this.getPotentialEnPassantSquares();
 
-    if (!epArr.includes(this.model.game.enPassantSquare))
+    if (!epArr.includes(this.model().game().enPassantSquare))
     {
-      this.model.game.enPassantSquare = "";
+      this.model().game().enPassantSquare = "";
     }
   }
 
   doesValidationPass(): boolean
   {
-    const game = this.model.game;
+    const game = this.model().game;
 
     //One king per side.
-    const flattenedPieceState = game.pieceState.flat();
+    const flattenedPieceState = game().pieceState.flat();
     const whiteKings = flattenedPieceState.filter(p => p == PieceType.WHITE_KING);
     const blackKings = flattenedPieceState.filter(p => p == PieceType.BLACK_KING);
 
@@ -381,13 +378,13 @@ export class InputPositionBoard {
     }
 
     //Kings are not adjacent.
-    const whiteKing = game.getKingCoordinate(PieceColor.WHITE);
+    const whiteKing = game().getKingCoordinate(PieceColor.WHITE);
     const whiteKingIdx = Chonse2.findIndexFromCoordinate(whiteKing);
     for(let i = 0; i < InputPositionBoard.X_VECTOR.length; i++)
     {
       const xComponent = InputPositionBoard.X_VECTOR[i] + whiteKingIdx.rowIndex;
       const yComponent = InputPositionBoard.Y_VECTOR[i] + whiteKingIdx.colIndex;
-      const rank = game.pieceState[xComponent]
+      const rank = game().pieceState[xComponent]
       
       if (rank)
       {
@@ -403,8 +400,8 @@ export class InputPositionBoard {
     }
 
     //Pawns are not on the first or eighth rank.
-    const firstRank = game.pieceState[0];
-    const lastRank = game.pieceState[game.pieceState.length - 1];
+    const firstRank = game().pieceState[0];
+    const lastRank = game().pieceState[game().pieceState.length - 1];
 
     for(let i: number = 0; i < firstRank.length; i++)
     {
@@ -421,8 +418,8 @@ export class InputPositionBoard {
     }
 
     //Both kings cannot be in check.
-    const isWhiteInCheck: boolean = game.isInCheck(PieceColor.WHITE);
-    const isBlackInCheck: boolean = game.isInCheck(PieceColor.BLACK);
+    const isWhiteInCheck: boolean = game().isInCheck(PieceColor.WHITE);
+    const isBlackInCheck: boolean = game().isInCheck(PieceColor.BLACK);
 
     if (isWhiteInCheck && isBlackInCheck)
     {
@@ -430,7 +427,7 @@ export class InputPositionBoard {
     }
 
     //White to move -> Black cannot be in check. Black to move -> White cannot be in check.
-    if ((game.turn && isBlackInCheck) || !game.turn && isWhiteInCheck)
+    if ((game().turn && isBlackInCheck) || !game().turn && isWhiteInCheck)
     {
       return false;
     }
@@ -445,7 +442,7 @@ export class InputPositionBoard {
       return;
     }
 
-    const copy: Chonse2 = this.model.game.getFullDeepCopy();
+    const copy: Chonse2 = this.model().game().getFullDeepCopy();
 
     this.router.navigate(['/'], {state: { "inputtedPosition" : copy }})
   }
@@ -457,7 +454,7 @@ export class InputPositionBoard {
       return;
     }
 
-    const copy: Chonse2 = this.model.game.getFullDeepCopy();
+    const copy: Chonse2 = this.model().game().getFullDeepCopy();
 
     this.router.navigate(['/vs-ai'], {state: { "inputtedPosition" : copy }})
   }
@@ -471,13 +468,13 @@ export class InputPositionBoard {
   {
     const idx = Chonse2.findIndexFromCoordinate(coordinate);
     
-    return this.model.squareHighlightStatuses[idx.rowIndex][idx.colIndex];
+    return this.model().squareHighlightStatuses()[idx.rowIndex][idx.colIndex];
   }
 
   //Sets all the right clicked statuses to false, clearing any right clicked squares.
   resetClickedSquares()
   {
-    if (this.model.squareHighlightStatuses.length == 0)
+    if (this.model().squareHighlightStatuses().length == 0)
     {
       for(let i = 0; i < Chonse2.SIZE; i++)
       {
@@ -486,19 +483,19 @@ export class InputPositionBoard {
         {
           rank.push(false);
         }
-        this.model.squareHighlightStatuses.push(rank);
+        this.model().squareHighlightStatuses().push(rank);
       }
     }
     else 
     {
       for(let i = 0; i < Chonse2.SIZE; i++)
       {
-        const rank = this.model.squareHighlightStatuses[i];
+        const rank = this.model().squareHighlightStatuses()[i];
         for(let j = 0; j < Chonse2.SIZE; j++)
         {
           rank[j] = false;
         }
-        this.model.squareHighlightStatuses.push(rank);
+        this.model().squareHighlightStatuses().push(rank);
       }
     }
   }

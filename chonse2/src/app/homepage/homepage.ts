@@ -154,7 +154,7 @@ export class Homepage implements OnInit{
       bs.mainMoveStack.set(this.vsAiMoves);
 
       //Set pgn headers.
-      bs.pgnHeaders = this.vsAiPgnHeaders;
+      bs.pgnHeaders.set(this.vsAiPgnHeaders);
 
       //Add game to service.
       this.gameService.deleteGame(BoardNames.Analysis);
