@@ -330,7 +330,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //#region 
   getEvalProgress = computed( (): number => 
   {
-    return Number(this.boardState().evalProgress.toFixed(2));
+    return Number(this.boardState().evalProgress().toFixed(2));
   } )
 
   getEngineDisplayName = computed( (): string => 
@@ -623,6 +623,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     {
       this.boardState().goBack();
       Sound.playSound(Sound.MOVE);
+
     }, this.animationDuration )
   }
 
@@ -634,6 +635,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     {
       this.boardState().goForward();
       Sound.playSoundForMove(mostRecentMove.notation);
+
     }, this.animationDuration )
   }   
 
@@ -674,6 +676,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.boardState().mainStackPointer.set(index);
+    this.cdr.markForCheck();
   }
 
   moveClassificationClicked(color: PieceColor, classification : MoveClassification)
@@ -892,7 +895,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //Sets all the right clicked statuses to false, clearing any right clicked squares.
   resetClickedSquares()
   {
-    if (this.boardState().squareHighlightStatuses.length == 0)
+    if (this.boardState().squareHighlightStatuses().length == 0)
     {
       for(let i = 0; i < Chonse2.SIZE; i++)
       {

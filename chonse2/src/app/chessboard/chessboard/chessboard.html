@@ -10,7 +10,7 @@
                 @if(animatedPiece())
                 {
                     <img class="animatedPiece"
-                        [ngClass]="{'animatedPieceFlipped': boardState().isFlipped}"
+                        [ngClass]="{'animatedPieceFlipped': boardState().isFlipped()}"
                         [src]="`piece/merida/${animatedPiece()}.svg`"
                         [style.transform]="'
                             translate(' + animatedPieceX() + 'px,' + animatedPieceY() + 'px)' 
@@ -105,7 +105,7 @@
                                 @if (_isSquareEndgameKingSquare(rankIndex, fileIndex)())
                                 {
                                     <div class="endgameSquareOverlay" 
-                                    [ngClass]="{'endgameSquareOverlayFlipped': boardState().isFlipped}">
+                                    [ngClass]="{'endgameSquareOverlayFlipped': boardState().isFlipped()}">
                                         <div class="fade-out-bg endgameSquareBackground"
                                             [style]="{'background-color' : _getEndgameSquareBackgroundColor(rankIndex, fileIndex)()}">
                                         </div>
@@ -123,7 +123,7 @@
 
                                 @if(this.getMoveClassificationIconSourceForCoord(this.COORDS[rankIndex][fileIndex])() != "")
                                 {
-                                    <div class="moveClassificationIconOverlay" [ngClass]="{'moveClassificationIconOverlayFlipped': boardState().isFlipped}">
+                                    <div class="moveClassificationIconOverlay" [ngClass]="{'moveClassificationIconOverlayFlipped': boardState().isFlipped()}">
                                         <img alt="moveClassificationIcon" class="moveClassificationIcon" [src]="getMoveClassificationIconSourceForCoord(this.COORDS[rankIndex][fileIndex])()" draggable="false">
                                     </div>
                                 }
@@ -417,7 +417,7 @@
 
 
         <!--PROGRESS BAR-->
-        @if( this.boardState().evalProgress > 0 && this.boardState().evalProgress < 97.1)
+        @if( this.boardState().evalProgress() > 0 && this.boardState().evalProgress() < 97.1)
         {
             <div >
                 <ngb-progressbar class="mb-3" type="info" [value]="getEvalProgress()" [striped]="true" [animated]="true"><i>{{this.getEvalProgress()}}% [{{this.getEngineDisplayName()}}]</i></ngb-progressbar>

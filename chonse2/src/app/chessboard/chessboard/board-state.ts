@@ -10,7 +10,6 @@ import { Arrow } from "./arrow";
 import LocalStorageHelper from "./local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
 import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
-import { zip } from "rxjs";
 
 export default class BoardState
 {
@@ -30,7 +29,7 @@ export default class BoardState
     //Eval stuff.
     doEvaluateGame: WritableSignal<boolean> = signal(false);
     eval: WritableSignal<GameEval | undefined> = signal(undefined);
-    evalProgress: number = 0;
+    evalProgress: WritableSignal<number> = signal(0);
     engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
@@ -76,7 +75,7 @@ export default class BoardState
         {
             let previousState: Chonse2;
 
-            if (this.divergenceMoveStack.length != 0)
+            if (this.divergenceMoveStack().length != 0)
             {
                 //previousState = this.divergenceStateStack[this.divergenceStateStack.length - 1];
                 previousState = this.divergenceStateStack()[this.divergenceStateStack().length - 1];
@@ -114,7 +113,7 @@ export default class BoardState
     getCurrentState(): Chonse2
     {
         //If we are diverging from the main game, return what was pushed to the secondary stack.
-        if (this.divergenceStateStack.length != 0)
+        if (this.divergenceStateStack().length != 0)
         {
             return this.divergenceStateStack()[this.divergenceStackPointer()];
         }
@@ -184,7 +183,7 @@ export default class BoardState
     getPreviousMostRecentEval(): PositionEval | undefined
     {
         const ev = this.eval();
-        if (this.divergenceEvalStack.length == 1)
+        if (this.divergenceEvalStack().length == 1)
         {
             if (ev)
             {
@@ -192,7 +191,7 @@ export default class BoardState
             }
         }
 
-        if (this.divergenceEvalStack.length > 1) 
+        if (this.divergenceEvalStack().length > 1) 
         {
             if (ev)
             {
@@ -311,11 +310,11 @@ export default class BoardState
         {
             if (this.eval())
             {
-                this.divergenceEvalStack.update(stack => { stack.pop(); return stack; });
+                this.divergenceEvalStack.update(stack => stack.slice(0, -1));
             }
 
-            this.divergenceStateStack.update(stack => { stack.pop(); return stack; });
-            this.divergenceMoveStack.update(stack => { stack.pop(); return stack; });
+            this.divergenceStateStack.update(stack => stack.slice(0, -1));
+            this.divergenceMoveStack.update(stack => stack.slice(0, -1));
             this.divergenceStackPointer.update(ptr => ptr - 1);
         }
     }
@@ -698,7 +697,7 @@ export default class BoardState
 
         //Sets up the ratings and progress setter.
         const params = this.getEvaluateGameParams();
-        params.setEvaluationProgress = ( (value: number) => this.evalProgress = value);
+        params.setEvaluationProgress = ( (value: number) => this.evalProgress.set(value));
         params.playersRatings = this.pgnHeaders.whiteElo && this.pgnHeaders.blackElo ? {white: Number(this.pgnHeaders.whiteElo), black: Number(this.pgnHeaders.blackElo)} : {}
 
         //Evaluate the game.
@@ -712,7 +711,7 @@ export default class BoardState
 
 
         //Sanitizes any excellent moves that also appear as best moves.
-        for(let i = 0; i < this.mainMoveStack.length; i++)
+        for(let i = 0; i < this.mainMoveStack().length; i++)
         {
             const mv = this.mainMoveStack()[i];
             const ev = this.eval()?.positions[i];
