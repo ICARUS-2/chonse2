@@ -57,7 +57,7 @@ export default class BoardState
         this.isFlipped = signal(false);
 
         this.mainStateStack = signal([]);
-        this.mainStateStack.update(s => [...s, ...startingStates]);
+        this.mainStateStack = signal([...startingStates]);
         this.mainStackPointer = signal(0);
         this.mainMoveStack = signal([]);
 

@@ -51,7 +51,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
   //Game service ID
-  //@Input({required: true}) gameId: string = "";
   gameId = input<string>("")
 
   //State
@@ -104,7 +103,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     private toastr: ToastrService,
     private router: Router,
     public themeService: ThemeService,
-    private cdr: ChangeDetectorRef)
+    public cdr: ChangeDetectorRef)
   {
     //Board state stored in service to persist across routerlink changes.
     const boardState: BoardState = this.chessBoardService.getGame(this.gameId());

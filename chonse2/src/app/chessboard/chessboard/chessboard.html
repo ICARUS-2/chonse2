@@ -192,7 +192,7 @@
                     (buttonClick)="copyPGNClicked()">
                 </app-bootstrap-button>
 
-                @if(!boardState().doEvaluateGame && boardState().mainStateStack().length > 1)
+                @if(!boardState().doEvaluateGame() && boardState().mainStateStack().length > 1)
                 {
                     <app-bootstrap-button
                         label="Analyze"

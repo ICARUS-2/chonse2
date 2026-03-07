@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { PieceType } from '../../lib/piece-type';
 import Chonse2 from '../../lib/chonse2';
@@ -120,7 +120,7 @@ export class Homepage implements OnInit{
         this.setDefaultBoard();
       }
     }
-    else if (this.inputtedPosition)
+    else if (this.inputtedPosition) //from board editor
     {
       //Reconstructs the passed data into a Chonse2 object and reinitializes the game state.
       const restoredPosition = Object.assign(new Chonse2(), this.inputtedPosition);
@@ -130,10 +130,10 @@ export class Homepage implements OnInit{
 
       //Places it into a valid board state and adds it.
       const boardState = new BoardState([restoredPosition]);
-      boardState.doEvaluateGame.set(true);
-
+      boardState.isReadOnly.set(true); //TODO WHY THE FUCK DOES THIS FIX IT
       this.gameService.deleteGame(BoardNames.Analysis);
       this.gameService.addGame(BoardNames.Analysis, boardState);
+      boardState.doEvaluateGame.set(true);
     }
     else if (this.vsAiMoves && this.vsAiStates && this.vsAiGameStates && this.vsAiPgnHeaders)
     {
