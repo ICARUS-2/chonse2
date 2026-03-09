@@ -4,7 +4,7 @@
     <div class="m-4"></div>
 
     <div class="importOptions">
-        <select class="form-select gameSourceDropdown" [(ngModel)]="selectedDropdownOption">
+        <select [formField]="form.selectedDropdownOption" class="form-select gameSourceDropdown">
             @for(opt of dropdownOptions; track $index )
             {   
                 <option [value]="opt">{{opt}}</option>
@@ -13,7 +13,7 @@
 
         <div class="m-1"></div>
 
-        @if (selectedDropdownOption == PgnSources.Chesscom)
+        @if (form.selectedDropdownOption().value() == PgnSources.Chesscom)
         {
             <div>
                 <input 
@@ -21,14 +21,14 @@
                     (keydown.enter)="handleChessComGoPressed()" 
                     class="form-control usernameInput" 
                     placeholder="Search username" 
-                    [(ngModel)]="siteUsername"
-                    (focus)="isUsernameInputFocused = true;"
-                    (blur)="isUsernameInputFocused = false">
+                    [formField]="form.siteUsername"
+                    (focus)="isUsernameInputFocused.set(true);"
+                    (blur)="isUsernameInputFocused.set(false)">
                 
-                @if(isUsernameInputFocused)
+                @if(isUsernameInputFocused())
                 {
                     <ul class="list-group position-absolute savedUsernames">
-                        @for(username of savedChesscomUsernames; track $index)
+                        @for(username of savedChesscomUsernames(); track $index)
                         {
                             <li 
                                 class="list-group-item list-group-item-action"
@@ -47,7 +47,7 @@
             <app-bootstrap-button (buttonClick)="handleChessComGoPressed()" label="Go"></app-bootstrap-button>
         }
 
-        @if (selectedDropdownOption == PgnSources.Lichess)
+        @if (form.selectedDropdownOption().value() == PgnSources.Lichess)
         {
             <div>
                 <input 
@@ -55,14 +55,14 @@
                     (keydown.enter)="handleLichessGoPressed()" 
                     class="form-control usernameInput" 
                     placeholder="Search username" 
-                    [(ngModel)]="siteUsername"
-                    (focus)="isUsernameInputFocused = true;"
-                    (blur)="isUsernameInputFocused = false">
+                    [formField]="form.siteUsername"
+                    (focus)="isUsernameInputFocused.set(true);"
+                    (blur)="isUsernameInputFocused.set(false)">
                 
-                @if(isUsernameInputFocused)
+                @if(isUsernameInputFocused())
                 {
                     <ul class="list-group position-absolute savedUsernames">
-                        @for(username of savedLichessUsernames; track $index)
+                        @for(username of savedLichessUsernames(); track $index)
                         {
                             <li 
                                 class="list-group-item list-group-item-action"
@@ -84,9 +84,9 @@
 
     <div class="m-4"></div>
 
-    @if(selectedDropdownOption == PgnSources.Chesscom && chessComGames.length != 0)
+    @if(form.selectedDropdownOption().value() == PgnSources.Chesscom && chessComGames().length != 0)
     {
-        @for(game of chessComGames; track $index)
+        @for(game of chessComGames(); track $index)
         {
             <button class="siteResult card mb-2 w-100" style="text-align: left;" (click)="handleChessComGameClicked(game)">
                 <div class="card-body siteResultInner">
@@ -115,9 +115,9 @@
         }
     }
 
-    @if(selectedDropdownOption == PgnSources.Lichess && lichessGames.length != 0)
+    @if(form.selectedDropdownOption().value() == PgnSources.Lichess && lichessGames().length != 0)
     {
-        @for(game of lichessGames; track $index)
+        @for(game of lichessGames(); track $index)
         {
             <button class="siteResult card mb-2 w-100" style="text-align: left;" (click)="handleLichessGameClicked(game)">
                 <div class="card-body siteResultInner">
@@ -153,9 +153,9 @@
         }
     }
 
-    @if(selectedDropdownOption == PgnSources.Manual)
+    @if(form.selectedDropdownOption().value() == PgnSources.Manual)
     {
-        <textarea [(ngModel)]="pgn" class="manualPgnField d-block w-100"></textarea>
+        <textarea [formField]="form.pgn" class="manualPgnField d-block w-100"></textarea>
         <div class="m-4"></div>
 
         <app-bootstrap-button (click)="handleSubmitClicked()" label="Submit"></app-bootstrap-button>

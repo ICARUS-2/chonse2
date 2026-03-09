@@ -58,11 +58,12 @@ export class VsAi implements OnInit, AfterViewInit{
 
   ngOnInit(): void 
   {
-  const routeState = history.state;
-  this.inputtedPosition = routeState[RouteConstants.ROUTE_INPUTTED_POSITION];
+    const routeState = history.state;
+    this.inputtedPosition = routeState[RouteConstants.ROUTE_INPUTTED_POSITION];
 
-  this.setDefault();
-}
+    this.setDefault();
+  }
+  
   ngAfterViewInit(): void {
 
   }
