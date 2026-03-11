@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, input, Input, Output } from '@angular/core';
 import { PieceColor } from '../../../lib/piece-color';
 import { Square } from "../../chessboard/square/square";
 import { PieceType } from '../../../lib/piece-type';
@@ -16,8 +16,8 @@ export class PieceSelector {
   PieceColor = PieceColor;
   PieceSelector = PieceSelector;
   
-  @Input() for: PieceColor = PieceColor.WHITE;
-  @Input() isKingActive: boolean = true;
+  for = input<PieceColor>(PieceColor.WHITE);
+  isKingActive = input<boolean>(true);
 
   @Output() pieceSquareMouseDownEvent: EventEmitter<{piece: string, event: PointerEvent}> = new EventEmitter<{piece: string, event: PointerEvent}>();
   @Output() deleteSquareMouseUpEvent: EventEmitter<string> = new EventEmitter<string>();
@@ -40,7 +40,7 @@ export class PieceSelector {
   
   pieceSquareMouseDown(piece: string, event: PointerEvent)
   {
-    if (!this.isKingActive && (piece == PieceType.WHITE_KING || piece == PieceType.BLACK_KING))
+    if (!this.isKingActive() && (piece == PieceType.WHITE_KING || piece == PieceType.BLACK_KING))
     {
       return;
     }
