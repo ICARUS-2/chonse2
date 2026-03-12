@@ -25,7 +25,6 @@ export default class BoardState
     divergenceStackPointer: WritableSignal<number>;
     divergenceMoveStack: WritableSignal<Array<IMoveResult>>;
     divergenceEvalStack: WritableSignal<Array<PositionEval>>;
-    //divergenceEval: WritableSignal<PositionEval>;
 
     //Eval stuff.
     doEvaluateGame: WritableSignal<boolean> = signal(false);

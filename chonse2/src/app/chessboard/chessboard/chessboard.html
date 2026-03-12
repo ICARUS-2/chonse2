@@ -255,7 +255,8 @@
                                 {
                                     <tr 
                                     app-divergence-table-entry
-                                    [moveStack]="boardState().divergenceMoveStack()">
+                                    [moveStack]="boardState().divergenceMoveStack()"
+                                    [evalStack]="boardState().divergenceEvalStack()">
                                     </tr>
                                 }
 
@@ -306,7 +307,8 @@
                                 {
                                     <tr 
                                         app-divergence-table-entry
-                                        [moveStack]="boardState().divergenceMoveStack()">
+                                        [moveStack]="boardState().divergenceMoveStack()"
+                                        [evalStack]="boardState().divergenceEvalStack()">
                                     </tr>
                                 }
                             }

@@ -118,7 +118,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
 
     const boardState: BoardState | undefined = this.chessBoardService.getGame(this.gameId());
     if (!boardState) {
@@ -130,7 +130,10 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.boardState().doEvaluateGame() && !this.boardState().engine())
     {
-      this.boardState().evaluateGame();
+      await this.boardState().evaluateGame();
+      this.boardState().divergenceStackPointer.set(-1);
+      this.boardState().divergenceStateStack.set([]);
+      this.boardState().divergenceMoveStack.set([]);
     }
   }
 
@@ -260,7 +263,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const ref = this.modalService.open(ImportModal, {size: 'lg'});
 
-    ref.result.then( result => 
+    ref.result.then( async result => 
       {
         try 
         {
@@ -274,10 +277,15 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
           //Update current component state.
           this.boardState.set(this.chessBoardService.getGame(this.gameId()));
-          this.boardState().evaluateGame();
 
           //User feedback
           this.toastr.success("Successfully imported PGN.");
+
+          await this.boardState().evaluateGame();
+
+          this.boardState().divergenceStackPointer.set(-1);
+          this.boardState().divergenceStateStack.set([]);
+          this.boardState().divergenceMoveStack.set([]);
         }
         catch(ex)
         {
@@ -307,7 +315,10 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     this.boardState().doEvaluateGame.set(true);
     await this.boardState().evaluateGame();
-    this.boardState().goBackToStart();
+    //this.boardState().goBackToStart();
+    this.boardState().divergenceStackPointer.set(-1);
+    this.boardState().divergenceStateStack.set([]);
+    this.boardState().divergenceMoveStack.set([]);
     this.boardState().isReadOnly.set(true);
   }
 
