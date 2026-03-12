@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PieceType } from '../../../lib/piece-type';
 import { PieceColor } from '../../../lib/piece-color';
@@ -9,6 +9,7 @@ import ThemeService from '../../themes/theme-service';
   imports: [],
   templateUrl: './promotion-modal.html',
   styleUrl: './promotion-modal.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PromotionModal {
   color: string = "";

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, NgZone, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, input, Input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { PieceType } from '../../../lib/piece-type';
 import { Square } from '../square/square';
 import { PieceColor } from '../../../lib/piece-color';
@@ -18,7 +18,7 @@ import { ImportModal } from '../import-modal.ts/import-modal';
 import { ToastrService } from 'ngx-toastr';
 import { PgnComments } from './pgn-misc';
 import { EvalBar } from '../eval-bar/eval-bar';
-import { EngineDisplayName, EngineName, MoveClassification, moveClassificationLabels } from '../engine/types/enums';
+import { EngineDisplayName, EngineName, MoveClassification } from '../engine/types/enums';
 import MoveClassificationList from './move-classification-list';
 import { getEvaluationBarValue2 } from '../engine/helpers/chessHelper';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
@@ -28,14 +28,16 @@ import { Router } from '@angular/router';
 import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-helper';
 import { BootstrapButton } from '../../bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
+import { DivergenceTableEntry } from '../divergence-table-entry/divergence-table-entry';
 
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart, BootstrapButton],
+  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart, BootstrapButton, DivergenceTableEntry],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Chessboard implements OnInit, AfterViewInit {
+export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   pieceType = PieceType;
   PieceColor = PieceColor;
   GameOverReason = GameOverReason;
@@ -50,32 +52,33 @@ export class Chessboard implements OnInit, AfterViewInit {
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
   //Game service ID
-  @Input({required: true}) gameId: string = "";
-  
+  gameId = input<string>("")
+
   //State
-  boardState: BoardState
+  boardState = signal<BoardState>(null!);
 
   //MOVE PROPERTIES
-  currentLegalMoves: string[] = [];
-  currentlyHeldPiece: string = "";
-  fromSquare: string = "";
-  toSquare: string = "";
-  fromRightClickSquare: string = "";
-  toRightClickSquare: string = "";
+  currentLegalMoves = signal<string[]>([]);
+  currentlyHeldPiece = signal<string>('');
+  fromSquare = signal<string>('');
+  toSquare = signal<string>('');
+  fromRightClickSquare = signal<string>('');
+  toRightClickSquare = signal<string>('');
 
   //COSMETIC
   private readonly _ARROW_PULLBACK = 0.18;
-  mouseX: number = 0;
-  mouseY: number = 0;
-  arrows: Array<Arrow> = [];
+  private resizeObserver: ResizeObserver;
+  mouseX = signal(0);
+  mouseY = signal(0);
+  arrows = signal<Arrow[]>([]);
   @ViewChild('board', { static: false }) boardElement!: ElementRef<HTMLDivElement>;
-  @HostListener('window:resize') onResize() { this.updateBoardSize();}
-  boardPixelSize: number = 0;
-  animatedPiece: string = "";
-  animatedPieceX: number = 0;
-  animatedPieceY: number = 0;
-  animationDuration: number = 100; //ms
-  animatedPieceCoord: string = "";
+  boardPixelSize = signal(0);
+  animatedPiece = signal('');
+  animatedPieceX = signal(0);
+  animatedPieceY = signal(0);
+  animationDuration = 100; // ms
+  animatedPieceCoord = signal('');
+
   static readonly moveClassificationColors: Map<string, string> = new Map<string, string>( 
     [
       [MoveClassification.Opening, "Gray"],
@@ -93,77 +96,94 @@ export class Chessboard implements OnInit, AfterViewInit {
   )
   
   //FUNCTIONAL
-  clickToMove: boolean = false;
+  clickToMove = signal(false);
 
   constructor(
-    private ngZone: NgZone, 
     private modalService: NgbModal, 
     private chessBoardService: ChessBoardService, 
     private toastr: ToastrService,
     private router: Router,
-    public themeService: ThemeService)
+    public themeService: ThemeService,
+    public cdr: ChangeDetectorRef)
   {
     //Board state stored in service to persist across routerlink changes.
-    const boardState: BoardState = this.chessBoardService.getGame(this.gameId);
+    const boardState: BoardState = this.chessBoardService.getGame(this.gameId());
 
-    this.boardState = boardState;
+    this.boardState.set(boardState);
+
+    this.resizeObserver = new ResizeObserver( () =>
+    {
+      this.updateBoardSize();
+    } )
+
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
 
-    const boardState: BoardState | undefined = this.chessBoardService.getGame(this.gameId);
+    const boardState: BoardState | undefined = this.chessBoardService.getGame(this.gameId());
     if (!boardState) {
         //Not loading component if there is no game.
         console.warn(`Game ${this.gameId} not found yet`);
         return;
     }
-    this.boardState = boardState;
+    this.boardState.set(boardState);
 
-    if (this.boardState.doEvaluateGame)
+    if (this.boardState().doEvaluateGame() && !this.boardState().engine())
     {
-      if (!this.boardState.engine)
-      {
-        this.boardState.evaluateGame();
-      }
+      await this.boardState().evaluateGame();
+      this.boardState().divergenceStackPointer.set(-1);
+      this.boardState().divergenceStateStack.set([]);
+      this.boardState().divergenceMoveStack.set([]);
     }
   }
 
-  ngAfterViewInit(): void {
-    setTimeout(() => this.updateBoardSize());
+  ngAfterViewInit(): void 
+  {
+    if (this.boardElement)
+    {
+      this.resizeObserver.observe(this.boardElement.nativeElement);
+
+      this.updateBoardSize();
+    }
+  }
+
+  ngOnDestroy(): void 
+  {
+    this.resizeObserver.disconnect();  
   }
 
   async completeMove(fromSquare: string, toSquare: string)
   {
     //If the game is vs AI and there is no engine, don't move anything
-    if (this.boardState.isVsAi && !this.boardState.engine)
+    if (this.boardState().isVsAi() && !this.boardState().engine())
     {
       return;
     }
 
     //Can't move if, in AI mode, it isn't the player's turn.
-    if (this.boardState.isVsAi)
+    if (this.boardState().isVsAi())
     {
       //If we aren't diverging:
-      if (this.getMostCurrentMainState() == this.boardState.getCurrentState())
+      if (this.getMostCurrentMainState() == this.boardState().getCurrentState())
       {
-        if ((this.getMostCurrentMainState().turn && !this.boardState.humanPlayerIsWhite) || (!this.getMostCurrentMainState().turn && this.boardState.humanPlayerIsWhite))
+        if ((this.getMostCurrentMainState().turn && !this.boardState().humanPlayerIsWhite()) || (!this.getMostCurrentMainState().turn && this.boardState().humanPlayerIsWhite()))
         {
           return;
         }
       }
     }
 
-    const piece = this.currentlyHeldPiece;
-    if (!this.currentLegalMoves.includes(toSquare))
+    const piece = this.currentlyHeldPiece();
+    if (!this.currentLegalMoves().includes(toSquare))
     {
       return;
     }
     
-    const stateCopy = this.boardState.getCurrentState().getFullDeepCopy();
+    const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
 
     const isPromotion = (
-      this.currentlyHeldPiece == PieceType.WHITE_PAWN && this.toSquare.includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
-      this.currentlyHeldPiece == PieceType.BLACK_PAWN && this.toSquare.includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
+      this.currentlyHeldPiece() == PieceType.WHITE_PAWN && this.toSquare().includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
+      this.currentlyHeldPiece() == PieceType.BLACK_PAWN && this.toSquare().includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
 
     let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare, piece: PieceType.NONE, comment: ""};
 
@@ -171,7 +191,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     if (isPromotion)
     {
       //color to show on the dialog is derived.
-      const promotionPieceColor = this.currentlyHeldPiece == PieceType.WHITE_PAWN ? PieceColor.WHITE : PieceColor.BLACK;
+      const promotionPieceColor = this.currentlyHeldPiece() == PieceType.WHITE_PAWN ? PieceColor.WHITE : PieceColor.BLACK;
 
       //open the modal and set the color.
       const modalRef = this.modalService.open(PromotionModal, {size: 'xl'});
@@ -183,9 +203,9 @@ export class Chessboard implements OnInit, AfterViewInit {
         //perform the move and promote to what the user selected.
         moveResult = stateCopy.completeMove(fromSquare, toSquare, result);
 
-        await this.boardState.pushState(stateCopy, moveResult);
+        await this.boardState().pushState(stateCopy, moveResult);
         
-        if (this.boardState.isVsAi && this.getMostCurrentMainState() == this.boardState.getCurrentState())
+        if (this.boardState().isVsAi() && this.getMostCurrentMainState() == this.boardState().getCurrentState())
         {
           this.playAIMove();
         }
@@ -196,10 +216,10 @@ export class Chessboard implements OnInit, AfterViewInit {
         //if the dialog was forced closed, promote to queen by default.
         moveResult = stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
 
-        await this.boardState.pushState(stateCopy, moveResult);
+        await this.boardState().pushState(stateCopy, moveResult);
 
                 
-        if (this.boardState.isVsAi && this.getMostCurrentMainState() == this.boardState.getCurrentState())
+        if (this.boardState().isVsAi() && this.getMostCurrentMainState() == this.boardState().getCurrentState())
         {
           this.playAIMove();
         }
@@ -215,9 +235,9 @@ export class Chessboard implements OnInit, AfterViewInit {
 
       //perform the move
       moveResult = await stateCopy.completeMove(fromSquare, toSquare, piece);
-      this.boardState.pushState(stateCopy, moveResult);
+      this.boardState().pushState(stateCopy, moveResult);
         
-      if (this.boardState.isVsAi && this.getMostCurrentMainState() == this.boardState.getCurrentState())
+      if (this.boardState().isVsAi() && this.getMostCurrentMainState() == this.boardState().getCurrentState())
       {
         this.playAIMove();
       }
@@ -232,9 +252,9 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   resetMoveState()
   {
-    this.fromSquare = "";
-    this.toSquare = "";
-    this.currentLegalMoves = [];
+    this.fromSquare.set("");
+    this.toSquare.set("");
+    this.currentLegalMoves.set([]);
   }
 
   //Import/Reset/Analyze/Copy PGN
@@ -243,24 +263,29 @@ export class Chessboard implements OnInit, AfterViewInit {
   {
     const ref = this.modalService.open(ImportModal, {size: 'lg'});
 
-    ref.result.then( result => 
+    ref.result.then( async result => 
       {
         try 
         {
           //Create a new instance to put the game in.
           const newBoard: BoardState = BoardState.parsePGN(result);
-          newBoard.doEvaluateGame = true;
+          newBoard.doEvaluateGame.set(true);
           
           //Remove the old one and add the new one.
-          this.chessBoardService.deleteGame(this.gameId);
-          this.chessBoardService.addGame(this.gameId, newBoard);
+          this.chessBoardService.deleteGame(this.gameId());
+          this.chessBoardService.addGame(this.gameId(), newBoard);
 
           //Update current component state.
-          this.boardState = this.chessBoardService.getGame(this.gameId);
-          this.boardState.evaluateGame();
+          this.boardState.set(this.chessBoardService.getGame(this.gameId()));
 
           //User feedback
           this.toastr.success("Successfully imported PGN.");
+
+          await this.boardState().evaluateGame();
+
+          this.boardState().divergenceStackPointer.set(-1);
+          this.boardState().divergenceStateStack.set([]);
+          this.boardState().divergenceMoveStack.set([]);
         }
         catch(ex)
         {
@@ -279,25 +304,29 @@ export class Chessboard implements OnInit, AfterViewInit {
   handleResetClicked()
   {
     const bs: BoardState = new BoardState();
-    this.chessBoardService.deleteGame(this.gameId);
-    this.chessBoardService.addGame(this.gameId, bs);
-    this.boardState = this.chessBoardService.getGame(this.gameId);
-    this.arrows.length = 0;
+    this.chessBoardService.deleteGame(this.gameId());
+    this.chessBoardService.addGame(this.gameId(), bs);
+    this.boardState.set(this.chessBoardService.getGame(this.gameId()));
+    this.arrows.set([]);
   }
   //#endregion
 
-  handleAnalyzeClicked()
+  async handleAnalyzeClicked()
   {
-    this.boardState.doEvaluateGame = true;
-    this.boardState.evaluateGame();
-    this.boardState.isReadOnly = true;
+    this.boardState().doEvaluateGame.set(true);
+    await this.boardState().evaluateGame();
+    //this.boardState().goBackToStart();
+    this.boardState().divergenceStackPointer.set(-1);
+    this.boardState().divergenceStateStack.set([]);
+    this.boardState().divergenceMoveStack.set([]);
+    this.boardState().isReadOnly.set(true);
   }
 
   async copyPGNClicked(): Promise<void>
   {
     try 
     {
-      const exportedPgn = this.boardState.exportPGN();
+      const exportedPgn = this.boardState().exportPGN();
       await navigator.clipboard.writeText(exportedPgn);
       this.toastr.info("PGN copied");
     }
@@ -309,16 +338,16 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   //eval
   //#region 
-  getEvalProgress() : number
+  getEvalProgress = computed( (): number => 
   {
-    return Number(this.boardState.evalProgress.toFixed(2));
-  }
+    return Number(this.boardState().evalProgress().toFixed(2));
+  } )
 
-  getEngineDisplayName(): string 
+  getEngineDisplayName = computed( (): string => 
   {
-    if (this.boardState.engine)
+    if (this.boardState().engine)
     {
-      const eName = EngineDisplayName.get(this.boardState.engine.name);
+      const eName = EngineDisplayName.get(this.boardState().engine()?.name ?? UciEngine.DEFAULT_ENGINE);
 
       if (eName)
       {
@@ -326,15 +355,15 @@ export class Chessboard implements OnInit, AfterViewInit {
       }
     }
     return "what the hell are you analyzing this with then?";
-  }
+  }) 
 
-  getMoveClassificationForSquare(coord: string): MoveClassification 
+  getMoveClassificationForSquare = (coord: string) => computed( (): MoveClassification =>
   {
-    const lastEval = this.boardState.getMostRecentEval();
+    const lastEval = this.boardState().getMostRecentEval();
 
     if (lastEval)
     {
-      const lastMove = this.boardState.getMostRecentMove();
+      const lastMove = this.boardState().getMostRecentMove();
       const classification: MoveClassification = lastEval.moveClassification ?? MoveClassification.None;
 
       if (lastMove.fromCoord == coord || lastMove.toCoord == coord)
@@ -344,35 +373,35 @@ export class Chessboard implements OnInit, AfterViewInit {
     }
 
     return MoveClassification.None;
-  }
-
-  getMoveClassificationIconSourceForCoord(coord: string): string 
+  }) 
+  
+  getMoveClassificationIconSourceForCoord = (coord: string) => computed( (): string =>
   {
-    const lastEval = this.boardState.getMostRecentEval();
+    const lastEval = this.boardState().getMostRecentEval();
     
     if (lastEval)
     {
       if (lastEval.moveClassification)
       {
-        const mostRecentMove = this.boardState.getMostRecentMove();
+        const mostRecentMove = this.boardState().getMostRecentMove();
 
         if (mostRecentMove.toCoord == coord)
         {
-          return this.getIconSourceForMoveClassification(lastEval.moveClassification);
+          return this.getIconSourceForMoveClassification(lastEval.moveClassification)();
         }   
       }
     }
     return "";
-  }
+  } )
 
-  getIconSourceForMoveClassification(classification: MoveClassification)
+  getIconSourceForMoveClassification = (classification: MoveClassification) => computed( () => 
   {
     return "icons/" + classification + ".png";
-  }
+  })
 
-  getPastEngineArrow() : Arrow | null
+  getPastEngineArrow = computed( (): Arrow | null => 
   {
-    const bestMove = this.boardState.getPreviousMostRecentEval()?.bestMove;
+    const bestMove = this.boardState().getPreviousMostRecentEval()?.bestMove;
 
     if (bestMove)
     {
@@ -385,11 +414,11 @@ export class Chessboard implements OnInit, AfterViewInit {
     }
 
     return null;
-  }
+  } ) 
 
-  getFutureEngineArrow(): Arrow | null 
+  getFutureEngineArrow = computed( (): Arrow | null =>
   {
-    const bestMove = this.boardState.getMostRecentEval()?.bestMove;
+    const bestMove = this.boardState().getMostRecentEval()?.bestMove;
 
     if (bestMove)
     {
@@ -402,12 +431,12 @@ export class Chessboard implements OnInit, AfterViewInit {
     }
 
     return null;
-  }
+  } ) 
 
-  getEvalBarData(): {whiteBarPercentage: number, label: string}
+  getEvalBarData = computed( (): {whiteBarPercentage: number, label: string} =>
   {
-    const e = this.boardState.getMostRecentEval();
-    const state = this.boardState.getCurrentState();
+    const e = this.boardState().getMostRecentEval();
+    const state = this.boardState().getCurrentState();
 
     if (e)
     {
@@ -416,7 +445,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     }
     else 
     {
-      const pe = this.boardState.getPreviousMostRecentEval();
+      const pe = this.boardState().getPreviousMostRecentEval();
       if (pe)
       {
         const data = getEvaluationBarValue2(pe, state.gameState.gameScore);
@@ -425,17 +454,15 @@ export class Chessboard implements OnInit, AfterViewInit {
     }
 
     return {whiteBarPercentage: 51, label: "0.4"};
-  }
+  })
 
   onGraphClicked(idx: number)
   {
-    this.ngZone.run( () =>
-    {
-      this.moveClicked(idx);
-    } )
+    //Potentially mark this for change?
+    this.moveClicked(idx);
   }
 
-  getImageSourceForEnginePiece(coord: string) : string
+  getImageSourceForEnginePiece = (coord: string) => computed( (): string =>
   {
     if (!coord)
     {
@@ -450,19 +477,19 @@ export class Chessboard implements OnInit, AfterViewInit {
     const fromCoord: string = coord[0] + coord[1];
     const idx = Chonse2.findIndexFromCoordinate(fromCoord);
 
-    const piece: string = this.boardState.getCurrentState().pieceState[idx.rowIndex][idx.colIndex];
+    const piece: string = this.boardState().getCurrentState().pieceState[idx.rowIndex][idx.colIndex];
 
     return `piece/merida/${piece}.svg`;
-  }
+  }) 
 
-  getOpeningDisplay() : string
+  getOpeningDisplay = computed( () : string => 
   {
-    if (!this.boardState.eval)
+    if (!this.boardState().eval)
     {
       return "-";
     }
 
-    const recentEval: PositionEval | undefined = this.boardState.getMostRecentEval();
+    const recentEval: PositionEval | undefined = this.boardState().getMostRecentEval();
 
     if (!recentEval)
     {
@@ -476,14 +503,16 @@ export class Chessboard implements OnInit, AfterViewInit {
       }
       else 
       {
-        if (this.boardState.eval.positions)
+        const evaluation = this.boardState().eval();
+        if (evaluation?.positions)
         {
-          return this.boardState.eval.positions[this.boardState.eval.positions.length - 1].opening ?? "-";
+          const l = evaluation.positions.length - 1;
+          return evaluation.positions[l].opening ?? "-";
         }
       }
     }
     return "-";
-  }
+  } )
   //#endregion
 
   //VS AI
@@ -495,8 +524,10 @@ export class Chessboard implements OnInit, AfterViewInit {
       return;
     }
 
+    const engine = this.boardState().engine();
+
     //Can't play an engine move if there is no engine.
-    if (!this.boardState.engine)
+    if (!engine)
     {
       this.toastr.error("Error: Engine not initialized.");
       return;
@@ -505,10 +536,10 @@ export class Chessboard implements OnInit, AfterViewInit {
     //Sets up the params to query the engine.
     const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
     const fen = this.getMostCurrentMainState().getFEN();
-    const elo = this.boardState.aiElo;
+    const elo = this.boardState().aiElo();
               
     //Asks the engine for its move.
-    const engineResult = await this.boardState.engine.getEngineNextMove(fen, elo, depth);
+    const engineResult = await engine.getEngineNextMove(fen, elo, depth);
     
     //If the engine couldn't find something, display an error.
     if (!engineResult)
@@ -523,7 +554,7 @@ export class Chessboard implements OnInit, AfterViewInit {
     const promotion = engineResult[4] ? engineResult[4].toUpperCase() : PieceType.QUEEN;
 
     //The state to be pushed to the stack.
-    const stateCopy = this.boardState.getCurrentState().getFullDeepCopy();
+    const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
     
     const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
     const pieceToAnimate = this.getMostCurrentMainState().pieceState[fromIdx.rowIndex][fromIdx.colIndex];
@@ -543,7 +574,7 @@ export class Chessboard implements OnInit, AfterViewInit {
 
     gameState.isGameOver = true;
     gameState.reason = GameOverReason.Resignation;
-    gameState.gameScore = this.boardState.humanPlayerIsWhite ? GameScore.BLACK_WON : GameScore.WHITE_WON;
+    gameState.gameScore = this.boardState().humanPlayerIsWhite() ? GameScore.BLACK_WON : GameScore.WHITE_WON;
 
     this.toastr.warning("You resigned.");
   }
@@ -555,24 +586,26 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   analyzeAiGameClicked()
   {
-    const states = this.boardState.mainStateStack.map( s => s.getFullDeepCopy() );
-    const gameStates = this.boardState.mainStateStack.map( s => structuredClone(s.gameState) );
-    const moves = this.boardState.mainMoveStack.map(m => structuredClone(m));
-    const pgnHeaders = structuredClone(this.boardState.pgnHeaders);
+    const states = this.boardState().mainStateStack().map( s => s.getFullDeepCopy() );
+    const gameStates = this.boardState().mainStateStack().map( s => structuredClone(s.gameState) );
+    const moves = this.boardState().mainMoveStack().map(m => structuredClone(m));
+    const pgnHeaders = structuredClone(this.boardState().pgnHeaders());
 
     this.router.navigate(['/'], {state: { "vsAiStates": states, "vsAiGameStates": gameStates, "vsAiMoves": moves, "vsAiPgnHeaders": pgnHeaders}});
   }
 
   getMostCurrentMainState()
   {
-    return this.boardState.mainStateStack[this.boardState.mainStateStack.length - 1];
+    return this.boardState().mainStateStack()[this.boardState().mainStateStack().length - 1];
   }
 
   forcePushState(state: Chonse2, moveResult: IMoveResult)
   {
-    this.boardState.mainStateStack.push(state);
-    this.boardState.mainMoveStack.push(moveResult);
-    this.boardState.mainStackPointer++;
+    this.boardState().mainStateStack.update( stack => [...stack, state]);
+    
+    this.boardState().mainMoveStack.update( stack => [...stack, moveResult] );
+    
+    this.boardState().mainStackPointer.update(score => score + 1);
   }
   //#endregion
 
@@ -580,83 +613,85 @@ export class Chessboard implements OnInit, AfterViewInit {
   //#region 
   handleFlipClicked()
   {
-    this.boardState.isFlipped = !this.boardState.isFlipped;
+    this.boardState().isFlipped.update( f => !f );
   }
 
   handleDoubleBackButtonClicked()
   {
     Sound.playSound(Sound.MOVE);
-    this.boardState.goBackToStart();
+    this.boardState().goBackToStart();
   }
 
   handleBackButtonClicked()
   {
-    const mostRecentMove = this.boardState.getMostRecentMove();
+    const mostRecentMove = this.boardState().getMostRecentMove();
 
 
     this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
 
     setTimeout( () =>
     {
-      this.boardState.goBack();
+      this.boardState().goBack();
       Sound.playSound(Sound.MOVE);
+
     }, this.animationDuration )
   }
 
   handleForwardButtonClicked()
   {
-    const mostRecentMove = this.boardState.getFutureMove();
+    const mostRecentMove = this.boardState().getFutureMove();
     this.animateMove(mostRecentMove.fromCoord, mostRecentMove.toCoord, mostRecentMove.piece);
     setTimeout( () =>
     {
-      this.boardState.goForward();
+      this.boardState().goForward();
       Sound.playSoundForMove(mostRecentMove.notation);
+
     }, this.animationDuration )
   }   
 
   handleDoubleForwardButtonClicked()
   {
-    this.boardState.goForwardToEnd();
+    this.boardState().goForwardToEnd();
     Sound.playSound(Sound.CAPTURE);
   }
 
   //Should the back buttons be enabled
-  areBackButtonsEnabled(): boolean 
+  areBackButtonsEnabled = computed( (): boolean  =>
   {
-    return this.boardState.mainStackPointer != 0 || this.boardState.divergenceStackPointer != -1;
-  }
+    return this.boardState().mainStackPointer() != 0 || this.boardState().divergenceStackPointer() != -1;
+  })
 
-  areForwardButtonsEnabled(): boolean 
+  areForwardButtonsEnabled = computed( (): boolean =>
   {
     //If we are deviating from the main game (by going back) then you can't logically go forward.
-    if (this.boardState.divergenceStateStack.length != 0)
+    if (this.boardState().divergenceStateStack().length != 0)
     {
       return false;
     }
 
     //If there are no more moves left after this, then you can't go back.
-    if (this.boardState.mainStackPointer == this.boardState.mainStateStack.length - 1)
+    if (this.boardState().mainStackPointer() == this.boardState().mainStateStack().length - 1)
     {
       return false;
     }
 
     return true;
-  }
-
+  })
   
   moveClicked(index: number)
   {
-    if (this.boardState.divergenceStateStack.length != 0)
+    if (this.boardState().divergenceStateStack().length != 0)
     { 
-      this.boardState.goBackToStart();
+      this.boardState().goBackToStart();
     }
 
-    this.boardState.mainStackPointer = index;
+    this.boardState().mainStackPointer.set(index);
+    this.cdr.markForCheck();
   }
 
   moveClassificationClicked(color: PieceColor, classification : MoveClassification)
   {
-    const list: MoveClassificationList = color == PieceColor.WHITE ? this.boardState.whiteMoveClassificationList : this.boardState.blackMoveClassificationList;
+    const list: MoveClassificationList = color == PieceColor.WHITE ? this.boardState().whiteMoveClassificationList() : this.boardState().blackMoveClassificationList();
     
     const entry = list.moves.get(classification);
     
@@ -674,10 +709,10 @@ export class Chessboard implements OnInit, AfterViewInit {
     }
   }
 
-  getClockForPlayer(color: string) : string
+  getClockForPlayer = (color: string) => computed ( (): string =>
   {
-    const stackPtr = this.boardState.mainStackPointer;
-    const moveStack = this.boardState.mainMoveStack;
+    const stackPtr = this.boardState().mainStackPointer();
+    const moveStack = this.boardState().mainMoveStack();
 
     for(let i = stackPtr; i > 0; i--)
     {
@@ -696,7 +731,7 @@ export class Chessboard implements OnInit, AfterViewInit {
       }
     }
       return ""
-  }
+  } ) 
   //#endregion
 
   //Left click/pointer
@@ -704,7 +739,7 @@ export class Chessboard implements OnInit, AfterViewInit {
   onSquareLeftClick = () =>
   {
     this.resetClickedSquares();
-    this.arrows = this.arrows.filter( a => a.context == ArrowContext.Engine );
+    this.arrows.set(this.arrows().filter( a => a.context == ArrowContext.Engine));
   }
 
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: PointerEvent })
@@ -720,8 +755,8 @@ export class Chessboard implements OnInit, AfterViewInit {
       else //if not, the piece is dragged under the mouse cursor.
       {
         //update the square that the piece is dragged from
-        this.fromSquare = event.coordinate;
-        this.currentlyHeldPiece = event.piece;
+        this.fromSquare.set(event.coordinate);
+        this.currentlyHeldPiece.set(event.piece);
 
         if (event.piece != "")
         {
@@ -730,13 +765,13 @@ export class Chessboard implements OnInit, AfterViewInit {
       }
 
       //property will display legal moves on the screen.
-      this.currentLegalMoves = this.boardState.getCurrentState().getLegalMoves(event.coordinate);
+      this.currentLegalMoves.set(this.boardState().getCurrentState().getLegalMoves(event.coordinate));
     }
 
     //Right click for square highlight or arrow drawing
     if (event.mouse.button == 2)
     {
-      this.fromRightClickSquare = event.coordinate;
+      this.fromRightClickSquare.set(event.coordinate);
     }
   }
 
@@ -748,13 +783,13 @@ export class Chessboard implements OnInit, AfterViewInit {
       if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE))
       {
         //If the fromsquare has not been selected, we should set it and compute its legal moves.
-        if (this.fromSquare == "")
+        if (this.fromSquare() == "")
         {
-          this.fromSquare = event.coordinate;
-          this.currentLegalMoves = this.boardState.getCurrentState().getLegalMoves(this.fromSquare);
+          this.fromSquare.set(event.coordinate);
+          this.currentLegalMoves.set(this.boardState().getCurrentState().getLegalMoves(this.fromSquare()));
 
           //If it has no legal moves, reset the state to reduce the number of clicks required when switching to another piece.
-          if (this.currentLegalMoves.length == 0)
+          if (this.currentLegalMoves().length == 0)
           {
             this.resetMoveState();
           }
@@ -764,18 +799,18 @@ export class Chessboard implements OnInit, AfterViewInit {
         }
 
         //If the toSquare is empty and we got this far, the user would like to move to this square.
-        if (this.toSquare == "")
+        if (this.toSquare() == "")
         {
-          this.toSquare = event.coordinate;
+          this.toSquare.set(event.coordinate);
 
           //If it is not legal, reset the state and disregard the from square, or complete the move if it is legal.
-          if (!this.currentLegalMoves.includes(this.toSquare))
+          if (!this.currentLegalMoves().includes(this.toSquare()))
           {
             this.resetMoveState();
           }
           else
           {
-            this.completeMove(this.fromSquare, this.toSquare);
+            this.completeMove(this.fromSquare(), this.toSquare());
           }
         }
         return;
@@ -783,47 +818,52 @@ export class Chessboard implements OnInit, AfterViewInit {
 
       //If it is not click to move mode:
       //sets the square in the UI to where the player is dropping the piece.
-      this.toSquare = event.coordinate;
+      this.toSquare.set(event.coordinate);
 
       const fromSquare = this.fromSquare;
       const toSquare = event.coordinate;
 
-      this.completeMove(fromSquare, toSquare);
+      this.completeMove(fromSquare(), toSquare);
     }
 
     if (event.mouse.button == 2)
     {
-      this.toRightClickSquare = event.coordinate;
+      this.toRightClickSquare.set(event.coordinate);
 
       //If the squares are the same, the user is highlighting a sqaure.
-      if (this.fromRightClickSquare == this.toRightClickSquare)
+      if (this.fromRightClickSquare() == this.toRightClickSquare())
       {
         //Gets the index of the square to highlight.
-        const idx = Chonse2.findIndexFromCoordinate(this.toRightClickSquare);
+        const idx = Chonse2.findIndexFromCoordinate(this.toRightClickSquare());
 
         //Sets the status telling it to change color.
-        this.boardState.squareHighlightStatuses[idx.rowIndex][idx.colIndex] = !this.boardState.squareHighlightStatuses[idx.rowIndex][idx.colIndex];
+        this.boardState().squareHighlightStatuses.update(grid =>
+        {
+            const copy = grid.map(r => [...r]);
+            copy[idx.rowIndex][idx.colIndex] = !copy[idx.rowIndex][idx.colIndex];
+            return copy;
+        });
       }
       else //If the squares are different, they are drawing an arrow.
       {
-        const arrow = this.createArrow(this.fromRightClickSquare, this.toRightClickSquare);
+        const arrow = this.createArrow(this.fromRightClickSquare(), this.toRightClickSquare());
         
         if (arrow)
         {
-          this.arrows.push(arrow); 
+          this.arrows.set([...this.arrows() , arrow]); 
         }
       }
 
-      this.fromRightClickSquare = "";
-      this.toRightClickSquare = "";
+      this.fromRightClickSquare.set('');
+      this.toRightClickSquare.set('');
     }
   }
 
   handleDragImage(mouse: PointerEvent)
   {
     //Adds sets the current mouse position in the UI so it can be tracked.
-    this.mouseX = mouse.clientX;
-    this.mouseY = mouse.clientY;
+    this.mouseX.set(mouse.clientX);
+    this.mouseY.set(mouse.clientY);
 
     //Adds events to continuously track the movement of the piece.
     document.addEventListener('pointermove', this.onMouseMove);
@@ -833,8 +873,8 @@ export class Chessboard implements OnInit, AfterViewInit {
   //When the mouse moves, tell the UI where it is.
   onMouseMove = (event: PointerEvent) => 
   {
-    this.mouseX = event.clientX; 
-    this.mouseY = event.clientY;
+    this.mouseX.set(event.clientX); 
+    this.mouseY.set(event.clientY);
   }
 
   //When the mouse is released, remove the event listeners and reset the from/to/stored legal moves.
@@ -843,9 +883,9 @@ export class Chessboard implements OnInit, AfterViewInit {
     document.removeEventListener('pointermove', this.onMouseMove);
     document.removeEventListener('pointerup', this.onMouseUp);
 
-    this.currentlyHeldPiece = "";
-    this.mouseX = 0;
-    this.mouseY = 0;
+    this.currentlyHeldPiece.set("");
+    this.mouseX.set(0);
+    this.mouseY.set(0);
 
     this.resetMoveState();
   }
@@ -855,17 +895,17 @@ export class Chessboard implements OnInit, AfterViewInit {
   //#region 
 
   //For the coordinate, get whether it is right clicked or not.
-  getRightClickedStatusForSquare(coordinate: string)
+  getRightClickedStatusForSquare = (coordinate: string) => computed( () =>
   {
     const idx = Chonse2.findIndexFromCoordinate(coordinate);
     
-    return this.boardState.squareHighlightStatuses[idx.rowIndex][idx.colIndex];
-  }
+    return this.boardState().squareHighlightStatuses()[idx.rowIndex][idx.colIndex];
+  } )
 
   //Sets all the right clicked statuses to false, clearing any right clicked squares.
   resetClickedSquares()
   {
-    if (this.boardState.squareHighlightStatuses.length == 0)
+    if (this.boardState().squareHighlightStatuses().length == 0)
     {
       for(let i = 0; i < Chonse2.SIZE; i++)
       {
@@ -874,19 +914,19 @@ export class Chessboard implements OnInit, AfterViewInit {
         {
           rank.push(false);
         }
-        this.boardState.squareHighlightStatuses.push(rank);
+        this.boardState().squareHighlightStatuses.update( st => [...st, rank] );
       }
     }
     else 
     {
       for(let i = 0; i < Chonse2.SIZE; i++)
       {
-        const rank = this.boardState.squareHighlightStatuses[i];
+        const rank = this.boardState().squareHighlightStatuses()[i];
         for(let j = 0; j < Chonse2.SIZE; j++)
         {
           rank[j] = false;
         }
-        this.boardState.squareHighlightStatuses.push(rank);
+        this.boardState().squareHighlightStatuses.update( st => [...st, rank] );
       }
     }
   }
@@ -944,87 +984,87 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   //Endgame square animation logic
   //#region
-  _isSquareEndgameKingSquare(rankIndex: number, fileIndex: number)
+  _isSquareEndgameKingSquare = (rankIndex: number, fileIndex: number) => computed((): boolean  => 
   {
-    return this._isSquareCheckmatedKing(rankIndex, fileIndex) || this._isSquareWinningKing(rankIndex, fileIndex) || this._isSquareKingInDraw(rankIndex, fileIndex);
-  }
+    return this._isSquareCheckmatedKing(rankIndex, fileIndex)() || this._isSquareWinningKing(rankIndex, fileIndex)() || this._isSquareKingInDraw(rankIndex, fileIndex)();
+  })
 
-  _isSquareCheckmatedKing(rankIndex: number, fileIndex: number) : boolean
+  _isSquareCheckmatedKing = (rankIndex: number, fileIndex: number) => computed( (): boolean =>
   {
-    return (this.boardState.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState.getCurrentState().gameState.winner == PieceColor.BLACK) || (this.boardState.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState.getCurrentState().gameState.winner == PieceColor.WHITE) && this.boardState.getCurrentState().gameState.reason == GameOverReason.Checkmate;
-  }
+    return (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.BLACK) || (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.WHITE) && this.boardState().getCurrentState().gameState.reason == GameOverReason.Checkmate;
+  })
 
-  _isSquareWinningKing(rankIndex: number, fileIndex: number) : boolean
+  _isSquareWinningKing = (rankIndex: number, fileIndex: number) => computed( (): boolean => 
   {
-    return (this.boardState.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState.getCurrentState().gameState.winner == PieceColor.WHITE) || (this.boardState.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState.getCurrentState().gameState.winner == PieceColor.BLACK); 
-  }
+    return (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.WHITE) || (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.BLACK); 
+  } )
 
-  _isSquareKingInDraw(rankIndex: number, fileIndex: number) : boolean 
-  { 
-    return this.boardState.getCurrentState().gameState.isDraw() && (this.boardState.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING || this.boardState.getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING);
-  }
-
-  _getEndgameSquareBackgroundColor(rankIndex: number, fileIndex: number): string
+  _isSquareKingInDraw = (rankIndex: number, fileIndex: number) => computed( (): boolean => 
   {
-    if (this._isSquareCheckmatedKing(rankIndex, fileIndex))
+    return this.boardState().getCurrentState().gameState.isDraw() && (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING || this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING);
+  })
+
+  _getEndgameSquareBackgroundColor = (rankIndex: number, fileIndex: number) => computed( (): string => 
+  {
+    if (this._isSquareCheckmatedKing(rankIndex, fileIndex)())
     {
       return "red";
     }
 
-    if (this._isSquareKingInDraw(rankIndex, fileIndex))
+    if (this._isSquareKingInDraw(rankIndex, fileIndex)())
     {
       return "skyblue"
     }
 
-    if (this._isSquareWinningKing(rankIndex, fileIndex))
+    if (this._isSquareWinningKing(rankIndex, fileIndex)())
     {
       return "limegreen";
     }
 
     return "transparent";
-  }
+  })
 
-  _getEndgameSquareImgSrc(rankIndex: number, fileIndex: number): string
+  _getEndgameSquareImgSrc = (rankIndex: number, fileIndex: number) => computed( (): string =>
   {
     const base = "icons/";
 
-    if (this._isSquareCheckmatedKing(rankIndex, fileIndex))
+    if (this._isSquareCheckmatedKing(rankIndex, fileIndex)())
     {
       return base + "checkmate.webp";
     }
 
-    if (this._isSquareKingInDraw(rankIndex, fileIndex))
+    if (this._isSquareKingInDraw(rankIndex, fileIndex)())
     {
       return base + "draw.webp"
     }
 
-    if (this._isSquareWinningKing(rankIndex, fileIndex))
+    if (this._isSquareWinningKing(rankIndex, fileIndex)())
     {
       return base + "winner.webp";
     }
 
     return "";
-  }
+  })
 
-  _getEndgameSquareText(rankIndex: number, fileIndex: number) : string
+  _getEndgameSquareText = (rankIndex: number, fileIndex: number) => computed( (): string =>
   {
-    if (this._isSquareCheckmatedKing(rankIndex, fileIndex))
+    if (this._isSquareCheckmatedKing(rankIndex, fileIndex)())
     {
       return "Checkmate";
     }
 
-    if (this._isSquareWinningKing(rankIndex, fileIndex))
+    if (this._isSquareWinningKing(rankIndex, fileIndex)())
     {
       return "Winner";
     }
 
-    if (this._isSquareKingInDraw(rankIndex, fileIndex))
+    if (this._isSquareKingInDraw(rankIndex, fileIndex)())
     {
       return "Draw";
     }
 
     return "";
-  }
+  })
   //#endregion
   
   //Animation for piece movement logic
@@ -1037,50 +1077,51 @@ export class Chessboard implements OnInit, AfterViewInit {
       return;
     }
 
-    this.boardPixelSize = this.boardElement.nativeElement.getBoundingClientRect().width;
+    this.boardPixelSize.set(this.boardElement.nativeElement.getBoundingClientRect().width);
   }
   
-  getBoardTopLeft(): { left: number; top: number } {
+  getBoardTopLeft = computed( (): { left: number; top: number }  => 
+  {
     const rect = this.boardElement.nativeElement.getBoundingClientRect();
     return { left: rect.left, top: rect.top };
-  }
+  })
 
-  getBoardPixelSize(): number 
+  getBoardPixelSize = computed( (): number => 
   {
-    return this.boardPixelSize;
-  }
+    return this.boardPixelSize();
+  }) 
 
-  getSquarePixelSize(): number 
+  getSquarePixelSize = computed( (): number => 
   {
-    return this.boardPixelSize / Chonse2.SIZE;
-  }
+    return this.boardPixelSize() / Chonse2.SIZE;
+  })
 
-  getPiecePixelPosition(coordinate: string): { x: number, y: number } 
+  getPiecePixelPosition = (coordinate: string) => computed( (): { x: number, y: number }  => 
   {
     const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coordinate);
     const squareSize = this.getSquarePixelSize();
 
     return {
-        x: colIndex * squareSize,
-        y: rowIndex * squareSize
+      x: colIndex * squareSize,
+      y: rowIndex * squareSize
     };
-  }
+  } ) 
 
 
   animateMove(from: string, to: string, piece: string) 
   {
-    const fromCoords = this.getPiecePixelPosition(from);
-    const toCoords = this.getPiecePixelPosition(to);
-    this.animatedPieceCoord = from;
-    this.animatedPiece = piece;
+    const fromCoords = this.getPiecePixelPosition(from)();
+    const toCoords = this.getPiecePixelPosition(to)();
+    this.animatedPieceCoord.set(from);
+    this.animatedPiece.set(piece);
 
-    this.animatedPieceX = fromCoords.x;
-    this.animatedPieceY = fromCoords.y;
+    this.animatedPieceX.set(fromCoords.x);
+    this.animatedPieceY.set(fromCoords.y);
 
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-            this.animatedPieceX = toCoords.x;
-            this.animatedPieceY = toCoords.y;
+            this.animatedPieceX.set(toCoords.x);
+            this.animatedPieceY.set(toCoords.y);
         });
     });
   }
@@ -1088,8 +1129,8 @@ export class Chessboard implements OnInit, AfterViewInit {
 
   onAnimationEnd() 
   {
-    this.animatedPiece = "";
-    this.animatedPieceCoord = "";
+    this.animatedPiece.set("");
+    this.animatedPieceCoord.set("");
   }
   //#endregion
   

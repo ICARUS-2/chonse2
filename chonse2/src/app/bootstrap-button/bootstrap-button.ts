@@ -1,29 +1,31 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import ThemeService from '../themes/theme-service';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output
+} from '@angular/core';
 import { NgClass } from '@angular/common';
+import ThemeService from '../themes/theme-service';
 
 @Component({
   selector: 'app-bootstrap-button',
+  standalone: true,
   imports: [NgClass],
   templateUrl: './bootstrap-button.html',
   styleUrl: './bootstrap-button.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BootstrapButton {
 
-  @Input() label = "BUTTON_LABEL";
-  @Input() disabled: boolean = false;
-  @Input() extraClasses: string = "";
+  label = input<string>('BUTTON_LABEL');
+  disabled = input<boolean>(false);
+  extraClasses = input<string>('');
 
-  @Output() buttonClick: EventEmitter<PointerEvent> = new EventEmitter();
-  constructor(public themeService: ThemeService)
-  {
-    
+  buttonClick = output<PointerEvent>();
+
+  constructor(public themeService: ThemeService) {}
+
+  onButtonClicked(event: PointerEvent) {
+    this.buttonClick.emit(event);
   }
-
-
-  onButtonClicked()
-  {
-    this.buttonClick.emit();
-  }
-
 }

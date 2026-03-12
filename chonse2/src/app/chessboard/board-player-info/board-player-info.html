@@ -1,6 +1,6 @@
 <div class="boardPlayerInfoContainer d-flex align-items-center">
     
-    <p [style.color]="themeService.getThemeInstance().getTextColor()">{{playerName}} {{playerElo ? `(${playerElo})` : ""}}</p>
+    <p [style.color]="themeService.getThemeInstance().getTextColor()">{{playerName()}} {{playerElo() ? `(${playerElo()})` : ""}}</p>
     
     <div class="m-1"></div>
 
@@ -23,8 +23,8 @@
     
     <div class="m-1"></div>
 
-    @if (clock)
+    @if (clock())
     {
-        <p class="badge text-bg-secondary">{{clock}}</p>
+        <p class="badge text-bg-secondary">{{clock()}}</p>
     }
 </div>
