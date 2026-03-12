@@ -25,6 +25,7 @@ export default class BoardState
     divergenceStackPointer: WritableSignal<number>;
     divergenceMoveStack: WritableSignal<Array<IMoveResult>>;
     divergenceEvalStack: WritableSignal<Array<PositionEval>>;
+    //divergenceEval: WritableSignal<PositionEval>;
 
     //Eval stuff.
     doEvaluateGame: WritableSignal<boolean> = signal(false);
@@ -33,8 +34,9 @@ export default class BoardState
     engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
-    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult}>> = signal([]);
+    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult, session: number}>> = signal([]);
     private isEvaluating: WritableSignal<boolean> = signal(false);
+    evaluationSessionId: number = 0; //Designed to prevent in-progress evals from causing desyncrhonization when going back.
 
     //Vs ai stuff
     isVsAi: WritableSignal<boolean> = signal(false);
@@ -212,7 +214,9 @@ export default class BoardState
 
     private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: IMoveResult)
     {
-        this.evalQueue.update( q => [...q, {previousState, state, move}] );
+        const session = this.evaluationSessionId;
+
+        this.evalQueue.update( q => [...q, {previousState, state, move, session}] );
 
         this.processEvaluationQueue();
     }
@@ -221,11 +225,11 @@ export default class BoardState
         if (!this.engine() || this.isEvaluating() || this.evalQueue().length == 0)
         {
             return;
-        } 
-        
+        }
+
         this.isEvaluating.set(true);
 
-        const { previousState, state, move } = this.evalQueue().shift()!;
+        const { previousState, state, move, session } = this.evalQueue().shift()!;
 
         try
         {
@@ -246,6 +250,14 @@ export default class BoardState
                     move,
                     depth
                 );
+
+                // If session changed, abandon immediately
+                if (session !== this.evaluationSessionId || this.divergenceEvalStack().length == this.divergenceStateStack().length)
+                {
+                    this.isEvaluating.set(false);
+                    this.processEvaluationQueue();
+                    return;
+                }
                 
                 //Sanitizes for moe classification consistency across different evaluations.
                 const previousEval = this.getPreviousMostRecentEval();
@@ -284,12 +296,15 @@ export default class BoardState
     //#region STACK TRAVERSAL
     goBackToStart()
     {
+        this.evaluationSessionId++;
+
         //Simply back up to the first move.
         this.mainStackPointer.set(0);
         this.divergenceStateStack.set([]);
         this.divergenceMoveStack.set([]);
         this.divergenceEvalStack.set([]);
         this.divergenceStackPointer.set(-1);
+        this.evalQueue.set([]);
     }
 
     goBack()
@@ -308,9 +323,13 @@ export default class BoardState
         }
         else //If we are diverging, just get rid of the state entirely.
         {
+            this.evaluationSessionId++;
             if (this.eval())
             {
-                this.divergenceEvalStack.update(stack => stack.slice(0, -1));
+                if (this.divergenceEvalStack().length >= this.divergenceMoveStack().length)
+                {
+                    this.divergenceEvalStack.update(stack => stack.slice(0, -1));
+                }
             }
 
             this.divergenceStateStack.update(stack => stack.slice(0, -1));

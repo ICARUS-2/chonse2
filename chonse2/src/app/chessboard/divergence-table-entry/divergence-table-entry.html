@@ -1,9 +1,9 @@
-<td colspan="3" class="" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+<td colspan="3" class="ps-4" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
     <i class="bi bi-arrow-return-right"></i>
 
-    <table class="ts-4 w-100">
-        <tbody>
-            @for(item of stack(); track $index)
+    <table class="w-100">
+        <tbody class="">
+            @for(item of moveStack(); track $index)
             {
                 @if ($index % 2 == 0)
                 {
@@ -13,11 +13,11 @@
                         </td>
 
                         <td>
-                            <div>{{item.notation}}</div>
+                            <div class="d-inline">{{item.notation}}</div>
                         </td>
 
                         <td>
-                            <div>{{stack()[$index + 1] == null ? "-" : stack()[$index + 1].notation}}</div>
+                            <div class="d-inline">{{moveStack()[$index + 1] == null ? "-" : moveStack()[$index + 1].notation}}</div>
                         </td>
                     </tr>
                 }

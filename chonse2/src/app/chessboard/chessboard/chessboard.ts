@@ -303,10 +303,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }
   //#endregion
 
-  handleAnalyzeClicked()
+  async handleAnalyzeClicked()
   {
     this.boardState().doEvaluateGame.set(true);
-    this.boardState().evaluateGame();
+    await this.boardState().evaluateGame();
+    this.boardState().goBackToStart();
     this.boardState().isReadOnly.set(true);
   }
 
