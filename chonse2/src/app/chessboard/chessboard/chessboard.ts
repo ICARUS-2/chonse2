@@ -18,7 +18,7 @@ import { ImportModal } from '../import-modal.ts/import-modal';
 import { ToastrService } from 'ngx-toastr';
 import { PgnComments } from './pgn-misc';
 import { EvalBar } from '../eval-bar/eval-bar';
-import { EngineDisplayName, EngineName, MoveClassification, moveClassificationLabels } from '../engine/types/enums';
+import { EngineDisplayName, EngineName, MoveClassification } from '../engine/types/enums';
 import MoveClassificationList from './move-classification-list';
 import { getEvaluationBarValue2 } from '../engine/helpers/chessHelper';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
@@ -28,10 +28,11 @@ import { Router } from '@angular/router';
 import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-helper';
 import { BootstrapButton } from '../../bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
+import { DivergenceTableEntry } from '../divergence-table-entry/divergence-table-entry';
 
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart, BootstrapButton],
+  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart, BootstrapButton, DivergenceTableEntry],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush

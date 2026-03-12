@@ -242,10 +242,20 @@
                 <div class="algebraicContainer" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
                     <!--Moves table-->
                     <table class="w-100">
+                        <tbody>
                         @for (item of boardState().mainMoveStack(); track $index) 
                         {
                             @if ($index % 2 == 0)
                             {
+                                <!--If we are diverging from this row in the stack, show the diverged moves.-->
+                                @if (boardState().divergenceStateStack().length != 0 && $index == 0 && boardState().mainStackPointer() == 0)
+                                {
+                                    <tr 
+                                    app-divergence-table-entry
+                                    [stack]="boardState().divergenceMoveStack()">
+                                    </tr>
+                                }
+
                                 <tr class="">
                                     <td>
                                         <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
@@ -286,8 +296,19 @@
 
                                     </td>
                                 </tr>
+
+                                <!--If we are diverging from this row in the stack, show the diverged moves.-->
+                                @if (boardState().divergenceStateStack().length != 0 && 
+                                    ( $index == boardState().mainStackPointer() - 1 || $index == boardState().mainStackPointer() - 2))
+                                {
+                                    <tr 
+                                        app-divergence-table-entry
+                                        [stack]="boardState().divergenceMoveStack()">
+                                    </tr>
+                                }
                             }
                         }
+                        </tbody>
                     </table>
                 </div>
                 @if(this.boardState().eval())

@@ -1,0 +1,28 @@
+<td colspan="3" class="" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+    <i class="bi bi-arrow-return-right"></i>
+
+    <table class="ts-4 w-100">
+        <tbody>
+            @for(item of stack(); track $index)
+            {
+                @if ($index % 2 == 0)
+                {
+                    <tr>
+                        <td>
+                            <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
+                        </td>
+
+                        <td>
+                            <div>{{item.notation}}</div>
+                        </td>
+
+                        <td>
+                            <div>{{stack()[$index + 1] == null ? "-" : stack()[$index + 1].notation}}</div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+</td>
