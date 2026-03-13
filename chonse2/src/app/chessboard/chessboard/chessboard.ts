@@ -29,6 +29,7 @@ import Chonse2 from '../../../chonse2-lib/chonse2';
 import { UciEngine } from '../../../engine-lib/uciEngine';
 import { getEvaluationBarValue2 } from '../../../engine-lib/helpers/chessHelper';
 import { PositionEval } from '../../../engine-lib/types/eval';
+import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
 
 @Component({
   selector: 'app-chessboard',
@@ -322,18 +323,10 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.boardState().isReadOnly.set(true);
   }
 
-  async copyPGNClicked(): Promise<void>
+  async exportGameClicked(): Promise<void>
   {
-    try 
-    {
-      const exportedPgn = this.boardState().exportPGN();
-      await navigator.clipboard.writeText(exportedPgn);
-      this.toastr.info("PGN copied");
-    }
-    catch(ex)
-    {
-      this.toastr.error("Error obtaining PGN: " + ex);
-    }
+    const modalRef = this.modalService.open(CopyPgnModal);
+    modalRef.componentInstance.pgn = this.boardState().exportPGN();
   }
 
   //eval

@@ -186,18 +186,22 @@
                     (buttonClick)="handleResetClicked()">
                 </app-bootstrap-button>
 
-                <app-bootstrap-button
-                    label="Copy PGN"
-                    extraClasses="me-1"
-                    (buttonClick)="copyPGNClicked()">
-                </app-bootstrap-button>
-
                 @if(!boardState().doEvaluateGame() && boardState().mainStateStack().length > 1)
                 {
                     <app-bootstrap-button
                         label="Analyze"
-                        extraClasses=""
+                        extraClasses="me-1"
                         (buttonClick)="handleAnalyzeClicked()">
+                    </app-bootstrap-button>
+                }
+
+                
+                @if (boardState().mainStateStack().length > 1)
+                {
+                    <app-bootstrap-button
+                        label="Export Game"
+                        extraClasses=""
+                        (buttonClick)="exportGameClicked()">
                     </app-bootstrap-button>
                 }
             </div>

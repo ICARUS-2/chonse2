@@ -10,14 +10,13 @@ export default class GameLinkHelper
     {
         const ORIG: string = window.location.origin;
 
-        //return `${ORIG}${BASE_PATH}/?gameId=${gameId}&username=${username}&site=${site}`;
         return `${ORIG}${BASE_PATH}/game/${site}/${username}/${gameId}`
     }
 
     static generatePgnGameLink(pgn: string)
     {
         const ORIG: string = window.location.origin;
-        const compressionResult = compressPgn(pgn);
+        const compressionResult = compressPgn(pgn.trim());
 
         return `${ORIG}${BASE_PATH}/pgn/${compressionResult}`;
     }
