@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PgnSources } from '../chessboard/pgn-misc';
@@ -11,22 +11,20 @@ import { ToastrService } from 'ngx-toastr';
 import { LichessAPI, LichessGame } from '../api/lichess-api';
 import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from "../../bootstrap-button/bootstrap-button";
+import { form, FormField } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-import-modal',
-  imports: [FormsModule, CommonModule, BootstrapButton],
+  imports: [FormsModule, CommonModule, BootstrapButton, FormField],
   templateUrl: './import-modal.html',
   styleUrl: './import-modal.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImportModal implements OnInit
 {
   //To access the options in the if block.
   PgnSources = PgnSources;
-
-  //PGN to return.
-  pgn: string = "";
   
-  selectedDropdownOption: PgnSources = PgnSources.Chesscom;
   dropdownOptions: Array<PgnSources> = 
   [
     PgnSources.Chesscom,
@@ -34,14 +32,24 @@ export class ImportModal implements OnInit
     PgnSources.Manual
   ];
 
-  siteUsername: string = "";
-  savedChesscomUsernames: string[] = [];
-  savedLichessUsernames: string[] = [];
-  isUsernameInputFocused: boolean = false;
+  savedChesscomUsernames: WritableSignal<string[]> = signal([]);
+  savedLichessUsernames: WritableSignal<string[]> = signal([]);
+  isUsernameInputFocused: WritableSignal<boolean> = signal(false);
 
-  chessComGames: Array<ChessComGame> = [];
-  lichessGames: Array<LichessGame> = [];
+  chessComGames: WritableSignal<Array<ChessComGame>> = signal([]);
+  lichessGames: WritableSignal<Array<LichessGame>> = signal([]);
   
+  formModel = signal<FormModel>({
+    pgn: "",
+    selectedDropdownOption: PgnSources.Chesscom,
+    siteUsername: ""
+  })
+
+  form = form(this.formModel, (schema) => 
+  {
+    //any potential constraints in the future
+  })
+
   constructor(private activeModal: NgbActiveModal, private toastr: ToastrService, public themeService: ThemeService)
   {
     //LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_USERNAMES, []);
@@ -50,14 +58,14 @@ export class ImportModal implements OnInit
   //On init, get the list of saved usernames.
   ngOnInit(): void 
   {
-    this.savedChesscomUsernames = LocalStorageHelper.getStringArray(LocalStorageHelper.SAVED_USERNAMES);
-    this.savedLichessUsernames = LocalStorageHelper.getStringArray(LocalStorageHelper.SAVED_LICHESS_USERNAMES);
+    this.savedChesscomUsernames.set(LocalStorageHelper.getStringArray(LocalStorageHelper.SAVED_USERNAMES));
+    this.savedLichessUsernames.set(LocalStorageHelper.getStringArray(LocalStorageHelper.SAVED_LICHESS_USERNAMES));
   }
 
   //Close and resolve with selected PGN.
   handleSubmitClicked()
   {
-    this.activeModal.close(this.pgn);
+    this.activeModal.close(this.form.pgn().value());
   }
 
   //Close and resolve with the selected game from the chess.com API.
@@ -70,17 +78,18 @@ export class ImportModal implements OnInit
   //Used to set the username when selecting from dropdown.
   selectUsername(name: string)
   {
-    this.siteUsername = name;
+    this.form.siteUsername().value.set(name);
   }
 
   //Chesscom
   //Removes the username in the array and sets it in local storage.
   handleRemoveChessComUsernameClicked(name: string)
   { 
-    const newArr = this.savedChesscomUsernames.filter( n => n != name );
+    const newArr = this.savedChesscomUsernames().filter( n => n != name );
 
-    this.savedChesscomUsernames = newArr;
-    this.siteUsername = "";
+    this.savedChesscomUsernames.set(newArr);
+    this.form.siteUsername().value.set("");
+
     LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_USERNAMES, newArr);
   }
 
@@ -92,9 +101,9 @@ export class ImportModal implements OnInit
       return;
     }
 
-    for(let i = 0; i < this.savedChesscomUsernames.length; i++)
+    for(let i = 0; i < this.savedChesscomUsernames().length; i++)
     {
-      const su = this.savedChesscomUsernames[i];
+      const su = this.savedChesscomUsernames()[i];
 
       if (su.toLowerCase() == name.toLowerCase())
       {
@@ -102,8 +111,8 @@ export class ImportModal implements OnInit
       }
     }
 
-    this.savedChesscomUsernames.push(name);
-    LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_USERNAMES, this.savedChesscomUsernames);
+    this.savedChesscomUsernames.update( arr => [...arr, name] );
+    LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_USERNAMES, this.savedChesscomUsernames());
   }
 
   //Lichess 
@@ -115,9 +124,9 @@ export class ImportModal implements OnInit
       return;
     }
 
-    for(let i = 0; i < this.savedLichessUsernames.length; i++)
+    for(let i = 0; i < this.savedLichessUsernames().length; i++)
     {
-      const su = this.savedLichessUsernames[i];
+      const su = this.savedLichessUsernames()[i];
 
       if (su.toLowerCase() == name.toLowerCase())
       {
@@ -125,16 +134,17 @@ export class ImportModal implements OnInit
       }
     }
 
-    this.savedLichessUsernames.push(name);
-    LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_LICHESS_USERNAMES, this.savedLichessUsernames);
+    this.savedLichessUsernames.update( arr => [...arr, name] )
+
+    LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_LICHESS_USERNAMES, this.savedLichessUsernames());
   }
 
   handleRemoveLichessUsernameClicked(name: string)
   {
-    const newArr = this.savedLichessUsernames.filter( n => n != name );
+    const newArr = this.savedLichessUsernames().filter( n => n != name );
 
-    this.savedLichessUsernames = newArr;
-    this.siteUsername = "";
+    this.savedLichessUsernames.set(newArr);
+    this.form.siteUsername().value.set("");
     LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_LICHESS_USERNAMES, newArr);
   }
   //#endregion
@@ -144,9 +154,9 @@ export class ImportModal implements OnInit
   //Chesscom.
   async handleChessComGoPressed()
   {
-    this.saveChesscomUsername(this.siteUsername);
-
-    this.chessComGames = await ChessComAPI.getGamesForUser(this.siteUsername);
+    this.saveChesscomUsername(this.form.siteUsername().value());
+    
+    this.chessComGames.set(await ChessComAPI.getGamesForUser(this.form.siteUsername().value()));
   }
 
   async handleChessComGameLinkClicked(event: PointerEvent, game: ChessComGame)
@@ -157,8 +167,8 @@ export class ImportModal implements OnInit
 
     try 
     {
-      await navigator.clipboard.writeText(GameLinkHelper.generateGameUrl(GameLinkHelper.CHESSCOM_SOURCE, gameId, this.siteUsername));
-      this.toastr.info(`Successfully copied game for ${this.siteUsername}.`);
+      await navigator.clipboard.writeText(GameLinkHelper.generateGameUrl(GameLinkHelper.CHESSCOM_SOURCE, gameId, this.form.siteUsername().value()));
+      this.toastr.info(`Successfully copied game for ${this.form.siteUsername().value()}.`);
     }
     catch(ex)
     {
@@ -172,7 +182,7 @@ export class ImportModal implements OnInit
 
     if (score == GameScore.WHITE_WON)
     {
-      if (game.white.username.toLowerCase() == this.siteUsername.toLowerCase())
+      if (game.white.username.toLowerCase() == this.form.siteUsername().value().toLowerCase())
       {
         return "text-bg-success";
       }
@@ -182,7 +192,7 @@ export class ImportModal implements OnInit
 
     if (score == GameScore.BLACK_WON)
     {
-      if (game.black.username.toLowerCase() == this.siteUsername.toLowerCase())
+      if (game.black.username.toLowerCase() == this.form.siteUsername().value().toLowerCase())
       {
         return "text-bg-success";
       }
@@ -196,9 +206,9 @@ export class ImportModal implements OnInit
   //Lichess
   async handleLichessGoPressed()
   {
-    this.saveLichessUsername(this.siteUsername);
+    this.saveLichessUsername(this.form.siteUsername().value());
 
-    this.lichessGames = await LichessAPI.getGamesForUser(this.siteUsername);
+    this.lichessGames.set(await LichessAPI.getGamesForUser(this.form.siteUsername().value()));
   }
 
   handleLichessGameClicked(game: LichessGame)
@@ -212,8 +222,8 @@ export class ImportModal implements OnInit
 
     try 
     {
-      await navigator.clipboard.writeText(GameLinkHelper.generateGameUrl(GameLinkHelper.LICHESS_SOURCE, game.id, this.siteUsername));
-      this.toastr.info(`Successfully copied game for ${this.siteUsername}.`);
+      await navigator.clipboard.writeText(GameLinkHelper.generateGameUrl(GameLinkHelper.LICHESS_SOURCE, game.id, this.form.siteUsername().value()));
+      this.toastr.info(`Successfully copied game for ${this.form.siteUsername().value()}.`);
     }
     catch(ex)
     {
@@ -227,7 +237,7 @@ export class ImportModal implements OnInit
 
     if (score == GameScore.WHITE_WON)
     {
-      if (game.players.white.name.toLowerCase() == this.siteUsername.toLowerCase())
+      if (game.players.white.name.toLowerCase() == this.form.siteUsername().value().toLowerCase())
       {
         return "text-bg-success";
       }
@@ -237,7 +247,7 @@ export class ImportModal implements OnInit
 
     if (score == GameScore.BLACK_WON)
     {
-      if (game.players.black.name.toLowerCase() == this.siteUsername.toLowerCase())
+      if (game.players.black.name.toLowerCase() == this.form.siteUsername().value().toLowerCase())
       {
         return "text-bg-success";
       }
@@ -247,4 +257,11 @@ export class ImportModal implements OnInit
 
     return "text-bg-info text-light";
   }
+}
+
+interface FormModel
+{
+  pgn: string,
+  selectedDropdownOption: PgnSources,
+  siteUsername: string
 }

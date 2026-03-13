@@ -3,13 +3,13 @@
         <div 
             class="progress-bar bg-white"
             role="progressbar"
-            [style.height.%]="data.whiteBarPercentage">
+            [style.height.%]="data().whiteBarPercentage">
         </div>
     </div>
 
     <div 
         class="evalLabel" 
-        [ngClass]="{'top': data.whiteBarPercentage < 50, 'bottom': data.whiteBarPercentage >= 50}">
-        {{ data.label }}
+        [ngClass]="{'top': data().whiteBarPercentage < 50, 'bottom': data().whiteBarPercentage >= 50}">
+        {{ data().label }}
     </div>
 </div>

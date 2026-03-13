@@ -13,15 +13,15 @@
     <input
         class="form-check-input custom-switch"
         type="checkbox"
-        [(ngModel)]="clickToMove"
-        (ngModelChange)="handleClickToMoveSwitchPressed($event)"
+        [formField]="form.clickToMove"
+        (change)="handleClickToMoveSwitchPressed($event.target.checked)"
     />
     </div>
     
     <hr>
     <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Engine</h2>
     <h4 class="text-secondary">Select Engine</h4>
-    <select [(ngModel)]="selectedEngine" class="form-select" (ngModelChange)="handleEngineDropdownSelectionChanged()">
+    <select [formField]="form.selectedEngine" class="form-select" (change)="handleEngineDropdownSelectionChanged()">
         @for(engine of Object.values(EngineName); track $index)
         {
             <option [value]="engine">{{EngineDisplayName.get(engine)}}</option>
@@ -32,14 +32,14 @@
 
     <h4 class="text-secondary">Engine Depth</h4>
     <div class="d-flex" [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
-        <input (ngModelChange)="handleEngineDepthChanged()" [(ngModel)]="engineDepth" type="range" class="form-range custom-range" min="10" max="30" id="range2">
-        <p>{{engineDepth}}</p>
+        <input (change)="handleEngineDepthChanged()" [formField]="form.engineDepth" type="range" class="form-range custom-range" id="range2">
+        <p>{{form.engineDepth().value()}}</p>
     </div>
     <hr>
 
     <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Appearance</h2>
     <h4 class="text-secondary">Select Theme</h4>
-    <select [(ngModel)]="selectedTheme" class="form-select" (ngModelChange)="handleThemeDropdownSelectionChanged()">
+    <select [formField]="form.selectedTheme" class="form-select" (change)="handleThemeDropdownSelectionChanged()">
         @for(theme of Object.values(Themes); track $index)
         {
             <option [value]="theme">{{theme}}</option>

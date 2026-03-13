@@ -1,0 +1,49 @@
+<td colspan="3" class="" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+    <i class="bi bi-arrow-return-right"></i>
+
+    <div class="innerContainer ps-4">
+        <table class="w-100">
+            <tbody class="">
+                @for(item of moveStack(); track $index)
+                {
+                    @if ($index % 2 == 0)
+                    {
+                        <tr>
+                            <td>
+                                <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
+                            </td>
+
+                            <td>
+                                @if (evalStack(); as stack)
+                                {
+                                    @if (stack[$index]; as evalItem)
+                                    {
+                                        @if (evalItem.moveClassification)
+                                        {
+                                            <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(evalItem.moveClassification)()">
+                                        }
+                                    }
+                                }
+                                <div class="d-inline">{{item.notation}}</div>
+                            </td>
+
+                            <td>
+                                @if (evalStack(); as stack)
+                                {
+                                    @if (stack[$index + 1]; as evalItem)
+                                    {
+                                        @if (evalItem.moveClassification)
+                                        {
+                                            <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(evalItem.moveClassification)()">
+                                        }
+                                    }
+                                }
+                                <div class="d-inline">{{moveStack()[$index + 1] == null ? "-" : moveStack()[$index + 1].notation}}</div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</td>

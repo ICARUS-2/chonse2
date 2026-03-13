@@ -5,8 +5,8 @@
 
     <div [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
         <label>Set AI Elo</label>
-        <input [(ngModel)]="this.eloSliderValue" type="range" class="form-range custom-range" [min]="UciEngine.MIN_ELO" [max]="UciEngine.MAX_ELO" id="range2">
-        <p>{{this.eloSliderValue}}</p>
+        <input [formField]="form.elo" type="range" class="form-range custom-range"  id="range2">
+        <p>{{form.elo().value()}}</p>
     </div>
  
     <div class="m-3"></div>
@@ -18,7 +18,7 @@
             <input
                 class="form-check-input custom-switch"
                 type="checkbox"
-                [(ngModel)]="humanPlayerIsWhite"
+                [formField]="form.isHumanPlayerWhite"
             />
         </div>
     </div>

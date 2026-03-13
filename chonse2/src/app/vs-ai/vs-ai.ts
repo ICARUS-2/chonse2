@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import { BoardNames } from '../boards';
 import { Chessboard } from '../chessboard/chessboard/chessboard';
@@ -15,6 +15,7 @@ import { GameState } from '../../lib/game-state';
   imports: [Chessboard],
   templateUrl: './vs-ai.html',
   styleUrl: './vs-ai.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VsAi implements OnInit, AfterViewInit{
 
@@ -57,11 +58,12 @@ export class VsAi implements OnInit, AfterViewInit{
 
   ngOnInit(): void 
   {
-  const routeState = history.state;
-  this.inputtedPosition = routeState[RouteConstants.ROUTE_INPUTTED_POSITION];
+    const routeState = history.state;
+    this.inputtedPosition = routeState[RouteConstants.ROUTE_INPUTTED_POSITION];
 
-  this.setDefault();
-}
+    this.setDefault();
+  }
+  
   ngAfterViewInit(): void {
 
   }
@@ -69,7 +71,7 @@ export class VsAi implements OnInit, AfterViewInit{
   setDefault()
   {
     const bs: BoardState = new BoardState();
-    bs.isVsAi = true;
+    bs.isVsAi.set(true);
     this.gameService.addGame(BoardNames.VsAi, bs);
   } 
 }
