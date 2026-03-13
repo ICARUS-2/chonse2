@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BoardNames } from '../boards';
 import { InputPositionBoard } from "./input-position-board/input-position-board";
 import { InputPositionService } from './input-position-service';

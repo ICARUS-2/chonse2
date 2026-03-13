@@ -1,3 +1,5 @@
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
+
 export enum PgnFields
 {
     //necessary
@@ -59,4 +61,14 @@ export enum PgnSources
     Chesscom = "Chess.com",
     Lichess = "Lichess",
     Manual = "Manual PGN",
+}
+
+export function compressPgn(pgn: string) : string
+{
+    return compressToEncodedURIComponent(pgn);    
+}
+
+export function decompresssPgn(lzstr: string) : string 
+{
+    return decompressFromEncodedURIComponent(lzstr);
 }

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, model, signal } from '@angular/core';
-import { UciEngine } from '../../chessboard/engine/uciEngine';
+import { UciEngine } from '../../../engine-lib/uciEngine';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import VsAiConfig from '../vs-ai-config';
 import { FormsModule } from '@angular/forms';

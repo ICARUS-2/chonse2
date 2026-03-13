@@ -3,12 +3,12 @@ import { ChessBoardService } from '../chessboard/chessboard/chess-board-service'
 import { BoardNames } from '../boards';
 import { Chessboard } from '../chessboard/chessboard/chessboard';
 import BoardState from '../chessboard/chessboard/board-state';
-import Chonse2 from '../../lib/chonse2';
 import { RouteConstants } from '../app.routes';
 import VsAiConfigurationModalHelper from './vs-ai-configuration-modal-helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import { GameState } from '../../lib/game-state';
+import { GameState } from '../../chonse2-lib/game-state';
+import Chonse2 from '../../chonse2-lib/chonse2';
 
 @Component({
   selector: 'app-vs-ai',

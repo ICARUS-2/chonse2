@@ -1,7 +1,7 @@
 import { Component, computed, input, signal } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
-import { PositionEval } from '../engine/types/eval';
-import { MoveClassification } from '../engine/types/enums';
+import { MoveClassification } from '../../../engine-lib/types/enums';
+import { PositionEval } from '../../../engine-lib/types/eval';
 
 @Component({
   selector: 'tr[app-divergence-table-entry]',

@@ -1,4 +1,4 @@
-import { MoveClassification } from "../engine/types/enums";
+import { MoveClassification } from "../../../engine-lib/types/enums";
 
 export default class MoveClassificationList 
 {

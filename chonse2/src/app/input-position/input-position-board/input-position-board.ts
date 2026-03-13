@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, input, Input, NgZone, signal, WritableSignal } from '@angular/core';
-import Chonse2 from '../../../lib/chonse2';
-import { PieceType } from '../../../lib/piece-type';
+import Chonse2 from '../../../chonse2-lib/chonse2';
+import { PieceType } from '../../../chonse2-lib/piece-type';
 import { ToastrService } from 'ngx-toastr';
 import InputPositionState from '../input-position-state';
 import { InputPositionService } from '../input-position-service';
 import { Arrow, ArrowContext } from '../../chessboard/chessboard/arrow';
-import { MoveClassification } from '../../chessboard/engine/types/enums';
-import { PieceColor } from '../../../lib/piece-color';
-import { GameOverReason, GameState } from '../../../lib/game-state';
+import { MoveClassification } from '../../../engine-lib/types/enums';
+import { PieceColor } from '../../../chonse2-lib/piece-color';
+import { GameOverReason} from '../../../chonse2-lib/game-state';
 import { Square } from '../../chessboard/square/square';
 import { PieceSelector } from "../piece-selector/piece-selector";
 import { FormsModule } from '@angular/forms';
@@ -369,8 +369,8 @@ export class InputPositionBoard {
 
     //One king per side.
     const flattenedPieceState = game().pieceState.flat();
-    const whiteKings = flattenedPieceState.filter(p => p == PieceType.WHITE_KING);
-    const blackKings = flattenedPieceState.filter(p => p == PieceType.BLACK_KING);
+    const whiteKings = flattenedPieceState.filter((p: string) => p == PieceType.WHITE_KING);
+    const blackKings = flattenedPieceState.filter((p: string) => p == PieceType.BLACK_KING);
 
     if (whiteKings.length != 1 || blackKings.length != 1)
     {

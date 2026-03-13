@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
-import { PieceType } from '../../lib/piece-type';
-import Chonse2 from '../../lib/chonse2';
+import Chonse2 from '../../chonse2-lib/chonse2';
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import BoardState from '../chessboard/chessboard/board-state';
 import { BoardNames } from '../boards';
 import { ChessComAPI }from '../chessboard/api/chesscom-api';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
-import { GameState } from '../../lib/game-state';
+import { GameState } from '../../chonse2-lib/game-state';
 import { RouteConstants } from '../app.routes';
 import { PgnHeaders } from '../chessboard/chessboard/pgn-misc';
 import { LichessAPI } from '../chessboard/api/lichess-api';
@@ -23,10 +22,16 @@ import ThemeService from '../themes/theme-service';
 })
 export class Homepage implements OnInit{
 
+  //Import from chess site.
   site: string | undefined;
   username: string | undefined;
   gameId: string | undefined;
+  
+  //Import from board editor
   inputtedPosition: Chonse2 | undefined;
+
+  //Import from PGN link
+  pgnFromLink: string | undefined;
 
   vsAiStates: Array<Chonse2> | undefined;
   vsAiGameStates: Array<GameState> | undefined;
@@ -58,6 +63,7 @@ export class Homepage implements OnInit{
     this.username = state[RouteConstants.ROUTE_USERNAME];
     this.gameId = state[RouteConstants.ROUTE_GAMEID];
     this.inputtedPosition = state[RouteConstants.ROUTE_INPUTTED_POSITION];
+    this.pgnFromLink = state[RouteConstants.ROUTE_PGN];
 
     //Game vs AI.
     this.vsAiStates = state[RouteConstants.ROUTE_VSAI_STATES];
@@ -166,6 +172,23 @@ export class Homepage implements OnInit{
       //Add game to service.
       this.gameService.deleteGame(BoardNames.Analysis);
       this.gameService.addGame(BoardNames.Analysis, bs);
+    }
+    else if (this.pgnFromLink)
+    {
+      try 
+      {
+        const boardState = BoardState.parsePGN(this.pgnFromLink.trim());
+        boardState.doEvaluateGame.set(true);
+        this.gameService.deleteGame(BoardNames.Analysis);
+        this.gameService.addGame(BoardNames.Analysis, boardState);
+        this.cdr.markForCheck();
+        this.toastrService.success("Game import successful.");
+      }
+      catch(ex) //If PGN parse failed.
+      {
+        this.toastrService.error("Import failed - PGN parse failed.")
+        this.setDefaultBoard();
+      }
     }
     else 
     {

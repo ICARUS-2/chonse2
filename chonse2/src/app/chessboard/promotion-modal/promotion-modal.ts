@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { PieceType } from '../../../lib/piece-type';
-import { PieceColor } from '../../../lib/piece-color';
+import { PieceType } from '../../../chonse2-lib/piece-type';
+import { PieceColor } from '../../../chonse2-lib/piece-color';
 import ThemeService from '../../themes/theme-service';
 
 @Component({

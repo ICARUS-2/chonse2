@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, Input } from '@angular/core';
-import { PieceColor } from '../../../lib/piece-color';
+import { PieceColor } from '../../../chonse2-lib/piece-color';
 import ThemeService from '../../themes/theme-service';
 
 @Component({

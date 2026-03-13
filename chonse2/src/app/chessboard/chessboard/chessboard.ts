@@ -1,12 +1,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, input, Input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
-import { PieceType } from '../../../lib/piece-type';
 import { Square } from '../square/square';
-import { PieceColor } from '../../../lib/piece-color';
 import { BoardPlayerInfo } from "../board-player-info/board-player-info";
 import { NgbModal, NgbProgressbar } from '@ng-bootstrap/ng-bootstrap';
 import { PromotionModal } from '../promotion-modal/promotion-modal';
-import Chonse2 from '../../../lib/chonse2';
-import { GameOverReason, GameScore } from '../../../lib/game-state';
 import { CommonModule } from '@angular/common';
 import LocalStorageHelper from './local-storage-helper';
 import { FormsModule } from '@angular/forms';
@@ -18,17 +14,22 @@ import { ImportModal } from '../import-modal.ts/import-modal';
 import { ToastrService } from 'ngx-toastr';
 import { PgnComments } from './pgn-misc';
 import { EvalBar } from '../eval-bar/eval-bar';
-import { EngineDisplayName, EngineName, MoveClassification } from '../engine/types/enums';
 import MoveClassificationList from './move-classification-list';
-import { getEvaluationBarValue2 } from '../engine/helpers/chessHelper';
-import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
-import { PositionEval } from '../engine/types/eval';
-import { UciEngine } from '../engine/uciEngine';
 import { Router } from '@angular/router';
 import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-helper';
 import { BootstrapButton } from '../../bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
 import { DivergenceTableEntry } from '../divergence-table-entry/divergence-table-entry';
+import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
+import { PieceType } from '../../../chonse2-lib/piece-type';
+import { PieceColor } from '../../../chonse2-lib/piece-color';
+import { GameOverReason, GameScore } from '../../../chonse2-lib/game-state';
+import { EngineDisplayName, EngineName, MoveClassification } from '../../../engine-lib/types/enums';
+import Chonse2 from '../../../chonse2-lib/chonse2';
+import { UciEngine } from '../../../engine-lib/uciEngine';
+import { getEvaluationBarValue2 } from '../../../engine-lib/helpers/chessHelper';
+import { PositionEval } from '../../../engine-lib/types/eval';
+import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
 
 @Component({
   selector: 'app-chessboard',
@@ -322,18 +323,10 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.boardState().isReadOnly.set(true);
   }
 
-  async copyPGNClicked(): Promise<void>
+  async exportGameClicked(): Promise<void>
   {
-    try 
-    {
-      const exportedPgn = this.boardState().exportPGN();
-      await navigator.clipboard.writeText(exportedPgn);
-      this.toastr.info("PGN copied");
-    }
-    catch(ex)
-    {
-      this.toastr.error("Error obtaining PGN: " + ex);
-    }
+    const modalRef = this.modalService.open(CopyPgnModal);
+    modalRef.componentInstance.pgn = this.boardState().exportPGN();
   }
 
   //eval

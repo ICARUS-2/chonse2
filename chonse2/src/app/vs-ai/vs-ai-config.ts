@@ -1,4 +1,4 @@
-import { UciEngine } from "../chessboard/engine/uciEngine";
+import { UciEngine } from "../../engine-lib/uciEngine";
 
 export default class VsAiConfig 
 {
