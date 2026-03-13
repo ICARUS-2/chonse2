@@ -2,10 +2,10 @@ import { EvaluateGameParams, LineEval, PositionEval } from "../types/eval";
 //import { Game, Player } from "@/types/game";
 import { BLACK, Chess, Color, PieceSymbol, Square, WHITE } from "../helpers/chess";
 import { getPositionWinPercentage } from "../helpers/winPercentage";
+import { GameScore } from "../../chonse2-lib/game-state";
+import Chonse2 from "../../chonse2-lib/chonse2";
+import { PieceType } from "../../chonse2-lib/piece-type";
 //import { PieceColor } from "../../../../lib/piece-color";
-import { PieceType } from "../../../../lib/piece-type";
-import Chonse2 from "../../../../lib/chonse2";
-import { GameScore } from "../../../../lib/game-state";
 
 type Piece = "wP" | "wB" | "wN" | "wR" | "wQ" | "wK" | "bP" | "bB" | "bN" | "bR" | "bQ" | "bK";
 

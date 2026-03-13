@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, input, Input, Output } from '@angular/core';
-import { PieceColor } from '../../../lib/piece-color';
 import { Square } from "../../chessboard/square/square";
-import { PieceType } from '../../../lib/piece-type';
 import { CommonModule } from '@angular/common';
+import { PieceType } from '../../../chonse2-lib/piece-type';
+import { PieceColor } from '../../../chonse2-lib/piece-color';
 
 @Component({
   selector: 'app-piece-selector',

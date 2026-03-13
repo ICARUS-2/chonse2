@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import LocalStorageHelper from '../chessboard/chessboard/local-storage-helper';
-import { EngineDisplayName, EngineName } from '../chessboard/engine/types/enums';
-import { UciEngine } from '../chessboard/engine/uciEngine';
 import { Themes } from '../themes/themes';
 import ThemeService from '../themes/theme-service';
 import { CommonModule } from '@angular/common';
 import { form, FormField, max, min } from '@angular/forms/signals';
+import { EngineDisplayName, EngineName } from '../../engine-lib/types/enums';
+import { UciEngine } from '../../engine-lib/uciEngine';
 
 @Component({
   selector: 'app-settings',

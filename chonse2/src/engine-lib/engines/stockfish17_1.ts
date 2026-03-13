@@ -1,7 +1,7 @@
 import { EngineName } from "../types/enums";
 import { UciEngine } from "../uciEngine";
 import { isMultiThreadSupported, isWasmSupported } from "../helpers/shared";
-import { BASE_PATH } from "../../../../globals/globals";
+import { BASE_PATH } from "../../globals/globals";
 
 export class Stockfish17_1 {
   public static async create(lite?: boolean): Promise<UciEngine> {

@@ -1,12 +1,12 @@
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { VsAiConfigurationModal } from "./vs-ai-configuration-modal/vs-ai-configuration-modal";
 import BoardState from "../chessboard/chessboard/board-state";
-import { EngineDisplayName, EngineName } from "../chessboard/engine/types/enums";
 import { ChessBoardService } from "../chessboard/chessboard/chess-board-service";
 import { BoardNames } from "../boards";
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { ToastrService } from "ngx-toastr";
-import Chonse2 from "../../lib/chonse2";
+import { EngineDisplayName, EngineName } from "../../engine-lib/types/enums";
+import Chonse2 from "../../chonse2-lib/chonse2";
 
 export default class VsAiConfigurationModalHelper
 {

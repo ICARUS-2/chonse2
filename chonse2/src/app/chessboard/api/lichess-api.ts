@@ -1,4 +1,4 @@
-import { GameOverReason, GameScore } from "../../../lib/game-state";
+import { GameScore, GameOverReason } from "../../../chonse2-lib/game-state";
 
 export class LichessAPI
 {

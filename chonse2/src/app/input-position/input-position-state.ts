@@ -1,5 +1,5 @@
 import { signal, WritableSignal } from "@angular/core";
-import Chonse2 from "../../lib/chonse2";
+import Chonse2 from "../../chonse2-lib/chonse2";
 import { Arrow } from "../chessboard/chessboard/arrow";
 
 export default class InputPositionState

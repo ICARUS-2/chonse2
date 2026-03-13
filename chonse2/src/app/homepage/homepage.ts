@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
-import { PieceType } from '../../lib/piece-type';
-import Chonse2 from '../../lib/chonse2';
+import Chonse2 from '../../chonse2-lib/chonse2';
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import BoardState from '../chessboard/chessboard/board-state';
 import { BoardNames } from '../boards';
 import { ChessComAPI }from '../chessboard/api/chesscom-api';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
-import { GameState } from '../../lib/game-state';
+import { GameState } from '../../chonse2-lib/game-state';
 import { RouteConstants } from '../app.routes';
 import { PgnHeaders } from '../chessboard/chessboard/pgn-misc';
 import { LichessAPI } from '../chessboard/api/lichess-api';
