@@ -32,8 +32,8 @@ export class Settings {
 
   form = form(this.formModel, (schema) => 
   {
-    min(schema.engineDepth, 10),
-    max(schema.engineDepth, 30)
+    min(schema.engineDepth, 14),
+    max(schema.engineDepth, 22)
   })
 
   constructor(public themeService: ThemeService)

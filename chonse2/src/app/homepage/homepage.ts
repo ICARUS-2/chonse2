@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { PieceType } from '../../lib/piece-type';
 import Chonse2 from '../../lib/chonse2';
@@ -41,7 +41,10 @@ export class Homepage implements OnInit{
 
   BoardNames = BoardNames;
 
-  constructor(public gameService: ChessBoardService, private toastrService: ToastrService, public themeService: ThemeService)
+  constructor(public gameService: ChessBoardService, 
+    private toastrService: ToastrService, 
+    public themeService: ThemeService,
+    private cdr: ChangeDetectorRef)
   {
 
   }
@@ -74,7 +77,9 @@ export class Homepage implements OnInit{
           {
             const boardState = BoardState.parsePGN(game.pgn);
             boardState.doEvaluateGame.set(true);
+            this.gameService.deleteGame(BoardNames.Analysis);
             this.gameService.addGame(BoardNames.Analysis, boardState);
+            this.cdr.markForCheck();
             this.toastrService.success("Game import successful.");
           }
           catch(ex) //If PGN parse failed.
@@ -99,7 +104,9 @@ export class Homepage implements OnInit{
           {
             const boardState = BoardState.parsePGN(game.pgn);
             boardState.doEvaluateGame.set(true);
+            this.gameService.deleteGame(BoardNames.Analysis);
             this.gameService.addGame(BoardNames.Analysis, boardState);
+            this.cdr.markForCheck();
             this.toastrService.success("Game import successful.");
           }
           catch(ex) //If PGN parse failed.

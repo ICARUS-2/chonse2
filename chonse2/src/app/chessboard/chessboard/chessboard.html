@@ -243,22 +243,23 @@
                     <!--Moves table-->
                     <table class="w-100">
                         <tbody>
+                                                            
+                        <!--If we are diverging from this row in the stack, show the diverged moves.-->
+                        <!--
+                        -->
+                        @if (boardState().divergenceStateStack().length != 0 && boardState().mainStackPointer() == 0)
+                        {
+                            <tr 
+                            app-divergence-table-entry
+                            [moveStack]="boardState().divergenceMoveStack()"
+                            [evalStack]="boardState().divergenceEvalStack()">
+                            </tr>
+                        }
                         @for (item of boardState().mainMoveStack(); track $index) 
                         {
                             @if ($index % 2 == 0)
                             {
-                                
-                                <!--If we are diverging from this row in the stack, show the diverged moves.-->
-                                <!--
-                                -->
-                                @if (boardState().divergenceStateStack().length != 0 && $index == 0 && boardState().mainStackPointer() == 0)
-                                {
-                                    <tr 
-                                    app-divergence-table-entry
-                                    [moveStack]="boardState().divergenceMoveStack()"
-                                    [evalStack]="boardState().divergenceEvalStack()">
-                                    </tr>
-                                }
+
 
                                 <tr class="">
                                     <td>
