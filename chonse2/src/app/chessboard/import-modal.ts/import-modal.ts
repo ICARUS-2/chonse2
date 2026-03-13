@@ -167,7 +167,7 @@ export class ImportModal implements OnInit
 
     try 
     {
-      await navigator.clipboard.writeText(GameLinkHelper.generateGameUrl(GameLinkHelper.CHESSCOM_SOURCE, gameId, this.form.siteUsername().value()));
+      await navigator.clipboard.writeText(GameLinkHelper.generateChessSiteGameUrl(GameLinkHelper.CHESSCOM_SOURCE, gameId, this.form.siteUsername().value()));
       this.toastr.info(`Successfully copied game for ${this.form.siteUsername().value()}.`);
     }
     catch(ex)
@@ -222,7 +222,7 @@ export class ImportModal implements OnInit
 
     try 
     {
-      await navigator.clipboard.writeText(GameLinkHelper.generateGameUrl(GameLinkHelper.LICHESS_SOURCE, game.id, this.form.siteUsername().value()));
+      await navigator.clipboard.writeText(GameLinkHelper.generateChessSiteGameUrl(GameLinkHelper.LICHESS_SOURCE, game.id, this.form.siteUsername().value()));
       this.toastr.info(`Successfully copied game for ${this.form.siteUsername().value()}.`);
     }
     catch(ex)

@@ -1,0 +1,14 @@
+<div class="container">
+    @if( isError() )
+    {
+        <h1 class="text-error">Error</h1>
+        <h4 class="text-error">No PGN found.</h4>
+    } @else 
+    {
+        <h1 class="text-primary">Load PGN</h1>
+        <h4>Decompressed PGN: </h4>
+        <pre>
+{{this.decompressedPgn()}}
+        </pre>
+    }
+</div>

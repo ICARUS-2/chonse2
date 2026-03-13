@@ -22,10 +22,16 @@ import ThemeService from '../themes/theme-service';
 })
 export class Homepage implements OnInit{
 
+  //Import from chess site.
   site: string | undefined;
   username: string | undefined;
   gameId: string | undefined;
+  
+  //Import from board editor
   inputtedPosition: Chonse2 | undefined;
+
+  //Import from PGN link
+  pgnFromLink: string | undefined;
 
   vsAiStates: Array<Chonse2> | undefined;
   vsAiGameStates: Array<GameState> | undefined;
@@ -57,6 +63,7 @@ export class Homepage implements OnInit{
     this.username = state[RouteConstants.ROUTE_USERNAME];
     this.gameId = state[RouteConstants.ROUTE_GAMEID];
     this.inputtedPosition = state[RouteConstants.ROUTE_INPUTTED_POSITION];
+    this.pgnFromLink = state[RouteConstants.ROUTE_PGN];
 
     //Game vs AI.
     this.vsAiStates = state[RouteConstants.ROUTE_VSAI_STATES];
@@ -165,6 +172,23 @@ export class Homepage implements OnInit{
       //Add game to service.
       this.gameService.deleteGame(BoardNames.Analysis);
       this.gameService.addGame(BoardNames.Analysis, bs);
+    }
+    else if (this.pgnFromLink)
+    {
+      try 
+      {
+        const boardState = BoardState.parsePGN(this.pgnFromLink.trim());
+        boardState.doEvaluateGame.set(true);
+        this.gameService.deleteGame(BoardNames.Analysis);
+        this.gameService.addGame(BoardNames.Analysis, boardState);
+        this.cdr.markForCheck();
+        this.toastrService.success("Game import successful.");
+      }
+      catch(ex) //If PGN parse failed.
+      {
+        this.toastrService.error("Import failed - PGN parse failed.")
+        this.setDefaultBoard();
+      }
     }
     else 
     {
