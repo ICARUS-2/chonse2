@@ -1,33 +1,33 @@
 
 <div class="squareContainer" 
-    [style]="{'background-color': getColor(), 'box-shadow': isInCheck() ? '0 4px 0 0 red inset' : ''}"
-    [class]="isFlipped() ? 'squareFlipped' : ''" 
+    [style]="{'background-color': getColor(), 'box-shadow': isInCheck ? '0 4px 0 0 red inset' : ''}"
+    [class]="isFlipped ? 'squareFlipped' : ''" 
     (pointerdown)="handleMouseDown($event)"
     (pointerup)="handleMouseUp($event)"
     (click)="handleLeftClick($event)"
     (contextmenu)="handleRightClick($event)">
 
-    @if(showFile() && coordinate() != "")
+    @if(showFile && coordinate != "")
     {
-        <p class="fileLabel" [style]="{ 'color': getReverseColor()}">{{coordinate()[0]}}</p>
+        <p class="fileLabel" [style]="{ 'color': getReverseColor()}">{{coordinate[0]}}</p>
     }
 
-    @if (showRank() && coordinate() != "")
+    @if (showRank && coordinate != "")
     {
-        <p class="rankLabel" [style]="{ 'color': getReverseColor()}">{{coordinate()[1]}}</p>
+        <p class="rankLabel" [style]="{ 'color': getReverseColor()}">{{coordinate[1]}}</p>
     }
 
-    @if (piece() != "" && showPiece())
+    @if (piece != "" && showPiece)
     {
-        <img alt="pieceImage" class="pieceImage" [src]="`piece/merida/${piece()}.svg`" draggable="false">
+        <img alt="pieceImage" class="pieceImage" [src]="`piece/merida/${piece}.svg`" draggable="false">
     }
 
-    @if (isLegalMove() && piece() == "")
+    @if (isLegalMove && piece == "")
     {
         <div class="legalMoveCircle"></div>
     }
 
-    @if (isLegalMove() && piece() != "")
+    @if (isLegalMove && piece != "")
     {
         <div class="legalMoveCaptureCircle"></div>
     }

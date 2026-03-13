@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { BoardNames } from '../boards';
 import { InputPositionBoard } from "./input-position-board/input-position-board";
 import { InputPositionService } from './input-position-service';
@@ -10,7 +10,6 @@ import { ChessBoardService } from '../chessboard/chessboard/chess-board-service'
   imports: [InputPositionBoard],
   templateUrl: './input-position.html',
   styleUrl: './input-position.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InputPosition implements OnInit {
   BoardNames = BoardNames;

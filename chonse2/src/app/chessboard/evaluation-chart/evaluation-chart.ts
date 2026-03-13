@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ChartItemData } from './chart-item-data';
 import { PositionEval } from '../engine/types/eval';
 import { MoveClassification } from '../engine/types/enums';
@@ -11,7 +11,6 @@ import ThemeService from '../../themes/theme-service';
   imports: [BaseChartDirective],
   templateUrl: './evaluation-chart.html',
   styleUrl: './evaluation-chart.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EvaluationChart implements OnInit {
 

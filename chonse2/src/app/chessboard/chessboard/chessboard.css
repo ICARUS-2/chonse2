@@ -216,13 +216,6 @@
   width: 100%;
 }
 
-.playerNameInTable
-{
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: 10vmin;
-}
-
 .moveClassificationListIcon
 {
   width: 3.7vmin;

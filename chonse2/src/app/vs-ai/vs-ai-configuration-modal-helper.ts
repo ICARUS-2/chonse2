@@ -1,7 +1,7 @@
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { VsAiConfigurationModal } from "./vs-ai-configuration-modal/vs-ai-configuration-modal";
 import BoardState from "../chessboard/chessboard/board-state";
-import { EngineDisplayName, EngineName } from "../chessboard/engine/types/enums";
+import { EngineDisplayName } from "../chessboard/engine/types/enums";
 import { ChessBoardService } from "../chessboard/chessboard/chess-board-service";
 import { BoardNames } from "../boards";
 import { Chessboard } from "../chessboard/chessboard/chessboard";
@@ -27,32 +27,31 @@ export default class VsAiConfigurationModalHelper
                 //If the board editor passed in a state, set it.
                 if (startingState)
                 {
-                    bs.mainStateStack.set([startingState])
+                    bs.mainStateStack = [startingState]
                 }
 
-                bs.isVsAi.set(true);
-                bs.humanPlayerIsWhite.set(isHumanWhite);
-                bs.aiElo.set(result.getElo());
+                bs.isVsAi = true;
+                bs.humanPlayerIsWhite = isHumanWhite;
+                bs.aiElo = result.getElo();
 
                 if (!isHumanWhite)
                 {
-                    bs.isFlipped.set(true);
+                    bs.isFlipped = true;
                 }
 
                 await bs.setEngineIfNotExists();
 
-                const engine = bs.engine();
-                if (engine)
+                if (bs.engine)
                 {
-                    const engineDisplayName = EngineDisplayName.get(engine.name as EngineName)?.toString() ?? "-";
+                    const engineDisplayName = EngineDisplayName.get(bs.engine.name)?.toString() ?? "-";
 
-                    isHumanWhite ? (bs.pgnHeaders().black = engineDisplayName) : (bs.pgnHeaders().white = engineDisplayName)
-                    isHumanWhite ? (bs.pgnHeaders().blackElo = engineElo) : (bs.pgnHeaders().whiteElo = engineElo);
-                    isHumanWhite ? (bs.pgnHeaders().white = "You") : (bs.pgnHeaders().black = "You");
+                    isHumanWhite ? (bs.pgnHeaders.black = engineDisplayName) : (bs.pgnHeaders.white = engineDisplayName)
+                    isHumanWhite ? (bs.pgnHeaders.blackElo = engineElo) : (bs.pgnHeaders.whiteElo = engineElo);
+                    isHumanWhite ? (bs.pgnHeaders.white = "You") : (bs.pgnHeaders.black = "You");
 
                     chessBoardService.deleteGame(BoardNames.VsAi);
                     chessBoardService.addGame(BoardNames.VsAi, bs);
-                    componentInstance.boardState.set(chessBoardService.getGame(BoardNames.VsAi));
+                    componentInstance.boardState = chessBoardService.getGame(BoardNames.VsAi);
 
                     toastr.success(`Starting game vs Stockfish ${engineElo}`);
 
@@ -68,7 +67,7 @@ export default class VsAiConfigurationModalHelper
                     {
                         if (!isHumanWhite)
                         {
-                            if (componentInstance.boardState().engine())
+                            if (componentInstance.boardState.engine)
                             {
                                 componentInstance.playAIMove();
                             }
