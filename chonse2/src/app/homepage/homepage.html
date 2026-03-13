@@ -2,7 +2,7 @@
     <div class="innerContainer w-100 d-flex justify-content-center">
         @if(this.gameService.getGame(BoardNames.Analysis))
         {
-            <app-chessboard #chessboard [gameId]="BoardNames.Analysis"></app-chessboard>
+            <app-chessboard [gameId]="BoardNames.Analysis"></app-chessboard>
         }
         @else 
         {
