@@ -19,6 +19,20 @@ export class Settings {
   Object = Object;
   Themes = Themes;
 
+  formModel = signal<FormModel>(
+  {
+    clickToMove:  LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, false),
+    selectedEngine: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName,
+    engineDepth:  LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
+    selectedTheme: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_THEME, ThemeService.DEFAULT_THEME) as Themes
+  })
+
+  form = form(this.formModel, (schema) => 
+  {
+    min(schema.engineDepth, 14),
+    max(schema.engineDepth, 22)
+  })
+
   constructor(public themeService: ThemeService)
   {
 
