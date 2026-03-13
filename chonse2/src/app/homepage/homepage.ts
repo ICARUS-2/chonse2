@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { PieceType } from '../../lib/piece-type';
 import Chonse2 from '../../lib/chonse2';
@@ -19,7 +19,6 @@ import ThemeService from '../themes/theme-service';
   imports: [Chessboard],
   templateUrl: './homepage.html',
   styleUrl: './homepage.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Homepage implements OnInit{
 
@@ -73,7 +72,7 @@ export class Homepage implements OnInit{
           try 
           {
             const boardState = BoardState.parsePGN(game.pgn);
-            boardState.doEvaluateGame.set(true);
+            boardState.doEvaluateGame = true;
             this.gameService.addGame(BoardNames.Analysis, boardState);
             this.toastrService.success("Game import successful.");
           }
@@ -98,7 +97,7 @@ export class Homepage implements OnInit{
           try 
           {
             const boardState = BoardState.parsePGN(game.pgn);
-            boardState.doEvaluateGame.set(true);
+            boardState.doEvaluateGame = true;
             this.gameService.addGame(BoardNames.Analysis, boardState);
             this.toastrService.success("Game import successful.");
           }
@@ -120,7 +119,7 @@ export class Homepage implements OnInit{
         this.setDefaultBoard();
       }
     }
-    else if (this.inputtedPosition) //from board editor
+    else if (this.inputtedPosition)
     {
       //Reconstructs the passed data into a Chonse2 object and reinitializes the game state.
       const restoredPosition = Object.assign(new Chonse2(), this.inputtedPosition);
@@ -130,31 +129,31 @@ export class Homepage implements OnInit{
 
       //Places it into a valid board state and adds it.
       const boardState = new BoardState([restoredPosition]);
-      boardState.isReadOnly.set(true); //TODO WHY THE FUCK DOES THIS FIX IT
+      boardState.doEvaluateGame = true;
+
       this.gameService.deleteGame(BoardNames.Analysis);
       this.gameService.addGame(BoardNames.Analysis, boardState);
-      boardState.doEvaluateGame.set(true);
     }
     else if (this.vsAiMoves && this.vsAiStates && this.vsAiGameStates && this.vsAiPgnHeaders)
     {
       //Set up board state.
       const bs = new BoardState();
-      bs.isReadOnly.set(true);
-      bs.doEvaluateGame.set(true);
+      bs.isReadOnly = true;
+      bs.doEvaluateGame = true;
       
       //Set positions.
       const restoredPositions = this.vsAiStates.map( s => Object.assign(new Chonse2, s) );
-      bs.mainStateStack.set(restoredPositions);
+      bs.mainStateStack = restoredPositions;
 
       //Set game states for the positions.
       const restoredGameStates = this.vsAiGameStates?.map( s => Object.assign(new GameState, s) );
       restoredPositions.forEach( (s: Chonse2, idx: number) => s.gameState = restoredGameStates[idx]);
   
       //Set move stack.
-      bs.mainMoveStack.set(this.vsAiMoves);
+      bs.mainMoveStack = this.vsAiMoves;
 
       //Set pgn headers.
-      bs.pgnHeaders.set(this.vsAiPgnHeaders);
+      bs.pgnHeaders = this.vsAiPgnHeaders;
 
       //Add game to service.
       this.gameService.deleteGame(BoardNames.Analysis);

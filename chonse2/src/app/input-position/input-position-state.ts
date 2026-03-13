@@ -1,13 +1,12 @@
-import { signal, WritableSignal } from "@angular/core";
 import Chonse2 from "../../lib/chonse2";
 import { Arrow } from "../chessboard/chessboard/arrow";
 
 export default class InputPositionState
 {
-    game: WritableSignal<Chonse2> = signal<Chonse2>(new Chonse2());
-    arrows: WritableSignal<Arrow[]> = signal<Arrow[]>([]);
-    squareHighlightStatuses: WritableSignal<Array<Array<boolean>>> = signal<Array<Array<boolean>>>(InputPositionState.initializeHighlightStatuses());
-    isFlipped: WritableSignal<boolean> = signal(false);
+    game: Chonse2 = new Chonse2();
+    arrows: Arrow[] = [];
+    squareHighlightStatuses: Array<Array<boolean>> = InputPositionState.initializeHighlightStatuses();
+    isFlipped = false;
 
     static initializeHighlightStatuses(): Array<Array<boolean>>
     {

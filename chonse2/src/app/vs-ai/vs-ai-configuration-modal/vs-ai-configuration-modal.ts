@@ -1,49 +1,31 @@
-import { ChangeDetectionStrategy, Component, model, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { UciEngine } from '../../chessboard/engine/uciEngine';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import VsAiConfig from '../vs-ai-config';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from "../../bootstrap-button/bootstrap-button";
-import { form, FormField, max, min } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-vs-ai-configuration-modal',
-  imports: [FormsModule, BootstrapButton, FormField],
+  imports: [CommonModule, FormsModule, BootstrapButton],
   templateUrl: './vs-ai-configuration-modal.html',
   styleUrl: './vs-ai-configuration-modal.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
-
 export class VsAiConfigurationModal {
   UciEngine = UciEngine;
 
-  formModel = signal<FormModel>( 
-  {
-    elo: UciEngine.MIN_ELO,
-    isHumanPlayerWhite: true
-  })
-
-  form = form(this.formModel, ( schema ) => 
-  {
-    min(schema.elo, UciEngine.MIN_ELO);
-    max(schema.elo, UciEngine.MAX_ELO);
-  });
-
+  eloSliderValue: number;
+  humanPlayerIsWhite: boolean = true;
+  
   constructor(private activeModal: NgbActiveModal, public themeService: ThemeService)
   {
-
+    this.eloSliderValue = UciEngine.MIN_ELO;
   }
 
   submitClicked()
   {
-    this.activeModal.close(new VsAiConfig(this.form.elo().value(), this.form.isHumanPlayerWhite().value()));
+    this.activeModal.close(new VsAiConfig(this.eloSliderValue, this.humanPlayerIsWhite));
   }
-}
-
-
-interface FormModel 
-{
-  elo: number,
-  isHumanPlayerWhite: boolean
 }

@@ -36,6 +36,7 @@
             "deployUrl": "/chonse2/",
             "browser": "src/main.ts",
             "polyfills": [
+              "zone.js",
               "@angular/localize/init"
             ],
             "outputPath": {
@@ -99,6 +100,8 @@
           "builder": "@angular/build:karma",
           "options": {
             "polyfills": [
+              "zone.js",
+              "zone.js/testing",
               "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.spec.json",

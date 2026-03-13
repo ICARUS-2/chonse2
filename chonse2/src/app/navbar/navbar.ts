@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import ThemeService from '../themes/theme-service';
 
@@ -7,7 +7,6 @@ import ThemeService from '../themes/theme-service';
   imports: [RouterLink],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Navbar {
 
