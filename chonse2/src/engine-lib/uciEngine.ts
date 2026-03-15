@@ -55,6 +55,10 @@ export class UciEngine {
   private multiPv = 3;
   private elo: number | undefined = undefined;
 
+  //Lichess cloud eval
+  private lastCloudEvalRequest = 0;
+  public isCloudHybridMode = false;
+
   private constructor(
     engineName: EngineName,
     enginePath: string,
@@ -383,6 +387,13 @@ export class UciEngine {
         return lichessEval;
       }
     }*/
+
+    const now = Date.now();
+
+    if (now - this.lastCloudEvalRequest > 1000)
+    {
+      this.lastCloudEvalRequest = now;
+    }
 
     const results = await this.sendCommands(
       [`position fen ${fen}`, `go depth ${depth}`],

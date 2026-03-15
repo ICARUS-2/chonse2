@@ -35,6 +35,21 @@
         <input (change)="handleEngineDepthChanged()" [formField]="form.engineDepth" type="range" class="form-range custom-range" id="range2">
         <p>{{form.engineDepth().value()}}</p>
     </div>
+
+    <div class="m-4"></div>
+
+    <h4 class="text-secondary">Cloud Hybrid Mode <span class="bi bi-patch-question" ngbTooltip="Delegate evaluations to Lichess cloud eval wherever possible."></span> </h4>
+    <div
+    class="form-check form-switch"
+    [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+    >
+    <input
+        class="form-check-input custom-switch"
+        type="checkbox"
+        [formField]="form.cloudHybridMode"
+        (change)="handleCloudHybridChanged($event.target.checked)"
+    /></div>
+
     <hr>
 
     <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Appearance</h2>

@@ -42,6 +42,24 @@ export class LichessAPI
 
         return game;
     }
+
+    static async getCloudEval(fen: string, multiPv = 3) 
+    {
+        const url = `https://lichess.org/api/cloud-eval?fen=${encodeURIComponent(fen)}&multiPv=${multiPv}`;
+
+        const res = await fetch(url, {
+        headers: {
+        "Accept": "application/json"
+        }
+  });
+
+  if (!res.ok) {
+    throw new Error(`HTTP error: ${res.status}`);
+  }
+
+  const data = await res.json();
+  return data;
+}
 }
 
 class LichessPlayer 
