@@ -308,42 +308,43 @@ export class UciEngine {
       setEvaluationProgress?.(99 - Math.exp(-4 * progress) * 99);
     };
 
-    await Promise.all(
-      fens.map(async (fen, i) => {
-        const whoIsCheckmated = getWhoIsCheckmated(fen);
-        if (whoIsCheckmated) {
-          updateEval(i, {
-            lines: [
-              {
-                pv: [],
-                depth: 0,
-                multiPv: 1,
-                mate: whoIsCheckmated === "w" ? -1 : 1,
-              },
-            ],
-          });
-          return;
-        }
+    for (let i = 0; i < fens.length; i++) {
+      const fen = fens[i];
 
-        const isStalemate = getIsStalemate(fen);
-        if (isStalemate) {
-          updateEval(i, {
-            lines: [
-              {
-                pv: [],
-                depth: 0,
-                multiPv: 1,
-                cp: 0,
-              },
-            ],
-          });
-          return;
-        }
+      const whoIsCheckmated = getWhoIsCheckmated(fen);
+      if (whoIsCheckmated) {
+        updateEval(i, {
+          lines: [
+            {
+              pv: [],
+              depth: 0,
+              multiPv: 1,
+              mate: whoIsCheckmated === "w" ? -1 : 1,
+            },
+          ],
+        });
+        continue;
+      }
 
-        const result = await this.evaluatePosition(fen, depth, workersNb);
-        updateEval(i, result);
-      })
-    );
+      const isStalemate = getIsStalemate(fen);
+      if (isStalemate) {
+        updateEval(i, {
+          lines: [
+            {
+              pv: [],
+              depth: 0,
+              multiPv: 1,
+              cp: 0,
+            },
+          ],
+        });
+        continue;
+      }
+
+    //Evaluate either via cloud or local engine
+    const result = await this.evaluatePosition(fen, depth, workersNb);
+    updateEval(i, result);
+  }
 
     await this.setWorkersNb(1);
     this.isReady = true;
@@ -389,18 +390,21 @@ export class UciEngine {
       }
     }*/
 
-    const now = Date.now();
-
-    if (now - this.lastCloudEvalRequest > 1000)
+    if (this.isCloudHybridMode)
     {
-      this.lastCloudEvalRequest = now;
+      const now = Date.now();
 
-      const cloudResult = await LichessAPI.getCloudEval(fen);
-
-      if (cloudResult)
+      if (now - this.lastCloudEvalRequest > 1000)
       {
-        console.log(cloudResult);
-        return cloudResult;
+        this.lastCloudEvalRequest = now;
+
+        const cloudResult = await LichessAPI.getCloudEval(fen);
+
+        if (cloudResult)
+        {
+          //console.log(cloudResult)
+          return cloudResult;
+        }
       }
     }
 

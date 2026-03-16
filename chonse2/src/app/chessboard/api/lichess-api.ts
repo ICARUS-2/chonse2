@@ -50,7 +50,7 @@ export class LichessAPI
         {
             const url = `https://lichess.org/api/cloud-eval?fen=${encodeURIComponent(fen)}&multiPv=${multiPv}`;
 
-            const res: any = await fetch(url, 
+            const res: Response = await fetch(url, 
             {
                 headers: 
                 {
@@ -58,14 +58,7 @@ export class LichessAPI
                 }
             });
 
-            if (!res.ok)
-            {
-                console.warn("Cloud eval failed, falling back to local - " + res.status + " " + res["error"]);
-            }
-
             const data = await res.json();
-            
-            //console.log(data);
 
             const posEval: PositionEval = {
                 bestMove: data.pvs[0].moves.split(" ")[0],
@@ -82,7 +75,7 @@ export class LichessAPI
                     return e;
                 } )
             };
-
+            console.info("Cloud eval successful for position " + fen)
             return posEval;
         }
         catch(ex)

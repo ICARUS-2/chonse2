@@ -255,8 +255,11 @@ export const getIsPieceSacrifice = (
     b: [],
   };
 
-  for (const move of moves) {
+  for (let move of moves) {
     try {
+
+      move = normalizeLichessMove(move, game);
+
       const fullMove = game.move(uciMoveParams2(move, game.turn()));
       if (fullMove.captured) {
         capturedPieces[fullMove.color].push(fullMove.captured);
@@ -430,3 +433,48 @@ export const formatUciPv = (fen: string, uciMoves: string[]): string[] => {
     return uci;
   });
 };
+
+
+function normalizeLichessMove(move: string, chess: Chess) {
+
+    if (move.includes("O-O"))
+    {
+      return move;
+    }
+
+    if (move.includes("x"))
+    {
+      move = move.replace("x", "");
+    }
+
+    if (move.includes("+"))
+    {
+      move = move.replace("+", "");
+    }
+
+    if (move.includes("#"))
+    {
+      move = move.replace("#", "");
+    }
+
+    const from = move.slice(0, 2);
+    const to = move.slice(2, 4);
+    const promotion = move.length > 4 ? move[4] : "";
+
+    const piece = chess.get(from as Square);
+    const target = chess.get(to as Square);
+
+    if (
+        piece?.type === "k" &&
+        target?.type === "r" &&
+        piece.color === target.color
+    ) {
+        if (from === "e1" && to === "h1") return /*{ from: "e1", to: "g1" }*/ "O-O";
+        if (from === "e1" && to === "a1") return /*{ from: "e1", to: "c1" }*/ "O-O-O";
+        if (from === "e8" && to === "h8") return /*{ from: "e8", to: "g8" }*/ "O-O";
+        if (from === "e8" && to === "a8") return /*{ from: "e8", to: "c8" }*/ "O-O-O";
+    }
+
+    //return { from, to, promotion };
+    return from+to+promotion
+}
