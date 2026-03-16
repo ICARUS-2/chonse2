@@ -1,4 +1,5 @@
 import { GameScore, GameOverReason } from "../../../chonse2-lib/game-state";
+import { LineEval, PositionEval } from "../../../engine-lib/types/eval";
 
 export class LichessAPI
 {
@@ -43,23 +44,54 @@ export class LichessAPI
         return game;
     }
 
-    static async getCloudEval(fen: string, multiPv = 3) 
+    static async getCloudEval(fen: string, multiPv = 3): Promise<PositionEval | undefined>
     {
-        const url = `https://lichess.org/api/cloud-eval?fen=${encodeURIComponent(fen)}&multiPv=${multiPv}`;
+        try 
+        {
+            const url = `https://lichess.org/api/cloud-eval?fen=${encodeURIComponent(fen)}&multiPv=${multiPv}`;
 
-        const res = await fetch(url, {
-        headers: {
-        "Accept": "application/json"
+            const res: any = await fetch(url, 
+            {
+                headers: 
+                {
+                    "Accept": "application/json"
+                }
+            });
+
+            if (!res.ok)
+            {
+                console.warn("Cloud eval failed, falling back to local - " + res.status + " " + res["error"]);
+            }
+
+            const data = await res.json();
+            
+            //console.log(data);
+
+            const posEval: PositionEval = {
+                bestMove: data.pvs[0].moves.split(" ")[0],
+                lines: data.pvs.map( ( l:any, index: number ) => 
+                { 
+                    const e: LineEval = {
+                        pv: l.moves.split(" "),
+                        depth: data.depth,
+                        multiPv: index + 1,
+                        cp: l.cp,
+                        mate: l.mate
+                    }
+
+                    return e;
+                } )
+            };
+
+            return posEval;
         }
-  });
+        catch(ex)
+        {
+            //console.log(ex);
+        }
 
-  if (!res.ok) {
-    throw new Error(`HTTP error: ${res.status}`);
-  }
-
-  const data = await res.json();
-  return data;
-}
+        return undefined;
+    }
 }
 
 class LichessPlayer 
