@@ -125,9 +125,14 @@
 {
   display: flex;
   flex-direction: column;
-  height: 82vmin;
-  width: 82vmin;
+  height: 96vmin;
+  width: 83vmin;
   touch-action: manipulation;
+}
+
+.engineDashboard 
+{
+  height: 7vmin;
 }
 
 .boardControlButtons
@@ -254,6 +259,11 @@
   {
     width: 100%;
     height: unset;
+  }
+
+  .engineDashboard
+  {
+    height: 20vmin;
   }
 
   .movesAndAccuracies

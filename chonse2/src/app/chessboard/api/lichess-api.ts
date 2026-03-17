@@ -1,4 +1,5 @@
 import { GameScore, GameOverReason } from "../../../chonse2-lib/game-state";
+import { EvalSource, LineEval, PositionEval } from "../../../engine-lib/types/eval";
 
 export class LichessAPI
 {
@@ -41,6 +42,49 @@ export class LichessAPI
         const game = games.filter(g => g.id == id)[0];
 
         return game;
+    }
+
+    static async getCloudEval(fen: string, multiPv = 3): Promise<PositionEval | undefined>
+    {
+        try 
+        {
+            const url = `https://lichess.org/api/cloud-eval?fen=${encodeURIComponent(fen)}&multiPv=${multiPv}`;
+
+            const res: Response = await fetch(url, 
+            {
+                headers: 
+                {
+                    "Accept": "application/json"
+                }
+            });
+
+            const data = await res.json();
+
+            const posEval: PositionEval = {
+                bestMove: data.pvs[0].moves.split(" ")[0],
+                lines: data.pvs.map( ( l:any, index: number ) => 
+                { 
+                    const e: LineEval = {
+                        pv: l.moves.split(" "),
+                        depth: data.depth,
+                        multiPv: index + 1,
+                        cp: l.cp,
+                        mate: l.mate
+                    }
+
+                    return e;
+                },),
+                source: EvalSource.Cloud
+            };
+            console.info("Cloud eval successful for position " + fen)
+            return posEval;
+        }
+        catch(ex)
+        {
+            //console.log(ex);
+        }
+
+        return undefined;
     }
 }
 

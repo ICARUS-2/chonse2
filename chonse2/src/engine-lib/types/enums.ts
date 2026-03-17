@@ -36,13 +36,25 @@ export enum EngineName {
   Stockfish11 = "stockfish_11",
 }
 
-export const EngineDisplayName: Map<EngineName, string> = new Map<EngineName, string>
+export enum EngineType  
+{
+  NNUE = "NNUE",
+  HCE = "HCE"
+}
+
+export const EngineInformation: Map<EngineName, EngineInfo> = new Map<EngineName, EngineInfo>
 (
   [
-    //[EngineName.Stockfish18, "Stockfish 18"],
-    [EngineName.Stockfish18Lite, "Stockfish 18 Lite"],
-    [EngineName.Stockfish17_1, "Stockfish 17.1"],
-    [EngineName.Stockfish17_1Lite, "Stockfish 17.1 Lite"],
-    [EngineName.Stockfish11, "Stockfish 11 HCE"]
-  ] 
+    [EngineName.Stockfish18Lite, {displayName: "Stockfish 18 Lite", type: EngineType.NNUE, sizeMb: 7}],
+    [EngineName.Stockfish17_1, {displayName: "Stockfish 17.1", type: EngineType.NNUE, sizeMb: 75}],
+    [EngineName.Stockfish17_1Lite, {displayName: "Stockfish 17.1 Lite", type: EngineType.NNUE, sizeMb: 7}],
+    [EngineName.Stockfish11, {displayName: "Stockfish 11", type: EngineType.HCE, sizeMb: 1.3}]
+  ]
 )
+
+export interface EngineInfo
+{
+  type: EngineType,
+  displayName: string,
+  sizeMb: number
+}

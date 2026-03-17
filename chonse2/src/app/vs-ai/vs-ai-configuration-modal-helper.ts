@@ -5,7 +5,7 @@ import { ChessBoardService } from "../chessboard/chessboard/chess-board-service"
 import { BoardNames } from "../boards";
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { ToastrService } from "ngx-toastr";
-import { EngineDisplayName, EngineName } from "../../engine-lib/types/enums";
+import { EngineInformation ,EngineName } from "../../engine-lib/types/enums";
 import Chonse2 from "../../chonse2-lib/chonse2";
 
 export default class VsAiConfigurationModalHelper
@@ -44,7 +44,7 @@ export default class VsAiConfigurationModalHelper
                 const engine = bs.engine();
                 if (engine)
                 {
-                    const engineDisplayName = EngineDisplayName.get(engine.name as EngineName)?.toString() ?? "-";
+                    const engineDisplayName = EngineInformation.get(engine.name as EngineName)?.displayName?.toString() ?? "-";
 
                     isHumanWhite ? (bs.pgnHeaders().black = engineDisplayName) : (bs.pgnHeaders().white = engineDisplayName)
                     isHumanWhite ? (bs.pgnHeaders().blackElo = engineElo) : (bs.pgnHeaders().whiteElo = engineElo);

@@ -5,12 +5,13 @@ import { Themes } from '../themes/themes';
 import ThemeService from '../themes/theme-service';
 import { CommonModule } from '@angular/common';
 import { form, FormField, max, min } from '@angular/forms/signals';
-import { EngineDisplayName, EngineName } from '../../engine-lib/types/enums';
+import { EngineInformation, EngineName } from '../../engine-lib/types/enums';
 import { UciEngine } from '../../engine-lib/uciEngine';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-settings',
-  imports: [FormsModule, FormsModule, CommonModule, FormField],
+  imports: [FormsModule, FormsModule, CommonModule, FormField, NgbTooltip],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -18,7 +19,7 @@ import { UciEngine } from '../../engine-lib/uciEngine';
 export class Settings {
   LocalStorageHelper = LocalStorageHelper;
   EngineName = EngineName;
-  EngineDisplayName = EngineDisplayName;
+  EngineInformation = EngineInformation;
   Object = Object;
   Themes = Themes;
 
@@ -27,6 +28,7 @@ export class Settings {
     clickToMove:  LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, false),
     selectedEngine: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName,
     engineDepth:  LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
+    cloudHybridMode: LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, false),
     selectedTheme: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_THEME, ThemeService.DEFAULT_THEME) as Themes
   })
 
@@ -59,6 +61,12 @@ export class Settings {
     LocalStorageHelper.setNumber(LocalStorageHelper.ENGINE_DEPTH, this.form.engineDepth().value());
   }
 
+  //Cloud hybrid
+  handleCloudHybridChanged(val: boolean)
+  {
+    LocalStorageHelper.setBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, this.form.cloudHybridMode().value());   
+  }
+
   //Theme select
   handleThemeDropdownSelectionChanged()
   {
@@ -73,5 +81,6 @@ interface FormModel
   clickToMove: boolean;
   selectedEngine: EngineName;
   engineDepth: number;
+  cloudHybridMode: boolean;
   selectedTheme: Themes;
 }

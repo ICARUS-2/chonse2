@@ -1,5 +1,6 @@
-import { EngineName, MoveClassification } from "./types/enums";
+import { EngineName } from "./types/enums";
 import {
+  EvalSource,
   EvaluateGameParams,
   EvaluatePositionWithUpdateParams,
   GameEval,
@@ -19,6 +20,7 @@ import { getEngineWorker, sendCommandsToWorker } from "./worker";
 import { Stockfish11 } from "./engines/stockfish11";
 import { Stockfish18 } from "./engines/stockfish18";
 import { Stockfish17_1 } from "./engines/stockfish17_1";
+import { LichessAPI } from "../app/chessboard/api/lichess-api";
 
 
 export class UciEngine {
@@ -54,6 +56,10 @@ export class UciEngine {
     | undefined = undefined;
   private multiPv = 3;
   private elo: number | undefined = undefined;
+
+  //Lichess cloud eval
+  private lastCloudEvalRequest = 0;
+  public isCloudHybridMode = false;
 
   private constructor(
     engineName: EngineName,
@@ -303,42 +309,45 @@ export class UciEngine {
       setEvaluationProgress?.(99 - Math.exp(-4 * progress) * 99);
     };
 
-    await Promise.all(
-      fens.map(async (fen, i) => {
-        const whoIsCheckmated = getWhoIsCheckmated(fen);
-        if (whoIsCheckmated) {
-          updateEval(i, {
-            lines: [
-              {
-                pv: [],
-                depth: 0,
-                multiPv: 1,
-                mate: whoIsCheckmated === "w" ? -1 : 1,
-              },
-            ],
-          });
-          return;
-        }
+    for (let i = 0; i < fens.length; i++) {
+      const fen = fens[i];
 
-        const isStalemate = getIsStalemate(fen);
-        if (isStalemate) {
-          updateEval(i, {
-            lines: [
-              {
-                pv: [],
-                depth: 0,
-                multiPv: 1,
-                cp: 0,
-              },
-            ],
-          });
-          return;
-        }
+      const whoIsCheckmated = getWhoIsCheckmated(fen);
+      if (whoIsCheckmated) {
+        updateEval(i, {
+          lines: [
+            {
+              pv: [],
+              depth: 0,
+              multiPv: 1,
+              mate: whoIsCheckmated === "w" ? -1 : 1,
+            },
+          ],
+          source: EvalSource.Local
+        });
+        continue;
+      }
 
-        const result = await this.evaluatePosition(fen, depth, workersNb);
-        updateEval(i, result);
-      })
-    );
+      const isStalemate = getIsStalemate(fen);
+      if (isStalemate) {
+        updateEval(i, {
+          lines: [
+            {
+              pv: [],
+              depth: 0,
+              multiPv: 1,
+              cp: 0,
+            },
+          ],
+          source: EvalSource.Local
+        });
+        continue;
+      }
+
+    //Evaluate either via cloud or local engine
+    const result = await this.evaluatePosition(fen, depth, workersNb);
+    updateEval(i, result);
+  }
 
     await this.setWorkersNb(1);
     this.isReady = true;
@@ -383,6 +392,24 @@ export class UciEngine {
         return lichessEval;
       }
     }*/
+
+    if (this.isCloudHybridMode)
+    {
+      const now = Date.now();
+
+      if (now - this.lastCloudEvalRequest > 1000)
+      {
+        this.lastCloudEvalRequest = now;
+
+        const cloudResult = await LichessAPI.getCloudEval(fen);
+
+        if (cloudResult)
+        {
+          //console.log(cloudResult)
+          return cloudResult;
+        }
+      }
+    }
 
     const results = await this.sendCommands(
       [`position fen ${fen}`, `go depth ${depth}`],
