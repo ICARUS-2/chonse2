@@ -1,4 +1,4 @@
-<div class="componentContainer">
+<div class="componentContainer pt-1">
     <div class="boardAndEvalBar d-flex align-items-center">
         @if(this.boardState().doEvaluateGame())
         {
@@ -135,8 +135,16 @@
             <app-board-player-info [playerName]="boardState().pgnHeaders().white" [playerElo]="boardState().pgnHeaders().whiteElo" for="w" [clock]="getClockForPlayer('w')()" [capturedPieces]="boardState().getCurrentState().piecesWhiteCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
         </div>
     </div>
-    <div class="boardControls p-2" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
-        <div class="boardControlButtons">
+    <div class="boardControls" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+        <div class="engineDashboard d-flex" [style.border-bottom]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`" >
+            <div class="w-50" [style.border-right]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+
+            </div>
+            <div class="w-50">
+
+            </div>
+        </div>
+        <div class="boardControlButtons ps-2 pe-2 pt-1">
             <app-bootstrap-button 
                 (buttonClick)="handleFlipClicked()" 
                 label="↑↓"
@@ -239,8 +247,10 @@
             </div> 
         }
         <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
-        <div [style.color]="themeService.getThemeInstance().getTextColor()" class="evalTextData d-flex flex-column justify-content-center">{{this.boardState().pgnHeaders().termination ? ( this.boardState().pgnHeaders().termination != "Normal" ? this.boardState().pgnHeaders().termination + " - " : this.boardState().pgnHeaders().result + " - ") : "-"}} {{this.boardState().getCurrentState().gameState.isGameOver ? this.boardState().getCurrentState().gameState.reason + " " + this.boardState().getCurrentState().gameState.gameScore: boardState().getCurrentState().turn ? "White to move" : "Black to move"}}</div>
-        <div [style.color]="themeService.getThemeInstance().getTextColor()" class="evalTextData d-flex flex-column justify-content-center mb-1">{{this.getOpeningDisplay()}}</div>
+        <div class="ps-2 pe-2">
+            <div [style.color]="themeService.getThemeInstance().getTextColor()" class="evalTextData d-flex flex-column justify-content-center">{{this.boardState().pgnHeaders().termination ? ( this.boardState().pgnHeaders().termination != "Normal" ? this.boardState().pgnHeaders().termination + " - " : this.boardState().pgnHeaders().result + " - ") : "-"}} {{this.boardState().getCurrentState().gameState.isGameOver ? this.boardState().getCurrentState().gameState.reason + " " + this.boardState().getCurrentState().gameState.gameScore: boardState().getCurrentState().turn ? "White to move" : "Black to move"}}</div>
+            <div [style.color]="themeService.getThemeInstance().getTextColor()" class="evalTextData d-flex flex-column justify-content-center mb-1">{{this.getOpeningDisplay()}}</div>
+        </div>
         <div [style.color]="themeService.getThemeInstance().getTextColor()" class="d-flex movesAndAccuracies">
             <div class="evalSectionLeft d-flex flex-column">
                 <div class="algebraicContainer" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
