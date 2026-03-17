@@ -6,6 +6,7 @@ export interface PositionEval {
   moveClassification?: MoveClassification;
   opening?: string;
   lines: LineEval[];
+  source?: EvalSource;
 }
 
 export interface LineEval {
@@ -72,3 +73,9 @@ export interface SavedEval {
 }
 
 export type SavedEvals = Record<string, SavedEval | undefined>;
+
+export enum EvalSource 
+{
+  Local = "Local",
+  Cloud = "Cloud"
+}

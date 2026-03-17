@@ -261,6 +261,11 @@
     height: unset;
   }
 
+  .engineDashboard
+  {
+    height: 20vmin;
+  }
+
   .movesAndAccuracies
   {
     flex-direction: column;

@@ -1,5 +1,6 @@
-import { EngineName, MoveClassification } from "./types/enums";
+import { EngineName } from "./types/enums";
 import {
+  EvalSource,
   EvaluateGameParams,
   EvaluatePositionWithUpdateParams,
   GameEval,
@@ -322,6 +323,7 @@ export class UciEngine {
               mate: whoIsCheckmated === "w" ? -1 : 1,
             },
           ],
+          source: EvalSource.Local
         });
         continue;
       }
@@ -337,6 +339,7 @@ export class UciEngine {
               cp: 0,
             },
           ],
+          source: EvalSource.Local
         });
         continue;
       }

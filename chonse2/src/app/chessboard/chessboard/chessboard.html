@@ -137,8 +137,41 @@
     </div>
     <div class="boardControls" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
         <div class="engineDashboard d-flex" [style.border-bottom]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`" >
-            <div class="w-50" [style.border-right]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+            <div class="w-50 p-2 d-flex flex-column justify-content-center" [style.border-right]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+                @if (this.boardState().doEvaluateGame())
+                {
+                    @if(this.boardState().engine(); as engine)
+                    {
+                        <!--Engine-->
+                        <div>
+                            {{EngineInformation.get(engine.name)?.displayName}} 
+                            <span class="badge" [ngClass]="{ 'bg-success' : EngineInformation.get(engine.name)?.type == EngineType.NNUE, 'bg-danger' : EngineInformation.get(engine.name)?.type == EngineType.HCE}">{{EngineInformation.get(engine.name)?.type}}</span>
+                            
+                            @if(engine.isCloudHybridMode)
+                            {
+                                <span class="badge bg-info ms-1 text-secondary">Cloud Hybrid</span>
+                            }
+                        </div>
 
+                        <!--Depth-->
+                        <div>
+                            @if(this.boardState().getMostRecentEval(); as eval)
+                            {
+                                @if(eval.lines[0])
+                                {
+                                    <div>
+                                        Depth {{eval.lines[0].depth}}
+                                    
+                                        @if(eval.source == EvalSource.Cloud)
+                                        {
+                                            <span class="badge bg-info ms-1 text-secondary">CLOUD</span>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                }
             </div>
             <div class="w-50">
 

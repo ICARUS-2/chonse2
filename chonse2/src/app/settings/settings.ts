@@ -5,7 +5,7 @@ import { Themes } from '../themes/themes';
 import ThemeService from '../themes/theme-service';
 import { CommonModule } from '@angular/common';
 import { form, FormField, max, min } from '@angular/forms/signals';
-import { EngineDisplayName, EngineName } from '../../engine-lib/types/enums';
+import { EngineInformation, EngineName } from '../../engine-lib/types/enums';
 import { UciEngine } from '../../engine-lib/uciEngine';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 
@@ -19,7 +19,7 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 export class Settings {
   LocalStorageHelper = LocalStorageHelper;
   EngineName = EngineName;
-  EngineDisplayName = EngineDisplayName;
+  EngineInformation = EngineInformation;
   Object = Object;
   Themes = Themes;
 

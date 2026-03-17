@@ -24,7 +24,7 @@
     <select [formField]="form.selectedEngine" class="form-select" (change)="handleEngineDropdownSelectionChanged()">
         @for(engine of Object.values(EngineName); track $index)
         {
-            <option [value]="engine">{{EngineDisplayName.get(engine)}}</option>
+            <option [value]="engine">{{EngineInformation.get(engine)?.displayName}}</option>
         }
     </select>
         
@@ -38,7 +38,7 @@
 
     <div class="m-4"></div>
 
-    <h4 class="text-secondary">Cloud Hybrid Mode <span class="bi bi-patch-question" ngbTooltip="Delegate evaluations to Lichess cloud eval wherever possible."></span> </h4>
+    <h4 class="text-secondary">Cloud Hybrid Mode <span class="bi bi-patch-question text-info" ngbTooltip="Delegate evaluations to Lichess cloud eval wherever possible. Can yield increased depth, faster evaluations and less CPU usage."></span> </h4>
     <div
     class="form-check form-switch"
     [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"

@@ -1,5 +1,5 @@
 import { GameScore, GameOverReason } from "../../../chonse2-lib/game-state";
-import { LineEval, PositionEval } from "../../../engine-lib/types/eval";
+import { EvalSource, LineEval, PositionEval } from "../../../engine-lib/types/eval";
 
 export class LichessAPI
 {
@@ -73,7 +73,8 @@ export class LichessAPI
                     }
 
                     return e;
-                } )
+                },),
+                source: EvalSource.Cloud
             };
             console.info("Cloud eval successful for position " + fen)
             return posEval;

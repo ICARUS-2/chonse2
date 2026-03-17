@@ -24,11 +24,11 @@ import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
 import { PieceType } from '../../../chonse2-lib/piece-type';
 import { PieceColor } from '../../../chonse2-lib/piece-color';
 import { GameOverReason, GameScore } from '../../../chonse2-lib/game-state';
-import { EngineDisplayName, EngineName, MoveClassification } from '../../../engine-lib/types/enums';
+import { EngineInformation, EngineName, MoveClassification, EngineType } from '../../../engine-lib/types/enums';
 import Chonse2 from '../../../chonse2-lib/chonse2';
 import { UciEngine } from '../../../engine-lib/uciEngine';
 import { getEvaluationBarValue2 } from '../../../engine-lib/helpers/chessHelper';
-import { PositionEval } from '../../../engine-lib/types/eval';
+import { EvalSource, PositionEval } from '../../../engine-lib/types/eval';
 import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
 
 @Component({
@@ -44,7 +44,9 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   GameOverReason = GameOverReason;
   LocalStorageHelper = LocalStorageHelper;
   EngineName = EngineName;
-  EngineDisplayName = EngineDisplayName;
+  EngineInformation = EngineInformation;
+  EngineType = EngineType;
+  EvalSource = EvalSource;
   Object = Object;
   MoveClassification = MoveClassification;
   Chessboard = Chessboard;
@@ -340,7 +342,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     if (this.boardState().engine)
     {
-      const eName = EngineDisplayName.get(this.boardState().engine()?.name ?? UciEngine.DEFAULT_ENGINE);
+      const eName = EngineInformation.get(this.boardState().engine()?.name ?? UciEngine.DEFAULT_ENGINE)?.displayName;
 
       if (eName)
       {
