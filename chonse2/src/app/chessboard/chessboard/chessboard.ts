@@ -97,9 +97,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       [MoveClassification.None, "None"]
     ]
   )
-  
-  //FUNCTIONAL
-  clickToMove = signal(false);
 
   constructor(
     private modalService: NgbModal, 
@@ -176,7 +173,20 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
-    const piece = this.currentlyHeldPiece();
+    const isClickToMove = LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, false);
+    
+    let piece = "";
+
+    if (isClickToMove)
+    {
+      const idx = Chonse2.findIndexFromCoordinate(fromSquare);
+      piece = this.boardState().getCurrentState().pieceState[idx.rowIndex][idx.colIndex];
+    }
+    else 
+    {
+      piece = this.currentlyHeldPiece();
+    }
+    
     if (!this.currentLegalMoves().includes(toSquare))
     {
       return;
@@ -185,8 +195,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
 
     const isPromotion = (
-      this.currentlyHeldPiece() == PieceType.WHITE_PAWN && this.toSquare().includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
-      this.currentlyHeldPiece() == PieceType.BLACK_PAWN && this.toSquare().includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
+      piece == PieceType.WHITE_PAWN && this.toSquare().includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
+      piece == PieceType.BLACK_PAWN && this.toSquare().includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
 
     let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare, piece: PieceType.NONE, comment: ""};
 

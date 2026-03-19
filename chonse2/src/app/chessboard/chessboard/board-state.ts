@@ -790,7 +790,7 @@ export default class BoardState
             //Gets the engine type saved as per the user setting.
             const engineType: EngineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName;
             
-            const cloudHybridMode: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, false);
+            const cloudHybridMode: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, true);
 
             //Instantiate the engine with the factory.
             const engine: UciEngine = await UciEngine.getEngine(engineType);
