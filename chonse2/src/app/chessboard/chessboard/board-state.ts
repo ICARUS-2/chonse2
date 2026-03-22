@@ -10,6 +10,7 @@ import { PieceType } from "../../../chonse2-lib/piece-type";
 import { MoveClassification, EngineName } from "../../../engine-lib/types/enums";
 import { PositionEval, GameEval, EvaluateGameParams } from "../../../engine-lib/types/eval";
 import { UciEngine } from "../../../engine-lib/uciEngine";
+import { Quote, Quotes } from "./quotes";
 
 export default class BoardState
 {
@@ -46,7 +47,9 @@ export default class BoardState
     squareHighlightStatuses: WritableSignal<Array<Array<boolean>>>;
     arrows: WritableSignal<Array<Arrow>>;
     isFlipped: WritableSignal<boolean>;
+    displayedQuote: WritableSignal<Quote | undefined> = signal(undefined);
 
+    //Behavior
     isReadOnly: WritableSignal<boolean> = signal(false);
 
     constructor(startingStates: Array<Chonse2> = [new Chonse2()], headers: PgnHeaders = new PgnHeaders())
@@ -717,6 +720,9 @@ export default class BoardState
         const params = this.getEvaluateGameParams();
         params.setEvaluationProgress = ( (value: number) => this.evalProgress.set(value));
         params.playersRatings = this.pgnHeaders().whiteElo && this.pgnHeaders().blackElo ? {white: Number(this.pgnHeaders().whiteElo), black: Number(this.pgnHeaders().blackElo)} : {}
+
+        //Get the quote to be displayed
+        this.displayedQuote.set(Quotes.getQuote());
 
         //Evaluate the game.
         const engine = this.engine();

@@ -132,7 +132,7 @@
 
 .engineDashboard 
 {
-  height: 7vmin;
+  height: 14vmin;
 }
 
 .boardControlButtons
@@ -263,7 +263,7 @@
 
   .engineDashboard
   {
-    height: 20vmin;
+    height: 30vmin;
   }
 
   .movesAndAccuracies
