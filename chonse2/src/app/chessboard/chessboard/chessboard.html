@@ -177,7 +177,7 @@
             </div>
 
             <!--Top box that displays coach info-->
-            <div class="w-50 p-2 d-flex flex-column justify-content-center">
+            <div class="w-50 p-2 d-flex flex-column justify-content-center overflow-auto">
                 @if( this.boardState().evalProgress() > 0 && this.boardState().evalProgress() < 97.1)
                 {
                     @if (this.boardState().displayedQuote(); as q)
