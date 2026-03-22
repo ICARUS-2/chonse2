@@ -137,6 +137,7 @@
     </div>
     <div class="boardControls" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
         <div class="engineDashboard d-flex" [style.border-bottom]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`" >
+            <!--Top box that displays engine type and depth-->
             <div class="w-50 p-2 d-flex flex-column justify-content-center" [style.border-right]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
                 @if (this.boardState().doEvaluateGame())
                 {
@@ -172,9 +173,19 @@
                         </div>
                     }
                 }
+            
             </div>
-            <div class="w-50">
 
+            <!--Top box that displays coach info-->
+            <div class="w-50 p-2 d-flex flex-column justify-content-center">
+                @if( this.boardState().evalProgress() > 0 && this.boardState().evalProgress() < 97.1)
+                {
+                    @if (this.boardState().displayedQuote(); as q)
+                    {
+                        <div>"{{q.text}}"</div>
+                        <div class="fw-bold">-{{q.author}}</div>
+                    }
+                }
             </div>
         </div>
         <div class="boardControlButtons ps-2 pe-2 pt-1">
@@ -306,7 +317,6 @@
                         {
                             @if ($index % 2 == 0)
                             {
-
 
                                 <tr class="">
                                     <td>
