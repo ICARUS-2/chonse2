@@ -5,8 +5,8 @@ import { ChessBoardService } from "../chessboard/chessboard/chess-board-service"
 import { BoardNames } from "../boards";
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { ToastrService } from "ngx-toastr";
-import { EngineInformation ,EngineName } from "../../engine-lib/types/enums";
-import Chonse2 from "../../chonse2-lib/chonse2";
+import Chonse2 from "../../libs/chonse2-lib/chonse2";
+import { EngineInformation, EngineName } from "../../libs/engine-lib/types/enums";
 
 export default class VsAiConfigurationModalHelper
 {

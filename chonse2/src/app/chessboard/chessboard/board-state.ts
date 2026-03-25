@@ -3,14 +3,14 @@ import { Arrow } from "./arrow";
 import LocalStorageHelper from "./local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
 import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
-import Chonse2 from "../../../chonse2-lib/chonse2";
-import { GameScore } from "../../../chonse2-lib/game-state";
-import { PieceColor } from "../../../chonse2-lib/piece-color";
-import { PieceType } from "../../../chonse2-lib/piece-type";
-import { MoveClassification, EngineName } from "../../../engine-lib/types/enums";
-import { PositionEval, GameEval, EvaluateGameParams } from "../../../engine-lib/types/eval";
-import { UciEngine } from "../../../engine-lib/uciEngine";
 import { Quote, Quotes } from "./quotes";
+import Chonse2 from "../../../libs/chonse2-lib/chonse2";
+import { GameScore } from "../../../libs/chonse2-lib/game-state";
+import { PieceColor } from "../../../libs/chonse2-lib/piece-color";
+import { PieceType } from "../../../libs/chonse2-lib/piece-type";
+import { MoveClassification, EngineName } from "../../../libs/engine-lib/types/enums";
+import { PositionEval, GameEval, EvaluateGameParams } from "../../../libs/engine-lib/types/eval";
+import { UciEngine } from "../../../libs/engine-lib/uciEngine";
 
 export default class BoardState
 {

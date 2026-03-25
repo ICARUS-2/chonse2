@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { PieceType } from '../../../chonse2-lib/piece-type';
-import { PieceColor } from '../../../chonse2-lib/piece-color';
 import ThemeService from '../../themes/theme-service';
+import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
+import { PieceType } from '../../../libs/chonse2-lib/piece-type';
 
 @Component({
   selector: 'app-promotion-modal',

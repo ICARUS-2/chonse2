@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, model, signal } from '@angular/core';
-import { UciEngine } from '../../../engine-lib/uciEngine';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import VsAiConfig from '../vs-ai-config';
 import { FormsModule } from '@angular/forms';
 import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from "../../bootstrap-button/bootstrap-button";
 import { form, FormField, max, min } from '@angular/forms/signals';
+import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 
 @Component({
   selector: 'app-vs-ai-configuration-modal',

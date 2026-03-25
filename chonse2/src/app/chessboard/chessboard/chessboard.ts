@@ -21,15 +21,15 @@ import { BootstrapButton } from '../../bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
 import { DivergenceTableEntry } from '../divergence-table-entry/divergence-table-entry';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
-import { PieceType } from '../../../chonse2-lib/piece-type';
-import { PieceColor } from '../../../chonse2-lib/piece-color';
-import { GameOverReason, GameScore } from '../../../chonse2-lib/game-state';
-import { EngineInformation, EngineName, MoveClassification, EngineType } from '../../../engine-lib/types/enums';
-import Chonse2 from '../../../chonse2-lib/chonse2';
-import { UciEngine } from '../../../engine-lib/uciEngine';
-import { getEvaluationBarValue2 } from '../../../engine-lib/helpers/chessHelper';
-import { EvalSource, PositionEval } from '../../../engine-lib/types/eval';
 import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
+import Chonse2 from '../../../libs/chonse2-lib/chonse2';
+import { GameOverReason, GameScore } from '../../../libs/chonse2-lib/game-state';
+import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
+import { PieceType } from '../../../libs/chonse2-lib/piece-type';
+import { getEvaluationBarValue2 } from '../../../libs/engine-lib/helpers/chessHelper';
+import { EngineName, EngineInformation, EngineType, MoveClassification } from '../../../libs/engine-lib/types/enums';
+import { EvalSource, PositionEval } from '../../../libs/engine-lib/types/eval';
+import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 
 @Component({
   selector: 'app-chessboard',

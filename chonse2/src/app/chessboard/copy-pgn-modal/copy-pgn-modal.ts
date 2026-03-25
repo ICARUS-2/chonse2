@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 import GameLinkHelper from '../chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
