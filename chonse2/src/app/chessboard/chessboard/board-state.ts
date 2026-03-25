@@ -142,7 +142,7 @@ export default class BoardState
         }
 
         //If neither stack has a move (aka starting position), return a dummy move.
-        return { result: false, notation: "", fromCoord: "", toCoord: "", piece: PieceType.NONE, comment: ""};
+        return { result: false, notation: "", fromCoord: "", toCoord: "", piece: PieceType.NONE, pgnComment: "", additionalComment: ""};
     }
 
     getFutureMove(): IMoveResult 
@@ -160,7 +160,7 @@ export default class BoardState
         }
 
         //If no moves ahead, return a dummy move
-        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE, comment: "" };
+        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE, pgnComment: "", additionalComment: ""};
     }
     //#endregion
 
@@ -547,7 +547,8 @@ export default class BoardState
                             fromCoord: "",
                             toCoord: "",
                             piece: "",
-                            comment: ""
+                            pgnComment: "",
+                            additionalComment: ""
                         }
 
                         //Special case: Kingside castle.
@@ -680,7 +681,7 @@ export default class BoardState
 
                         //If we got this far, it's a valid move, push it.
                         moveResult = copyOfState.completeMove(passingCandidates[0], move.toCoordinate, move.promotion ?? undefined);
-                        moveResult.comment = commentStr;
+                        moveResult.pgnComment = commentStr;
                         commentStr = "";
 
                         states.push(copyOfState);

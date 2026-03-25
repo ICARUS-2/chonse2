@@ -27,7 +27,7 @@ import { GameOverReason, GameScore } from '../../../libs/chonse2-lib/game-state'
 import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
 import { PieceType } from '../../../libs/chonse2-lib/piece-type';
 import { getEvaluationBarValue2 } from '../../../libs/engine-lib/helpers/chessHelper';
-import { EngineName, EngineInformation, EngineType, MoveClassification } from '../../../libs/engine-lib/types/enums';
+import { EngineName, EngineInformation, EngineType, MoveClassification, moveClassificationLabels } from '../../../libs/engine-lib/types/enums';
 import { EvalSource, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 
@@ -49,6 +49,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   EvalSource = EvalSource;
   Object = Object;
   MoveClassification = MoveClassification;
+  moveClassificationLabels = moveClassificationLabels;
   Chessboard = Chessboard;
   Math = Math;
 
@@ -198,7 +199,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       piece == PieceType.WHITE_PAWN && this.toSquare().includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
       piece == PieceType.BLACK_PAWN && this.toSquare().includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
 
-    let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare, piece: PieceType.NONE, comment: ""};
+    let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare, piece: PieceType.NONE, pgnComment: "", additionalComment: ""};
 
     //handle pawn promotion if the pawn is at the opposite rank=.
     if (isPromotion)
@@ -324,23 +325,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }
   //#endregion
 
-  async handleAnalyzeClicked()
-  {
-    this.boardState().doEvaluateGame.set(true);
-    await this.boardState().evaluateGame();
-    //this.boardState().goBackToStart();
-    this.boardState().divergenceStackPointer.set(-1);
-    this.boardState().divergenceStateStack.set([]);
-    this.boardState().divergenceMoveStack.set([]);
-    this.boardState().isReadOnly.set(true);
-  }
-
-  async exportGameClicked(): Promise<void>
-  {
-    const modalRef = this.modalService.open(CopyPgnModal);
-    modalRef.componentInstance.pgn = this.boardState().exportPGN();
-  }
-
   //eval
   //#region 
   getEvalProgress = computed( (): number => 
@@ -401,6 +385,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   getIconSourceForMoveClassification = (classification: MoveClassification) => computed( () => 
   {
+    if (classification == MoveClassification.None)
+    {
+      return "";
+    }
+
     return "icons/" + classification + ".png";
   })
 
@@ -518,6 +507,14 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
     return "-";
   } )
+  //#endregion
+
+  //Coach stuff
+  //#region
+  showFollowUpClicked()
+  {
+    
+  }
   //#endregion
 
   //VS AI
@@ -729,14 +726,31 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
       if (!move.piece.startsWith(color))
       {
-        if (move.comment.startsWith(PgnComments.CLOCK))
+        if (move.pgnComment.startsWith(PgnComments.CLOCK))
         {
-          return move.comment.replace(PgnComments.CLOCK, "");
+          return move.pgnComment.replace(PgnComments.CLOCK, "");
         }
       }
     }
       return ""
   } ) 
+
+  async handleAnalyzeClicked()
+  {
+    this.boardState().doEvaluateGame.set(true);
+    await this.boardState().evaluateGame();
+    //this.boardState().goBackToStart();
+    this.boardState().divergenceStackPointer.set(-1);
+    this.boardState().divergenceStateStack.set([]);
+    this.boardState().divergenceMoveStack.set([]);
+    this.boardState().isReadOnly.set(true);
+  }
+
+  async exportGameClicked(): Promise<void>
+  {
+    const modalRef = this.modalService.open(CopyPgnModal);
+    modalRef.componentInstance.pgn = this.boardState().exportPGN();
+  }
   //#endregion
 
   //Left click/pointer

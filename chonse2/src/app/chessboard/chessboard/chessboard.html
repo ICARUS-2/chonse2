@@ -177,13 +177,35 @@
             </div>
 
             <!--Top box that displays coach info-->
-            <div class="w-50 p-2 d-flex flex-column justify-content-center overflow-auto">
+            <div class="w-50 p-2 d-flex flex-column justify-content-start overflow-auto">
                 @if( this.boardState().evalProgress() > 0 && this.boardState().evalProgress() < 97.1)
                 {
                     @if (this.boardState().displayedQuote(); as q)
                     {
                         <div>"{{q.text}}"</div>
                         <div class="fw-bold">-{{q.author}}</div>
+                    }
+                }
+
+                @if (this.boardState().getMostRecentEval(); as eval)
+                {
+                    @if (this.boardState().getMostRecentMove(); as move)
+                    {
+                        <div class="fw-bold">
+                            @if (getIconSourceForMoveClassification(eval.moveClassification ?? MoveClassification.None); as iconSource)
+                            {
+                                @if (iconSource() != "")
+                                {
+                                    <img [src]="iconSource()" class="inlineMoveIcon" alt="move classification"/>
+                                    {{move.notation}} is {{moveClassificationLabels[eval.moveClassification ?? MoveClassification.None]}}
+
+                                    @if (eval.lines[0]; as line)
+                                    {
+                                        <app-bootstrap-button (buttonClick)="showFollowUpClicked()" extraClasses="mt-1" label="Show follow-up"></app-bootstrap-button>
+                                    }
+                                }
+                            }
+                        </div>
                     }
                 }
             </div>

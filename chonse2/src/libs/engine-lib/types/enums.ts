@@ -22,7 +22,7 @@ export const moveClassificationLabels: Record<MoveClassification, string> = {
   [MoveClassification.Perfect]: "the only good move",
   [MoveClassification.Best]: "the best move",
   [MoveClassification.Excellent]: "excellent",
-  [MoveClassification.Okay]: "an okay move",
+  [MoveClassification.Okay]: "an okay",
   [MoveClassification.Inaccuracy]: "an inaccuracy",
   [MoveClassification.Mistake]: "a mistake",
   [MoveClassification.Blunder]: "a blunder",
