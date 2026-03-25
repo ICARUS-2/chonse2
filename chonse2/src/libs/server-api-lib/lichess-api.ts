@@ -1,5 +1,5 @@
-import { GameScore, GameOverReason } from "../../../libs/chonse2-lib/game-state";
-import { PositionEval, LineEval, EvalSource } from "../../../libs/engine-lib/types/eval";
+import { GameScore, GameOverReason } from "../chonse2-lib/game-state";
+import { PositionEval, LineEval, EvalSource } from "../engine-lib/types/eval";
 
 
 export class LichessAPI
