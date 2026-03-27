@@ -28,9 +28,10 @@ import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
 import { PieceType } from '../../../libs/chonse2-lib/piece-type';
 import { getEvaluationBarValue2 } from '../../../libs/engine-lib/helpers/chessHelper';
 import { EngineName, EngineInformation, EngineType, MoveClassification, moveClassificationLabels } from '../../../libs/engine-lib/types/enums';
-import { EvalSource, PositionEval } from '../../../libs/engine-lib/types/eval';
+import { EvalSource, LineEval, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
+import CoachLib from '../../../libs/coach-lib/coach-lib';
 
 @Component({
   selector: 'app-chessboard',
@@ -509,9 +510,48 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //#endregion
 
   //#region Coach
-  showFollowUpClicked()
+  async showFollowUpClicked()
   {
+    //Checks what the most recent eval was.
+    const mostRecentEval: PositionEval | undefined = this.boardState().getMostRecentEval();
 
+    //If we have it, we can show follow up.
+    if (mostRecentEval)
+    {
+      //If the line actually exists, it can be followed.
+      if (mostRecentEval.lines.length > 0)
+      {
+        //We only want the top engine line.
+        const topEngineLine: LineEval = mostRecentEval.lines[0];
+
+        //Sees how long it should actually iterate through.
+        const iterationLength = this.Math.min(5, topEngineLine.pv.length);
+
+        for(let i = 0; i < iterationLength; i++)
+        {
+          //Retrieves the top engine move.
+          const engineMove = topEngineLine.pv[i];
+
+          //Clones the board so that the move can be played.
+          const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
+
+          //Converts the move.
+          const {fromSquare, toSquare, promotion } = CoachLib.convertUciToChonse2Move(engineMove);
+
+
+          //Every one second, play the move without blocking UI thread.
+          const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
+          moveResult.coachComment = CoachLib.COACH_MOVE_DELIMITER;
+          this.boardState().pushState(stateCopy, moveResult, true);
+          await this.delay(1000);
+        }
+      }
+    }
+  }
+
+  delay(ms: number): Promise<void> 
+  {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
   //#endregion
 
@@ -604,7 +644,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     
     this.boardState().mainMoveStack.update( stack => [...stack, moveResult] );
     
-    this.boardState().mainStackPointer.update(score => score + 1);
+    this.boardState().mainStackPointer.update(ptr => ptr + 1);
   }
   //#endregion
 
@@ -623,7 +663,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   handleBackButtonClicked()
   {
     const mostRecentMove = this.boardState().getMostRecentMove();
-
 
     this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
 
@@ -656,11 +695,22 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //Should the back buttons be enabled
   areBackButtonsEnabled = computed( (): boolean  =>
   {
+    if (this.boardState().isCoachMoveShowing())
+    {
+      return false;
+    }
+
     return this.boardState().mainStackPointer() != 0 || this.boardState().divergenceStackPointer() != -1;
   })
 
   areForwardButtonsEnabled = computed( (): boolean =>
   {
+    if (this.boardState().isCoachMoveShowing())
+    {
+      return false;
+    }
+
+
     //If we are deviating from the main game (by going back) then you can't logically go forward.
     if (this.boardState().divergenceStateStack().length != 0)
     {

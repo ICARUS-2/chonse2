@@ -46,6 +46,7 @@ export class UciEngine {
   static readonly MAX_ELO: number = 3190;
 
   static readonly DEFAULT_DEPTH = 16;
+  static readonly MIN_DEPTH = 10;
   public readonly name: EngineName;
   private workers: EngineWorker[] = [];
   private workerQueue: WorkerJob[] = [];

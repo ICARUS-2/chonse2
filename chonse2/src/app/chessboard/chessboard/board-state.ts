@@ -35,9 +35,12 @@ export default class BoardState
     engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
-    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult, session: number}>> = signal([]);
+    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult, session: number, evaluateAtMinimumDepth: boolean}>> = signal([]);
     private isEvaluating: WritableSignal<boolean> = signal(false);
     evaluationSessionId: number = 0; //Designed to prevent in-progress evals from causing desyncrhonization when going back.
+
+    //Coach stuff
+    isCoachMoveShowing: WritableSignal<boolean> = signal(false);
 
     //Vs ai stuff
     isVsAi: WritableSignal<boolean> = signal(false);
@@ -74,16 +77,15 @@ export default class BoardState
     }
 
     //#region STATES
-    async pushState(state: Chonse2, move: MoveResult)
+    async pushState(state: Chonse2, move: MoveResult, isCoachMove: boolean = false)
     {
         //If the pointer was moved back, diverge from the main path.
-        if (this.mainStackPointer() != this.mainStateStack().length - 1 || this.isReadOnly())
+        if (this.mainStackPointer() != this.mainStateStack().length - 1 || this.isReadOnly() || isCoachMove)
         {
             let previousState: Chonse2;
 
             if (this.divergenceMoveStack().length != 0)
             {
-                //previousState = this.divergenceStateStack[this.divergenceStateStack.length - 1];
                 previousState = this.divergenceStateStack()[this.divergenceStateStack().length - 1];
             }
             else 
@@ -97,7 +99,7 @@ export default class BoardState
 
             if (this.engine() && this.doEvaluateGame())
             {
-                this.enqueueEvaluation(previousState, state, move);
+                this.enqueueEvaluation(previousState, state, move, isCoachMove);
             }
         }
         else //If the pointer is at the top of the stack, continue to add to it.
@@ -139,7 +141,8 @@ export default class BoardState
         }
 
         //Otherwise, check the main move stack using the pointer
-        if (this.mainStackPointer() > 0) { 
+        if (this.mainStackPointer() > 0) 
+        { 
             return this.mainMoveStack()[this.mainStackPointer() - 1];
         }
 
@@ -165,9 +168,22 @@ export default class BoardState
         return new MoveResult();
     }
 
-    getRootForFollowUp()
+    getRootForFollowUp(): MoveResult
     {
-        
+        if (this.divergenceMoveStack().length > 0)
+        {
+            for(let i = this.divergenceMoveStack().length - 1; i >= 0; i--)
+            {
+                const move = this.divergenceMoveStack()[i];
+
+                if (move.coachComment != "*")
+                {
+                    return move;
+                }
+            }
+        }
+
+        return this.mainMoveStack()[this.mainStackPointer() - 1];
     }
     //#endregion
 
@@ -221,11 +237,11 @@ export default class BoardState
         return undefined
     }
 
-    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult)
+    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, evaluateAtMinimumDepth = false)
     {
         const session = this.evaluationSessionId;
 
-        this.evalQueue.update( q => [...q, {previousState, state, move, session}] );
+        this.evalQueue.update( q => [...q, {previousState, state, move, session, evaluateAtMinimumDepth}] );
 
         this.processEvaluationQueue();
     }
@@ -239,7 +255,7 @@ export default class BoardState
 
         this.isEvaluating.set(true);
 
-        const { previousState, state, move, session } = this.evalQueue().shift()!;
+        const { previousState, state, move, session, evaluateAtMinimumDepth } = this.evalQueue().shift()!;
 
         try
         {
@@ -247,11 +263,7 @@ export default class BoardState
 
             if (engine)
             {
-                const depth = LocalStorageHelper.getNumber
-                (
-                    LocalStorageHelper.ENGINE_DEPTH,
-                    UciEngine.DEFAULT_DEPTH
-                );
+                const depth = evaluateAtMinimumDepth? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
 
                 const resultOfEval = await engine.evaluateMove
                 (
@@ -269,7 +281,7 @@ export default class BoardState
                     return;
                 }
                 
-                //Sanitizes for moe classification consistency across different evaluations.
+                //Sanitizes for move classification consistency across different evaluations.
                 const previousEval = this.getPreviousMostRecentEval();
                 if (previousEval?.bestMove)
                 {
