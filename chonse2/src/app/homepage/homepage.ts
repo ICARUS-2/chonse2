@@ -12,6 +12,7 @@ import { LichessAPI } from '../../libs/server-api-lib/lichess-api';
 import ThemeService from '../themes/theme-service';
 import Chonse2 from '../../libs/chonse2-lib/chonse2';
 import { GameState } from '../../libs/chonse2-lib/game-state';
+import MoveResult from '../chessboard/chessboard/move-result';
 
 @Component({
   selector: 'app-homepage',
@@ -35,7 +36,7 @@ export class Homepage implements OnInit{
 
   vsAiStates: Array<Chonse2> | undefined;
   vsAiGameStates: Array<GameState> | undefined;
-  vsAiMoves: Array<IMoveResult> | undefined;
+  vsAiMoves: Array<MoveResult> | undefined;
   vsAiPgnHeaders: PgnHeaders | undefined;
 
   progress: number = 0;
@@ -164,7 +165,8 @@ export class Homepage implements OnInit{
       restoredPositions.forEach( (s: Chonse2, idx: number) => s.gameState = restoredGameStates[idx]);
   
       //Set move stack.
-      bs.mainMoveStack.set(this.vsAiMoves);
+      const restoredMoveStack = this.vsAiMoves.map( m => Object.assign(new MoveResult, m) )
+      bs.mainMoveStack.set(restoredMoveStack);
 
       //Set pgn headers.
       bs.pgnHeaders.set(this.vsAiPgnHeaders);

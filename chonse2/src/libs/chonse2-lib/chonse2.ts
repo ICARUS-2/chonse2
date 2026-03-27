@@ -199,7 +199,7 @@ export default class Chonse2
   {
     if (this.gameState.isGameOver || fromCoordinate == toCoordinate)
     {
-      return {result: false, notation: "", fromCoord: fromCoordinate, toCoord: toCoordinate, piece: "", pgnComment: "", additionalComment: ""};
+      return {result: false, notation: "", fromCoord: fromCoordinate, toCoord: toCoordinate, piece: "", pgnComment: ""};
     }
 
     //In piece state, where the current piece is moving to.
@@ -216,7 +216,7 @@ export default class Chonse2
 
     if (!legalMoves.includes(toCoordinate))
     {
-      return {result: false, notation: "", fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: "", additionalComment: ""};
+      return {result: false, notation: "", fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: ""};
     }
 
     //Begin building algebraic notation for move
@@ -469,7 +469,7 @@ export default class Chonse2
     }
 
     //The move was successful if we got this far.
-    return {result: true, notation: notation.get(), fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: "", additionalComment: ""};
+    return {result: true, notation: notation.get(), fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: ""};
   }
 
   //Verifies if a king of a particular color is in check.

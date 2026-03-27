@@ -30,6 +30,7 @@ import { getEvaluationBarValue2 } from '../../../libs/engine-lib/helpers/chessHe
 import { EngineName, EngineInformation, EngineType, MoveClassification, moveClassificationLabels } from '../../../libs/engine-lib/types/enums';
 import { EvalSource, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
+import MoveResult from './move-result';
 
 @Component({
   selector: 'app-chessboard',
@@ -199,7 +200,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       piece == PieceType.WHITE_PAWN && this.toSquare().includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
       piece == PieceType.BLACK_PAWN && this.toSquare().includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
 
-    let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare, piece: PieceType.NONE, pgnComment: "", additionalComment: ""};
+    let moveResult: MoveResult = new MoveResult();
 
     //handle pawn promotion if the pawn is at the opposite rank=.
     if (isPromotion)
@@ -215,7 +216,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       modalRef.result.then( async (result) =>
       {
         //perform the move and promote to what the user selected.
-        moveResult = stateCopy.completeMove(fromSquare, toSquare, result);
+        moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, result));
 
         await this.boardState().pushState(stateCopy, moveResult);
         
@@ -228,7 +229,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       .catch( async () =>
       {
         //if the dialog was forced closed, promote to queen by default.
-        moveResult = stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
+        moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN));
 
         await this.boardState().pushState(stateCopy, moveResult);
 
@@ -248,7 +249,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     {
 
       //perform the move
-      moveResult = await stateCopy.completeMove(fromSquare, toSquare, piece);
+      moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, piece));
       this.boardState().pushState(stateCopy, moveResult);
         
       if (this.boardState().isVsAi() && this.getMostCurrentMainState() == this.boardState().getCurrentState())
@@ -271,8 +272,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.currentLegalMoves.set([]);
   }
 
-  //Import/Reset/Analyze/Copy PGN
-  //#region 
+  //#region Import/Reset/Analyze/Copy PGN
   handleImportClicked()
   {
     const ref = this.modalService.open(ImportModal, {size: 'lg'});
@@ -325,8 +325,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }
   //#endregion
 
-  //eval
-  //#region 
+  //#region Eval
   getEvalProgress = computed( (): number => 
   {
     return Number(this.boardState().evalProgress().toFixed(2));
@@ -509,16 +508,14 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   } )
   //#endregion
 
-  //Coach stuff
-  //#region
+  //#region Coach
   showFollowUpClicked()
   {
-    
+
   }
   //#endregion
 
-  //VS AI
-  //#region
+  //#region Vs AI
   async playAIMove()
   {
     if (this.getMostCurrentMainState().gameState.isGameOver)
@@ -564,7 +561,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.animateMove(fromSquare, toSquare, pieceToAnimate);
     setTimeout( () => 
     {
-      const moveResult = stateCopy.completeMove(fromSquare, toSquare, promotion);
+      const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
       this.forcePushState(stateCopy, moveResult);
       Sound.playSoundForMove(moveResult.notation);
     }, this.animationDuration);
@@ -601,7 +598,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     return this.boardState().mainStateStack()[this.boardState().mainStateStack().length - 1];
   }
 
-  forcePushState(state: Chonse2, moveResult: IMoveResult)
+  forcePushState(state: Chonse2, moveResult: MoveResult)
   {
     this.boardState().mainStateStack.update( stack => [...stack, state]);
     
@@ -611,8 +608,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }
   //#endregion
 
-  //Controls
-  //#region 
+  //#region Controls
   handleFlipClicked()
   {
     this.boardState().isFlipped.update( f => !f );
@@ -753,8 +749,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }
   //#endregion
 
-  //Left click/pointer
-  //#region 
+  //#region Left click/pointer
   onSquareLeftClick = () =>
   {
     this.resetClickedSquares();
@@ -763,6 +758,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: PointerEvent })
   {
+    if (this.boardState().isLocked())
+    {
+      return;
+    }
+
     //If the square was left clicked
     if (event.mouse.button == 0)
     {
@@ -796,6 +796,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   onSquareMouseUp(event: { coordinate: string, mouse: PointerEvent })
   {
+    if (this.boardState().isLocked())
+    {
+      return;
+    }
+
     if (event.mouse.button == 0)
     {
       //If this is click to move mode
@@ -910,8 +915,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }
   //#endregion
 
-  //Square highlight logic
-  //#region 
+  //#region Square highlighting
 
   //For the coordinate, get whether it is right clicked or not.
   getRightClickedStatusForSquare = (coordinate: string) => computed( () =>
@@ -951,8 +955,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }
   //#endregion
 
-  //Arrow logic
-  //#region
+  //#region Arrows
   //had some help with cat i farted for this one, i aint a graphic designer lol
   _getArrowCoords(arrow: Arrow) 
   {
@@ -1001,8 +1004,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }
   //#endregion
 
-  //Endgame square animation logic
-  //#region
+  //#region Endgame square animation
   _isSquareEndgameKingSquare = (rankIndex: number, fileIndex: number) => computed((): boolean  => 
   {
     return this._isSquareCheckmatedKing(rankIndex, fileIndex)() || this._isSquareWinningKing(rankIndex, fileIndex)() || this._isSquareKingInDraw(rankIndex, fileIndex)();
@@ -1086,8 +1088,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   })
   //#endregion
   
-  //Animation for piece movement logic
-  //#region
+  //#region Animation for piece movement logic
 
   updateBoardSize()
   {

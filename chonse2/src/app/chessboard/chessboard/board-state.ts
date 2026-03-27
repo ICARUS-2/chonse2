@@ -11,6 +11,7 @@ import { PieceType } from "../../../libs/chonse2-lib/piece-type";
 import { MoveClassification, EngineName } from "../../../libs/engine-lib/types/enums";
 import { PositionEval, GameEval, EvaluateGameParams } from "../../../libs/engine-lib/types/eval";
 import { UciEngine } from "../../../libs/engine-lib/uciEngine";
+import MoveResult from "./move-result";
 
 export default class BoardState
 {
@@ -19,12 +20,12 @@ export default class BoardState
     //For the moves actually being performed.
     mainStateStack: WritableSignal<Array<Chonse2>>;     
     mainStackPointer: WritableSignal<number>;
-    mainMoveStack: WritableSignal<Array<IMoveResult>>;
+    mainMoveStack: WritableSignal<Array<MoveResult>>;
     
     //For going back and playing out what move COULD have been made.
     divergenceStateStack: WritableSignal<Array<Chonse2>>;
     divergenceStackPointer: WritableSignal<number>;
-    divergenceMoveStack: WritableSignal<Array<IMoveResult>>;
+    divergenceMoveStack: WritableSignal<Array<MoveResult>>;
     divergenceEvalStack: WritableSignal<Array<PositionEval>>;
 
     //Eval stuff.
@@ -51,6 +52,7 @@ export default class BoardState
 
     //Behavior
     isReadOnly: WritableSignal<boolean> = signal(false);
+    isLocked: WritableSignal<boolean> = signal(false);
 
     constructor(startingStates: Array<Chonse2> = [new Chonse2()], headers: PgnHeaders = new PgnHeaders())
     {
@@ -72,7 +74,7 @@ export default class BoardState
     }
 
     //#region STATES
-    async pushState(state: Chonse2, move: IMoveResult)
+    async pushState(state: Chonse2, move: MoveResult)
     {
         //If the pointer was moved back, diverge from the main path.
         if (this.mainStackPointer() != this.mainStateStack().length - 1 || this.isReadOnly())
@@ -128,7 +130,7 @@ export default class BoardState
     //#endregion
     
     //#region MOVES
-    getMostRecentMove(): IMoveResult 
+    getMostRecentMove(): MoveResult 
     {
         //If we have any moves in the divergence stack, return the most recent one
         if (this.divergenceStackPointer() >= 0) 
@@ -142,10 +144,10 @@ export default class BoardState
         }
 
         //If neither stack has a move (aka starting position), return a dummy move.
-        return { result: false, notation: "", fromCoord: "", toCoord: "", piece: PieceType.NONE, pgnComment: "", additionalComment: ""};
+        return new MoveResult();
     }
 
-    getFutureMove(): IMoveResult 
+    getFutureMove(): MoveResult 
     {
         //If there are moves in the divergence stack ahead of the pointer
         if (this.divergenceStackPointer() + 1 < this.divergenceMoveStack().length) 
@@ -160,7 +162,12 @@ export default class BoardState
         }
 
         //If no moves ahead, return a dummy move
-        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE, pgnComment: "", additionalComment: ""};
+        return new MoveResult();
+    }
+
+    getRootForFollowUp()
+    {
+        
     }
     //#endregion
 
@@ -214,7 +221,7 @@ export default class BoardState
         return undefined
     }
 
-    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: IMoveResult)
+    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult)
     {
         const session = this.evaluationSessionId;
 
@@ -222,6 +229,7 @@ export default class BoardState
 
         this.processEvaluationQueue();
     }
+
     private async processEvaluationQueue()
     {
         if (!this.engine() || this.isEvaluating() || this.evalQueue().length == 0)
@@ -379,7 +387,7 @@ export default class BoardState
     {
         //States and PGN headers to be returned.
         const states: Array<Chonse2> = [];
-        const moveStack: Array<IMoveResult> = [];
+        const moveStack: Array<MoveResult> = [];
         const pgnHeaders = new PgnHeaders();
         const boardState = new BoardState();
 
@@ -541,15 +549,7 @@ export default class BoardState
                         const turn = copyOfState.turn;
                         const colorToMove = turn ? PieceColor.WHITE : PieceColor.BLACK;
         
-                        let moveResult: IMoveResult = {
-                            result: false,
-                            notation: "",
-                            fromCoord: "",
-                            toCoord: "",
-                            piece: "",
-                            pgnComment: "",
-                            additionalComment: ""
-                        }
+                        let moveResult = new MoveResult();
 
                         //Special case: Kingside castle.
                         if (token == "O-O" || token == "O-O+" || token == "O-O#")
@@ -559,7 +559,7 @@ export default class BoardState
                             const toSquare = turn ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE;
 
                             //Perform the move on the deep copy.
-                            moveResult = copyOfState.completeMove(kingSquare, toSquare);      
+                            moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(kingSquare, toSquare));      
                             
                             //Register the move on the board's stacks.
                             states.push(copyOfState);
@@ -577,7 +577,7 @@ export default class BoardState
                             const toSquare = turn ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE;
 
                             //Perform the move on the deep copy.
-                            moveResult = copyOfState.completeMove(kingSquare, toSquare);
+                            moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(kingSquare, toSquare));
 
                             //Register the move on the board's stacks.
                             states.push(copyOfState);
@@ -680,7 +680,7 @@ export default class BoardState
                         }
 
                         //If we got this far, it's a valid move, push it.
-                        moveResult = copyOfState.completeMove(passingCandidates[0], move.toCoordinate, move.promotion ?? undefined);
+                        moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(passingCandidates[0], move.toCoordinate, move.promotion ?? undefined));
                         moveResult.pgnComment = commentStr;
                         commentStr = "";
 
