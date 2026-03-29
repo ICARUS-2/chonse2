@@ -31,7 +31,7 @@ import { EngineName, EngineInformation, EngineType, MoveClassification, moveClas
 import { EvalSource, LineEval, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
-import CoachLib from '../../../libs/coach-lib/coach-lib';
+import {CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-lib';
 
 @Component({
   selector: 'app-chessboard',
@@ -350,6 +350,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const lastEval = this.boardState().getMostRecentEval();
 
+    if (this.boardState().divergenceEvalStack().length > 0 && (this.boardState().divergenceEvalStack().length != this.boardState().divergenceStateStack().length))
+    {
+      return MoveClassification.None;
+    }
+
     if (lastEval)
     {
       const lastMove = this.boardState().getMostRecentMove();
@@ -368,6 +373,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const lastEval = this.boardState().getMostRecentEval();
     
+    if (this.boardState().divergenceEvalStack().length > 0 && (this.boardState().divergenceEvalStack().length != this.boardState().divergenceStateStack().length))
+    {
+      return "";
+    }
+
     if (lastEval)
     {
       if (lastEval.moveClassification)
@@ -519,7 +529,34 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //#endregion
 
   //#region Coach
-  async showFollowUpClicked()
+  showFollowUpClicked()
+  {
+    this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.FollowUp);
+    this.doCoachMoveSequence();  
+  }
+
+  async showMissedOpportunityClicked()
+  {
+    this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.MissedOpportunity);
+
+    //Gets previous state and eval
+    const previousState = this.boardState().getPreviousMostRecentState().getFullDeepCopy();
+    const previousEval = this.boardState().getPreviousMostRecentEval();
+    const dummyResult = this.boardState().getRootForFollowUp().move ?? new MoveResult();
+    dummyResult.coachComment = CoachUtils.COACH_MOVE_DELIMITER;
+
+    //If they exist, push to divergence stack temporarily (creating a fake rollback)
+    if (previousEval && previousState)
+    {
+      this.boardState().divergenceStateStack.update( s => [...s, previousState] );
+      this.boardState().divergenceMoveStack.update( s=> [...s, new MoveResult()] );
+      this.boardState().divergenceEvalStack.update( s => [...s, previousEval] )
+
+      this.doCoachMoveSequence();
+    }
+  }
+
+  async doCoachMoveSequence()
   {
     this.boardState().isCoachMoveShowing.set(true);
 
@@ -550,7 +587,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
             const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
 
             //Converts the move.
-            const {fromSquare, toSquare, promotion } = CoachLib.convertUciToChonse2Move(engineMove);
+            const {fromSquare, toSquare, promotion } = CoachUtils.convertUciToChonse2Move(engineMove);
 
             const currentState = this.boardState().getCurrentState();
             const rawPieceIndex = Chonse2.findIndexFromCoordinate(fromSquare);
@@ -563,7 +600,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
             
             //Then play the move.
             const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
-            moveResult.coachComment = CoachLib.COACH_MOVE_DELIMITER;
+            moveResult.coachComment = CoachUtils.COACH_MOVE_DELIMITER;
             Sound.playSoundForMove(moveResult.notation);
 
             //Then add it.
@@ -578,21 +615,33 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+
   delay(ms: number): Promise<void> 
   {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  hideFollowUpClicked()
+  hideSequence()
   {
+    //Gets the most recent move and stores it.
     let mostRecentMove = this.boardState().getMostRecentMove();
     
-    while(mostRecentMove.coachComment == CoachLib.COACH_MOVE_DELIMITER)
+    //Pops every single thing that is a coach-played move.
+    while(mostRecentMove.coachComment == CoachUtils.COACH_MOVE_DELIMITER)
     {
       this.boardState().goBack();
       mostRecentMove = this.boardState().getMostRecentMove();
     }
+
+    if (this.boardState().coachMoveSequenceType() == CoachMoveSequenceType.MissedOpportunity)
+    {
+      //Ensures dummy move is erased.
+      this.boardState().goBack();
+    }
+
+    //Sets flag so that the board can be used again.
     this.boardState().isCoachMoveShowing.set(false);
+    this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.None);
   }
   //#endregion
 
