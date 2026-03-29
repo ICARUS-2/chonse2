@@ -1,0 +1,30 @@
+import { PieceType } from "../../../libs/chonse2-lib/piece-type";
+
+//Object designed to hold move data as well as coach stuff.
+export default class MoveResult implements IMoveResult
+{
+    result: boolean = false;
+    notation: string = "";
+    fromCoord: string = "";
+    toCoord: string = "";
+    piece: string = PieceType.NONE;
+    pgnComment: string = "";
+
+    coachComment: string = "";
+
+    //Exists because the Chonse2 library alone should not be returning anything more complex than the base IMoveResult, 
+    //but the chessboard needs something a bit more complex for coach interactions and whatnot.
+    static createMoveResultFromInterface(obj: IMoveResult): MoveResult
+    {
+        const val = new MoveResult();
+
+        val.result = obj.result;
+        val.notation = obj.notation;
+        val.fromCoord = obj.fromCoord;
+        val.toCoord = obj.toCoord;
+        val.piece = obj.piece;
+        val.pgnComment = obj.piece;
+
+        return val;
+    }
+}

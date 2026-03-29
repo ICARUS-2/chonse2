@@ -1,17 +1,18 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
-import Chonse2 from '../../chonse2-lib/chonse2';
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import BoardState from '../chessboard/chessboard/board-state';
 import { BoardNames } from '../boards';
-import { ChessComAPI }from '../chessboard/api/chesscom-api';
+import { ChessComAPI }from '../../libs/server-api-lib/chesscom-api';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
-import { GameState } from '../../chonse2-lib/game-state';
 import { RouteConstants } from '../app.routes';
 import { PgnHeaders } from '../chessboard/chessboard/pgn-misc';
-import { LichessAPI } from '../chessboard/api/lichess-api';
+import { LichessAPI } from '../../libs/server-api-lib/lichess-api';
 import ThemeService from '../themes/theme-service';
+import Chonse2 from '../../libs/chonse2-lib/chonse2';
+import { GameState } from '../../libs/chonse2-lib/game-state';
+import MoveResult from '../chessboard/chessboard/move-result';
 
 @Component({
   selector: 'app-homepage',
@@ -35,7 +36,7 @@ export class Homepage implements OnInit{
 
   vsAiStates: Array<Chonse2> | undefined;
   vsAiGameStates: Array<GameState> | undefined;
-  vsAiMoves: Array<IMoveResult> | undefined;
+  vsAiMoves: Array<MoveResult> | undefined;
   vsAiPgnHeaders: PgnHeaders | undefined;
 
   progress: number = 0;
@@ -164,7 +165,8 @@ export class Homepage implements OnInit{
       restoredPositions.forEach( (s: Chonse2, idx: number) => s.gameState = restoredGameStates[idx]);
   
       //Set move stack.
-      bs.mainMoveStack.set(this.vsAiMoves);
+      const restoredMoveStack = this.vsAiMoves.map( m => Object.assign(new MoveResult, m) )
+      bs.mainMoveStack.set(restoredMoveStack);
 
       //Set pgn headers.
       bs.pgnHeaders.set(this.vsAiPgnHeaders);

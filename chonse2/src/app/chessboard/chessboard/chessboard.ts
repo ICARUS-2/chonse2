@@ -21,15 +21,17 @@ import { BootstrapButton } from '../../bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
 import { DivergenceTableEntry } from '../divergence-table-entry/divergence-table-entry';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
-import { PieceType } from '../../../chonse2-lib/piece-type';
-import { PieceColor } from '../../../chonse2-lib/piece-color';
-import { GameOverReason, GameScore } from '../../../chonse2-lib/game-state';
-import { EngineInformation, EngineName, MoveClassification, EngineType } from '../../../engine-lib/types/enums';
-import Chonse2 from '../../../chonse2-lib/chonse2';
-import { UciEngine } from '../../../engine-lib/uciEngine';
-import { getEvaluationBarValue2 } from '../../../engine-lib/helpers/chessHelper';
-import { EvalSource, PositionEval } from '../../../engine-lib/types/eval';
 import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
+import Chonse2 from '../../../libs/chonse2-lib/chonse2';
+import { GameOverReason, GameScore } from '../../../libs/chonse2-lib/game-state';
+import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
+import { PieceType } from '../../../libs/chonse2-lib/piece-type';
+import { getEvaluationBarValue2 } from '../../../libs/engine-lib/helpers/chessHelper';
+import { EngineName, EngineInformation, EngineType, MoveClassification, moveClassificationLabels } from '../../../libs/engine-lib/types/enums';
+import { EvalSource, LineEval, PositionEval } from '../../../libs/engine-lib/types/eval';
+import { UciEngine } from '../../../libs/engine-lib/uciEngine';
+import MoveResult from './move-result';
+import CoachLib from '../../../libs/coach-lib/coach-lib';
 
 @Component({
   selector: 'app-chessboard',
@@ -49,6 +51,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   EvalSource = EvalSource;
   Object = Object;
   MoveClassification = MoveClassification;
+  moveClassificationLabels = moveClassificationLabels;
   Chessboard = Chessboard;
   Math = Math;
 
@@ -131,7 +134,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     if (this.boardState().doEvaluateGame() && !this.boardState().engine())
     {
       await this.boardState().evaluateGame();
-      this.boardState().divergenceStackPointer.set(-1);
       this.boardState().divergenceStateStack.set([]);
       this.boardState().divergenceMoveStack.set([]);
     }
@@ -198,7 +200,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       piece == PieceType.WHITE_PAWN && this.toSquare().includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
       piece == PieceType.BLACK_PAWN && this.toSquare().includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
 
-    let moveResult: IMoveResult = {result: false, notation: "", fromCoord: fromSquare, toCoord: toSquare, piece: PieceType.NONE, comment: ""};
+    let moveResult: MoveResult = new MoveResult();
 
     //handle pawn promotion if the pawn is at the opposite rank=.
     if (isPromotion)
@@ -214,7 +216,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       modalRef.result.then( async (result) =>
       {
         //perform the move and promote to what the user selected.
-        moveResult = stateCopy.completeMove(fromSquare, toSquare, result);
+        moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, result));
 
         await this.boardState().pushState(stateCopy, moveResult);
         
@@ -227,7 +229,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       .catch( async () =>
       {
         //if the dialog was forced closed, promote to queen by default.
-        moveResult = stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN);
+        moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, PieceType.QUEEN));
 
         await this.boardState().pushState(stateCopy, moveResult);
 
@@ -247,7 +249,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     {
 
       //perform the move
-      moveResult = await stateCopy.completeMove(fromSquare, toSquare, piece);
+      moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, piece));
       this.boardState().pushState(stateCopy, moveResult);
         
       if (this.boardState().isVsAi() && this.getMostCurrentMainState() == this.boardState().getCurrentState())
@@ -270,8 +272,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.currentLegalMoves.set([]);
   }
 
-  //Import/Reset/Analyze/Copy PGN
-  //#region 
+  //#region Import/Reset/Analyze/Copy PGN
   handleImportClicked()
   {
     const ref = this.modalService.open(ImportModal, {size: 'lg'});
@@ -296,7 +297,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
           await this.boardState().evaluateGame();
 
-          this.boardState().divergenceStackPointer.set(-1);
           this.boardState().divergenceStateStack.set([]);
           this.boardState().divergenceMoveStack.set([]);
         }
@@ -316,6 +316,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   handleResetClicked()
   {
+    this.boardState().isCoachMoveShowing.set(false);
+
     const bs: BoardState = new BoardState();
     this.chessBoardService.deleteGame(this.gameId());
     this.chessBoardService.addGame(this.gameId(), bs);
@@ -324,25 +326,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }
   //#endregion
 
-  async handleAnalyzeClicked()
-  {
-    this.boardState().doEvaluateGame.set(true);
-    await this.boardState().evaluateGame();
-    //this.boardState().goBackToStart();
-    this.boardState().divergenceStackPointer.set(-1);
-    this.boardState().divergenceStateStack.set([]);
-    this.boardState().divergenceMoveStack.set([]);
-    this.boardState().isReadOnly.set(true);
-  }
-
-  async exportGameClicked(): Promise<void>
-  {
-    const modalRef = this.modalService.open(CopyPgnModal);
-    modalRef.componentInstance.pgn = this.boardState().exportPGN();
-  }
-
-  //eval
-  //#region 
+  //#region Eval
   getEvalProgress = computed( (): number => 
   {
     return Number(this.boardState().evalProgress().toFixed(2));
@@ -401,11 +385,21 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   getIconSourceForMoveClassification = (classification: MoveClassification) => computed( () => 
   {
+    if (classification == MoveClassification.None)
+    {
+      return "";
+    }
+
     return "icons/" + classification + ".png";
   })
 
   getPastEngineArrow = computed( (): Arrow | null => 
   {
+    if (this.boardState().isCoachMoveShowing())
+    {
+      return null;
+    }
+
     const bestMove = this.boardState().getPreviousMostRecentEval()?.bestMove;
 
     if (bestMove)
@@ -423,6 +417,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   getFutureEngineArrow = computed( (): Arrow | null =>
   {
+    if (this.boardState().isCoachMoveShowing())
+    {
+      return null;
+    }
+
     const bestMove = this.boardState().getMostRecentEval()?.bestMove;
 
     if (bestMove)
@@ -463,7 +462,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   onGraphClicked(idx: number)
   {
-    //Potentially mark this for change?
     this.moveClicked(idx);
   }
 
@@ -520,8 +518,85 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   } )
   //#endregion
 
-  //VS AI
-  //#region
+  //#region Coach
+  async showFollowUpClicked()
+  {
+    this.boardState().isCoachMoveShowing.set(true);
+
+    //Checks what the most recent eval was.
+    const mostRecentEval: PositionEval | undefined = this.boardState().getMostRecentEval();
+
+    //If we have it, we can show follow up.
+    if (mostRecentEval)
+    {
+      //If the line actually exists, it can be followed.
+      if (mostRecentEval.lines.length > 0)
+      {
+        //We only want the top engine line.
+        const topEngineLine: LineEval = mostRecentEval.lines[0];
+
+        //Sees how long it should actually iterate through.
+
+        const iterationLength = topEngineLine.mate ? topEngineLine.pv.length : this.Math.min(5, topEngineLine.pv.length);
+
+        for(let i = 0; i < iterationLength; i++)
+        {
+          if (this.boardState().isCoachMoveShowing())
+          {
+            //Retrieves the top engine move.
+            const engineMove = topEngineLine.pv[i];
+
+            //Clones the board so that the move can be played.
+            const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
+
+            //Converts the move.
+            const {fromSquare, toSquare, promotion } = CoachLib.convertUciToChonse2Move(engineMove);
+
+            const currentState = this.boardState().getCurrentState();
+            const rawPieceIndex = Chonse2.findIndexFromCoordinate(fromSquare);
+            const piece = currentState.pieceState[rawPieceIndex.rowIndex][rawPieceIndex.colIndex];
+
+            
+            //First, do the animation
+            this.animateMove(fromSquare, toSquare, piece);
+            await this.delay(this.animationDuration);
+            
+            //Then play the move.
+            const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
+            moveResult.coachComment = CoachLib.COACH_MOVE_DELIMITER;
+            Sound.playSoundForMove(moveResult.notation);
+
+            //Then add it.
+            this.boardState().pushState(stateCopy, moveResult, true);
+            
+            //Then wait one second for the next move.
+            await this.delay(1000);
+            
+          }
+        }
+      }
+    }
+  }
+
+  delay(ms: number): Promise<void> 
+  {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  hideFollowUpClicked()
+  {
+    let mostRecentMove = this.boardState().getMostRecentMove();
+    
+    while(mostRecentMove.coachComment == CoachLib.COACH_MOVE_DELIMITER)
+    {
+      this.boardState().goBack();
+      mostRecentMove = this.boardState().getMostRecentMove();
+    }
+    this.boardState().isCoachMoveShowing.set(false);
+  }
+  //#endregion
+
+  //#region Vs AI
   async playAIMove()
   {
     if (this.getMostCurrentMainState().gameState.isGameOver)
@@ -567,7 +642,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.animateMove(fromSquare, toSquare, pieceToAnimate);
     setTimeout( () => 
     {
-      const moveResult = stateCopy.completeMove(fromSquare, toSquare, promotion);
+      const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
       this.forcePushState(stateCopy, moveResult);
       Sound.playSoundForMove(moveResult.notation);
     }, this.animationDuration);
@@ -604,18 +679,17 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     return this.boardState().mainStateStack()[this.boardState().mainStateStack().length - 1];
   }
 
-  forcePushState(state: Chonse2, moveResult: IMoveResult)
+  forcePushState(state: Chonse2, moveResult: MoveResult)
   {
     this.boardState().mainStateStack.update( stack => [...stack, state]);
     
     this.boardState().mainMoveStack.update( stack => [...stack, moveResult] );
     
-    this.boardState().mainStackPointer.update(score => score + 1);
+    this.boardState().mainStackPointer.update(ptr => ptr + 1);
   }
   //#endregion
 
-  //Controls
-  //#region 
+  //#region Controls
   handleFlipClicked()
   {
     this.boardState().isFlipped.update( f => !f );
@@ -630,7 +704,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   handleBackButtonClicked()
   {
     const mostRecentMove = this.boardState().getMostRecentMove();
-
 
     this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
 
@@ -663,11 +736,22 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //Should the back buttons be enabled
   areBackButtonsEnabled = computed( (): boolean  =>
   {
-    return this.boardState().mainStackPointer() != 0 || this.boardState().divergenceStackPointer() != -1;
+    if (this.boardState().isCoachMoveShowing())
+    {
+      return false;
+    }
+
+    return this.boardState().mainStackPointer() != 0 || this.boardState().divergenceStateStack().length != 0;
   })
 
   areForwardButtonsEnabled = computed( (): boolean =>
   {
+    if (this.boardState().isCoachMoveShowing())
+    {
+      return false;
+    }
+
+
     //If we are deviating from the main game (by going back) then you can't logically go forward.
     if (this.boardState().divergenceStateStack().length != 0)
     {
@@ -685,6 +769,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   
   moveClicked(index: number)
   {
+    if (this.boardState().isCoachMoveShowing())
+    {
+      return;
+    }
+
     if (this.boardState().divergenceStateStack().length != 0)
     { 
       this.boardState().goBackToStart();
@@ -729,18 +818,32 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
       if (!move.piece.startsWith(color))
       {
-        if (move.comment.startsWith(PgnComments.CLOCK))
+        if (move.pgnComment.startsWith(PgnComments.CLOCK))
         {
-          return move.comment.replace(PgnComments.CLOCK, "");
+          return move.pgnComment.replace(PgnComments.CLOCK, "");
         }
       }
     }
       return ""
   } ) 
+
+  async handleAnalyzeClicked()
+  {
+    this.boardState().doEvaluateGame.set(true);
+    await this.boardState().evaluateGame();
+    this.boardState().divergenceStateStack.set([]);
+    this.boardState().divergenceMoveStack.set([]);
+    this.boardState().isReadOnly.set(true);
+  }
+
+  async exportGameClicked(): Promise<void>
+  {
+    const modalRef = this.modalService.open(CopyPgnModal);
+    modalRef.componentInstance.pgn = this.boardState().exportPGN();
+  }
   //#endregion
 
-  //Left click/pointer
-  //#region 
+  //#region Left click/pointer
   onSquareLeftClick = () =>
   {
     this.resetClickedSquares();
@@ -749,6 +852,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: PointerEvent })
   {
+    if (this.boardState().isLocked())
+    {
+      return;
+    }
+
     //If the square was left clicked
     if (event.mouse.button == 0)
     {
@@ -782,6 +890,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   onSquareMouseUp(event: { coordinate: string, mouse: PointerEvent })
   {
+    if (this.boardState().isLocked())
+    {
+      return;
+    }
+
     if (event.mouse.button == 0)
     {
       //If this is click to move mode
@@ -896,8 +1009,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }
   //#endregion
 
-  //Square highlight logic
-  //#region 
+  //#region Square highlighting
 
   //For the coordinate, get whether it is right clicked or not.
   getRightClickedStatusForSquare = (coordinate: string) => computed( () =>
@@ -937,8 +1049,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }
   //#endregion
 
-  //Arrow logic
-  //#region
+  //#region Arrows
   //had some help with cat i farted for this one, i aint a graphic designer lol
   _getArrowCoords(arrow: Arrow) 
   {
@@ -987,8 +1098,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }
   //#endregion
 
-  //Endgame square animation logic
-  //#region
+  //#region Endgame square animation
   _isSquareEndgameKingSquare = (rankIndex: number, fileIndex: number) => computed((): boolean  => 
   {
     return this._isSquareCheckmatedKing(rankIndex, fileIndex)() || this._isSquareWinningKing(rankIndex, fileIndex)() || this._isSquareKingInDraw(rankIndex, fileIndex)();
@@ -1072,8 +1182,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   })
   //#endregion
   
-  //Animation for piece movement logic
-  //#region
+  //#region Animation for piece movement logic
 
   updateBoardSize()
   {

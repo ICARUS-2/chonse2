@@ -5,5 +5,5 @@ interface IMoveResult
     fromCoord: string,
     toCoord: string,
     piece: string,
-    comment: string
+    pgnComment: string
 }

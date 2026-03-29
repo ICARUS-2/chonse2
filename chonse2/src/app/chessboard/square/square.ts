@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, EventEmitter, input, Input, Output } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
-import { MoveClassification } from '../../../engine-lib/types/enums';
-import { PieceType } from '../../../chonse2-lib/piece-type';
+import { PieceType } from '../../../libs/chonse2-lib/piece-type';
+import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 
 @Component({
   selector: 'app-square',

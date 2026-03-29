@@ -20,7 +20,7 @@ import { getEngineWorker, sendCommandsToWorker } from "./worker";
 import { Stockfish11 } from "./engines/stockfish11";
 import { Stockfish18 } from "./engines/stockfish18";
 import { Stockfish17_1 } from "./engines/stockfish17_1";
-import { LichessAPI } from "../app/chessboard/api/lichess-api";
+import { LichessAPI } from "../server-api-lib/lichess-api";
 
 
 export class UciEngine {
@@ -46,6 +46,7 @@ export class UciEngine {
   static readonly MAX_ELO: number = 3190;
 
   static readonly DEFAULT_DEPTH = 16;
+  static readonly MIN_DEPTH = 10;
   public readonly name: EngineName;
   private workers: EngineWorker[] = [];
   private workerQueue: WorkerJob[] = [];

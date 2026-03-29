@@ -1,4 +1,5 @@
-import { UciEngine } from "../../engine-lib/uciEngine";
+import { UciEngine } from "../../libs/engine-lib/uciEngine";
+
 
 export default class VsAiConfig 
 {

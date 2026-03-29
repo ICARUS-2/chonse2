@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, input, Input } from '@angular/core';
-import { PieceColor } from '../../../chonse2-lib/piece-color';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+
 import ThemeService from '../../themes/theme-service';
+import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
 
 @Component({
   selector: 'app-board-player-info',

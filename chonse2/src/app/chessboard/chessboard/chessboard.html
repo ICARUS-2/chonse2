@@ -136,7 +136,7 @@
         </div>
     </div>
     <div class="boardControls" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
-        <div class="engineDashboard d-flex" [style.border-bottom]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`" >
+        <div class="engineDashboard d-flex" [style.color]="themeService.getThemeInstance().getTextColor()" [style.border-bottom]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`" >
             <!--Top box that displays engine type and depth-->
             <div class="w-50 p-2 d-flex flex-column justify-content-center" [style.border-right]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
                 @if (this.boardState().doEvaluateGame())
@@ -177,13 +177,53 @@
             </div>
 
             <!--Top box that displays coach info-->
-            <div class="w-50 p-2 d-flex flex-column justify-content-center overflow-auto">
+            <div class="w-50 p-2 d-flex flex-column justify-content-start overflow-auto">
                 @if( this.boardState().evalProgress() > 0 && this.boardState().evalProgress() < 97.1)
                 {
                     @if (this.boardState().displayedQuote(); as q)
                     {
                         <div>"{{q.text}}"</div>
                         <div class="fw-bold">-{{q.author}}</div>
+                    }
+                }
+
+                @if (this.boardState().getRootForFollowUp(); as root)
+                {
+                    @if (root.move && root.eval)
+                    {
+                        <div class="fw-bold">
+                            @if (getIconSourceForMoveClassification(root.eval.moveClassification ?? MoveClassification.None); as iconSource)
+                            {
+                                @if (iconSource() != "")
+                                {
+                                    <img [src]="iconSource()" class="inlineMoveIcon" alt="move classification"/>
+                                    {{root.move.notation}} is {{moveClassificationLabels[root.eval.moveClassification ?? MoveClassification.None]}}
+                                    
+                                    <div></div>
+
+                                    @if (root.eval.lines[0]; as line)
+                                    {
+                                        @if (!boardState().isCoachMoveShowing())
+                                        {
+                                            <app-bootstrap-button (buttonClick)="showFollowUpClicked()" extraClasses="mt-1" label="Show follow-up"></app-bootstrap-button>
+                                        }
+                                        @else 
+                                        {
+                                            <app-bootstrap-button (buttonClick)="hideFollowUpClicked()" extraClasses="mt-1" label="Hide follow-up"></app-bootstrap-button>
+                                        }
+                                    }
+                                }
+                            }
+                        </div>
+
+                        <!-- <div class="testingPurposes">
+                            <p>Main stack length: {{this.boardState().mainStateStack().length}}</p>
+                            <p>Main move stack length: {{this.boardState().mainMoveStack().length}}</p>
+                            <p>Main eval stack length: {{this.boardState().eval()?.positions?.length}}</p>
+                            <p>Divergence stack length: {{this.boardState().divergenceStateStack().length}}</p>
+                            <p>Divergence move stack length: {{this.boardState().divergenceMoveStack().length}}</p>
+                            <p>Divergence eval stack length: {{this.boardState().divergenceEvalStack().length}}</p>
+                        </div> -->
                     }
                 }
             </div>
@@ -260,7 +300,7 @@
         }
         @else 
         {
-            <div class="d-flex w-100 justify-content-start mt-2">
+            <div class="d-flex w-100 justify-content-start mt-2 ms-2">
 
                 @if (!getMostCurrentMainState().gameState.isGameOver && boardState().engine())
                 {

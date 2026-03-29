@@ -1,13 +1,4 @@
 import { ChangeDetectionStrategy, Component, input, Input, NgZone, signal, WritableSignal } from '@angular/core';
-import Chonse2 from '../../../chonse2-lib/chonse2';
-import { PieceType } from '../../../chonse2-lib/piece-type';
-import { ToastrService } from 'ngx-toastr';
-import InputPositionState from '../input-position-state';
-import { InputPositionService } from '../input-position-service';
-import { Arrow, ArrowContext } from '../../chessboard/chessboard/arrow';
-import { MoveClassification } from '../../../engine-lib/types/enums';
-import { PieceColor } from '../../../chonse2-lib/piece-color';
-import { GameOverReason} from '../../../chonse2-lib/game-state';
 import { Square } from '../../chessboard/square/square';
 import { PieceSelector } from "../piece-selector/piece-selector";
 import { FormsModule } from '@angular/forms';
@@ -15,6 +6,14 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BootstrapButton } from '../../bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
+import Chonse2 from '../../../libs/chonse2-lib/chonse2';
+import { GameOverReason } from '../../../libs/chonse2-lib/game-state';
+import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
+import { PieceType } from '../../../libs/chonse2-lib/piece-type';
+import { MoveClassification } from '../../../libs/engine-lib/types/enums';
+import { Arrow, ArrowContext } from '../../chessboard/chessboard/arrow';
+import { InputPositionService } from '../input-position-service';
+import InputPositionState from '../input-position-state';
 
 @Component({
   selector: 'app-input-position-board',

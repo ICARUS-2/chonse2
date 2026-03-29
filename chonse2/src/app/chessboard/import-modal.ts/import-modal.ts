@@ -3,15 +3,15 @@ import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PgnSources } from '../chessboard/pgn-misc';
 import LocalStorageHelper from '../chessboard/local-storage-helper';
-import {ChessComAPI, ChessComGame} from '../api/chesscom-api';;
+import {ChessComAPI, ChessComGame} from '../../../libs/server-api-lib/chesscom-api';;
 import { CommonModule } from '@angular/common';
-import { GameScore } from '../../../chonse2-lib/game-state';
 import GameLinkHelper from '../chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
-import { LichessAPI, LichessGame } from '../api/lichess-api';
+import { LichessAPI, LichessGame } from '../../../libs/server-api-lib/lichess-api';
 import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from "../../bootstrap-button/bootstrap-button";
 import { form, FormField } from '@angular/forms/signals';
+import { GameScore } from '../../../libs/chonse2-lib/game-state';
 
 @Component({
   selector: 'app-import-modal',

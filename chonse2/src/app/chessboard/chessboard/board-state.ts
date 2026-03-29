@@ -3,14 +3,16 @@ import { Arrow } from "./arrow";
 import LocalStorageHelper from "./local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
 import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
-import Chonse2 from "../../../chonse2-lib/chonse2";
-import { GameScore } from "../../../chonse2-lib/game-state";
-import { PieceColor } from "../../../chonse2-lib/piece-color";
-import { PieceType } from "../../../chonse2-lib/piece-type";
-import { MoveClassification, EngineName } from "../../../engine-lib/types/enums";
-import { PositionEval, GameEval, EvaluateGameParams } from "../../../engine-lib/types/eval";
-import { UciEngine } from "../../../engine-lib/uciEngine";
 import { Quote, Quotes } from "./quotes";
+import Chonse2 from "../../../libs/chonse2-lib/chonse2";
+import { GameScore } from "../../../libs/chonse2-lib/game-state";
+import { PieceColor } from "../../../libs/chonse2-lib/piece-color";
+import { PieceType } from "../../../libs/chonse2-lib/piece-type";
+import { MoveClassification, EngineName, moveClassificationLabels } from "../../../libs/engine-lib/types/enums";
+import { PositionEval, GameEval, EvaluateGameParams } from "../../../libs/engine-lib/types/eval";
+import { UciEngine } from "../../../libs/engine-lib/uciEngine";
+import MoveResult from "./move-result";
+import CoachLib from "../../../libs/coach-lib/coach-lib";
 
 export default class BoardState
 {
@@ -19,12 +21,11 @@ export default class BoardState
     //For the moves actually being performed.
     mainStateStack: WritableSignal<Array<Chonse2>>;     
     mainStackPointer: WritableSignal<number>;
-    mainMoveStack: WritableSignal<Array<IMoveResult>>;
+    mainMoveStack: WritableSignal<Array<MoveResult>>;
     
     //For going back and playing out what move COULD have been made.
     divergenceStateStack: WritableSignal<Array<Chonse2>>;
-    divergenceStackPointer: WritableSignal<number>;
-    divergenceMoveStack: WritableSignal<Array<IMoveResult>>;
+    divergenceMoveStack: WritableSignal<Array<MoveResult>>;
     divergenceEvalStack: WritableSignal<Array<PositionEval>>;
 
     //Eval stuff.
@@ -34,9 +35,12 @@ export default class BoardState
     engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
-    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult, session: number}>> = signal([]);
+    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult, session: number, overrideForCoachEvals: boolean}>> = signal([]);
     private isEvaluating: WritableSignal<boolean> = signal(false);
     evaluationSessionId: number = 0; //Designed to prevent in-progress evals from causing desyncrhonization when going back.
+
+    //Coach stuff
+    isCoachMoveShowing: WritableSignal<boolean> = signal(false);
 
     //Vs ai stuff
     isVsAi: WritableSignal<boolean> = signal(false);
@@ -51,6 +55,7 @@ export default class BoardState
 
     //Behavior
     isReadOnly: WritableSignal<boolean> = signal(false);
+    isLocked: WritableSignal<boolean> = signal(false);
 
     constructor(startingStates: Array<Chonse2> = [new Chonse2()], headers: PgnHeaders = new PgnHeaders())
     {
@@ -66,22 +71,20 @@ export default class BoardState
         this.mainMoveStack = signal([]);
 
         this.divergenceStateStack = signal([]);
-        this.divergenceStackPointer = signal(-1);
         this.divergenceMoveStack = signal([]);
         this.divergenceEvalStack = signal([]);
     }
 
     //#region STATES
-    async pushState(state: Chonse2, move: IMoveResult)
+    async pushState(state: Chonse2, move: MoveResult, isCoachMove: boolean = false)
     {
         //If the pointer was moved back, diverge from the main path.
-        if (this.mainStackPointer() != this.mainStateStack().length - 1 || this.isReadOnly())
+        if (this.mainStackPointer() != this.mainStateStack().length - 1 || this.isReadOnly() || isCoachMove)
         {
             let previousState: Chonse2;
 
             if (this.divergenceMoveStack().length != 0)
             {
-                //previousState = this.divergenceStateStack[this.divergenceStateStack.length - 1];
                 previousState = this.divergenceStateStack()[this.divergenceStateStack().length - 1];
             }
             else 
@@ -91,11 +94,10 @@ export default class BoardState
 
             this.divergenceStateStack.update(stack => [...stack, state]);
             this.divergenceMoveStack.update(stack => [...stack, move]);
-            this.divergenceStackPointer.update(ptr => ptr + 1);
 
             if (this.engine() && this.doEvaluateGame())
             {
-                this.enqueueEvaluation(previousState, state, move);
+                this.enqueueEvaluation(previousState, state, move, isCoachMove);
             }
         }
         else //If the pointer is at the top of the stack, continue to add to it.
@@ -119,7 +121,7 @@ export default class BoardState
         //If we are diverging from the main game, return what was pushed to the secondary stack.
         if (this.divergenceStateStack().length != 0)
         {
-            return this.divergenceStateStack()[this.divergenceStackPointer()];
+            return this.divergenceStateStack()[this.divergenceStateStack().length - 1];
         }
 
         //Otherwise, just get the current main state.
@@ -128,48 +130,71 @@ export default class BoardState
     //#endregion
     
     //#region MOVES
-    getMostRecentMove(): IMoveResult 
+    getMostRecentMove(): MoveResult 
     {
         //If we have any moves in the divergence stack, return the most recent one
-        if (this.divergenceStackPointer() >= 0) 
+        if (this.divergenceStateStack().length > 0) 
         {
-            return this.divergenceMoveStack()[this.divergenceStackPointer()];
+            return this.divergenceMoveStack()[this.divergenceMoveStack().length - 1];
         }
 
         //Otherwise, check the main move stack using the pointer
-        if (this.mainStackPointer() > 0) { 
+        if (this.mainStackPointer() > 0) 
+        { 
             return this.mainMoveStack()[this.mainStackPointer() - 1];
         }
 
         //If neither stack has a move (aka starting position), return a dummy move.
-        return { result: false, notation: "", fromCoord: "", toCoord: "", piece: PieceType.NONE, comment: ""};
+        return new MoveResult();
     }
 
-    getFutureMove(): IMoveResult 
+    getFutureMove(): MoveResult 
     {
-        //If there are moves in the divergence stack ahead of the pointer
-        if (this.divergenceStackPointer() + 1 < this.divergenceMoveStack().length) 
-        {
-            return this.divergenceMoveStack()[this.divergenceStackPointer() + 1];
-        }
-
-        //Otherwise, check the main move stack using the pointer
+        //Check the main move stack using the pointer
         if (this.mainStackPointer() < this.mainMoveStack().length) 
         {
             return this.mainMoveStack()[this.mainStackPointer()];
         }
 
         //If no moves ahead, return a dummy move
-        return { result: false, notation: "N/A", fromCoord: "", toCoord: "", piece: PieceType.NONE, comment: "" };
+        return new MoveResult();
+    }
+
+    getRootForFollowUp(): {move: MoveResult | undefined, eval: PositionEval | undefined}
+    {
+        let returnMove: MoveResult | undefined = undefined;
+        let returnEval: PositionEval | undefined = undefined;
+        if (this.divergenceMoveStack().length > 0)
+        {
+            for(let i = this.divergenceMoveStack().length - 1; i >= 0; i--)
+            {
+                const move = this.divergenceMoveStack()[i];
+
+                if (move.coachComment != CoachLib.COACH_MOVE_DELIMITER)
+                {
+                    returnMove = move;
+                    returnEval = this.divergenceEvalStack()[i];
+                    break;
+                }
+            }
+        }
+
+        if (returnMove == undefined)
+        {
+            returnMove = this.mainMoveStack()[this.mainStackPointer() - 1];
+            returnEval = this.eval()?.positions[this.mainStackPointer()];
+        }
+
+        return {move: returnMove, eval: returnEval}
     }
     //#endregion
 
     //#region EVAL
     getMostRecentEval() : PositionEval | undefined
     {
-        if (this.divergenceStackPointer() >= 0) 
+        if (this.divergenceEvalStack().length > 0) 
         {
-            return this.divergenceEvalStack()[this.divergenceStackPointer()];
+            return this.divergenceEvalStack()[this.divergenceEvalStack().length - 1];
         }
 
         //Otherwise, check the main move stack using the pointer
@@ -199,7 +224,7 @@ export default class BoardState
         {
             if (ev)
             {
-                return this.divergenceEvalStack()[this.divergenceStackPointer() - 1];
+                return this.divergenceEvalStack()[this.divergenceEvalStack().length - 2];
             }
         }
 
@@ -213,15 +238,17 @@ export default class BoardState
 
         return undefined
     }
-
-    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: IMoveResult)
+    
+    //Override for coach evals simply tells it to evaluate it at a lower depth (so the eval bar has a value), and make it best move no matter what (since the coach will always play the best move anyway)
+    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, overrideForCoachEvals = false)
     {
         const session = this.evaluationSessionId;
 
-        this.evalQueue.update( q => [...q, {previousState, state, move, session}] );
+        this.evalQueue.update( q => [...q, {previousState, state, move, session, overrideForCoachEvals: overrideForCoachEvals}] );
 
         this.processEvaluationQueue();
     }
+
     private async processEvaluationQueue()
     {
         if (!this.engine() || this.isEvaluating() || this.evalQueue().length == 0)
@@ -231,7 +258,7 @@ export default class BoardState
 
         this.isEvaluating.set(true);
 
-        const { previousState, state, move, session } = this.evalQueue().shift()!;
+        const { previousState, state, move, session, overrideForCoachEvals } = this.evalQueue().shift()!;
 
         try
         {
@@ -239,11 +266,7 @@ export default class BoardState
 
             if (engine)
             {
-                const depth = LocalStorageHelper.getNumber
-                (
-                    LocalStorageHelper.ENGINE_DEPTH,
-                    UciEngine.DEFAULT_DEPTH
-                );
+                const depth = overrideForCoachEvals? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
 
                 const resultOfEval = await engine.evaluateMove
                 (
@@ -252,6 +275,14 @@ export default class BoardState
                     move,
                     depth
                 );
+                
+                if (overrideForCoachEvals)
+                {
+                    if (resultOfEval.moveClassification != MoveClassification.Opening)
+                    {
+                        resultOfEval.moveClassification = MoveClassification.Best;
+                    }
+                }
 
                 // If session changed, abandon immediately
                 if (session !== this.evaluationSessionId || this.divergenceEvalStack().length == this.divergenceStateStack().length)
@@ -261,7 +292,7 @@ export default class BoardState
                     return;
                 }
                 
-                //Sanitizes for moe classification consistency across different evaluations.
+                //Sanitizes for move classification consistency across different evaluations.
                 const previousEval = this.getPreviousMostRecentEval();
                 if (previousEval?.bestMove)
                 {
@@ -305,7 +336,6 @@ export default class BoardState
         this.divergenceStateStack.set([]);
         this.divergenceMoveStack.set([]);
         this.divergenceEvalStack.set([]);
-        this.divergenceStackPointer.set(-1);
         this.evalQueue.set([]);
     }
 
@@ -336,7 +366,6 @@ export default class BoardState
 
             this.divergenceStateStack.update(stack => stack.slice(0, -1));
             this.divergenceMoveStack.update(stack => stack.slice(0, -1));
-            this.divergenceStackPointer.update(ptr => ptr - 1);
         }
     }
 
@@ -379,7 +408,7 @@ export default class BoardState
     {
         //States and PGN headers to be returned.
         const states: Array<Chonse2> = [];
-        const moveStack: Array<IMoveResult> = [];
+        const moveStack: Array<MoveResult> = [];
         const pgnHeaders = new PgnHeaders();
         const boardState = new BoardState();
 
@@ -541,14 +570,7 @@ export default class BoardState
                         const turn = copyOfState.turn;
                         const colorToMove = turn ? PieceColor.WHITE : PieceColor.BLACK;
         
-                        let moveResult: IMoveResult = {
-                            result: false,
-                            notation: "",
-                            fromCoord: "",
-                            toCoord: "",
-                            piece: "",
-                            comment: ""
-                        }
+                        let moveResult = new MoveResult();
 
                         //Special case: Kingside castle.
                         if (token == "O-O" || token == "O-O+" || token == "O-O#")
@@ -558,7 +580,7 @@ export default class BoardState
                             const toSquare = turn ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE;
 
                             //Perform the move on the deep copy.
-                            moveResult = copyOfState.completeMove(kingSquare, toSquare);      
+                            moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(kingSquare, toSquare));      
                             
                             //Register the move on the board's stacks.
                             states.push(copyOfState);
@@ -576,7 +598,7 @@ export default class BoardState
                             const toSquare = turn ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE;
 
                             //Perform the move on the deep copy.
-                            moveResult = copyOfState.completeMove(kingSquare, toSquare);
+                            moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(kingSquare, toSquare));
 
                             //Register the move on the board's stacks.
                             states.push(copyOfState);
@@ -679,8 +701,8 @@ export default class BoardState
                         }
 
                         //If we got this far, it's a valid move, push it.
-                        moveResult = copyOfState.completeMove(passingCandidates[0], move.toCoordinate, move.promotion ?? undefined);
-                        moveResult.comment = commentStr;
+                        moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(passingCandidates[0], move.toCoordinate, move.promotion ?? undefined));
+                        moveResult.pgnComment = commentStr;
                         commentStr = "";
 
                         states.push(copyOfState);

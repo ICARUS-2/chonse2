@@ -5,9 +5,9 @@ import { Themes } from '../themes/themes';
 import ThemeService from '../themes/theme-service';
 import { CommonModule } from '@angular/common';
 import { form, FormField, max, min } from '@angular/forms/signals';
-import { EngineInformation, EngineName } from '../../engine-lib/types/enums';
-import { UciEngine } from '../../engine-lib/uciEngine';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { EngineName, EngineInformation } from '../../libs/engine-lib/types/enums';
+import { UciEngine } from '../../libs/engine-lib/uciEngine';
 
 @Component({
   selector: 'app-settings',
@@ -34,7 +34,7 @@ export class Settings {
 
   form = form(this.formModel, (schema) => 
   {
-    min(schema.engineDepth, 14),
+    min(schema.engineDepth, UciEngine.MIN_DEPTH),
     max(schema.engineDepth, 22)
   })
 
