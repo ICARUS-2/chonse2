@@ -350,11 +350,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const lastEval = this.boardState().getMostRecentEval();
 
-    if (this.boardState().divergenceEvalStack().length > 0 && (this.boardState().divergenceEvalStack().length != this.boardState().divergenceStateStack().length))
-    {
-      return MoveClassification.None;
-    }
-
     if (lastEval)
     {
       const lastMove = this.boardState().getMostRecentMove();
@@ -541,15 +536,14 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     //Gets previous state and eval
     const previousState = this.boardState().getPreviousMostRecentState().getFullDeepCopy();
-    const previousEval = this.boardState().getPreviousMostRecentEval();
-    const dummyResult = this.boardState().getRootForFollowUp().move ?? new MoveResult();
-    dummyResult.coachComment = CoachUtils.COACH_MOVE_DELIMITER;
+    const previousEval = structuredClone(this.boardState().getPreviousMostRecentEval());
+    const dummyResult = new MoveResult();
 
     //If they exist, push to divergence stack temporarily (creating a fake rollback)
     if (previousEval && previousState)
     {
       this.boardState().divergenceStateStack.update( s => [...s, previousState] );
-      this.boardState().divergenceMoveStack.update( s=> [...s, new MoveResult()] );
+      this.boardState().divergenceMoveStack.update( s=> [...s, dummyResult] );
       this.boardState().divergenceEvalStack.update( s => [...s, previousEval] )
 
       this.doCoachMoveSequence();
@@ -608,7 +602,10 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
             
             //Then wait one second for the next move.
             await this.delay(1000);
-            
+          }
+          else 
+          {
+            break;
           }
         }
       }
