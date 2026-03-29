@@ -187,21 +187,21 @@
                     }
                 }
 
-                @if (this.boardState().getMostRecentEval(); as eval)
+                @if (this.boardState().getRootForFollowUp(); as root)
                 {
-                    @if (this.boardState().getMostRecentMove(); as move)
+                    @if (root.move && root.eval)
                     {
                         <div class="fw-bold">
-                            @if (getIconSourceForMoveClassification(eval.moveClassification ?? MoveClassification.None); as iconSource)
+                            @if (getIconSourceForMoveClassification(root.eval.moveClassification ?? MoveClassification.None); as iconSource)
                             {
                                 @if (iconSource() != "")
                                 {
                                     <img [src]="iconSource()" class="inlineMoveIcon" alt="move classification"/>
-                                    {{move.notation}} is {{moveClassificationLabels[eval.moveClassification ?? MoveClassification.None]}}
+                                    {{root.move.notation}} is {{moveClassificationLabels[root.eval.moveClassification ?? MoveClassification.None]}}
                                     
                                     <div></div>
 
-                                    @if (eval.lines[0]; as line)
+                                    @if (root.eval.lines[0]; as line)
                                     {
                                         @if (!boardState().isCoachMoveShowing())
                                         {
@@ -216,14 +216,14 @@
                             }
                         </div>
 
-                        <div class="testingPurposes">
+                        <!-- <div class="testingPurposes">
                             <p>Main stack length: {{this.boardState().mainStateStack().length}}</p>
                             <p>Main move stack length: {{this.boardState().mainMoveStack().length}}</p>
                             <p>Main eval stack length: {{this.boardState().eval()?.positions?.length}}</p>
                             <p>Divergence stack length: {{this.boardState().divergenceStateStack().length}}</p>
                             <p>Divergence move stack length: {{this.boardState().divergenceMoveStack().length}}</p>
                             <p>Divergence eval stack length: {{this.boardState().divergenceEvalStack().length}}</p>
-                        </div>
+                        </div> -->
                     }
                 }
             </div>

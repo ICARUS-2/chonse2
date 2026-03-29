@@ -395,6 +395,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   getPastEngineArrow = computed( (): Arrow | null => 
   {
+    if (this.boardState().isCoachMoveShowing())
+    {
+      return null;
+    }
+
     const bestMove = this.boardState().getPreviousMostRecentEval()?.bestMove;
 
     if (bestMove)
@@ -412,6 +417,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   getFutureEngineArrow = computed( (): Arrow | null =>
   {
+    if (this.boardState().isCoachMoveShowing())
+    {
+      return null;
+    }
+
     const bestMove = this.boardState().getMostRecentEval()?.bestMove;
 
     if (bestMove)
@@ -541,12 +551,26 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
             //Converts the move.
             const {fromSquare, toSquare, promotion } = CoachLib.convertUciToChonse2Move(engineMove);
 
+            const currentState = this.boardState().getCurrentState();
+            const rawPieceIndex = Chonse2.findIndexFromCoordinate(fromSquare);
+            const piece = currentState.pieceState[rawPieceIndex.rowIndex][rawPieceIndex.colIndex];
 
-            //Every one second, play the move without blocking UI thread.
+            
+            //First, do the animation
+            this.animateMove(fromSquare, toSquare, piece);
+            await this.delay(this.animationDuration);
+            
+            //Then play the move.
             const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
             moveResult.coachComment = CoachLib.COACH_MOVE_DELIMITER;
+            Sound.playSoundForMove(moveResult.notation);
+
+            //Then add it.
             this.boardState().pushState(stateCopy, moveResult, true);
+            
+            //Then wait one second for the next move.
             await this.delay(1000);
+            
           }
         }
       }

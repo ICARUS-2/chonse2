@@ -8,7 +8,7 @@ import Chonse2 from "../../../libs/chonse2-lib/chonse2";
 import { GameScore } from "../../../libs/chonse2-lib/game-state";
 import { PieceColor } from "../../../libs/chonse2-lib/piece-color";
 import { PieceType } from "../../../libs/chonse2-lib/piece-type";
-import { MoveClassification, EngineName } from "../../../libs/engine-lib/types/enums";
+import { MoveClassification, EngineName, moveClassificationLabels } from "../../../libs/engine-lib/types/enums";
 import { PositionEval, GameEval, EvaluateGameParams } from "../../../libs/engine-lib/types/eval";
 import { UciEngine } from "../../../libs/engine-lib/uciEngine";
 import MoveResult from "./move-result";
@@ -35,7 +35,7 @@ export default class BoardState
     engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
-    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult, session: number, evaluateAtMinimumDepth: boolean}>> = signal([]);
+    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult, session: number, overrideForCoachEvals: boolean}>> = signal([]);
     private isEvaluating: WritableSignal<boolean> = signal(false);
     evaluationSessionId: number = 0; //Designed to prevent in-progress evals from causing desyncrhonization when going back.
 
@@ -173,6 +173,7 @@ export default class BoardState
                 if (move.coachComment != CoachLib.COACH_MOVE_DELIMITER)
                 {
                     returnMove = move;
+                    returnEval = this.divergenceEvalStack()[i];
                     break;
                 }
             }
@@ -237,12 +238,13 @@ export default class BoardState
 
         return undefined
     }
-
-    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, evaluateAtMinimumDepth = false)
+    
+    //Override for coach evals simply tells it to evaluate it at a lower depth (so the eval bar has a value), and make it best move no matter what (since the coach will always play the best move anyway)
+    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, overrideForCoachEvals = false)
     {
         const session = this.evaluationSessionId;
 
-        this.evalQueue.update( q => [...q, {previousState, state, move, session, evaluateAtMinimumDepth}] );
+        this.evalQueue.update( q => [...q, {previousState, state, move, session, overrideForCoachEvals: overrideForCoachEvals}] );
 
         this.processEvaluationQueue();
     }
@@ -256,7 +258,7 @@ export default class BoardState
 
         this.isEvaluating.set(true);
 
-        const { previousState, state, move, session, evaluateAtMinimumDepth } = this.evalQueue().shift()!;
+        const { previousState, state, move, session, overrideForCoachEvals } = this.evalQueue().shift()!;
 
         try
         {
@@ -264,7 +266,7 @@ export default class BoardState
 
             if (engine)
             {
-                const depth = evaluateAtMinimumDepth? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
+                const depth = overrideForCoachEvals? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
 
                 const resultOfEval = await engine.evaluateMove
                 (
@@ -273,6 +275,14 @@ export default class BoardState
                     move,
                     depth
                 );
+                
+                if (overrideForCoachEvals)
+                {
+                    if (resultOfEval.moveClassification != MoveClassification.Opening)
+                    {
+                        resultOfEval.moveClassification = MoveClassification.Best;
+                    }
+                }
 
                 // If session changed, abandon immediately
                 if (session !== this.evaluationSessionId || this.divergenceEvalStack().length == this.divergenceStateStack().length)
