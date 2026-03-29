@@ -34,7 +34,7 @@ export class Settings {
 
   form = form(this.formModel, (schema) => 
   {
-    min(schema.engineDepth, 14),
+    min(schema.engineDepth, UciEngine.MIN_DEPTH),
     max(schema.engineDepth, 22)
   })
 

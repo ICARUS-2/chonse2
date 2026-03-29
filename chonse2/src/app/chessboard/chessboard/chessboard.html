@@ -198,13 +198,31 @@
                                 {
                                     <img [src]="iconSource()" class="inlineMoveIcon" alt="move classification"/>
                                     {{move.notation}} is {{moveClassificationLabels[eval.moveClassification ?? MoveClassification.None]}}
+                                    
+                                    <div></div>
 
                                     @if (eval.lines[0]; as line)
                                     {
-                                        <app-bootstrap-button (buttonClick)="showFollowUpClicked()" extraClasses="mt-1" label="Show follow-up"></app-bootstrap-button>
+                                        @if (!boardState().isCoachMoveShowing())
+                                        {
+                                            <app-bootstrap-button (buttonClick)="showFollowUpClicked()" extraClasses="mt-1" label="Show follow-up"></app-bootstrap-button>
+                                        }
+                                        @else 
+                                        {
+                                            <app-bootstrap-button (buttonClick)="hideFollowUpClicked()" extraClasses="mt-1" label="Hide follow-up"></app-bootstrap-button>
+                                        }
                                     }
                                 }
                             }
+                        </div>
+
+                        <div class="testingPurposes">
+                            <p>Main stack length: {{this.boardState().mainStateStack().length}}</p>
+                            <p>Main move stack length: {{this.boardState().mainMoveStack().length}}</p>
+                            <p>Main eval stack length: {{this.boardState().eval()?.positions?.length}}</p>
+                            <p>Divergence stack length: {{this.boardState().divergenceStateStack().length}}</p>
+                            <p>Divergence move stack length: {{this.boardState().divergenceMoveStack().length}}</p>
+                            <p>Divergence eval stack length: {{this.boardState().divergenceEvalStack().length}}</p>
                         </div>
                     }
                 }

@@ -318,6 +318,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   handleResetClicked()
   {
+    this.boardState().isCoachMoveShowing.set(false);
+
     const bs: BoardState = new BoardState();
     this.chessBoardService.deleteGame(this.gameId());
     this.chessBoardService.addGame(this.gameId(), bs);
@@ -452,7 +454,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   onGraphClicked(idx: number)
   {
-    //Potentially mark this for change?
     this.moveClicked(idx);
   }
 
@@ -512,6 +513,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //#region Coach
   async showFollowUpClicked()
   {
+    this.boardState().isCoachMoveShowing.set(true);
+
     //Checks what the most recent eval was.
     const mostRecentEval: PositionEval | undefined = this.boardState().getMostRecentEval();
 
@@ -529,21 +532,24 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
         for(let i = 0; i < iterationLength; i++)
         {
-          //Retrieves the top engine move.
-          const engineMove = topEngineLine.pv[i];
+          if (this.boardState().isCoachMoveShowing())
+          {
+            //Retrieves the top engine move.
+            const engineMove = topEngineLine.pv[i];
 
-          //Clones the board so that the move can be played.
-          const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
+            //Clones the board so that the move can be played.
+            const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
 
-          //Converts the move.
-          const {fromSquare, toSquare, promotion } = CoachLib.convertUciToChonse2Move(engineMove);
+            //Converts the move.
+            const {fromSquare, toSquare, promotion } = CoachLib.convertUciToChonse2Move(engineMove);
 
 
-          //Every one second, play the move without blocking UI thread.
-          const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
-          moveResult.coachComment = CoachLib.COACH_MOVE_DELIMITER;
-          this.boardState().pushState(stateCopy, moveResult, true);
-          await this.delay(1000);
+            //Every one second, play the move without blocking UI thread.
+            const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
+            moveResult.coachComment = CoachLib.COACH_MOVE_DELIMITER;
+            this.boardState().pushState(stateCopy, moveResult, true);
+            await this.delay(1000);
+          }
         }
       }
     }
@@ -552,6 +558,18 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   delay(ms: number): Promise<void> 
   {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  hideFollowUpClicked()
+  {
+    let mostRecentMove = this.boardState().getMostRecentMove();
+    
+    while(mostRecentMove.coachComment == CoachLib.COACH_MOVE_DELIMITER)
+    {
+      this.boardState().goBack();
+      mostRecentMove = this.boardState().getMostRecentMove();
+    }
+    this.boardState().isCoachMoveShowing.set(false);
   }
   //#endregion
 
@@ -728,6 +746,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   
   moveClicked(index: number)
   {
+    if (this.boardState().isCoachMoveShowing())
+    {
+      return;
+    }
+
     if (this.boardState().divergenceStateStack().length != 0)
     { 
       this.boardState().goBackToStart();

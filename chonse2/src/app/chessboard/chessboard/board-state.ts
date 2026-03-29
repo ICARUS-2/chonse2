@@ -12,6 +12,7 @@ import { MoveClassification, EngineName } from "../../../libs/engine-lib/types/e
 import { PositionEval, GameEval, EvaluateGameParams } from "../../../libs/engine-lib/types/eval";
 import { UciEngine } from "../../../libs/engine-lib/uciEngine";
 import MoveResult from "./move-result";
+import CoachLib from "../../../libs/coach-lib/coach-lib";
 
 export default class BoardState
 {
@@ -168,22 +169,31 @@ export default class BoardState
         return new MoveResult();
     }
 
-    getRootForFollowUp(): MoveResult
+    getRootForFollowUp(): {move: MoveResult | undefined, eval: PositionEval | undefined}
     {
+        let returnMove: MoveResult | undefined = undefined;
+        let returnEval: PositionEval | undefined = undefined;
         if (this.divergenceMoveStack().length > 0)
         {
             for(let i = this.divergenceMoveStack().length - 1; i >= 0; i--)
             {
                 const move = this.divergenceMoveStack()[i];
 
-                if (move.coachComment != "*")
+                if (move.coachComment != CoachLib.COACH_MOVE_DELIMITER)
                 {
-                    return move;
+                    returnMove = move;
+                    break;
                 }
             }
         }
 
-        return this.mainMoveStack()[this.mainStackPointer() - 1];
+        if (returnMove == undefined)
+        {
+            returnMove = this.mainMoveStack()[this.mainStackPointer() - 1];
+            returnEval = this.eval()?.positions[this.mainStackPointer()];
+        }
+
+        return {move: returnMove, eval: returnEval}
     }
     //#endregion
 
