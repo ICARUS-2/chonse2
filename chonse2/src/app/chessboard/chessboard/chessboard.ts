@@ -536,7 +536,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         const topEngineLine: LineEval = mostRecentEval.lines[0];
 
         //Sees how long it should actually iterate through.
-        const iterationLength = this.Math.min(5, topEngineLine.pv.length);
+
+        const iterationLength = topEngineLine.mate ? topEngineLine.pv.length : this.Math.min(5, topEngineLine.pv.length);
 
         for(let i = 0; i < iterationLength; i++)
         {
