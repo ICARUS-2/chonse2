@@ -25,7 +25,6 @@ export default class BoardState
     
     //For going back and playing out what move COULD have been made.
     divergenceStateStack: WritableSignal<Array<Chonse2>>;
-    divergenceStackPointer: WritableSignal<number>;
     divergenceMoveStack: WritableSignal<Array<MoveResult>>;
     divergenceEvalStack: WritableSignal<Array<PositionEval>>;
 
@@ -72,7 +71,6 @@ export default class BoardState
         this.mainMoveStack = signal([]);
 
         this.divergenceStateStack = signal([]);
-        this.divergenceStackPointer = signal(-1);
         this.divergenceMoveStack = signal([]);
         this.divergenceEvalStack = signal([]);
     }
@@ -96,7 +94,6 @@ export default class BoardState
 
             this.divergenceStateStack.update(stack => [...stack, state]);
             this.divergenceMoveStack.update(stack => [...stack, move]);
-            this.divergenceStackPointer.update(ptr => ptr + 1);
 
             if (this.engine() && this.doEvaluateGame())
             {
@@ -124,7 +121,7 @@ export default class BoardState
         //If we are diverging from the main game, return what was pushed to the secondary stack.
         if (this.divergenceStateStack().length != 0)
         {
-            return this.divergenceStateStack()[this.divergenceStackPointer()];
+            return this.divergenceStateStack()[this.divergenceStateStack().length - 1];
         }
 
         //Otherwise, just get the current main state.
@@ -136,9 +133,9 @@ export default class BoardState
     getMostRecentMove(): MoveResult 
     {
         //If we have any moves in the divergence stack, return the most recent one
-        if (this.divergenceStackPointer() >= 0) 
+        if (this.divergenceStateStack().length > 0) 
         {
-            return this.divergenceMoveStack()[this.divergenceStackPointer()];
+            return this.divergenceMoveStack()[this.divergenceMoveStack().length - 1];
         }
 
         //Otherwise, check the main move stack using the pointer
@@ -153,13 +150,7 @@ export default class BoardState
 
     getFutureMove(): MoveResult 
     {
-        //If there are moves in the divergence stack ahead of the pointer
-        if (this.divergenceStackPointer() + 1 < this.divergenceMoveStack().length) 
-        {
-            return this.divergenceMoveStack()[this.divergenceStackPointer() + 1];
-        }
-
-        //Otherwise, check the main move stack using the pointer
+        //Check the main move stack using the pointer
         if (this.mainStackPointer() < this.mainMoveStack().length) 
         {
             return this.mainMoveStack()[this.mainStackPointer()];
@@ -200,9 +191,9 @@ export default class BoardState
     //#region EVAL
     getMostRecentEval() : PositionEval | undefined
     {
-        if (this.divergenceStackPointer() >= 0) 
+        if (this.divergenceEvalStack().length > 0) 
         {
-            return this.divergenceEvalStack()[this.divergenceStackPointer()];
+            return this.divergenceEvalStack()[this.divergenceEvalStack().length - 1];
         }
 
         //Otherwise, check the main move stack using the pointer
@@ -232,7 +223,7 @@ export default class BoardState
         {
             if (ev)
             {
-                return this.divergenceEvalStack()[this.divergenceStackPointer() - 1];
+                return this.divergenceEvalStack()[this.divergenceEvalStack().length - 2];
             }
         }
 
@@ -335,7 +326,6 @@ export default class BoardState
         this.divergenceStateStack.set([]);
         this.divergenceMoveStack.set([]);
         this.divergenceEvalStack.set([]);
-        this.divergenceStackPointer.set(-1);
         this.evalQueue.set([]);
     }
 
@@ -366,7 +356,6 @@ export default class BoardState
 
             this.divergenceStateStack.update(stack => stack.slice(0, -1));
             this.divergenceMoveStack.update(stack => stack.slice(0, -1));
-            this.divergenceStackPointer.update(ptr => ptr - 1);
         }
     }
 

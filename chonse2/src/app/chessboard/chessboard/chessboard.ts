@@ -134,7 +134,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     if (this.boardState().doEvaluateGame() && !this.boardState().engine())
     {
       await this.boardState().evaluateGame();
-      this.boardState().divergenceStackPointer.set(-1);
       this.boardState().divergenceStateStack.set([]);
       this.boardState().divergenceMoveStack.set([]);
     }
@@ -298,7 +297,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
           await this.boardState().evaluateGame();
 
-          this.boardState().divergenceStackPointer.set(-1);
           this.boardState().divergenceStateStack.set([]);
           this.boardState().divergenceMoveStack.set([]);
         }
@@ -718,7 +716,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return false;
     }
 
-    return this.boardState().mainStackPointer() != 0 || this.boardState().divergenceStackPointer() != -1;
+    return this.boardState().mainStackPointer() != 0 || this.boardState().divergenceStateStack().length != 0;
   })
 
   areForwardButtonsEnabled = computed( (): boolean =>
@@ -808,8 +806,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     this.boardState().doEvaluateGame.set(true);
     await this.boardState().evaluateGame();
-    //this.boardState().goBackToStart();
-    this.boardState().divergenceStackPointer.set(-1);
     this.boardState().divergenceStateStack.set([]);
     this.boardState().divergenceMoveStack.set([]);
     this.boardState().isReadOnly.set(true);
