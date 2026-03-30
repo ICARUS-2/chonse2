@@ -1,6 +1,6 @@
 import { PieceType } from "../chonse2-lib/piece-type";
 
-export default class CoachLib
+export class CoachUtils
 {
     static readonly COACH_MOVE_DELIMITER = "*"
 
@@ -12,4 +12,11 @@ export default class CoachLib
 
         return {fromSquare, toSquare, promotion};
     }
+}
+
+export enum CoachMoveSequenceType
+{
+    None = "None",
+    FollowUp = "FollowUp",
+    MissedOpportunity = "MissedOpportunity"
 }

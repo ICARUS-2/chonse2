@@ -12,7 +12,7 @@ import { MoveClassification, EngineName, moveClassificationLabels } from "../../
 import { PositionEval, GameEval, EvaluateGameParams } from "../../../libs/engine-lib/types/eval";
 import { UciEngine } from "../../../libs/engine-lib/uciEngine";
 import MoveResult from "./move-result";
-import CoachLib from "../../../libs/coach-lib/coach-lib";
+import { CoachMoveSequenceType, CoachUtils } from "../../../libs/coach-lib/coach-lib";
 
 export default class BoardState
 {
@@ -41,6 +41,7 @@ export default class BoardState
 
     //Coach stuff
     isCoachMoveShowing: WritableSignal<boolean> = signal(false);
+    coachMoveSequenceType: WritableSignal<CoachMoveSequenceType> = signal(CoachMoveSequenceType.None)
 
     //Vs ai stuff
     isVsAi: WritableSignal<boolean> = signal(false);
@@ -148,6 +149,21 @@ export default class BoardState
         return new MoveResult();
     }
 
+    getPreviousMostRecentState(): Chonse2
+    {
+        if (this.divergenceStateStack().length == 1)
+        {
+            return this.mainStateStack()[this.mainStackPointer()];
+        }
+
+        if (this.divergenceStateStack().length > 1)
+        {
+            return this.divergenceStateStack()[this.divergenceStateStack().length - 2];
+        }
+        
+        return this.mainStateStack()[this.mainStackPointer() - 1];
+    }
+
     getFutureMove(): MoveResult 
     {
         //Check the main move stack using the pointer
@@ -159,18 +175,21 @@ export default class BoardState
         //If no moves ahead, return a dummy move
         return new MoveResult();
     }
+    //#endregion
 
+    //#region COACH
     getRootForFollowUp(): {move: MoveResult | undefined, eval: PositionEval | undefined}
     {
         let returnMove: MoveResult | undefined = undefined;
         let returnEval: PositionEval | undefined = undefined;
+
         if (this.divergenceMoveStack().length > 0)
         {
             for(let i = this.divergenceMoveStack().length - 1; i >= 0; i--)
             {
                 const move = this.divergenceMoveStack()[i];
 
-                if (move.coachComment != CoachLib.COACH_MOVE_DELIMITER)
+                if (move.coachComment != CoachUtils.COACH_MOVE_DELIMITER)
                 {
                     returnMove = move;
                     returnEval = this.divergenceEvalStack()[i];
@@ -185,6 +204,7 @@ export default class BoardState
             returnEval = this.eval()?.positions[this.mainStackPointer()];
         }
 
+        console.log(returnEval);
         return {move: returnMove, eval: returnEval}
     }
     //#endregion
@@ -730,7 +750,7 @@ export default class BoardState
     async evaluateGame(): Promise<void> 
     {
         //Don't evaluate it if the flag hasn't been set.
-        if (!this.doEvaluateGame)
+        if (!this.doEvaluateGame())
         {   
             return;
         }
