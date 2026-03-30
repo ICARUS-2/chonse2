@@ -191,17 +191,19 @@
                 {
                     @if (root.move && root.eval)
                     {
-                        <div class="fw-bold">
+                        <div class="">
                             @if (getIconSourceForMoveClassification(root.eval.moveClassification ?? MoveClassification.None); as iconSource)
                             {
                                 @if (iconSource() != "")
                                 {
-                                    <img [src]="iconSource()" class="inlineMoveIcon" alt="move classification"/>
-                                    {{root.move.notation}} is {{moveClassificationLabels[root.eval.moveClassification ?? MoveClassification.None]}}
-                                    
-                                    <div class="mt-1"></div>
+                                    <div class="fw-bold">
+                                        <img [src]="iconSource()" class="coachClassificationIcon" alt="move classification"/>
+                                        {{root.move.notation}} is {{moveClassificationLabels[root.eval.moveClassification ?? MoveClassification.None]}}
+                                    </div>
 
-                                    <div class="">{{root.move.coachComment}}</div>
+                                    <div class=""></div>
+
+                                    <div class="small">{{root.move.coachComment}}</div>
 
                                     @if (root.eval.lines[0]; as line)
                                     {
