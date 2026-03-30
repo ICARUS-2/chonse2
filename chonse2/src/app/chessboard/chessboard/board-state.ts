@@ -175,7 +175,9 @@ export default class BoardState
         //If no moves ahead, return a dummy move
         return new MoveResult();
     }
+    //#endregion
 
+    //#region COACH
     getRootForFollowUp(): {move: MoveResult | undefined, eval: PositionEval | undefined}
     {
         let returnMove: MoveResult | undefined = undefined;

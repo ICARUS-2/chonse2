@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, input, Input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, input, Input, OnDestroy, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
 import { Square } from '../square/square';
 import { BoardPlayerInfo } from "../board-player-info/board-player-info";
 import { NgbModal, NgbProgressbar } from '@ng-bootstrap/ng-bootstrap';
@@ -62,6 +62,9 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   //State
   boardState = signal<BoardState>(null!);
+  
+  //Controls
+  coachButtonsDisabled: WritableSignal<boolean> = signal(false);
 
   //MOVE PROPERTIES
   currentLegalMoves = signal<string[]>([]);
@@ -350,6 +353,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const lastEval = this.boardState().getMostRecentEval();
 
+    if (!this.boardState().engine()?.getIsReady())
+    {
+      return MoveClassification.None;
+    }
+
     if (lastEval)
     {
       const lastMove = this.boardState().getMostRecentMove();
@@ -368,7 +376,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const lastEval = this.boardState().getMostRecentEval();
     
-    if (this.boardState().divergenceEvalStack().length > 0 && (this.boardState().divergenceEvalStack().length != this.boardState().divergenceStateStack().length))
+    if (!this.boardState().engine()?.getIsReady())
     {
       return "";
     }
@@ -526,12 +534,18 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //#region Coach
   showFollowUpClicked()
   {
+    //Ensures that people can't click the buttons like crazy and mess up the states.
+    this.disableCoachButtonsTemporarily();
+
     this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.FollowUp);
     this.doCoachMoveSequence();  
   }
 
   async showMissedOpportunityClicked()
   {
+    //Ensures that people can't click the buttons like crazy and mess up the states.
+    this.disableCoachButtonsTemporarily();
+
     this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.MissedOpportunity);
 
     //Gets previous state and eval
@@ -552,6 +566,9 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   async doCoachMoveSequence()
   {
+    //Ensures that people can't click the buttons like crazy and mess up the states.
+    this.disableCoachButtonsTemporarily();
+
     this.boardState().isCoachMoveShowing.set(true);
 
     //Checks what the most recent eval was.
@@ -637,8 +654,18 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
 
     //Sets flag so that the board can be used again.
+    this.boardState().evaluationSessionId++;
     this.boardState().isCoachMoveShowing.set(false);
     this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.None);
+  }
+
+  disableCoachButtonsTemporarily(duration = 1500) 
+  {
+    this.coachButtonsDisabled.set(true);
+
+    setTimeout(() => {
+      this.coachButtonsDisabled.set(false);
+    }, duration);
   }
   //#endregion
 
