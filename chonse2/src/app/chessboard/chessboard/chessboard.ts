@@ -552,6 +552,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const previousState = this.boardState().getPreviousMostRecentState().getFullDeepCopy();
     const previousEval = structuredClone(this.boardState().getPreviousMostRecentEval());
     const dummyResult = new MoveResult();
+    dummyResult.notation = "-"
+    dummyResult.coachComment = CoachUtils.COACH_MOVE_DELIMITER;
 
     //If they exist, push to divergence stack temporarily (creating a fake rollback)
     if (previousEval && previousState)
@@ -647,11 +649,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       mostRecentMove = this.boardState().getMostRecentMove();
     }
 
-    if (this.boardState().coachMoveSequenceType() == CoachMoveSequenceType.MissedOpportunity)
-    {
-      //Ensures dummy move is erased.
-      this.boardState().goBack();
-    }
+    // if (this.boardState().coachMoveSequenceType() == CoachMoveSequenceType.MissedOpportunity)
+    // {
+    //   //Ensures dummy move is erased.
+    //   this.boardState().goBack();
+    // }
 
     //Sets flag so that the board can be used again.
     this.boardState().evaluationSessionId++;

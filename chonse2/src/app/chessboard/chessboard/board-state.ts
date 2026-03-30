@@ -182,6 +182,7 @@ export default class BoardState
     {
         let returnMove: MoveResult | undefined = undefined;
         let returnEval: PositionEval | undefined = undefined;
+
         if (this.divergenceMoveStack().length > 0)
         {
             for(let i = this.divergenceMoveStack().length - 1; i >= 0; i--)
@@ -203,6 +204,7 @@ export default class BoardState
             returnEval = this.eval()?.positions[this.mainStackPointer()];
         }
 
+        console.log(returnEval);
         return {move: returnMove, eval: returnEval}
     }
     //#endregion

@@ -201,23 +201,25 @@
                                     
                                     <div class="mt-1"></div>
 
+                                    <div class="">{{root.move.coachComment}}</div>
+
                                     @if (root.eval.lines[0]; as line)
                                     {
                                         @if (!boardState().isCoachMoveShowing())
                                         {
-                                            <app-bootstrap-button (buttonClick)="showFollowUpClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1" label="Show follow-up"></app-bootstrap-button>
+                                            <app-bootstrap-button (buttonClick)="showFollowUpClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 btn-sm" label="Show follow-up"></app-bootstrap-button>
                                         
                                             @if (
                                                 root.eval.moveClassification == MoveClassification.Inaccuracy ||
                                                 root.eval.moveClassification == MoveClassification.Mistake ||
                                                 root.eval.moveClassification == MoveClassification.Blunder)
                                                 {
-                                                    <app-bootstrap-button (buttonClick)="showMissedOpportunityClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1" label="Show Miss"></app-bootstrap-button>
+                                                    <app-bootstrap-button (buttonClick)="showMissedOpportunityClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 btn-sm" label="Show miss"></app-bootstrap-button>
                                                 }
                                         }
                                         @else 
                                         {
-                                            <app-bootstrap-button (buttonClick)="hideSequence()" [disabled]="coachButtonsDisabled()" extraClasses="m-1" label="Hide Sequence"></app-bootstrap-button>
+                                            <app-bootstrap-button (buttonClick)="hideSequence()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 btn-sm" label="Hide Sequence"></app-bootstrap-button>
                                         }
                                     }
                                 }
