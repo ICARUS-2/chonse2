@@ -35,7 +35,7 @@ export default class BoardState
     engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
-    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: IMoveResult, session: number, overrideForCoachEvals: boolean}>> = signal([]);
+    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: MoveResult, session: number, overrideForCoachEvals: boolean}>> = signal([]);
     private isEvaluating: WritableSignal<boolean> = signal(false);
     evaluationSessionId: number = 0; //Designed to prevent in-progress evals from causing desyncrhonization when going back.
 
@@ -295,6 +295,8 @@ export default class BoardState
                     move,
                     depth
                 );
+
+                CoachUtils.performCoachAnalysis([previousState, state], [move], [resultOfEval], true);
                 
                 if (overrideForCoachEvals)
                 {
@@ -817,7 +819,8 @@ export default class BoardState
                 return list;
             });
         })
-        
+
+        //Pushes the indeces of the moves to their correct arrays.
         let turn = !this.mainStateStack()[0].turn;
 
         this.eval()?.positions.forEach( (pos, idx) =>
@@ -828,7 +831,13 @@ export default class BoardState
             correspondingArray?.arr.push(idx);
 
             turn = !turn;
-        })
+        });
+
+        const ev = this.eval();
+        if (ev != undefined)
+        {            
+            CoachUtils.performCoachAnalysis(this.mainStateStack(), this.mainMoveStack(), ev.positions)
+        }
     }
 
     async setEngineIfNotExists()

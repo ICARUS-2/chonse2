@@ -21,6 +21,7 @@ import { Stockfish11 } from "./engines/stockfish11";
 import { Stockfish18 } from "./engines/stockfish18";
 import { Stockfish17_1 } from "./engines/stockfish17_1";
 import { LichessAPI } from "../server-api-lib/lichess-api";
+import MoveResult from "../../app/chessboard/chessboard/move-result";
 
 
 export class UciEngine {
@@ -274,7 +275,7 @@ export class UciEngine {
     );
   }
 
-  public async evaluateMove(beforeFen: string, afterFen: string, move: IMoveResult, depth=UciEngine.DEFAULT_DEPTH): Promise<PositionEval>
+  public async evaluateMove(beforeFen: string, afterFen: string, move: MoveResult, depth=UciEngine.DEFAULT_DEPTH): Promise<PositionEval>
   {
     const evalResult = await this.evaluateGame({fens: [beforeFen, afterFen], uciMoves: [move.notation], depth});
     //const previousPositionResult = evalResult.positions[0];

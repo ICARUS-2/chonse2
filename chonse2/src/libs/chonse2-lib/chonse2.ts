@@ -634,7 +634,7 @@ export default class Chonse2
     return false;
   }
 
-  //FEN notation (old standard)
+  //FEN notation
   getFEN(): string
   {
     //string to be built

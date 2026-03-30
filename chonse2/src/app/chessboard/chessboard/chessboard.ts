@@ -649,12 +649,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       mostRecentMove = this.boardState().getMostRecentMove();
     }
 
-    // if (this.boardState().coachMoveSequenceType() == CoachMoveSequenceType.MissedOpportunity)
-    // {
-    //   //Ensures dummy move is erased.
-    //   this.boardState().goBack();
-    // }
-
     //Sets flag so that the board can be used again.
     this.boardState().evaluationSessionId++;
     this.boardState().isCoachMoveShowing.set(false);
