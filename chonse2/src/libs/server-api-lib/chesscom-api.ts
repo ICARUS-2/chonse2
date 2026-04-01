@@ -19,19 +19,39 @@ export class ChessComAPI
             const mostRecentGamesEndpoint = archivesData.archives[archivesData.archives.length - 1];
 
             const gameDataResponse = await fetch(mostRecentGamesEndpoint);
-            const gameData: {games: Array<object>} = await gameDataResponse.json();
 
-            const arr: Array<ChessComGame> = gameData.games.map( item => new ChessComGame(item) );
+            let arr: Array<ChessComGame> = [];
+            if (gameDataResponse.status < 400)
+            {
+              const gameData: {games: Array<object>} = await gameDataResponse.json();
+              arr = gameData.games.map( item => new ChessComGame(item) );
+            }
+
+            if (arr.length < 50)
+            {
+              const previousMonthMostRecentGamesEndpoint = archivesData.archives[archivesData.archives.length - 2];
+              
+              if (previousMonthMostRecentGamesEndpoint)
+              {
+                const previousMonthResponse = await fetch(previousMonthMostRecentGamesEndpoint);
+                const previousMonthGameData: {games: Array<object>} = await previousMonthResponse.json();
+                const previousMonthArr: Array<ChessComGame> = previousMonthGameData.games.map( item => new ChessComGame(item) );
+
+                arr.push(...previousMonthArr)
+              }
+            }
 
             return arr.reverse();
         }
         catch(ex)
         {
+          console.log(ex);
             //return empty arr.
         }
 
         return [];
     }
+
 
     static async getUserGameById(username: string, gameId: string): Promise<ChessComGame | undefined>
     {
