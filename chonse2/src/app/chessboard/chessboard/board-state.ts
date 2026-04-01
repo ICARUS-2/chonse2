@@ -204,7 +204,6 @@ export default class BoardState
             returnEval = this.eval()?.positions[this.mainStackPointer()];
         }
 
-        console.log(returnEval);
         return {move: returnMove, eval: returnEval}
     }
     //#endregion
