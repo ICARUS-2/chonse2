@@ -45,11 +45,11 @@ export class LichessAPI
         return game;
     }
 
-    static async getCloudEval(fen: string, multiPv = 3): Promise<PositionEval | undefined>
+    static async getCloudEval(fen: string): Promise<PositionEval | undefined>
     {
         try 
         {
-            const url = `https://lichess.org/api/cloud-eval?fen=${encodeURIComponent(fen)}&multiPv=${multiPv}`;
+            const url = `https://lichess.org/api/cloud-eval?fen=${encodeURIComponent(fen)}&multiPv=${3}`;
 
             const res: Response = await fetch(url, 
             {
@@ -77,7 +77,7 @@ export class LichessAPI
                 },),
                 source: EvalSource.Cloud
             };
-            if (posEval.lines.length < multiPv)
+            if (posEval.lines.length < 2)
             {
                 console.info("Cloud eval for " + fen + " successful, but insufficient lines found. Returning undefined");
                 return undefined;
