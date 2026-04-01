@@ -459,7 +459,7 @@ function normalizeLichessMove(move: string, chess: Chess) {
 
     const from = move.slice(0, 2);
     const to = move.slice(2, 4);
-    const promotion = move.length > 4 ? move[4] : "";
+    const promotion = move.includes("=") ? ("=" + move.split("=")[1]) : move.length > 4 ? move[4] : "";
 
     const piece = chess.get(from as Square);
     const target = chess.get(to as Square);
@@ -475,6 +475,7 @@ function normalizeLichessMove(move: string, chess: Chess) {
         if (from === "e8" && to === "a8") return /*{ from: "e8", to: "c8" }*/ "O-O-O";
     }
 
-    //return { from, to, promotion };
-    return from+to+promotion
+    const newMove = from+to+promotion;
+
+    return newMove;
 }
