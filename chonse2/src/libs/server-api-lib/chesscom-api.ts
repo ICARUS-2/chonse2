@@ -37,7 +37,7 @@ export class ChessComAPI
                 const previousMonthGameData: {games: Array<object>} = await previousMonthResponse.json();
                 const previousMonthArr: Array<ChessComGame> = previousMonthGameData.games.map( item => new ChessComGame(item) );
 
-                arr.push(...previousMonthArr)
+                arr = [...previousMonthArr, ...arr]
               }
             }
 
