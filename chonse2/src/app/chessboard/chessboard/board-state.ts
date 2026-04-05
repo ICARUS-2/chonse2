@@ -12,7 +12,7 @@ import { MoveClassification, EngineName, moveClassificationLabels } from "../../
 import { PositionEval, GameEval, EvaluateGameParams } from "../../../libs/engine-lib/types/eval";
 import { UciEngine } from "../../../libs/engine-lib/uciEngine";
 import MoveResult from "./move-result";
-import { CoachMoveSequenceType, CoachUtils } from "../../../libs/coach-lib/coach-lib";
+import { CoachMoveSequenceType, CoachUtils } from "../../../libs/coach-lib/coach-utils";
 
 export default class BoardState
 {

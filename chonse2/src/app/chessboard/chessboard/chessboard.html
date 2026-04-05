@@ -230,15 +230,6 @@
                                 }
                             }
                         </div>
-
-                        <!-- <div class="testingPurposes">
-                            <p>Main stack length: {{this.boardState().mainStateStack().length}}</p>
-                            <p>Main move stack length: {{this.boardState().mainMoveStack().length}}</p>
-                            <p>Main eval stack length: {{this.boardState().eval()?.positions?.length}}</p>
-                            <p>Divergence stack length: {{this.boardState().divergenceStateStack().length}}</p>
-                            <p>Divergence move stack length: {{this.boardState().divergenceMoveStack().length}}</p>
-                            <p>Divergence eval stack length: {{this.boardState().divergenceEvalStack().length}}</p>
-                        </div> -->
                     }
                 }
             </div>
@@ -584,5 +575,19 @@
             [src]="`piece/merida/${currentlyHeldPiece()}.svg`"
             [style.left.px]="mouseX()"
             [style.top.px]="mouseY()">
+    }
+</div>
+
+<div class="testingPurposes">
+    <!-- <p>Main stack length: {{this.boardState().mainStateStack().length}}</p>
+    <p>Main move stack length: {{this.boardState().mainMoveStack().length}}</p>
+    <p>Main eval stack length: {{this.boardState().eval()?.positions?.length}}</p>
+    <p>Divergence stack length: {{this.boardState().divergenceStateStack().length}}</p>
+    <p>Divergence move stack length: {{this.boardState().divergenceMoveStack().length}}</p>
+    <p>Divergence eval stack length: {{this.boardState().divergenceEvalStack().length}}</p> -->
+    @if(Chonse2Extensions.getAttackersAndDefendersForSquare(boardState().getCurrentState() ,"e4"); as ad)
+    {
+        <div>Attackers: {{ad.attackers}}</div>
+        <div>Defenders: {{ad.defenders}}</div>
     }
 </div>

@@ -31,7 +31,8 @@ import { EngineName, EngineInformation, EngineType, MoveClassification, moveClas
 import { EvalSource, LineEval, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
-import {CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-lib';
+import {CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
+import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
 
 @Component({
   selector: 'app-chessboard',
@@ -49,6 +50,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   EngineInformation = EngineInformation;
   EngineType = EngineType;
   EvalSource = EvalSource;
+  Chonse2Extensions = Chonse2Extensions;
   Object = Object;
   MoveClassification = MoveClassification;
   moveClassificationLabels = moveClassificationLabels;
