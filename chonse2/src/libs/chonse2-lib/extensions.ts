@@ -3,9 +3,18 @@ import { PieceType } from "./piece-type";
 
 export default class Chonse2Extensions
 {
-    public static isPieceHanging(board: Chonse2)
+    public static getHangingPieces(board: Chonse2)
     {
-        
+        //Check every piece in the board.
+        for(let i = 0; i < board.pieceState.length; i++)
+        {
+            const currentRank = board.pieceState[i];
+
+            for(let j = 0; j < currentRank.length; j++)
+            {
+
+            }
+        }
     }
 
     public static getAttackersAndDefendersForSquare(board: Chonse2, square: string): {attackers: Array<string>, defenders: Array<string>}
@@ -15,7 +24,7 @@ export default class Chonse2Extensions
 
         //Gets the piece in that square currently.
         const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(square);
-        const pieceInSquare = boardCopy.pieceState[rowIndex][colIndex];
+        //const pieceInSquare = boardCopy.pieceState[rowIndex][colIndex];
 
         //Represents what will be returned.
         const o: { attackers: string[], defenders: string[] } = 
