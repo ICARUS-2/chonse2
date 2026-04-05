@@ -137,10 +137,14 @@ export class CoachUtils
                     continue;
                 }
 
-                const colorToMove = isDivergenceStack ? (state.turn ? "White" : "Black") : (state.turn ? "Black" : "White")
+                const whiteToMove = isDivergenceStack ? (state.turn) : (!state.turn)
 
-                move.coachComment = this.getBaseSentence(posEval.moveClassification ?? MoveClassification.None).replace(this.TURN_PLACEHOLDER, colorToMove);
+                const colorToMoveText = whiteToMove ? "White" : "Black";
+
+                move.coachComment = this.getBaseSentence(posEval.moveClassification ?? MoveClassification.None).replace(this.TURN_PLACEHOLDER, colorToMoveText);
             
+                
+                
             }
         }
     }
@@ -164,4 +168,23 @@ export enum CoachMoveSequenceType
     None = "None",
     FollowUp = "FollowUp",
     MissedOpportunity = "MissedOpportunity"
+}
+
+export enum CoachFlagType 
+{
+    //Bad
+    AllowedCheckmate,
+    MissedCheckmate,
+    AllowedFork,
+    AllowedSkewer,
+    
+
+    //Good (future)
+    OpportunityToCheckmate,
+    OpportunityToFork,
+    OpportunityToSkewer,
+
+    //Good (current)
+    PinnedPiece,
+
 }

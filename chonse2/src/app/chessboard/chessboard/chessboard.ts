@@ -568,6 +568,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   async doCoachMoveSequence()
   {
+    this.boardState().isLocked.set(true);
+
     //Ensures that people can't click the buttons like crazy and mess up the states.
     this.disableCoachButtonsTemporarily();
 
@@ -639,6 +641,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   hideSequence()
   {
+    this.disableCoachButtonsTemporarily();
+
+    //Stops someone from moving a piece manually.
+    this.boardState().isLocked.set(false);
+
     //Gets the most recent move and stores it.
     let mostRecentMove = this.boardState().getMostRecentMove();
     

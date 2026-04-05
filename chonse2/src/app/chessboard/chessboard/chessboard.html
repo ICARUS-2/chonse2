@@ -209,7 +209,10 @@
                                     {
                                         @if (!boardState().isCoachMoveShowing())
                                         {
-                                            <app-bootstrap-button (buttonClick)="showFollowUpClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 btn-sm" label="Show follow-up"></app-bootstrap-button>
+                                            @if(!this.boardState().getCurrentState().gameState.isGameOver)
+                                            {
+                                                <app-bootstrap-button (buttonClick)="showFollowUpClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 btn-sm" label="Show follow-up"></app-bootstrap-button>
+                                            }
                                         
                                             @if (
                                                 root.eval.moveClassification == MoveClassification.Inaccuracy ||
