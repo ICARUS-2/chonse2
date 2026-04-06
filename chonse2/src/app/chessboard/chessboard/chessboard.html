@@ -230,15 +230,6 @@
                                 }
                             }
                         </div>
-
-                        <!-- <div class="testingPurposes">
-                            <p>Main stack length: {{this.boardState().mainStateStack().length}}</p>
-                            <p>Main move stack length: {{this.boardState().mainMoveStack().length}}</p>
-                            <p>Main eval stack length: {{this.boardState().eval()?.positions?.length}}</p>
-                            <p>Divergence stack length: {{this.boardState().divergenceStateStack().length}}</p>
-                            <p>Divergence move stack length: {{this.boardState().divergenceMoveStack().length}}</p>
-                            <p>Divergence eval stack length: {{this.boardState().divergenceEvalStack().length}}</p>
-                        </div> -->
                     }
                 }
             </div>
@@ -585,4 +576,24 @@
             [style.left.px]="mouseX()"
             [style.top.px]="mouseY()">
     }
+</div>
+
+<div class="testingPurposes">
+    <!-- <p>Main stack length: {{this.boardState().mainStateStack().length}}</p>
+    <p>Main move stack length: {{this.boardState().mainMoveStack().length}}</p>
+    <p>Main eval stack length: {{this.boardState().eval()?.positions?.length}}</p>
+    <p>Divergence stack length: {{this.boardState().divergenceStateStack().length}}</p>
+    <p>Divergence move stack length: {{this.boardState().divergenceMoveStack().length}}</p>
+    <p>Divergence eval stack length: {{this.boardState().divergenceEvalStack().length}}</p> -->
+    <!-- @if(Chonse2Extensions.getPiecesThatHitSquare(boardState().getCurrentState() ,"c6"); as ad)
+    {
+        <div>White: {{ad.white}}</div>
+        <div>Black: {{ad.black}}</div>
+    }
+
+    @if (Chonse2Extensions.getHangingPieces(boardState().getCurrentState()); as hp)
+    {
+        <div>White pieces hanging : {{hp.white}}</div>
+        <div>Black pieces hanging: {{hp.black}}</div>
+    } -->
 </div>
