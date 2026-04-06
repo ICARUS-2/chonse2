@@ -33,7 +33,7 @@ export class CoachUtils
             [
                 MoveClassification.Best,
                 [
-                    "Right on target",
+                    "Right on target.",
                     "Amazing move!",
                     `${this.TURN_PLACEHOLDER} found the top move!`
                 ]
@@ -80,7 +80,7 @@ export class CoachUtils
                 MoveClassification.Blunder, 
                 [
                     `${this.TURN_PLACEHOLDER} just made a blunder.`,
-                    `This move is going to cost ${this.TURN_PLACEHOLDER}`
+                    `This move is going to cost ${this.TURN_PLACEHOLDER}.`
                 ]
             ],
 
@@ -113,7 +113,8 @@ export class CoachUtils
     private static readonly PIECE_HANG_SENTENCES: Array<string> = 
     [
         `OUCH, ${CoachUtils.TURN_PLACEHOLDER} left their ${CoachUtils.PIECE_PLACEHOLDER} hanging!`,
-        `Whoopsie, ${CoachUtils.TURN_PLACEHOLDER} gave up a ${CoachUtils.PIECE_PLACEHOLDER}!`
+        `Whoopsie, ${CoachUtils.TURN_PLACEHOLDER} gave up a ${CoachUtils.PIECE_PLACEHOLDER}!`,
+        `This move loses a ${CoachUtils.PIECE_PLACEHOLDER}.`
     ]
     //#endregion
 
@@ -133,7 +134,7 @@ export class CoachUtils
             const move = moves[moveStackPointer];
             const posEval = evals[evalStackPointer];
 
-            if (state && move && posEval)
+            if (state && move && posEval && posEval.bestMove)
             {
                 if (move.coachComment == CoachUtils.COACH_MOVE_DELIMITER)
                 {
@@ -153,11 +154,11 @@ export class CoachUtils
                     {
                         //Case: Player leaves a piece hanging.
                         const allHangingPieces = Chonse2Extensions.getHangingPieces(state);
-                        
+                        const bestMove = CoachUtils.convertUciToChonse2Move(posEval.bestMove);
                         const hangingPiecesArrToCheck = whiteToMove ? allHangingPieces.black : allHangingPieces.white;
 
-                        let highestValuePiece = PieceType.NONE;
-                        let highestValuePieceMaterial = 0;
+                        let pieceToTake = PieceType.NONE;
+                        //let pieceToTakeMaterial = 0;
 
                         //If there is any hanging pieces, find the highest value one that they hung, otherwise move on.
                         if (hangingPiecesArrToCheck.length > 0)
@@ -166,20 +167,28 @@ export class CoachUtils
                             {
                                 const hangingPieceCoord = hangingPiecesArrToCheck[i];
                                 const hangingPiece = Chonse2Extensions.findPieceAtCoordinate(state, hangingPieceCoord);
-                                const hangingPieceMaterialValue = PieceMaterial.getMaterialFromPiece(hangingPiece);
+                                //const hangingPieceMaterialValue = PieceMaterial.getMaterialFromPiece(hangingPiece);
 
-                                if (hangingPieceMaterialValue > highestValuePieceMaterial)
+                                if (bestMove.toSquare == hangingPieceCoord)
                                 {
-                                    highestValuePiece = hangingPiece;
-                                    highestValuePieceMaterial = hangingPieceMaterialValue;
+                                    pieceToTake = hangingPiece;
+                                    //pieceToTakeMaterial = hangingPieceMaterialValue;
+                                    let phrase = CoachUtils.PIECE_HANG_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.PIECE_HANG_SENTENCES.length)]
+                                    phrase = phrase.replace(CoachUtils.PIECE_PLACEHOLDER, CoachUtils.convertPieceToText(pieceToTake)).replace(CoachUtils.TURN_PLACEHOLDER, colorToMoveText);
+                                    move.coachComment = phrase;
+                                    break;
                                 }
+
+                                /*
+                                if (hangingPieceMaterialValue > pieceToTakeMaterial)
+                                {
+                                    pieceToTake = hangingPiece;
+                                    pieceToTakeMaterial = hangingPieceMaterialValue;
+                                }*/
                             }
-
-                            let phrase = CoachUtils.PIECE_HANG_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.PIECE_HANG_SENTENCES.length)]
-                            phrase = phrase.replace(CoachUtils.PIECE_PLACEHOLDER, CoachUtils.convertPieceToText(highestValuePiece)).replace(CoachUtils.TURN_PLACEHOLDER, colorToMoveText);
-
-                            move.coachComment = phrase;
                         }
+
+
                     }
                 }
 
@@ -264,7 +273,7 @@ export class CoachUtils
             return "king";
         }
 
-        return "-";
+        return "piece";
     }
 }
 
