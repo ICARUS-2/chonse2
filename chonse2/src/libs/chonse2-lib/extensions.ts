@@ -107,8 +107,18 @@ export default class Chonse2Extensions
                     //Gets the coordinate for the given square.
                     const coord = Chonse2.COORDS[i][j];
 
+                    let legalMoves: Array<string> = [];
+
                     //Need to check legal moves to see what squares it hits.
-                    const legalMoves = boardCopy.getLegalMoves(coord);
+                    if (piece != PieceType.WHITE_KING && piece != PieceType.BLACK_KING)
+                    {
+                        legalMoves = boardCopy.getLegalMoves(coord);
+                    }
+                    else 
+                    {
+                        //Circumvents the fact that the king cannot put himself in check because he could be the last defender of a piece.
+                        legalMoves = boardCopy._getPotentiallyLegalKingMoves(coord, piece[0]);
+                    }
 
                     //If the piece has the square in question as a legal move, push it.                
                     if (legalMoves.includes(square)) 
