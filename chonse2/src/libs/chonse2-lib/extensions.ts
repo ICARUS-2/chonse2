@@ -1,10 +1,14 @@
 import Chonse2 from "./chonse2";
+import { PieceColor } from "./piece-color";
+import PieceMaterial from "./piece-material";
 import { PieceType } from "./piece-type";
 
 export default class Chonse2Extensions
 {
-    public static getHangingPieces(board: Chonse2)
+    public static getHangingPieces(board: Chonse2): Array<string>
     {
+        const hangingPieceCoords:Array<string> = [];
+
         //Check every piece in the board.
         for(let i = 0; i < board.pieceState.length; i++)
         {
@@ -12,84 +16,115 @@ export default class Chonse2Extensions
 
             for(let j = 0; j < currentRank.length; j++)
             {
-
+                const squareCoord = Chonse2.COORDS[i][j];
+                if(this.doesSquareHaveHangingPiece(board, squareCoord))
+                {
+                    hangingPieceCoords.push(squareCoord);
+                }
             }
         }
+        
+        return hangingPieceCoords;
     }
 
-    public static getAttackersAndDefendersForSquare(board: Chonse2, square: string): {attackers: Array<string>, defenders: Array<string>}
-    {
-        //Ensures that the original board doesn't get modified.
+    public static doesSquareHaveHangingPiece(board: Chonse2, squareCoord: string): boolean
+    {        
+        const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(squareCoord);
+        const pieceInSquare = board.pieceState[rowIndex][colIndex];
+
+        //A square with no piece in it isn't hanging.
+        if (pieceInSquare == PieceType.NONE)
+        {
+            return false;
+        }
+
+        const pieceInSquareColor = pieceInSquare[0] == "w" ? PieceColor.WHITE : PieceColor.BLACK;
+        const hits = Chonse2Extensions.getPiecesThatHitSquare(board, squareCoord);
+
+        const attackers = pieceInSquareColor == PieceColor.WHITE ? hits.black : hits.white;
+        const defenders = pieceInSquareColor == PieceColor.WHITE ? hits.white : hits.black;
+
+        //A piece that isn't attacked isn't hanging.
+        if (attackers.length == 0)
+        {
+            return false;
+        }
+
+        //If we got this far, there's at least one attacker. One attacker and no defenders = hanging.
+        if (defenders.length == 0)
+        {
+            return true;
+        }
+
+        //If the value of the smallest attacker value is less than that of the piece, then it is hanging.
+        const valueOfPieceInSquare = PieceMaterial.getMaterialFromPiece(pieceInSquare);
+        const minAttackerValue = Math.min( ...attackers.map( p => PieceMaterial.getMaterialFromPiece(p)) );
+        if (minAttackerValue < valueOfPieceInSquare)
+        {
+            return true;
+        }
+
+        //If a piece has more attackers than defenders then it's hanging
+        if (attackers.length > defenders.length)
+        {
+            return true;
+        }
+
+        //If none of the above three conditions are met then it's not hanging.
+        return false;
+    }
+
+    public static getPiecesThatHitSquare(board: Chonse2, square: string): {white: Array<string>, black: Array<string>} {
         const boardCopy = board.getFullDeepCopy();
-
-        //Gets the piece in that square currently.
         const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(square);
-        //const pieceInSquare = boardCopy.pieceState[rowIndex][colIndex];
+        const o: { white: string[], black: string[] } = { white: [], black: [] };
 
-        //Represents what will be returned.
-        const o: { attackers: string[], defenders: string[] } = 
-        { 
-            attackers: [], 
-            defenders: [] 
-        };
+        const colors = [PieceColor.WHITE, PieceColor.BLACK]; 
 
-        //Ghost pawn is needed to simulate the ability to attack/defend a square.
-        const ghostPawnForAttacker = boardCopy.turn ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
-        boardCopy.pieceState[rowIndex][colIndex] = ghostPawnForAttacker;
+        for (const currentColor of colors) {
+            boardCopy.turn = currentColor == PieceColor.WHITE;
+            
+            //Enemy ghost pawn to simulate "capturing"
+            boardCopy.pieceState[rowIndex][colIndex] = (currentColor === PieceColor.WHITE) ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
 
-        //Check every piece in the board.
-        for(let i = 0; i < boardCopy.pieceState.length; i++)
-        {
-            const currentRank = boardCopy.pieceState[i];
-
-            for(let j = 0; j < currentRank.length; j++)
+            //Loop through every single piece.
+            for (let i = 0; i < Chonse2.SIZE; i++) 
             {
-                //Coordinate for the square we are checking.
-                const coord = Chonse2.COORDS[i][j];
-
-                //Need to see if the piece in that square can move to the target square.
-                const legalMoves = boardCopy.getLegalMoves(coord);
-
-                //If we can move here, it is a valid attacker.
-                if (legalMoves.includes(square))
+                for (let j = 0; j < Chonse2.SIZE; j++) 
                 {
+                    //The current piece we are checking
                     const piece = boardCopy.pieceState[i][j];
-                    o.attackers.push(piece);
+                    
+                    //If there is no piece there, it has no legal moves.
+                    if (piece === PieceType.NONE) 
+                    {
+                        continue
+                    };
+
+                    //Ensures only the right color is checked.
+                    if (piece[0] !== currentColor) continue;
+
+                    //Gets the coordinate for the given square.
+                    const coord = Chonse2.COORDS[i][j];
+
+                    //Need to check legal moves to see what squares it hits.
+                    const legalMoves = boardCopy.getLegalMoves(coord);
+
+                    //If the piece has the square in question as a legal move, push it.                
+                    if (legalMoves.includes(square)) 
+                    {
+                        if (currentColor === PieceColor.WHITE) 
+                        {
+                            o.white.push(piece);
+                        } 
+                        else 
+                        {
+                            o.black.push(piece);
+                        }
+                    }
                 }
             }
         }
-
-        //Switch the turn now to check defenders.
-        boardCopy.turn = !boardCopy.turn;
-
-        //Ghost pawn switches color.
-        const ghostPawnForDefender = boardCopy.turn ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
-        boardCopy.pieceState[rowIndex][colIndex] = ghostPawnForDefender;
-        
-        //Checks every piece.
-        for(let i = 0; i < boardCopy.pieceState.length; i++)
-        {
-            const currentRank = boardCopy.pieceState[i];
-
-            for(let j = 0; j < currentRank.length; j++)
-            {
-                //Coordinate for the square we are checking.
-                const coord = Chonse2.COORDS[i][j];
-
-                //Need to see if the piece in that square can move to the target square.
-                const legalMoves = boardCopy.getLegalMoves(coord);
-
-                //If we can move here, it is a valid defender.
-                if (legalMoves.includes(square))
-                {
-                    const piece = boardCopy.pieceState[i][j];
-                    o.defenders.push(piece);
-                }
-            }
-        }
-
-
         return o;
     }
-
 }
