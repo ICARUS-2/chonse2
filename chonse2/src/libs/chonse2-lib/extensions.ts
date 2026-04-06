@@ -5,9 +5,15 @@ import { PieceType } from "./piece-type";
 
 export default class Chonse2Extensions
 {
-    public static getHangingPieces(board: Chonse2): Array<string>
+    //#region Hanging pieces
+
+    //Sorts hanging pieces by color.
+    public static getHangingPieces(board: Chonse2): { white: Array<string>, black: Array<string> }
     {
-        const hangingPieceCoords:Array<string> = [];
+        const o: { white: Array<string>, black: Array<string> } = {
+            white: [],
+            black: []
+        }
 
         //Check every piece in the board.
         for(let i = 0; i < board.pieceState.length; i++)
@@ -19,14 +25,24 @@ export default class Chonse2Extensions
                 const squareCoord = Chonse2.COORDS[i][j];
                 if(this.doesSquareHaveHangingPiece(board, squareCoord))
                 {
-                    hangingPieceCoords.push(squareCoord);
+                    const pieceColor = board.pieceState[i][j][0];
+
+                    if (pieceColor == PieceColor.WHITE)
+                    {
+                        o.white.push(squareCoord);
+                    }
+                    else 
+                    {
+                        o.black.push(squareCoord);
+                    }
                 }
             }
         }
         
-        return hangingPieceCoords;
+        return o;
     }
 
+    //Simple hanging piece checker (doesn't account for xray tho)
     public static doesSquareHaveHangingPiece(board: Chonse2, squareCoord: string): boolean
     {        
         const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(squareCoord);
@@ -73,7 +89,10 @@ export default class Chonse2Extensions
         //If none of the above three conditions are met then it's not hanging.
         return false;
     }
+    //#endregion
 
+    //#region General board state
+    //Gets coords of all pieces that attack/defend a given square.
     public static getPiecesThatHitSquare(board: Chonse2, square: string): {white: Array<string>, black: Array<string>} {
         const boardCopy = board.getFullDeepCopy();
         const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(square);
@@ -137,4 +156,12 @@ export default class Chonse2Extensions
         }
         return o;
     }
+
+    //Gets a piece based off the coordinates.
+    public static findPieceAtCoordinate(board: Chonse2, coord: string): string
+    {
+        const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
+
+        return board.pieceState[rowIndex][colIndex];
+    }   
 }
