@@ -178,17 +178,20 @@ export default class BoardState
     //#endregion
 
     //#region COACH
+    //Function is necessary so that the coach display doesn't show the eval for its own follow-up move.
     getRootForFollowUp(): {move: MoveResult | undefined, eval: PositionEval | undefined}
     {
         let returnMove: MoveResult | undefined = undefined;
         let returnEval: PositionEval | undefined = undefined;
 
+        //If we are diverging, comb backwards through the stack to find the first non-coach generated move (delimited by *)
         if (this.divergenceMoveStack().length > 0)
         {
             for(let i = this.divergenceMoveStack().length - 1; i >= 0; i--)
             {
                 const move = this.divergenceMoveStack()[i];
 
+                //Return the first non coach move
                 if (move.coachComment != CoachUtils.COACH_MOVE_DELIMITER)
                 {
                     returnMove = move;
@@ -198,6 +201,7 @@ export default class BoardState
             }
         }
 
+        //If divergence stack contains no values, then we just need the stack at the pointer position.
         if (returnMove == undefined)
         {
             returnMove = this.mainMoveStack()[this.mainStackPointer() - 1];
