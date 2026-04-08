@@ -134,6 +134,8 @@ export class CoachUtils
             const move = moves[moveStackPointer];
             const posEval = evals[evalStackPointer];
 
+            //const previousState = states[stateStackPointer - 1];
+
             if (state && move && posEval && posEval.bestMove)
             {
                 if (move.coachComment == CoachUtils.COACH_MOVE_DELIMITER)

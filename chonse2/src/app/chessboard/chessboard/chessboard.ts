@@ -68,6 +68,9 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //Controls
   coachButtonsDisabled: WritableSignal<boolean> = signal(false);
 
+  //Coach stuff
+  static readonly COACH_FOLLOW_UP_LENGTH = 10;
+
   //MOVE PROPERTIES
   currentLegalMoves = signal<string[]>([]);
   currentlyHeldPiece = signal<string>('');
@@ -591,7 +594,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
         //Sees how long it should actually iterate through.
 
-        const iterationLength = topEngineLine.mate ? topEngineLine.pv.length : this.Math.min(5, topEngineLine.pv.length);
+        const iterationLength = topEngineLine.mate ? topEngineLine.pv.length : this.Math.min(Chessboard.COACH_FOLLOW_UP_LENGTH, topEngineLine.pv.length);
 
         for(let i = 0; i < iterationLength; i++)
         {
