@@ -31,7 +31,7 @@ import { EngineName, EngineInformation, EngineType, MoveClassification, moveClas
 import { EvalSource, LineEval, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
-import {CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
+import {CoachFlagType, CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
 import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
 
 @Component({
@@ -674,6 +674,37 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       this.coachButtonsDisabled.set(false);
     }, duration);
+  }
+
+  getFollowUpButtonText(move: MoveResult, ev: PositionEval): string
+  {
+    let mate = undefined;
+    if (ev.lines[0])
+    {
+      mate = ev.lines[0].mate;
+    }
+
+    if (move.coachFlags.includes(CoachFlagType.AllowedCheckmate) || mate)
+    {
+      return "Show checkmate";
+    }
+
+    if (move.coachFlags.includes(CoachFlagType.LeftPieceHanging))
+    {
+      return "Show hanging piece";
+    }
+
+    return "Show follow-up";
+  }
+
+  getMissButtonText(move: MoveResult): string
+  {
+    if (move.coachFlags.includes(CoachFlagType.MissedCheckmate))
+    {
+      return "Show missed checkmate";
+    }
+
+    return "Show miss";
   }
   //#endregion
 

@@ -111,6 +111,7 @@ export class CoachUtils
         ]
     )
 
+    //Bad=============
     //If the player just hung a piece.
     private static readonly PIECE_HANG_SENTENCES: Array<string> = 
     [
@@ -132,7 +133,20 @@ export class CoachUtils
     [
         `This allows the opponent to checkmate the king. `,
         `${CoachUtils.TURN_PLACEHOLDER} just allowed the opponent to force checkmate. `,
-        `${CoachUtils.TURN_PLACEHOLDER} slipped up and the game is now lost. `
+        `${CoachUtils.TURN_PLACEHOLDER} slipped up, allowing the opponent to force checkmate with correct play. `
+    ]
+
+
+    //Good============
+    private static readonly FOUND_MATE_SENTENCES: Array<string> = 
+    [
+        `${CoachUtils.TURN_PLACEHOLDER} can now force checkmate with correct play. `,
+        `${CoachUtils.TURN_PLACEHOLDER} will checkmate the opponent if they find the right moves. `
+    ]
+
+    private static readonly ON_ROAD_TO_CHECKMATE_SENTENCES: Array<string> = 
+    [
+        `${CoachUtils.TURN_PLACEHOLDER} is still on the road to checkmate. `,
     ]
     //#endregion
 
@@ -181,6 +195,7 @@ export class CoachUtils
                 const whiteToMove = state.turn;
 
                 const colorToMoveText = whiteToMove ? "Black" : "White";
+                const oppositeColorText = whiteToMove ? "White" : "Black";
             
                 //=======Bad
                 if (posEval.moveClassification == MoveClassification.Inaccuracy ||
@@ -213,6 +228,9 @@ export class CoachUtils
                                     let newSentence = CoachUtils.PIECE_HANG_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.PIECE_HANG_SENTENCES.length)]
                                     newSentence = newSentence.replace(CoachUtils.PIECE_PLACEHOLDER, CoachUtils.convertPieceToText(pieceToTake)).replace(CoachUtils.TURN_PLACEHOLDER, colorToMoveText);
                                     move.coachComment += newSentence;
+
+                                    move.coachFlags.push(CoachFlagType.LeftPieceHanging);
+
                                     break;
                                 }
 
@@ -243,6 +261,8 @@ export class CoachUtils
                                     let newSentence = CoachUtils.MISSED_CHECKMATE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.MISSED_CHECKMATE_SENTENCES.length)]
                                     newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
                                     move.coachComment += newSentence;
+
+                                    move.coachFlags.push(CoachFlagType.MissedCheckmate);
                                 }
                             }
                         }
@@ -263,6 +283,8 @@ export class CoachUtils
                                     let newSentence = CoachUtils.ALLOWED_CHECKMATE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.ALLOWED_CHECKMATE_SENTENCES.length)]
                                     newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
                                     move.coachComment += newSentence;
+
+                                    move.coachFlags.push(CoachFlagType.AllowedCheckmate);
                                 }
                             }
                         }
@@ -271,8 +293,55 @@ export class CoachUtils
 
 
                 //=======Good
-                //
+                if (posEval.moveClassification == MoveClassification.Excellent ||
+                    posEval.moveClassification == MoveClassification.Best || 
+                    posEval.moveClassification == MoveClassification.Perfect ||
+                    posEval.moveClassification == MoveClassification.Okay
+                )
+                {
 
+                    //Case: Moving toward checkmate
+                    {
+                        if (previousState && previousPosEval)
+                        {
+                            const previousEngineLine: LineEval = previousPosEval.lines[0];
+                            const currentEngineLine: LineEval = posEval.lines[0];
+
+                            if (previousEngineLine && currentEngineLine)
+                            {
+                                //Subcase 1: Player just found the beginning of the mating sequence.
+                                if (!previousEngineLine.mate && currentEngineLine.mate)
+                                {
+                                    if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
+                                    {
+                                        let newSentence = CoachUtils.FOUND_MATE_SENTENCES[this.getRandomIndex(CoachUtils.FOUND_MATE_SENTENCES.length)];
+                                        newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
+                                        move.coachComment += newSentence;
+                                    }
+                                    else 
+                                    {
+                                        let newSentence = CoachUtils.FOUND_MATE_SENTENCES[this.getRandomIndex(CoachUtils.FOUND_MATE_SENTENCES.length)];
+                                        newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, oppositeColorText, "");
+                                        move.coachComment += newSentence;
+                                    }
+                                }   
+
+                                //Subcase 2: Player is continuing the mating sequence.
+                                if (previousEngineLine.mate && currentEngineLine.mate)
+                                {
+                                    if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
+                                    {
+                                        let newSentence = CoachUtils.ON_ROAD_TO_CHECKMATE_SENTENCES[this.getRandomIndex(CoachUtils.ON_ROAD_TO_CHECKMATE_SENTENCES.length)];
+                                        newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
+                                        move.coachComment += newSentence;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            
                 if (move.coachComment == "")
                 {
                     move.coachComment = this.getBaseSentence(posEval.moveClassification ?? MoveClassification.None).replace(this.TURN_PLACEHOLDER, colorToMoveText);
@@ -371,6 +440,7 @@ export enum CoachMoveSequenceType
 export enum CoachFlagType 
 {
     //Bad
+    LeftPieceHanging,
     AllowedCheckmate,
     MissedCheckmate,
     AllowedFork,
