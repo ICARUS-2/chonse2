@@ -13,6 +13,7 @@ export class CoachUtils
     static readonly TURN_PLACEHOLDER = "{turn}";
     static readonly PIECE_PLACEHOLDER = "{piece}";
 
+    //At minimum one sentence should be displayed.
     private static readonly BASE_SENTENCES: Map<MoveClassification, string[]> = new Map<MoveClassification, string[]>(
         [
             //Luminous moves.
@@ -110,18 +111,28 @@ export class CoachUtils
         ]
     )
 
+    //If the player just hung a piece.
     private static readonly PIECE_HANG_SENTENCES: Array<string> = 
     [
         `OUCH, ${CoachUtils.TURN_PLACEHOLDER} left their ${CoachUtils.PIECE_PLACEHOLDER} hanging! `,
         `Whoopsie, ${CoachUtils.TURN_PLACEHOLDER} gave up a ${CoachUtils.PIECE_PLACEHOLDER}! `,
-        `This move loses a ${CoachUtils.PIECE_PLACEHOLDER}.`
+        `This move loses a ${CoachUtils.PIECE_PLACEHOLDER}. `
     ]
 
+    //If the player had a viable checkmate but missed it.
     private static readonly MISSED_CHECKMATE_SENTENCES: Array<string> = 
     [
         `This misses an opportunity to checkmate the king. `,
         `${CoachUtils.TURN_PLACEHOLDER} had an opportunity to checkmate the king. `,
         `There was an opportunity to force checkmate, but ${CoachUtils.TURN_PLACEHOLDER} overlooked it. `
+    ]
+
+    //If the opponent had a good move but instead allowed forced mate by mistake.
+    private static readonly ALLOWED_CHECKMATE_SENTENCES: Array<string> = 
+    [
+        `This allows the opponent to checkmate the king. `,
+        `${CoachUtils.TURN_PLACEHOLDER} just allowed the opponent to force checkmate. `,
+        `${CoachUtils.TURN_PLACEHOLDER} slipped up and the game is now lost. `
     ]
     //#endregion
 
@@ -230,6 +241,26 @@ export class CoachUtils
                                 if (previousEngineLine.mate && !currentEngineLine.mate)
                                 {
                                     let newSentence = CoachUtils.MISSED_CHECKMATE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.MISSED_CHECKMATE_SENTENCES.length)]
+                                    newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
+                                    move.coachComment += newSentence;
+                                }
+                            }
+                        }
+                    }
+
+                    //Case: Player allowed checkmate inaccurately.
+                    {
+                        //Player allowed checkmate inaccurately if the previous position had no forced mates, the player made an inaccurate move and the resulting position has a forced mate.
+                        if (previousState && previousPosEval)
+                        {
+                            const previousEngineLine: LineEval = previousPosEval.lines[0];
+                            const currentEngineLine: LineEval = posEval.lines[0];
+
+                            if (previousEngineLine && currentEngineLine)
+                            {
+                                if (!previousEngineLine.mate && currentEngineLine.mate)
+                                {
+                                    let newSentence = CoachUtils.ALLOWED_CHECKMATE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.ALLOWED_CHECKMATE_SENTENCES.length)]
                                     newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
                                     move.coachComment += newSentence;
                                 }
