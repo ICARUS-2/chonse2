@@ -44,7 +44,7 @@
     transform: translate(-50%, -50%);
 }
 
-.endgameSquareOverlay
+.squareOverlay
 {
     position: absolute; 
     inset: 0; 
@@ -52,20 +52,20 @@
     z-index: 2;
 }
 
-.endgameSquareBackground
+.squareBackground
 {
     position: absolute;
     inset: 0; 
     z-index: 2;
 }
 
-.endgameSquareImage
+.squareImage
 {
     position: absolute;
     z-index: 3;
 }
 
-.endgameSquareOverlayFlipped
+.squareOverlayFlipped
 {
     transform: rotate(180deg);
 }
@@ -93,10 +93,25 @@
   }
 }
 
+@keyframes iconMoveSm {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(50%, -50%) scale(0.50); /* moves up-right and shrinks */
+  }
+}
+
 .move-up-right-shrink
 {
-    animation: iconMove 0.6s ease-in-out forwards;
-    animation-delay: 0.5s;
+  animation: iconMove 0.6s ease-in-out forwards;
+  animation-delay: 0.5s;
+}
+
+.move-up-right-shrink-sm
+{
+  animation: iconMoveSm 0.3s ease-in-out forwards;
+  animation-delay: 0.5s;
 }
 
 .corner-text
