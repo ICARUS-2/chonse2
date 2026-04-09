@@ -35,7 +35,7 @@ export default class BoardState
     engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
-    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: MoveResult, session: number, overrideForCoachEvals: boolean}>> = signal([]);
+    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: MoveResult, previousEval: PositionEval | undefined ,session: number, overrideForCoachEvals: boolean}>> = signal([]);
     private isEvaluating: WritableSignal<boolean> = signal(false);
     evaluationSessionId: number = 0; //Designed to prevent in-progress evals from causing desyncrhonization when going back.
 
@@ -79,6 +79,8 @@ export default class BoardState
     //#region STATES
     async pushState(state: Chonse2, move: MoveResult, isCoachMove: boolean = false)
     {
+        const previousEval = this.getMostRecentEval();
+
         //If the pointer was moved back, diverge from the main path.
         if (this.mainStackPointer() != this.mainStateStack().length - 1 || this.isReadOnly() || isCoachMove)
         {
@@ -96,9 +98,10 @@ export default class BoardState
             this.divergenceStateStack.update(stack => [...stack, state]);
             this.divergenceMoveStack.update(stack => [...stack, move]);
 
+
             if (this.engine() && this.doEvaluateGame())
             {
-                this.enqueueEvaluation(previousState, state, move, isCoachMove);
+                this.enqueueEvaluation(previousState, state, move, previousEval, isCoachMove);
             }
         }
         else //If the pointer is at the top of the stack, continue to add to it.
@@ -112,7 +115,7 @@ export default class BoardState
 
             if (this.engine() && this.doEvaluateGame())
             {
-                this.enqueueEvaluation(previousState, state, move);
+                this.enqueueEvaluation(previousState, state, move, previousEval);
             }
         }
     }
@@ -263,11 +266,11 @@ export default class BoardState
     }
     
     //Override for coach evals simply tells it to evaluate it at a lower depth (so the eval bar has a value), and make it best move no matter what (since the coach will always play the best move anyway)
-    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, overrideForCoachEvals = false)
+    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
     {
         const session = this.evaluationSessionId;
 
-        this.evalQueue.update( q => [...q, {previousState, state, move, session, overrideForCoachEvals: overrideForCoachEvals}] );
+        this.evalQueue.update( q => [...q, {previousState, state, move, previousEval, session, overrideForCoachEvals: overrideForCoachEvals}] );
 
         this.processEvaluationQueue();
     }
@@ -281,7 +284,7 @@ export default class BoardState
 
         this.isEvaluating.set(true);
 
-        const { previousState, state, move, session, overrideForCoachEvals } = this.evalQueue().shift()!;
+        const { previousState, state, move, previousEval ,session, overrideForCoachEvals } = this.evalQueue().shift()!;
 
         try
         {
@@ -299,7 +302,7 @@ export default class BoardState
                     depth
                 );
 
-                CoachUtils.performCoachAnalysis([previousState, state], [move], [resultOfEval], true);
+                CoachUtils.performCoachAnalysis([previousState, state], [move], previousEval ? [previousEval, resultOfEval] : [resultOfEval], true);
                 
                 if (overrideForCoachEvals)
                 {
@@ -318,10 +321,10 @@ export default class BoardState
                 }
                 
                 //Sanitizes for move classification consistency across different evaluations.
-                const previousEval = this.getPreviousMostRecentEval();
-                if (previousEval?.bestMove)
+                const previousMostRecentEval = this.getPreviousMostRecentEval();
+                if (previousMostRecentEval?.bestMove)
                 {
-                    if (move.notation.replace(/[+#x]/g, '').endsWith(previousEval.bestMove) && (resultOfEval.moveClassification == MoveClassification.Excellent || MoveClassification.Okay))
+                    if (move.notation.replace(/[+#x]/g, '').endsWith(previousMostRecentEval.bestMove) && (resultOfEval.moveClassification == MoveClassification.Excellent || MoveClassification.Okay))
                     {
                         resultOfEval.moveClassification = MoveClassification.Best;
                     }
