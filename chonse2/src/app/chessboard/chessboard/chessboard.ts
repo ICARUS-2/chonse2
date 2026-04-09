@@ -1294,6 +1294,38 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   })
   //#endregion
   
+  //#region Animation for luminous/perfect squares
+  _getLuminousOrPerfectSquareText = (classification: MoveClassification) => computed( (): string =>
+  {
+    if (classification == MoveClassification.Splendid)
+    {
+      return "LUM1NOUS!";
+    }
+
+    if (classification == MoveClassification.Perfect)
+    {
+      return "Perfect!";
+    }
+
+    return "Null";
+  });
+
+  _getLuminousOrPerfectBackgroundColor = (classification: MoveClassification) => computed( (): string =>
+  {
+    if (classification == MoveClassification.Splendid)
+    {
+      return "darkcyan";
+    }
+
+    if (classification == MoveClassification.Perfect)
+    {
+      return "fuchsia";
+    }
+
+    return "white";
+  })
+  //#endregion
+
   //#region Animation for piece movement logic
 
   updateBoardSize()

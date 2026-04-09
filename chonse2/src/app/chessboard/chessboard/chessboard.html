@@ -104,13 +104,13 @@
 
                                 @if (_isSquareEndgameKingSquare(rankIndex, fileIndex)())
                                 {
-                                    <div class="endgameSquareOverlay" 
-                                    [ngClass]="{'endgameSquareOverlayFlipped': boardState().isFlipped()}">
-                                        <div class="fade-out-bg endgameSquareBackground"
+                                    <div class="squareOverlay" 
+                                    [ngClass]="{'squareOverlayFlipped': boardState().isFlipped()}">
+                                        <div class="fade-out-bg squareBackground"
                                             [style]="{'background-color' : _getEndgameSquareBackgroundColor(rankIndex, fileIndex)()}">
                                         </div>
 
-                                        <img class="move-up-right-shrink endgameSquareImage"
+                                        <img class="move-up-right-shrink squareImage"
                                             [src]="_getEndgameSquareImgSrc(rankIndex, fileIndex)()"
                                             style="width: 10vmin;" />
 
@@ -121,11 +121,35 @@
                                     </div>
                                 }
 
-                                @if(this.getMoveClassificationIconSourceForCoord(this.COORDS[rankIndex][fileIndex])() != "")
+                                @if(this.getMoveClassificationIconSourceForCoord(this.COORDS[rankIndex][fileIndex])(); as iconSrc)
                                 {
-                                    <div class="moveClassificationIconOverlay" [ngClass]="{'moveClassificationIconOverlayFlipped': boardState().isFlipped()}">
-                                        <img alt="moveClassificationIcon" class="moveClassificationIcon" [src]="getMoveClassificationIconSourceForCoord(this.COORDS[rankIndex][fileIndex])()" draggable="false">
-                                    </div>
+                                    @if (getMoveClassificationForSquare(this.COORDS[rankIndex][fileIndex])(); as classification)
+                                    {
+                                        @if (classification == MoveClassification.Splendid || classification == MoveClassification.Perfect)
+                                        {
+                                            <div class="squareOverlay" 
+                                            [ngClass]="{'squareOverlayFlipped': boardState().isFlipped()}">
+                                                <div class="fade-out-bg squareBackground"
+                                                    [style]="{'background-color' : _getLuminousOrPerfectBackgroundColor(classification)()}">
+                                                </div>
+
+                                                <img class="move-up-right-shrink-sm squareImage"
+                                                    [src]="iconSrc"
+                                                    style="width: 10vmin;" />
+
+                                                <div class="corner-text fade-out-bg"
+                                                    [style]="{'background-color' : _getLuminousOrPerfectBackgroundColor(classification)()}">
+                                                    {{_getLuminousOrPerfectSquareText(classification)()}}
+                                                </div>
+                                            </div>
+                                        }
+                                        @else 
+                                        {
+                                            <div class="moveClassificationIconOverlay" [ngClass]="{'moveClassificationIconOverlayFlipped': boardState().isFlipped()}">
+                                                <img alt="moveClassificationIcon" class="moveClassificationIcon" [src]="iconSrc" draggable="false">
+                                            </div>
+                                        }
+                                    }
                                 }
                             </div>
                         }
