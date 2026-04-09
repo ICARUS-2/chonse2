@@ -1,4 +1,5 @@
 import { PieceType } from "../../../libs/chonse2-lib/piece-type";
+import { CoachFlagType } from "../../../libs/coach-lib/coach-utils";
 
 //Object designed to hold move data as well as coach stuff.
 export default class MoveResult implements IMoveResult
@@ -11,6 +12,7 @@ export default class MoveResult implements IMoveResult
     pgnComment: string = "";
 
     coachComment: string = "";
+    coachFlags: Array<CoachFlagType> = [];
 
     //Exists because the Chonse2 library alone should not be returning anything more complex than the base IMoveResult, 
     //but the chessboard needs something a bit more complex for coach interactions and whatnot.

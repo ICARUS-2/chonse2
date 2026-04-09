@@ -4,7 +4,7 @@ import Chonse2Extensions from "../chonse2-lib/extensions";
 import PieceMaterial from "../chonse2-lib/piece-material";
 import { PieceType } from "../chonse2-lib/piece-type";
 import { MoveClassification } from "../engine-lib/types/enums";
-import { PositionEval } from "../engine-lib/types/eval";
+import { LineEval, PositionEval } from "../engine-lib/types/eval";
 
 export class CoachUtils
 {
@@ -13,19 +13,20 @@ export class CoachUtils
     static readonly TURN_PLACEHOLDER = "{turn}";
     static readonly PIECE_PLACEHOLDER = "{piece}";
 
+    //At minimum one sentence should be displayed.
     private static readonly BASE_SENTENCES: Map<MoveClassification, string[]> = new Map<MoveClassification, string[]>(
         [
             //Luminous moves.
             [MoveClassification.Splendid, 
                 [
-                    `A luminous sacrifice. Leaving that piece hanging will improve the position. I see what ${this.TURN_PLACEHOLDER} is trying to do here.`
+                    `A luminous sacrifice. Leaving that piece hanging will improve the position. I see what ${this.TURN_PLACEHOLDER} is trying to do here. `
                 ]
             ],
 
             //Perfect moves.
             [MoveClassification.Perfect, 
                 [
-                    `There was one good move and ${this.TURN_PLACEHOLDER} found it!`
+                    `There was one good move and ${this.TURN_PLACEHOLDER} found it! `
                 ]
             ],
 
@@ -35,7 +36,7 @@ export class CoachUtils
                 [
                     "Right on target.",
                     "Amazing move!",
-                    `${this.TURN_PLACEHOLDER} found the top move!`
+                    `${this.TURN_PLACEHOLDER} found the top move! `
                 ]
             ],
 
@@ -43,8 +44,8 @@ export class CoachUtils
             [
                 MoveClassification.Excellent,
                 [
-                    "This is a fine move!",
-                    "Well done, an excellent move."
+                    "This is a fine move! ",
+                    "Well done, an excellent move. "
                 ]
             ],
 
@@ -52,8 +53,8 @@ export class CoachUtils
             [
                 MoveClassification.Okay,
                 [
-                    `Decent move, but ${this.TURN_PLACEHOLDER} had a better one.`,
-                    `This is alright, but not what I would have played.`
+                    `Decent move, but ${this.TURN_PLACEHOLDER} had a better one. `,
+                    `This is alright, but not what I would have played. `
                 ]
             ],
 
@@ -61,8 +62,8 @@ export class CoachUtils
             [
                 MoveClassification.Inaccuracy,
                 [
-                    `${this.TURN_PLACEHOLDER} had a chance to play something better.`,
-                    `${this.TURN_PLACEHOLDER} didn't find the right idea here.`
+                    `${this.TURN_PLACEHOLDER} had a chance to play something better. `,
+                    `${this.TURN_PLACEHOLDER} didn't find the right idea here. `
                 ]
             ],
 
@@ -70,8 +71,8 @@ export class CoachUtils
             [
                 MoveClassification.Mistake,
                 [
-                    `Hmm, this seems like a mistake to me.`,
-                    `Oh my god, ${this.TURN_PLACEHOLDER} made a mistake.`
+                    `Hmm, this seems like a mistake to me. `,
+                    `Oh my god, ${this.TURN_PLACEHOLDER} made a mistake. `
                 ]
             ],
 
@@ -79,8 +80,8 @@ export class CoachUtils
             [
                 MoveClassification.Blunder, 
                 [
-                    `${this.TURN_PLACEHOLDER} just made a blunder.`,
-                    `This move is going to cost ${this.TURN_PLACEHOLDER}.`
+                    `${this.TURN_PLACEHOLDER} just made a blunder. `,
+                    `This move is going to cost ${this.TURN_PLACEHOLDER}. `
                 ]
             ],
 
@@ -88,7 +89,7 @@ export class CoachUtils
             [
                 MoveClassification.Forced,
                 [
-                    `This was the only move.`
+                    `This was the only move. `
                 ]
             ],
 
@@ -110,11 +111,42 @@ export class CoachUtils
         ]
     )
 
+    //Bad=============
+    //If the player just hung a piece.
     private static readonly PIECE_HANG_SENTENCES: Array<string> = 
     [
-        `OUCH, ${CoachUtils.TURN_PLACEHOLDER} left their ${CoachUtils.PIECE_PLACEHOLDER} hanging!`,
-        `Whoopsie, ${CoachUtils.TURN_PLACEHOLDER} gave up a ${CoachUtils.PIECE_PLACEHOLDER}!`,
-        `This move loses a ${CoachUtils.PIECE_PLACEHOLDER}.`
+        `OUCH, ${CoachUtils.TURN_PLACEHOLDER} left their ${CoachUtils.PIECE_PLACEHOLDER} hanging! `,
+        `Whoopsie, ${CoachUtils.TURN_PLACEHOLDER} gave up a ${CoachUtils.PIECE_PLACEHOLDER}! `,
+        `This move loses a ${CoachUtils.PIECE_PLACEHOLDER}. `
+    ]
+
+    //If the player had a viable checkmate but missed it.
+    private static readonly MISSED_CHECKMATE_SENTENCES: Array<string> = 
+    [
+        `This misses an opportunity to checkmate the king. `,
+        `${CoachUtils.TURN_PLACEHOLDER} had an opportunity to checkmate the king. `,
+        `There was an opportunity to force checkmate, but ${CoachUtils.TURN_PLACEHOLDER} overlooked it. `
+    ]
+
+    //If the opponent had a good move but instead allowed forced mate by mistake.
+    private static readonly ALLOWED_CHECKMATE_SENTENCES: Array<string> = 
+    [
+        `This allows the opponent to checkmate the king. `,
+        `${CoachUtils.TURN_PLACEHOLDER} just allowed the opponent to force checkmate. `,
+        `${CoachUtils.TURN_PLACEHOLDER} slipped up, allowing the opponent to force checkmate with correct play. `
+    ]
+
+
+    //Good============
+    private static readonly FOUND_MATE_SENTENCES: Array<string> = 
+    [
+        `${CoachUtils.TURN_PLACEHOLDER} can now force checkmate with correct play. `,
+        `${CoachUtils.TURN_PLACEHOLDER} will checkmate the opponent if they find the right moves. `
+    ]
+
+    private static readonly ON_ROAD_TO_CHECKMATE_SENTENCES: Array<string> = 
+    [
+        `${CoachUtils.TURN_PLACEHOLDER} is still on the road to checkmate. `,
     ]
     //#endregion
 
@@ -126,18 +158,35 @@ export class CoachUtils
 
         for(let i = 0; i < states.length; i++)
         {
+            //Ensures that the correct pointer is selected based on whether we are diverging (since the stack lengths are different).
             const stateStackPointer = isDivergenceStack ? i + 1 : i;
             const moveStackPointer = isDivergenceStack ? i : i - 1;
-            const evalStackPointer = i;
+            const evalStackPointer = isDivergenceStack ? i + 1 : i;
 
+            //The current board state.
             const state = states[stateStackPointer];
+
+            //The current move.
             const move = moves[moveStackPointer];
+
+            //The current evaluation of the position.
             const posEval = evals[evalStackPointer];
 
-            //const previousState = states[stateStackPointer - 1];
+            //The previous evaluation/state in order for the coach to comment on misses.
+            const previousState = states[stateStackPointer - 1];
+            const previousPosEval = evals[evalStackPointer - 1];
 
+            // if (isDivergenceStack)
+            // {
+            //     console.log(states);
+            //     console.log(evals);
+            //     console.log(moves);
+            // }
+
+            //Can only do analysis if all of the necessary components exist.
             if (state && move && posEval && posEval.bestMove)
             {
+                //If this is a move the coach played (like a follow up), it doesn't need an evaluation since it is already the best move.
                 if (move.coachComment == CoachUtils.COACH_MOVE_DELIMITER)
                 {
                     continue;
@@ -146,6 +195,7 @@ export class CoachUtils
                 const whiteToMove = state.turn;
 
                 const colorToMoveText = whiteToMove ? "Black" : "White";
+                const oppositeColorText = whiteToMove ? "White" : "Black";
             
                 //=======Bad
                 if (posEval.moveClassification == MoveClassification.Inaccuracy ||
@@ -153,8 +203,8 @@ export class CoachUtils
                     posEval.moveClassification == MoveClassification.Blunder
                 )
                 {
+                    //Case: Player leaves a piece hanging.
                     {
-                        //Case: Player leaves a piece hanging.
                         const allHangingPieces = Chonse2Extensions.getHangingPieces(state);
                         const bestMove = CoachUtils.convertUciToChonse2Move(posEval.bestMove);
                         const hangingPiecesArrToCheck = whiteToMove ? allHangingPieces.black : allHangingPieces.white;
@@ -175,9 +225,12 @@ export class CoachUtils
                                 {
                                     pieceToTake = hangingPiece;
                                     //pieceToTakeMaterial = hangingPieceMaterialValue;
-                                    let phrase = CoachUtils.PIECE_HANG_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.PIECE_HANG_SENTENCES.length)]
-                                    phrase = phrase.replace(CoachUtils.PIECE_PLACEHOLDER, CoachUtils.convertPieceToText(pieceToTake)).replace(CoachUtils.TURN_PLACEHOLDER, colorToMoveText);
-                                    move.coachComment = phrase;
+                                    let newSentence = CoachUtils.PIECE_HANG_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.PIECE_HANG_SENTENCES.length)]
+                                    newSentence = newSentence.replace(CoachUtils.PIECE_PLACEHOLDER, CoachUtils.convertPieceToText(pieceToTake)).replace(CoachUtils.TURN_PLACEHOLDER, colorToMoveText);
+                                    move.coachComment += newSentence;
+
+                                    move.coachFlags.push(CoachFlagType.LeftPieceHanging);
+
                                     break;
                                 }
 
@@ -192,12 +245,103 @@ export class CoachUtils
 
 
                     }
+
+                    //Case: Player missed a checkmate
+                    {
+                        //Can only tell if a mate was missed if we can see the previous position
+                        if (previousState && previousPosEval)
+                        {
+                            const previousEngineLine: LineEval = previousPosEval.lines[0];
+                            const currentEngineLine: LineEval = posEval.lines[0];
+                            
+                            if (previousEngineLine && currentEngineLine)
+                            {
+                                if (previousEngineLine.mate && !currentEngineLine.mate)
+                                {
+                                    let newSentence = CoachUtils.MISSED_CHECKMATE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.MISSED_CHECKMATE_SENTENCES.length)]
+                                    newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
+                                    move.coachComment += newSentence;
+
+                                    move.coachFlags.push(CoachFlagType.MissedCheckmate);
+                                }
+                            }
+                        }
+                    }
+
+                    //Case: Player allowed checkmate inaccurately.
+                    {
+                        //Player allowed checkmate inaccurately if the previous position had no forced mates, the player made an inaccurate move and the resulting position has a forced mate.
+                        if (previousState && previousPosEval)
+                        {
+                            const previousEngineLine: LineEval = previousPosEval.lines[0];
+                            const currentEngineLine: LineEval = posEval.lines[0];
+
+                            if (previousEngineLine && currentEngineLine)
+                            {
+                                if (!previousEngineLine.mate && currentEngineLine.mate)
+                                {
+                                    let newSentence = CoachUtils.ALLOWED_CHECKMATE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.ALLOWED_CHECKMATE_SENTENCES.length)]
+                                    newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
+                                    move.coachComment += newSentence;
+
+                                    move.coachFlags.push(CoachFlagType.AllowedCheckmate);
+                                }
+                            }
+                        }
+                    }
                 }
 
 
                 //=======Good
-                //
+                if (posEval.moveClassification == MoveClassification.Excellent ||
+                    posEval.moveClassification == MoveClassification.Best || 
+                    posEval.moveClassification == MoveClassification.Perfect ||
+                    posEval.moveClassification == MoveClassification.Okay
+                )
+                {
 
+                    //Case: Moving toward checkmate
+                    {
+                        if (previousState && previousPosEval)
+                        {
+                            const previousEngineLine: LineEval = previousPosEval.lines[0];
+                            const currentEngineLine: LineEval = posEval.lines[0];
+
+                            if (previousEngineLine && currentEngineLine)
+                            {
+                                //Subcase 1: Player just found the beginning of the mating sequence.
+                                if (!previousEngineLine.mate && currentEngineLine.mate)
+                                {
+                                    if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
+                                    {
+                                        let newSentence = CoachUtils.FOUND_MATE_SENTENCES[this.getRandomIndex(CoachUtils.FOUND_MATE_SENTENCES.length)];
+                                        newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
+                                        move.coachComment += newSentence;
+                                    }
+                                    else 
+                                    {
+                                        let newSentence = CoachUtils.FOUND_MATE_SENTENCES[this.getRandomIndex(CoachUtils.FOUND_MATE_SENTENCES.length)];
+                                        newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, oppositeColorText, "");
+                                        move.coachComment += newSentence;
+                                    }
+                                }   
+
+                                //Subcase 2: Player is continuing the mating sequence.
+                                if (previousEngineLine.mate && currentEngineLine.mate)
+                                {
+                                    if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
+                                    {
+                                        let newSentence = CoachUtils.ON_ROAD_TO_CHECKMATE_SENTENCES[this.getRandomIndex(CoachUtils.ON_ROAD_TO_CHECKMATE_SENTENCES.length)];
+                                        newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
+                                        move.coachComment += newSentence;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            
                 if (move.coachComment == "")
                 {
                     move.coachComment = this.getBaseSentence(posEval.moveClassification ?? MoveClassification.None).replace(this.TURN_PLACEHOLDER, colorToMoveText);
@@ -277,6 +421,13 @@ export class CoachUtils
 
         return "piece";
     }
+
+    private static formatCoachStringWithPlaceholders(sentence: string, playerColor: string, piece: string): string
+    {
+        return sentence
+            .replace(CoachUtils.TURN_PLACEHOLDER, playerColor)
+            .replace(CoachUtils.PIECE_PLACEHOLDER, piece);
+    }
 }
 
 export enum CoachMoveSequenceType
@@ -289,6 +440,7 @@ export enum CoachMoveSequenceType
 export enum CoachFlagType 
 {
     //Bad
+    LeftPieceHanging,
     AllowedCheckmate,
     MissedCheckmate,
     AllowedFork,

@@ -203,7 +203,14 @@
 
                                     <div class=""></div>
 
-                                    <div class="small">{{root.move.coachComment}}</div>
+                                    <div class="small">
+                                        {{root.move.coachComment}}
+
+                                        @if (root.move.notation.includes("#"))
+                                        {
+                                            Checkmate is always the best move!
+                                        }
+                                    </div>
 
                                     @if (root.eval.lines[0]; as line)
                                     {
@@ -211,7 +218,7 @@
                                         {
                                             @if(!this.boardState().getCurrentState().gameState.isGameOver)
                                             {
-                                                <app-bootstrap-button (buttonClick)="showFollowUpClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 btn-sm" label="Show follow-up"></app-bootstrap-button>
+                                                <app-bootstrap-button (buttonClick)="showFollowUpClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 btn-sm" [label]="getFollowUpButtonText(root.move, root.eval)"></app-bootstrap-button>
                                             }
                                         
                                             @if (
@@ -219,7 +226,7 @@
                                                 root.eval.moveClassification == MoveClassification.Mistake ||
                                                 root.eval.moveClassification == MoveClassification.Blunder)
                                                 {
-                                                    <app-bootstrap-button (buttonClick)="showMissedOpportunityClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 btn-sm" label="Show miss"></app-bootstrap-button>
+                                                    <app-bootstrap-button (buttonClick)="showMissedOpportunityClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 btn-sm" [label]="getMissButtonText(root.move)"></app-bootstrap-button>
                                                 }
                                         }
                                         @else 
