@@ -72,6 +72,7 @@ export class VsAi implements OnInit, AfterViewInit{
   {
     const bs: BoardState = new BoardState();
     bs.isVsAi.set(true);
+    bs.isLocked.set(true);
     this.gameService.addGame(BoardNames.VsAi, bs);
   } 
 }
