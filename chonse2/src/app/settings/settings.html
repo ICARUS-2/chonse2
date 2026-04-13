@@ -24,7 +24,17 @@
     <select [formField]="form.selectedEngine" class="form-select" (change)="handleEngineDropdownSelectionChanged()">
         @for(engine of Object.values(EngineName); track $index)
         {
-            <option [value]="engine">{{EngineInformation.get(engine)?.displayName}}</option>
+            @if(EngineInformation.get(engine); as engineInfo)
+            {
+                <option [value]="engine">
+                    {{engineInfo.displayName}}
+
+                    @if (engineInfo.additionalText)
+                    {
+                        ({{engineInfo.additionalText}})
+                    }
+                </option>
+            }
         }
     </select>
         

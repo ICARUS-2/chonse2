@@ -1,7 +1,8 @@
 import { EngineName } from "../types/enums";
 import { UciEngine } from "../uciEngine";
-import { isMultiThreadSupported, isWasmSupported } from "../helpers/shared";
+import { isWasmSupported } from "../helpers/shared";
 import { BASE_PATH } from "../../../globals/globals";
+
 
 export class Stockfish18 {
   public static async create(lite?: boolean): Promise<UciEngine> {
@@ -9,20 +10,13 @@ export class Stockfish18 {
       throw new Error("Stockfish 18 is not supported");
     }
 
-    const multiThreadIsSupported = isMultiThreadSupported();
-    if (!multiThreadIsSupported) console.log("Single thread mode");
+    const enginePath = `${BASE_PATH}/engines/stockfish-18/stockfish-18${
+      lite ? "-lite" : ""
+    }-single${lite ? "" : "-6563532"}.js`;
 
-    let enginePath = "";
-    //const engineName = lite ? EngineName.Stockfish18Lite : EngineName.Stockfish18;
-    const engineName = EngineName.Stockfish18Lite;
-    if (lite)
-    {
-      enginePath = `${BASE_PATH}/engines/stockfish-18/stockfish-18-lite${multiThreadIsSupported ? "" : "-single"}.js`;
-    }
-    else 
-    {
-      enginePath = `https://cdn.jsdelivr.net/npm/@icarus2/stockfish-18-single@1.0.0/stockfish-18-single.js`;
-    }
+    const engineName = lite
+      ? EngineName.Stockfish18Lite
+      : EngineName.Stockfish18;
 
     return UciEngine.create(engineName, enginePath);
   }

@@ -1377,10 +1377,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.animatedPieceY.set(fromCoords.y);
 
     requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            this.animatedPieceX.set(toCoords.x);
-            this.animatedPieceY.set(toCoords.y);
-        });
+        this.animatedPieceX.set(toCoords.x);
+        this.animatedPieceY.set(toCoords.y);
     });
   }
 
