@@ -29,8 +29,8 @@ export class UciEngine {
   {
     switch (engineName) 
     {
-      //case EngineName.Stockfish18:
-      //  return Stockfish18.create(false);
+      case EngineName.Stockfish18:
+        return Stockfish18.create(false);
       case EngineName.Stockfish18Lite:
         return Stockfish18.create(true);
       case EngineName.Stockfish17_1:
