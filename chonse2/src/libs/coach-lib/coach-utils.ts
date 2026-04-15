@@ -34,8 +34,8 @@ export class CoachUtils
             [
                 MoveClassification.Best,
                 [
-                    "Right on target.",
-                    "Amazing move!",
+                    "Right on target. ",
+                    "Best move! ",
                     `${this.TURN_PLACEHOLDER} found the top move! `
                 ]
             ],
@@ -44,7 +44,7 @@ export class CoachUtils
             [
                 MoveClassification.Excellent,
                 [
-                    "This is a fine move! ",
+                    "This is a great move! ",
                     "Well done, an excellent move. "
                 ]
             ],
@@ -53,8 +53,8 @@ export class CoachUtils
             [
                 MoveClassification.Okay,
                 [
-                    `Decent move, but ${this.TURN_PLACEHOLDER} had a better one. `,
-                    `This is alright, but not what I would have played. `
+                    `Okay move, but ${this.TURN_PLACEHOLDER} had a better one. `,
+                    `This is decent, but not what I would have played. `
                 ]
             ],
 
@@ -71,7 +71,7 @@ export class CoachUtils
             [
                 MoveClassification.Mistake,
                 [
-                    `Hmm, this seems like a mistake to me. `,
+                    `Hmm, this seems like an error to me. `,
                     `Oh my god, ${this.TURN_PLACEHOLDER} made a mistake. `
                 ]
             ],
@@ -118,6 +118,13 @@ export class CoachUtils
         `OUCH, ${CoachUtils.TURN_PLACEHOLDER} left their ${CoachUtils.PIECE_PLACEHOLDER} hanging! `,
         `Whoopsie, ${CoachUtils.TURN_PLACEHOLDER} gave up a ${CoachUtils.PIECE_PLACEHOLDER}! `,
         `This move loses a ${CoachUtils.PIECE_PLACEHOLDER}. `
+    ]
+
+    //If the player missed the opportunity to capture a vulnerable piece
+    private static readonly MISSED_HANGING_PIECE_SENTENCES: Array<string> =
+    [
+        `${CoachUtils.TURN_PLACEHOLDER} missed an opportunity to capture a free ${CoachUtils.PIECE_PLACEHOLDER}.`,
+        `The best bet here was to capture a vulnerable ${CoachUtils.PIECE_PLACEHOLDER}. `
     ]
 
     //If the player had a viable checkmate but missed it.
@@ -203,47 +210,69 @@ export class CoachUtils
                     posEval.moveClassification == MoveClassification.Blunder
                 )
                 {
+                    const allHangingPieceCoords = Chonse2Extensions.getHangingPieces(state);
                     //Case: Player leaves a piece hanging.
                     {
-                        const allHangingPieces = Chonse2Extensions.getHangingPieces(state);
                         const bestMove = CoachUtils.convertUciToChonse2Move(posEval.bestMove);
-                        const hangingPiecesArrToCheck = whiteToMove ? allHangingPieces.black : allHangingPieces.white;
+                        const hangingPiecesArrToCheck = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
 
                         let pieceToTake = PieceType.NONE;
                         //let pieceToTakeMaterial = 0;
 
-                        //If there is any hanging pieces, find the highest value one that they hung, otherwise move on.
+                        //If there is any hanging pieces, find if the best move is to take, otherwise move on.
                         if (hangingPiecesArrToCheck.length > 0)
                         {
                             for(let i = 0; i < hangingPiecesArrToCheck.length; i++)
                             {
                                 const hangingPieceCoord = hangingPiecesArrToCheck[i];
                                 const hangingPiece = Chonse2Extensions.findPieceAtCoordinate(state, hangingPieceCoord);
-                                //const hangingPieceMaterialValue = PieceMaterial.getMaterialFromPiece(hangingPiece);
 
+                                //If the best move in this position is to capture the vulnerable piece, have the coach say this.
                                 if (bestMove.toSquare == hangingPieceCoord)
                                 {
                                     pieceToTake = hangingPiece;
-                                    //pieceToTakeMaterial = hangingPieceMaterialValue;
                                     let newSentence = CoachUtils.PIECE_HANG_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.PIECE_HANG_SENTENCES.length)]
-                                    newSentence = newSentence.replace(CoachUtils.PIECE_PLACEHOLDER, CoachUtils.convertPieceToText(pieceToTake)).replace(CoachUtils.TURN_PLACEHOLDER, colorToMoveText);
+
+                                    newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, CoachUtils.convertPieceToText(pieceToTake));
                                     move.coachComment += newSentence;
 
                                     move.coachFlags.push(CoachFlagType.LeftPieceHanging);
 
                                     break;
                                 }
-
-                                /*
-                                if (hangingPieceMaterialValue > pieceToTakeMaterial)
-                                {
-                                    pieceToTake = hangingPiece;
-                                    pieceToTakeMaterial = hangingPieceMaterialValue;
-                                }*/
                             }
                         }
+                    }
 
+                    //Case: Player missed the opportunity to capture a hanging piece 
+                    {
+                        if (previousState && previousPosEval)
+                        {
+                            if (previousPosEval.bestMove)
+                            {
+                                const allPreviousHangingPieceCoords = Chonse2Extensions.getHangingPieces(previousState)
+                                const previousHangingPiecesArrToCheck = whiteToMove ? allPreviousHangingPieceCoords.white : allPreviousHangingPieceCoords.black;
+                                
+                                const previousBestMove = CoachUtils.convertUciToChonse2Move(previousPosEval.bestMove);
 
+                                //For all the previously hanging pieces, check if the previous best move was to capture it. If it was, the coach should tell them.
+                                for (let i = 0; i < previousHangingPiecesArrToCheck.length; i++)
+                                {
+                                    const coord = previousHangingPiecesArrToCheck[i];
+                                    
+                                    if (coord === previousBestMove.toSquare)
+                                    {   
+                                        const pieceToCapture = CoachUtils.convertPieceToText(Chonse2Extensions.findPieceAtCoordinate(state, previousBestMove.toSquare));
+
+                                        let newSentence = CoachUtils.MISSED_HANGING_PIECE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.MISSED_HANGING_PIECE_SENTENCES.length)];
+                                        newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, pieceToCapture);
+
+                                        move.coachFlags.push(CoachFlagType.MissedHangingPiece);
+                                        move.coachComment += newSentence;
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     //Case: Player missed a checkmate
@@ -260,8 +289,9 @@ export class CoachUtils
                                 {
                                     let newSentence = CoachUtils.MISSED_CHECKMATE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.MISSED_CHECKMATE_SENTENCES.length)]
                                     newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
+                                    
+                                    
                                     move.coachComment += newSentence;
-
                                     move.coachFlags.push(CoachFlagType.MissedCheckmate);
                                 }
                             }
@@ -441,6 +471,7 @@ export enum CoachFlagType
 {
     //Bad
     LeftPieceHanging,
+    MissedHangingPiece,
     AllowedCheckmate,
     MissedCheckmate,
     AllowedFork,

@@ -704,6 +704,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return "Show missed checkmate";
     }
 
+    if (move.coachFlags.includes(CoachFlagType.MissedHangingPiece))
+    {
+      return "Show missed capture";
+    }
+
     return "Show miss";
   }
   //#endregion
