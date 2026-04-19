@@ -4,7 +4,7 @@ import { PieceSelector } from "../piece-selector/piece-selector";
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { BootstrapButton } from '../../bootstrap-button/bootstrap-button';
+import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
 import Chonse2 from '../../../libs/chonse2-lib/chonse2';
 import { GameOverReason } from '../../../libs/chonse2-lib/game-state';

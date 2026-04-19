@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 import GameLinkHelper from '../chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
-import { BootstrapButton } from "../../bootstrap-button/bootstrap-button";
+import { BootstrapButton } from "../../ui/bootstrap-button/bootstrap-button";
 
 @Component({
   selector: 'app-copy-pgn-modal',

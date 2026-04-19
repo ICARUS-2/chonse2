@@ -3,7 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import VsAiConfig from '../vs-ai-config';
 import { FormsModule } from '@angular/forms';
 import ThemeService from '../../themes/theme-service';
-import { BootstrapButton } from "../../bootstrap-button/bootstrap-button";
+import { BootstrapButton } from "../../ui/bootstrap-button/bootstrap-button";
 import { form, FormField, max, min } from '@angular/forms/signals';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 

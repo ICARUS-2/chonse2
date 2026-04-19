@@ -9,7 +9,7 @@ import GameLinkHelper from '../chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
 import { LichessAPI, LichessGame } from '../../../libs/server-api-lib/lichess-api';
 import ThemeService from '../../themes/theme-service';
-import { BootstrapButton } from "../../bootstrap-button/bootstrap-button";
+import { BootstrapButton } from "../../ui/bootstrap-button/bootstrap-button";
 import { form, FormField } from '@angular/forms/signals';
 import { GameScore } from '../../../libs/chonse2-lib/game-state';
 
