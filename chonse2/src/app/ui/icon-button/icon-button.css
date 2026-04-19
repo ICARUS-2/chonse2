@@ -1,0 +1,83 @@
+/* Main Button Container */
+.button {
+  position: relative;
+  width: 150px;
+  height: 40px;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  /* background-color is handled by your Angular theme service */
+  border-radius: 5px;
+  overflow: hidden;
+  padding: 0; 
+  transition: all 0.3s;
+}
+
+/* Disabled State */
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+/* Text Styling */
+.button .button__text {
+  /* KEY CHANGE: 
+     The text container now takes up exactly the space NOT occupied by the icon.
+     100% width minus the 39px icon width.
+  */
+  width: calc(100% - 39px);
+  text-align: center;
+  
+  color: #fff;
+  font-weight: 600;
+  transition: all 0.3s;
+  display: inline-block;
+}
+
+/* Icon Styling */
+.button .button__icon {
+  position: absolute;
+  /* Pinned to the right edge */
+  right: 0; 
+  height: 100%;
+  width: 39px;
+  /* background-color is handled by your Angular theme service */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+/* Bootstrap Icon Glyph */
+.button .button__icon i {
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+/* Hover States */
+.button:hover:not(:disabled) {
+  /* Ensure the button background matches the icon expansion */
+  background-color: #17795E; 
+}
+
+.button:hover:not(:disabled) .button__text {
+  /* Hide the text smoothly as the icon slides over */
+  opacity: 0;
+  color: transparent;
+}
+
+.button:hover:not(:disabled) .button__icon {
+  /* Expand icon to fill the entire button */
+  width: 100%;
+}
+
+/* Active Click State */
+.button:active:not(:disabled) .button__icon {
+  background-color: #146c54;
+}
+
+.button:active:not(:disabled) {
+  border: 1px solid #146c54;
+}

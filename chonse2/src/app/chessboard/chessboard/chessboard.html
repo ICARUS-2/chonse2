@@ -301,37 +301,42 @@
         </div>
         @if(!this.boardState().isVsAi())
         {
-            <div class="d-flex w-100 justify-content-around mt-2">
+            <div class="iconButtonContainer d-flex w-100 justify-content-around mt-2">
 
-                <app-bootstrap-button
+                <app-icon-button 
                     label="Import Game"
-                    extraClasses="me-1"
-                    (buttonClick)="handleImportClicked()">
-                </app-bootstrap-button>
+                    extraClasses="m-1"
+                    iconClass="bi-box-arrow-in-down-left"
+                    (buttonClick)="handleImportClicked()"
+                    >
+                </app-icon-button>
 
-                <app-bootstrap-button
+                <app-icon-button
                     label="Reset"
-                    extraClasses="me-1"
+                    extraClasses="m-1"
+                    iconClass="bi-bootstrap-reboot"
                     (buttonClick)="handleResetClicked()">
-                </app-bootstrap-button>
+                </app-icon-button>
 
                 @if(!boardState().doEvaluateGame() && boardState().mainStateStack().length > 1)
                 {
-                    <app-bootstrap-button
+                    <app-icon-button
                         label="Analyze"
-                        extraClasses="me-1"
+                        iconClass="bi-cpu"
+                        extraClasses="m-1"
                         (buttonClick)="handleAnalyzeClicked()">
-                    </app-bootstrap-button>
+                    </app-icon-button>
                 }
 
                 
                 @if (boardState().mainStateStack().length > 1)
                 {
-                    <app-bootstrap-button
+                    <app-icon-button
                         label="Export Game"
-                        extraClasses=""
+                        extraClasses="m-1"
+                        iconClass="bi-share"
                         (buttonClick)="exportGameClicked()">
-                    </app-bootstrap-button>
+                    </app-icon-button>
                 }
             </div>
         }
@@ -341,27 +346,30 @@
 
                 @if (!getMostCurrentMainState().gameState.isGameOver && boardState().engine())
                 {
-                    <app-bootstrap-button
+                    <app-icon-button
                         label="Resign"
                         (buttonClick)="resignVsAiClicked()"
-                        extraClasses="me-1">
-                    </app-bootstrap-button>
+                        iconClass="bi-flag"
+                        extraClasses="m1-1">
+                    </app-icon-button>
                 }
                 @else 
                 {
-                    <app-bootstrap-button
-                        label="New game vs AI"
-                        extraClasses="me-1"
+                    <app-icon-button
+                        label="New game"
+                        extraClasses="m-1"
+                        iconClass="bi-plus"
                         (buttonClick)="beginGameVsAiClicked()">
-                    </app-bootstrap-button>
+                    </app-icon-button>
 
                     @if (boardState().mainStateStack().length > 1)
                     {
-                        <app-bootstrap-button
+                        <app-icon-button
                             label="Analyze Game"
-                            extraClasses=""
+                            extraClasses="m-1"
+                            iconClass="bi-cpu"
                             (buttonClick)="analyzeAiGameClicked()">
-                        </app-bootstrap-button>
+                        </app-icon-button>
                     }
                 }
 

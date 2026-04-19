@@ -1,0 +1,16 @@
+<button 
+    [style.background-color]="themeService.getThemeInstance().getPrimaryColor()"
+    class="button" 
+    [class]="extraClasses()"
+    [disabled]="disabled()"
+    type="button" 
+    (click)="handleOnClick($event)">
+
+    <span class="button__text">{{ label() }}</span>
+
+    <span class="button__icon"
+    [style.background-color]="themeService.getThemeInstance().getHoverColor()"
+    >
+    <i [class]="'bi ' + iconClass()"></i>
+    </span>
+</button>

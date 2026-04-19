@@ -17,7 +17,7 @@ import { EvalBar } from '../eval-bar/eval-bar';
 import MoveClassificationList from './move-classification-list';
 import { Router } from '@angular/router';
 import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-helper';
-import { BootstrapButton } from '../../bootstrap-button/bootstrap-button';
+import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
 import { DivergenceTableEntry } from '../divergence-table-entry/divergence-table-entry';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
@@ -33,10 +33,11 @@ import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
 import {CoachFlagType, CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
 import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
+import { IconButton } from "../../ui/icon-button/icon-button";
 
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart, BootstrapButton, DivergenceTableEntry],
+  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart, BootstrapButton, DivergenceTableEntry, IconButton],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush

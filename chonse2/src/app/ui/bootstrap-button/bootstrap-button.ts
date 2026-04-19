@@ -5,7 +5,7 @@ import {
   output
 } from '@angular/core';
 import { NgClass } from '@angular/common';
-import ThemeService from '../themes/theme-service';
+import ThemeService from '../../themes/theme-service';
 
 @Component({
   selector: 'app-bootstrap-button',

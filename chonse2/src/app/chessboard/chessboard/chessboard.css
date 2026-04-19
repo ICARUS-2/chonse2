@@ -307,4 +307,10 @@
   {
     width: 100%;
   }
+
+  .iconButtonContainer 
+  {
+    flex-direction: column;
+    margin: 2vmin
+  }
 }

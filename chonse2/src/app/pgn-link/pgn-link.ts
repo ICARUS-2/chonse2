@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import ThemeService from '../themes/theme-service';
 import { form, FormField } from '@angular/forms/signals';
-import { BootstrapButton } from "../bootstrap-button/bootstrap-button";
+import { BootstrapButton } from "../ui/bootstrap-button/bootstrap-button";
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
 
