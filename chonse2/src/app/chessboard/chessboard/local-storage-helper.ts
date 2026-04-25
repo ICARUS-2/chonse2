@@ -6,6 +6,7 @@ export default class LocalStorageHelper
     static readonly SELECTED_ENGINE = "Chonse2_SelectedEngine";
     static readonly ENGINE_DEPTH = "Chonse2_EngineDepth";
     static readonly CLOUD_HYBRID_MODE = "Chonse2_CloudHybridMode";
+    static readonly ENGINE_THREAD_COUNT = "Chonse2_ThreadCount";
     static readonly SELECTED_THEME = "Chonse2_SelectedTheme";
 
     //bool

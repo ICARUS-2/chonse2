@@ -48,7 +48,7 @@
 
     <div class="m-4"></div>
 
-    <h4 class="text-secondary">Cloud Hybrid Mode <span class="bi bi-patch-question text-info" ngbTooltip="Delegate evaluations to Lichess cloud eval wherever possible. Can yield increased depth, faster evaluations and less CPU usage."></span> </h4>
+    <h4 class="text-secondary">Cloud Hybrid Mode (Single-thread only) <span class="bi bi-patch-question text-info" ngbTooltip="Delegate evaluations to Lichess cloud eval wherever possible. Can yield increased depth, faster evaluations and less CPU usage. Intended for devices that cannot take advantage of multithreading"></span> </h4>
     <div
     class="form-check form-switch"
     [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
@@ -59,6 +59,16 @@
         [formField]="form.cloudHybridMode"
         (change)="handleCloudHybridChanged($event.target.checked)"
     /></div>
+
+    <div class="m-4"></div>
+
+    <h4 class="text-secondary">Thread Count</h4>
+    <div class="d-flex" [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
+        <input (change)="handleThreadCountChanged()" [formField]="form.engineThreadCount" type="range" class="form-range custom-range" id="range3">
+        <p>{{form.engineThreadCount().value()}}</p>
+    </div>
+
+    <div class="m-4"></div>
 
     <hr>
 
@@ -78,4 +88,5 @@
     <h4>- Coded in  <a class="link-underline link-underline-opacity-0" [style.color]="themeService.getThemeInstance().getPrimaryColor()" href="https://v21.angular.dev/overview" target="_blank">Angular</a> (Zoneless).</h4>
     <h4>- Engine code adapted from <a class="link-underline link-underline-opacity-0" [style.color]="themeService.getThemeInstance().getPrimaryColor()" href="https://github.com/GuillaumeSD/Chesskit" target="_blank">GuillaumeSD/Chesskit</a>.</h4>
     <h4>- JS Stockfish implementation from <a class="link-underline link-underline-opacity-0" [style.color]="themeService.getThemeInstance().getPrimaryColor()" href="https://github.com/nmrugg/stockfish.js/" target="_blank">nmrugg/Stockfish.js</a></h4>
+    <h6>- AI usage: Help with some of the SVG and animation work + debugging, no vibecoding here.</h6>
 </div>

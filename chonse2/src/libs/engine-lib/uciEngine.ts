@@ -12,7 +12,6 @@ import {
 } from "./helpers/parseResults";
 import { computeAccuracy } from "./helpers/accuracy";
 import { getIsStalemate, getWhoIsCheckmated } from './helpers/chessHelper';
-//import { getLichessEval } from "../lichess";
 import { getMovesClassification } from "./helpers/moveClassification";
 import { computeEstimatedElo } from "./helpers/estimateElo";
 import { EngineWorker, WorkerJob } from "./types/engine";
@@ -22,6 +21,7 @@ import { Stockfish18 } from "./engines/stockfish18";
 import { Stockfish17_1 } from "./engines/stockfish17_1";
 import { LichessAPI } from "../server-api-lib/lichess-api";
 import MoveResult from "../../app/chessboard/chessboard/move-result";
+import LocalStorageHelper from "../../app/chessboard/chessboard/local-storage-helper";
 
 
 export class UciEngine {
@@ -277,8 +277,10 @@ export class UciEngine {
 
   public async evaluateMove(beforeFen: string, afterFen: string, move: MoveResult, depth=UciEngine.DEFAULT_DEPTH): Promise<PositionEval>
   {
-    const evalResult = await this.evaluateGame({fens: [beforeFen, afterFen], uciMoves: [move.notation], depth});
-    //const previousPositionResult = evalResult.positions[0];
+    const workersNb = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1);
+
+    const evalResult = await this.evaluateGame({fens: [beforeFen, afterFen], uciMoves: [move.notation], depth, workersNb});
+
     const positionResult = evalResult.positions[1];
     
     return positionResult;
@@ -311,45 +313,88 @@ export class UciEngine {
       setEvaluationProgress?.(99 - Math.exp(-4 * progress) * 99);
     };
 
-    for (let i = 0; i < fens.length; i++) {
-      const fen = fens[i];
+    if (this.isCloudHybridMode)
+    {
+      for (let i = 0; i < fens.length; i++) {
+        const fen = fens[i];
 
-      const whoIsCheckmated = getWhoIsCheckmated(fen);
-      if (whoIsCheckmated) {
-        updateEval(i, {
-          lines: [
-            {
-              pv: [],
-              depth: 0,
-              multiPv: 1,
-              mate: whoIsCheckmated === "w" ? -1 : 1,
-            },
-          ],
-          source: EvalSource.Local
-        });
-        continue;
+        const whoIsCheckmated = getWhoIsCheckmated(fen);
+        if (whoIsCheckmated) {
+          updateEval(i, {
+            lines: [
+              {
+                pv: [],
+                depth: 0,
+                multiPv: 1,
+                mate: whoIsCheckmated === "w" ? -1 : 1,
+              },
+            ],
+            source: EvalSource.Local
+          });
+          continue;
+        }
+
+        const isStalemate = getIsStalemate(fen);
+        if (isStalemate) {
+          updateEval(i, {
+            lines: [
+              {
+                pv: [],
+                depth: 0,
+                multiPv: 1,
+                cp: 0,
+              },
+            ],
+            source: EvalSource.Local
+          });
+          continue;
+        }
+
+      //Evaluate either via cloud or local engine
+      const result = await this.evaluatePosition(fen, depth);
+      updateEval(i, result);
       }
+    }
 
-      const isStalemate = getIsStalemate(fen);
-      if (isStalemate) {
-        updateEval(i, {
-          lines: [
-            {
-              pv: [],
-              depth: 0,
-              multiPv: 1,
-              cp: 0,
-            },
-          ],
-          source: EvalSource.Local
-        });
-        continue;
-      }
+    else 
+    {
+      await Promise.all(
+        fens.map(async (fen, i) => {
+          const whoIsCheckmated = getWhoIsCheckmated(fen);
+          if (whoIsCheckmated) {
+            updateEval(i, {
+              lines: [
+                {
+                  pv: [],
+                  depth: 0,
+                  multiPv: 1,
+                  mate: whoIsCheckmated === "w" ? -1 : 1,
+                },
+              ],
+            });
+            return;
+          }
 
-    //Evaluate either via cloud or local engine
-    const result = await this.evaluatePosition(fen, depth, workersNb);
-    updateEval(i, result);
-  }
+          const isStalemate = getIsStalemate(fen);
+          if (isStalemate) {
+            updateEval(i, {
+              lines: [
+                {
+                  pv: [],
+                  depth: 0,
+                  multiPv: 1,
+                  cp: 0,
+                },
+              ],
+            });
+            return;
+          }
+
+          const result = await this.evaluatePosition(fen, depth);
+          updateEval(i, result);
+        })
+      );
+    }
 
     await this.setWorkersNb(1);
     this.isReady = true;
@@ -382,18 +427,8 @@ export class UciEngine {
   private async evaluatePosition(
     fen: string,
     depth = UciEngine.DEFAULT_DEPTH,
-    workersNb: number
+    //workersNb: number
   ): Promise<PositionEval> {
-    /*
-    if (workersNb < 2) {
-      const lichessEval = await getLichessEval(fen, this.multiPv);
-      if (
-        lichessEval.lines.length >= this.multiPv &&
-        lichessEval.lines[0].depth >= depth
-      ) {
-        return lichessEval;
-      }
-    }*/
 
     if (this.isCloudHybridMode)
     {
@@ -407,7 +442,6 @@ export class UciEngine {
 
         if (cloudResult)
         {
-          //console.log(cloudResult)
           return cloudResult;
         }
       }
@@ -429,8 +463,6 @@ export class UciEngine {
   }: EvaluatePositionWithUpdateParams): Promise<PositionEval> {
     this.throwErrorIfNotReady();
 
-    //const lichessEvalPromise = getLichessEval(fen, multiPv);
-
     await this.stopAllCurrentJobs();
     await this.setMultiPv(multiPv);
 
@@ -441,16 +473,6 @@ export class UciEngine {
     };
 
     console.log(`Evaluating position: ${fen}`);
-
-    /*
-    const lichessEval = await lichessEvalPromise;
-    if (
-      lichessEval.lines.length >= multiPv &&
-      lichessEval.lines[0].depth >= depth
-    ) {
-      setPartialEval?.(lichessEval);
-      return lichessEval;
-    }*/
 
     const results = await this.sendCommands(
       [`position fen ${fen}`, `go depth ${depth}`],

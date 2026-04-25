@@ -4,7 +4,7 @@ import LocalStorageHelper from '../chessboard/chessboard/local-storage-helper';
 import { Themes } from '../themes/themes';
 import ThemeService from '../themes/theme-service';
 import { CommonModule } from '@angular/common';
-import { form, FormField, max, min } from '@angular/forms/signals';
+import { disabled, form, FormField, max, min } from '@angular/forms/signals';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { EngineName, EngineInformation } from '../../libs/engine-lib/types/enums';
 import { UciEngine } from '../../libs/engine-lib/uciEngine';
@@ -29,13 +29,19 @@ export class Settings {
     selectedEngine: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName,
     engineDepth:  LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
     cloudHybridMode: LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, false),
+    engineThreadCount: LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1),
     selectedTheme: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_THEME, ThemeService.DEFAULT_THEME) as Themes
   })
 
   form = form(this.formModel, (schema) => 
   {
+    //Engine depth
     min(schema.engineDepth, UciEngine.MIN_DEPTH),
-    max(schema.engineDepth, 22)
+    max(schema.engineDepth, 30),
+
+    //Engine thread count
+    min(schema.engineThreadCount, 1),
+    max(schema.engineThreadCount, 4)
   })
 
   constructor(public themeService: ThemeService)
@@ -67,6 +73,12 @@ export class Settings {
     LocalStorageHelper.setBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, this.form.cloudHybridMode().value());   
   }
 
+  //Workers number
+  handleThreadCountChanged()
+  {
+    LocalStorageHelper.setNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, this.form.engineThreadCount().value());
+  }
+
   //Theme select
   handleThemeDropdownSelectionChanged()
   {
@@ -82,5 +94,6 @@ interface FormModel
   selectedEngine: EngineName;
   engineDepth: number;
   cloudHybridMode: boolean;
+  engineThreadCount: number;
   selectedTheme: Themes;
 }
