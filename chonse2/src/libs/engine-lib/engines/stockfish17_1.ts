@@ -1,6 +1,6 @@
 import { EngineName } from "../types/enums";
 import { UciEngine } from "../uciEngine";
-import { isMultiThreadSupported, isWasmSupported } from "../helpers/shared";
+import { isWasmSupported } from "../helpers/shared";
 import { BASE_PATH } from "../../../globals/globals";
 
 export class Stockfish17_1 {
@@ -9,12 +9,9 @@ export class Stockfish17_1 {
       throw new Error("Stockfish 17.1 is not supported");
     }
 
-    const multiThreadIsSupported = isMultiThreadSupported();
-    if (!multiThreadIsSupported) console.log("Single thread mode");
-
     const enginePath = `${BASE_PATH}/engines/stockfish-17.1/stockfish-17.1${
       lite ? "-lite" : ""
-    }${multiThreadIsSupported ? "" : "-single"}.js`;
+    }-single.js`;
 
     const engineName = lite
       ? EngineName.Stockfish17_1Lite

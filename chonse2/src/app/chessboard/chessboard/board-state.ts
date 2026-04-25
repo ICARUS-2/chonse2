@@ -853,7 +853,7 @@ export default class BoardState
             //Gets the engine type saved as per the user setting.
             const engineType: EngineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName;
             
-            const cloudHybridMode: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, true);
+            const cloudHybridMode: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, false);
 
             //Instantiate the engine with the factory.
             const engine: UciEngine = await UciEngine.getEngine(engineType);
@@ -886,8 +886,9 @@ export default class BoardState
         const fens: string[] = this.mainStateStack().map( c2 => c2.getFEN() );
         const uciMoves: string[] = this.mainMoveStack().map(m => m.notation);
         const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
+        const workersNb = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1);
 
-        return {fens, uciMoves, depth};
+        return {fens, uciMoves, depth, workersNb};
     }
 
     exportPGN(): string
