@@ -91,6 +91,30 @@ export default class Chonse2Extensions
     }
     //#endregion
 
+    //#region Forks
+    public static getForksOnBoard(board: Chonse2, attackerColor: string)
+    {
+        const boardCopy = board.getFullDeepCopy();
+
+        boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
+
+        const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board._getAllPiecesAndCoordsByColor(attackerColor);
+    
+        //Loop over each piece.
+        piecesAndCoords.pieces.forEach( (piece, idx) => 
+        {
+            //If that piece is currently hanging, it can't be forking anything since it would just get captured.
+
+            //Check if this piece can hit two or more targets
+
+            //If it can, check if at least two of them are either hanging or are the king.
+
+            //If two of the pieces are hanging/is the king, then it is a fork.
+            
+        } )
+    }
+    //#endregion
+
     //#region General board state
     //Gets coords of all pieces that attack/defend a given square.
     public static getPiecesThatHitSquare(board: Chonse2, square: string): {white: Array<string>, black: Array<string>} {
@@ -164,4 +188,10 @@ export default class Chonse2Extensions
 
         return board.pieceState[rowIndex][colIndex];
     }   
+}
+
+export class Fork 
+{
+    attacker: string = PieceType.NONE;
+    
 }
