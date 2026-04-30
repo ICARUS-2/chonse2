@@ -1116,7 +1116,7 @@ export default class Chonse2
     return legalMoves.length != 0;
   }
 
-  private _getAllPiecesAndCoordsByColor(color: string): {pieces: Array<string>, coords: Array<string>}
+  public _getAllPiecesAndCoordsByColor(color: string): {pieces: Array<string>, coords: Array<string>}
   {
     if (color != PieceColor.WHITE && color != PieceColor.BLACK)
     {
