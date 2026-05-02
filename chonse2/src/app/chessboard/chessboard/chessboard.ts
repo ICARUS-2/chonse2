@@ -1360,37 +1360,42 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     return this.boardPixelSize() / Chonse2.SIZE;
   })
 
-  getPiecePixelPosition = (coordinate: string) => computed( (): { x: number, y: number }  => 
-  {
-    const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coordinate);
-    const squareSize = this.getSquarePixelSize();
-
-    return {
-      x: colIndex * squareSize,
-      y: rowIndex * squareSize
-    };
-  } ) 
-
-
   animateMove(from: string, to: string, piece: string) 
   {
-    const fromCoords = this.getPiecePixelPosition(from)();
-    const toCoords = this.getPiecePixelPosition(to)();
+    //calculate the pixel coordinates for from and to, in order to know how to animate it.
+    const fromCoords = this.calculatePixelPosition(from);
+    const toCoords = this.calculatePixelPosition(to);
+
+    //set piece state
     this.animatedPieceCoord.set(from);
     this.animatedPiece.set(piece);
-
     this.animatedPieceX.set(fromCoords.x);
     this.animatedPieceY.set(fromCoords.y);
 
-    requestAnimationFrame( () =>
-    {
+    requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         this.animatedPieceX.set(toCoords.x);
         this.animatedPieceY.set(toCoords.y);
       });
-    })
+    });
+
+    //if the animation takes longer than 500ms, force-clear it, prevents the piece from staying 'invisible' on the main board
+    setTimeout(() => {
+      if (this.animatedPiece() === piece) {
+        this.onAnimationEnd();
+      }
+    }, 500); 
   }
 
+  private calculatePixelPosition(coordinate: string): { x: number, y: number } 
+  {
+    const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coordinate);
+    const squareSize = this.getSquarePixelSize();
+    return {
+      x: colIndex * squareSize,
+      y: rowIndex * squareSize
+    };
+  }
 
   onAnimationEnd() 
   {
