@@ -92,23 +92,34 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Forks
-    public static getForksOnBoard(board: Chonse2, attackerColor: string): Array<Fork>
+    public static getForksOnBoard(
+        board: Chonse2, 
+        attackerColor: string, 
+        _: { white: Array<string>, black: Array<string> } | null = null //Array of all hanging pieces. 
+                         // For efficiency in cases where the hanging pieces have already been computed, don't compute them again
+    ): Array<Fork>
     {
+        //Will contain the forks on the board for that specific color.
         const allForks: Array<Fork> = [];
 
+        //Need to copy the board in order to simulate the correct turn.
         const boardCopy = board.getFullDeepCopy();
 
+        //Need to set the turn accordingly so legal moves register.
         boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
 
+        //All of the pieces/coords belonging to the attacker.
         const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board._getAllPiecesAndCoordsByColor(attackerColor);
         
-        const allHangingPieces = Chonse2Extensions.getHangingPieces(boardCopy);
+        //All of the hanging pieces on the board regardless of color.
+        const allHangingPieces = _ == null ? Chonse2Extensions.getHangingPieces(boardCopy) : _;
+
+        //Will need to get a handle on the attacker's hanging pieces to make sure the piece "forking" isn't actually hanging itself.
         const attackerHangingPieceCoords = attackerColor == PieceColor.WHITE ? allHangingPieces.white : allHangingPieces.black;
         
-
+        //Need to check through every piece to find which ones might be forking.
         for(let i = 0; i < piecesAndCoords.coords.length; i++)
         {
-            //const currentPiece = piecesAndCoords.pieces[i];
             const currentPieceCoordinate = piecesAndCoords.coords[i];
             
             //If that piece is currently hanging, it can't be forking anything since it would just get captured.
@@ -143,6 +154,7 @@ export default class Chonse2Extensions
             const opponentHangingPieceCoords = attackerColor == PieceColor.WHITE ? allHangingPieces.black : allHangingPieces.white;
             const filteredCandidates = candidatePieceCoordinatesToFork.filter( coord =>
                 {
+                    //If the piece is the king (aka the most important piece) and can't be "defended" by anything, it's a filtered candidate.
                     const pieceInCoord = Chonse2Extensions.findPieceAtCoordinate(boardCopy, coord);
                     
                     if (pieceInCoord.endsWith(PieceType.KING))
