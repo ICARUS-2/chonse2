@@ -92,26 +92,82 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Forks
-    public static getForksOnBoard(board: Chonse2, attackerColor: string)
+    public static getForksOnBoard(board: Chonse2, attackerColor: string): Array<Fork>
     {
+        const allForks: Array<Fork> = [];
+
         const boardCopy = board.getFullDeepCopy();
 
         boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
 
         const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board._getAllPiecesAndCoordsByColor(attackerColor);
-    
-        //Loop over each piece.
-        piecesAndCoords.pieces.forEach( (piece, idx) => 
+        
+        const allHangingPieces = Chonse2Extensions.getHangingPieces(boardCopy);
+        const attackerHangingPieceCoords = attackerColor == PieceColor.WHITE ? allHangingPieces.white : allHangingPieces.black;
+        
+
+        for(let i = 0; i < piecesAndCoords.coords.length; i++)
         {
-            //If that piece is currently hanging, it can't be forking anything since it would just get captured.
-
-            //Check if this piece can hit two or more targets
-
-            //If it can, check if at least two of them are either hanging or are the king.
-
-            //If two of the pieces are hanging/is the king, then it is a fork.
+            //const currentPiece = piecesAndCoords.pieces[i];
+            const currentPieceCoordinate = piecesAndCoords.coords[i];
             
-        } )
+            //If that piece is currently hanging, it can't be forking anything since it would just get captured.
+            if (attackerHangingPieceCoords.includes(currentPieceCoordinate))
+            {
+                continue;
+            }
+
+            //Need to know where the current piece can go.
+            const legalMoveCoordinatesForPiece = boardCopy.getLegalMoves(currentPieceCoordinate);
+
+            //List of candidate piece captures
+            const candidatePieceCoordinatesToFork = [];
+            const oppositeColor = PieceColor.getOpposite(attackerColor);
+            
+            console.log(legalMoveCoordinatesForPiece);
+
+            //For each of the legal moves of the current piece, a candidate capture is a piece of the opposite color that can be captured on the next turn.
+            for(let i = 0; i < legalMoveCoordinatesForPiece.length; i++)
+            {
+                const currentLegalMove = legalMoveCoordinatesForPiece[i];
+                const pieceInThatCoordinate = Chonse2Extensions.findPieceAtCoordinate(boardCopy,currentLegalMove);
+
+                //If there is a piece that can be captured, add it to the candidate list.
+                if (pieceInThatCoordinate.startsWith(oppositeColor))
+                {
+                    candidatePieceCoordinatesToFork.push(currentLegalMove);
+                }
+            }
+
+            //Filter out the potential candidates to find the pieces that are either hanging or are the king.
+            const opponentHangingPieceCoords = attackerColor == PieceColor.WHITE ? allHangingPieces.black : allHangingPieces.white;
+            const filteredCandidates = candidatePieceCoordinatesToFork.filter( coord =>
+                {
+                    const pieceInCoord = Chonse2Extensions.findPieceAtCoordinate(boardCopy, coord);
+                    
+                    if (pieceInCoord.endsWith(PieceType.KING))
+                    {
+                        return true;
+                    }
+
+                    if (opponentHangingPieceCoords.includes(coord))
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }
+            )
+
+            //If two or more candidates meet the criteria, it is a fork. Add it.
+            if (filteredCandidates.length >= 2)
+            {
+                allForks.push( new Fork(currentPieceCoordinate, filteredCandidates) );
+            }
+        }
+
+        //And then return all the forks.
+        return allForks;
     }
     //#endregion
 
@@ -192,6 +248,12 @@ export default class Chonse2Extensions
 
 export class Fork 
 {
-    attacker: string = PieceType.NONE;
-    
+    attackerCoordinate: string = "";
+    coordinatesAttacked: string[] = [];
+
+    constructor(attackerCoordinate_: string, coordinatesAttacked_: string[])
+    {
+        this.attackerCoordinate = attackerCoordinate_;
+        this.coordinatesAttacked = coordinatesAttacked_;
+    }
 }

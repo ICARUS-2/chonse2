@@ -2,6 +2,7 @@
 {
     height: 9vmin;
     width: 9vmin;
+    user-select: none;
 }
 
 .deleteIcon
