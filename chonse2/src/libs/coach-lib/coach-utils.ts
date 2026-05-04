@@ -1,6 +1,7 @@
 import MoveResult from "../../app/chessboard/chessboard/move-result";
 import Chonse2 from "../chonse2-lib/chonse2";
 import Chonse2Extensions from "../chonse2-lib/extensions";
+import { PieceColor } from "../chonse2-lib/piece-color";
 import PieceMaterial from "../chonse2-lib/piece-material";
 import { PieceType } from "../chonse2-lib/piece-type";
 import { MoveClassification } from "../engine-lib/types/enums";
@@ -118,14 +119,14 @@ export class CoachUtils
         `OUCH, ${CoachUtils.TURN_PLACEHOLDER} left their ${CoachUtils.PIECE_PLACEHOLDER} hanging! `,
         `Whoopsie, ${CoachUtils.TURN_PLACEHOLDER} gave up a ${CoachUtils.PIECE_PLACEHOLDER}! `,
         `This move loses a ${CoachUtils.PIECE_PLACEHOLDER}. `
-    ]
+    ];
 
     //If the player missed the opportunity to capture a vulnerable piece
     private static readonly MISSED_HANGING_PIECE_SENTENCES: Array<string> =
     [
         `${CoachUtils.TURN_PLACEHOLDER} missed an opportunity to capture a free ${CoachUtils.PIECE_PLACEHOLDER}.`,
         `The best bet here was to capture a vulnerable ${CoachUtils.PIECE_PLACEHOLDER}. `
-    ]
+    ];
 
     //If the player had a viable checkmate but missed it.
     private static readonly MISSED_CHECKMATE_SENTENCES: Array<string> = 
@@ -133,7 +134,7 @@ export class CoachUtils
         `This misses an opportunity to checkmate the king. `,
         `${CoachUtils.TURN_PLACEHOLDER} had an opportunity to checkmate the king. `,
         `There was an opportunity to force checkmate, but ${CoachUtils.TURN_PLACEHOLDER} overlooked it. `
-    ]
+    ];
 
     //If the opponent had a good move but instead allowed forced mate by mistake.
     private static readonly ALLOWED_CHECKMATE_SENTENCES: Array<string> = 
@@ -141,7 +142,7 @@ export class CoachUtils
         `This allows the opponent to checkmate the king. `,
         `${CoachUtils.TURN_PLACEHOLDER} just allowed the opponent to force checkmate. `,
         `${CoachUtils.TURN_PLACEHOLDER} slipped up, allowing the opponent to force checkmate with correct play. `
-    ]
+    ];
 
 
     //Good============
@@ -149,11 +150,17 @@ export class CoachUtils
     [
         `${CoachUtils.TURN_PLACEHOLDER} can now force checkmate with correct play. `,
         `${CoachUtils.TURN_PLACEHOLDER} will checkmate the opponent if they find the right moves. `
-    ]
+    ];
 
     private static readonly ON_ROAD_TO_CHECKMATE_SENTENCES: Array<string> = 
     [
         `${CoachUtils.TURN_PLACEHOLDER} is still on the road to checkmate. `,
+    ];
+
+    private static readonly FOUND_FORK_SENTENCES: Array<string> = 
+    [
+        `${CoachUtils.TURN_PLACEHOLDER} will pick up a ${CoachUtils.PIECE_PLACEHOLDER} with that fork. `,
+        `${CoachUtils.TURN_PLACEHOLDER} will be winning a ${CoachUtils.PIECE_PLACEHOLDER} with that fork. `,
     ]
     //#endregion
 
@@ -217,7 +224,6 @@ export class CoachUtils
                         const hangingPiecesArrToCheck = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
 
                         let pieceToTake = PieceType.NONE;
-                        //let pieceToTakeMaterial = 0;
 
                         //If there is any hanging pieces, find if the best move is to take, otherwise move on.
                         if (hangingPiecesArrToCheck.length > 0)
@@ -370,6 +376,43 @@ export class CoachUtils
                         }
                     }
 
+                    //Case: Player made a move that gives them a fork.
+                    {
+                        const attackerColor = whiteToMove ? PieceColor.BLACK : PieceColor.WHITE;
+                        const currentForks = Chonse2Extensions.getForksOnBoard(state, attackerColor);
+                        const previousForks = Chonse2Extensions.getForksOnBoard(previousState, attackerColor);
+
+                        let displayPiece = PieceType.NONE;
+                        let displayPieceValue = 0;
+
+                        if (currentForks.length > previousForks.length)
+                        {
+                            for(const fk of currentForks)
+                            {
+                                const forkedPieces = fk.coordinatesAttacked.map( c => Chonse2Extensions.findPieceAtCoordinate(state, c) );
+                                forkedPieces.sort( (a, b) => 
+                                {
+                                    const materialValA = PieceMaterial.getMaterialFromPiece(a);
+                                    const materialValB = PieceMaterial.getMaterialFromPiece(b);
+
+                                    return materialValB - materialValA;
+                                } )
+
+                                const secondHighestPiece = forkedPieces[1];
+                                const secondHighestPieceMaterialValue = PieceMaterial.getMaterialFromPiece(secondHighestPiece);
+
+                                if (secondHighestPieceMaterialValue > displayPieceValue)
+                                {
+                                    displayPiece = secondHighestPiece;
+                                    displayPieceValue = secondHighestPieceMaterialValue;
+                                }
+                            }
+
+                            let newSentence = CoachUtils.FOUND_FORK_SENTENCES[this.getRandomIndex(CoachUtils.FOUND_FORK_SENTENCES.length)];
+                            newSentence = this.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, CoachUtils.convertPieceToText(displayPiece));
+                            move.coachComment += newSentence;
+                        }
+                    }
                 }
             
                 if (move.coachComment == "")
