@@ -1247,7 +1247,7 @@ export default class Chonse2
     return val == null ? "" : val;
   }
 
-  private _lightweightCloneForCheckVerification()
+  public _lightweightCloneForCheckVerification()
   {
     const copy = new Chonse2();
 

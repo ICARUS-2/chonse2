@@ -92,26 +92,119 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Forks
-    public static getForksOnBoard(board: Chonse2, attackerColor: string)
+    public static getForksOnBoard(
+        board: Chonse2, 
+        attackerColor: string, 
+        _: { white: Array<string>, black: Array<string> } | null = null //Array of all hanging pieces. 
+                         // For efficiency in cases where the hanging pieces have already been computed, don't compute them again
+    ): Array<Fork>
     {
+        //Will contain the forks on the board for that specific color.
+        const allForks: Array<Fork> = [];
+
+        //Need to copy the board in order to simulate the correct turn.
         const boardCopy = board.getFullDeepCopy();
 
+        //Need to set the turn accordingly so legal moves register.
         boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
 
+        //All of the pieces/coords belonging to the attacker.
         const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board._getAllPiecesAndCoordsByColor(attackerColor);
-    
-        //Loop over each piece.
-        piecesAndCoords.pieces.forEach( (piece, idx) => 
+        
+        //All of the hanging pieces on the board regardless of color.
+        const allHangingPieces = _ == null ? Chonse2Extensions.getHangingPieces(boardCopy) : _;
+
+        //Will need to get a handle on the attacker's hanging pieces to make sure the piece "forking" isn't actually hanging itself.
+        const attackerHangingPieceCoords = attackerColor == PieceColor.WHITE ? allHangingPieces.white : allHangingPieces.black;
+        
+        //Need to check through every piece to find which ones might be forking.
+        for(let i = 0; i < piecesAndCoords.coords.length; i++)
         {
-            //If that piece is currently hanging, it can't be forking anything since it would just get captured.
-
-            //Check if this piece can hit two or more targets
-
-            //If it can, check if at least two of them are either hanging or are the king.
-
-            //If two of the pieces are hanging/is the king, then it is a fork.
+            const currentPieceCoordinate = piecesAndCoords.coords[i];
             
-        } )
+            //If that piece is currently hanging, it can't be forking anything since it would just get captured.
+            if (attackerHangingPieceCoords.includes(currentPieceCoordinate))
+            {
+                continue;
+            }
+
+            //Need to know where the current piece can go.
+            const legalMoveCoordinatesForPiece = boardCopy.getLegalMoves(currentPieceCoordinate);
+
+            //List of candidate piece captures
+            const candidatePieceCoordinatesToFork = [];
+            const oppositeColor = PieceColor.getOpposite(attackerColor);
+
+            //For each of the legal moves of the current piece, a candidate capture is a piece of the opposite color that can be captured on the next turn.
+            for(let i = 0; i < legalMoveCoordinatesForPiece.length; i++)
+            {
+                const currentLegalMove = legalMoveCoordinatesForPiece[i];
+                const pieceInThatCoordinate = Chonse2Extensions.findPieceAtCoordinate(boardCopy,currentLegalMove);
+
+                //If there is a piece that can be captured, add it to the candidate list.
+                if (pieceInThatCoordinate.startsWith(oppositeColor))
+                {
+                    candidatePieceCoordinatesToFork.push(currentLegalMove);
+                }
+            }
+
+            //Filter out the potential candidates to find the pieces that are either hanging or are the king.
+            const opponentHangingPieceCoords = attackerColor == PieceColor.WHITE ? allHangingPieces.black : allHangingPieces.white;
+            const filteredCandidates = candidatePieceCoordinatesToFork.filter( coord =>
+                {
+                    //If the piece is the king (aka the most important piece) and can't be "defended" by anything, it's a filtered candidate.
+                    const pieceInCoord = Chonse2Extensions.findPieceAtCoordinate(boardCopy, coord);
+                    
+                    if (pieceInCoord.endsWith(PieceType.KING))
+                    {
+                        return true;
+                    }
+
+                    //If the piece is hanging, it might be a filtered candidate.
+                    if (opponentHangingPieceCoords.includes(coord))
+                    {
+                        //Only thing barring it from being a filtered candidate is if this piece can give a check stopping the fork.
+                        const lightweightClone = boardCopy._lightweightCloneForCheckVerification();
+                        lightweightClone.turn = attackerColor == PieceColor.WHITE ? false : true;
+
+                        const legalMoves = lightweightClone.getLegalMoves(coord);
+                        let attackedPlayerHasCheckWithPiece = false;
+
+                        //Check every legal move of that piece to see if a check is possible. If not, not a forked piece.
+                        for (const move of legalMoves)
+                        {
+                            const c = boardCopy._lightweightCloneForCheckVerification();
+                            c.turn = attackerColor == PieceColor.WHITE ? false : true;
+
+                            c.completeMove(coord, move);
+                            
+                            const attackerIsInCheck = c.isInCheck(attackerColor);
+                            if (attackerIsInCheck)
+                            {
+                                attackedPlayerHasCheckWithPiece = true;
+                                break;
+                            }
+                        }
+
+                        if (!attackedPlayerHasCheckWithPiece)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+            )
+
+            //If two or more candidates meet the criteria, it is a fork. Add it.
+            if (filteredCandidates.length >= 2)
+            {
+                allForks.push( new Fork(currentPieceCoordinate, filteredCandidates) );
+            }
+        }
+
+        //And then return all the forks.
+        return allForks;
     }
     //#endregion
 
@@ -192,6 +285,12 @@ export default class Chonse2Extensions
 
 export class Fork 
 {
-    attacker: string = PieceType.NONE;
-    
+    attackerCoordinate: string = "";
+    coordinatesAttacked: string[] = [];
+
+    constructor(attackerCoordinate_: string, coordinatesAttacked_: string[])
+    {
+        this.attackerCoordinate = attackerCoordinate_;
+        this.coordinatesAttacked = coordinatesAttacked_;
+    }
 }

@@ -695,6 +695,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return "Show hanging piece";
     }
 
+    if (move.coachFlags.includes(CoachFlagType.OpportunityToFork))
+    {
+      return "Show fork";
+    }
+
     return "Show follow-up";
   }
 
@@ -703,6 +708,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     if (move.coachFlags.includes(CoachFlagType.MissedCheckmate))
     {
       return "Show missed checkmate";
+    }
+
+    if (move.coachFlags.includes(CoachFlagType.MissedFork))
+    {
+      return "Show missed fork";
     }
 
     if (move.coachFlags.includes(CoachFlagType.MissedHangingPiece))

@@ -635,4 +635,24 @@
         <div>White pieces hanging : {{hp.white}}</div>
         <div>Black pieces hanging: {{hp.black}}</div>
     } -->
+
+    <!-- <div>
+        @if(Chonse2Extensions.getForksOnBoard(boardState().getCurrentState(), PieceColor.WHITE); as whiteForks)
+        {
+            @for(fork of whiteForks; track $index)
+            {
+                <p>attacker {{fork.attackerCoordinate}}</p>
+                <p>forked: {{fork.coordinatesAttacked}}</p>
+            }
+        }
+
+        @if(Chonse2Extensions.getForksOnBoard(boardState().getCurrentState(), PieceColor.BLACK); as blackForks)
+        {
+            @for(fork of blackForks; track $index)
+            {
+                <p>attacker {{fork.attackerCoordinate}}</p>
+                <p>forked: {{fork.coordinatesAttacked}}</p>
+            }
+        }
+    </div> -->
 </div>
