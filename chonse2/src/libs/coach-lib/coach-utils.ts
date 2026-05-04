@@ -1,6 +1,6 @@
 import MoveResult from "../../app/chessboard/chessboard/move-result";
 import Chonse2 from "../chonse2-lib/chonse2";
-import Chonse2Extensions from "../chonse2-lib/extensions";
+import Chonse2Extensions, { Fork } from "../chonse2-lib/extensions";
 import { PieceColor } from "../chonse2-lib/piece-color";
 import PieceMaterial from "../chonse2-lib/piece-material";
 import { PieceType } from "../chonse2-lib/piece-type";
@@ -124,7 +124,7 @@ export class CoachUtils
     //If the player missed the opportunity to capture a vulnerable piece
     private static readonly MISSED_HANGING_PIECE_SENTENCES: Array<string> =
     [
-        `${CoachUtils.TURN_PLACEHOLDER} missed an opportunity to capture a free ${CoachUtils.PIECE_PLACEHOLDER}.`,
+        `${CoachUtils.TURN_PLACEHOLDER} missed an opportunity to capture a free ${CoachUtils.PIECE_PLACEHOLDER}. `,
         `The best bet here was to capture a vulnerable ${CoachUtils.PIECE_PLACEHOLDER}. `
     ];
 
@@ -144,19 +144,26 @@ export class CoachUtils
         `${CoachUtils.TURN_PLACEHOLDER} slipped up, allowing the opponent to force checkmate with correct play. `
     ];
 
+    private static readonly MISSED_FORK_SENTENCES: Array<string> =
+    [
+        `${CoachUtils.TURN_PLACEHOLDER} just missed an opportunity to win material through a fork. `
+    ];
 
     //Good============
+    //Player accurately found a mating sequence.
     private static readonly FOUND_MATE_SENTENCES: Array<string> = 
     [
         `${CoachUtils.TURN_PLACEHOLDER} can now force checkmate with correct play. `,
         `${CoachUtils.TURN_PLACEHOLDER} will checkmate the opponent if they find the right moves. `
     ];
 
+    //Player is continuing mating sequence.
     private static readonly ON_ROAD_TO_CHECKMATE_SENTENCES: Array<string> = 
     [
         `${CoachUtils.TURN_PLACEHOLDER} is still on the road to checkmate. `,
     ];
 
+    //Player has positioned a piece to win material through a fork.
     private static readonly FOUND_FORK_SENTENCES: Array<string> = 
     [
         `${CoachUtils.TURN_PLACEHOLDER} will pick up a ${CoachUtils.PIECE_PLACEHOLDER} with that fork. `,
@@ -218,6 +225,17 @@ export class CoachUtils
                 )
                 {
                     const allHangingPieceCoords = Chonse2Extensions.getHangingPieces(state);
+                    let previousBestMove: { fromSquare: string; toSquare: string; promotion: string} | null = null;
+                    let missedState: Chonse2 | null = null;
+
+                    if (previousPosEval.bestMove && previousState)
+                    {
+                        previousBestMove = CoachUtils.convertUciToChonse2Move(previousPosEval.bestMove);
+                        const previousStateCopy = previousState.getFullDeepCopy();
+                        previousStateCopy.completeMove(previousBestMove.fromSquare, previousBestMove.toSquare, previousBestMove.promotion);  
+                        missedState = previousStateCopy;
+                    }
+
                     //Case: Player leaves a piece hanging.
                     {
                         const bestMove = CoachUtils.convertUciToChonse2Move(posEval.bestMove);
@@ -322,6 +340,44 @@ export class CoachUtils
 
                                     move.coachFlags.push(CoachFlagType.AllowedCheckmate);
                                 }
+                            }
+                        }
+                    }
+
+                    //Case: Player missed an opportunity to fork
+                    {
+                        if (previousState)
+                        {
+                            let didMissFork: boolean = false;
+
+                            const attackerColor = whiteToMove ? PieceColor.BLACK : PieceColor.WHITE;
+                            const currentForks: Array<Fork> = Chonse2Extensions.getForksOnBoard(state, attackerColor);
+                            const previousStateForks: Array<Fork> = Chonse2Extensions.getForksOnBoard(previousState, attackerColor);
+                            
+                            //If the person had the fork but moved the attacking piece elsewhere
+                            if (currentForks.length < previousStateForks.length)
+                            {
+                                didMissFork = true;
+                            }
+
+                            //If the best move was to move to a position with a fork but it was overlooked
+                            if (missedState)
+                            {
+                                const missedStateForks = Chonse2Extensions.getForksOnBoard(missedState, attackerColor);
+                                
+                                if (currentForks.length < missedStateForks.length)
+                                {
+                                    didMissFork = true;
+                                }
+                            }
+
+                            if (didMissFork)
+                            {
+                                let newSentence = CoachUtils.MISSED_FORK_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.MISSED_FORK_SENTENCES.length)];
+                                newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
+                                move.coachComment += newSentence;
+
+                                move.coachFlags.push(CoachFlagType.MissedFork)
                             }
                         }
                     }
@@ -524,7 +580,7 @@ export enum CoachFlagType
     MissedCheckmate,
     AllowedFork,
     AllowedSkewer,
-    
+    MissedFork,
 
     //Good (future)
     OpportunityToCheckmate,
