@@ -134,8 +134,6 @@ export default class Chonse2Extensions
             //List of candidate piece captures
             const candidatePieceCoordinatesToFork = [];
             const oppositeColor = PieceColor.getOpposite(attackerColor);
-            
-            console.log(legalMoveCoordinatesForPiece);
 
             //For each of the legal moves of the current piece, a candidate capture is a piece of the opposite color that can be captured on the next turn.
             for(let i = 0; i < legalMoveCoordinatesForPiece.length; i++)
@@ -162,9 +160,36 @@ export default class Chonse2Extensions
                         return true;
                     }
 
+                    //If the piece is hanging, it might be a filtered candidate.
                     if (opponentHangingPieceCoords.includes(coord))
                     {
-                        return true;
+                        //Only thing barring it from being a filtered candidate is if this piece can give a check stopping the fork.
+                        const lightweightClone = boardCopy._lightweightCloneForCheckVerification();
+                        lightweightClone.turn = attackerColor == PieceColor.WHITE ? false : true;
+
+                        const legalMoves = lightweightClone.getLegalMoves(coord);
+                        let attackedPlayerHasCheckWithPiece = false;
+
+                        //Check every legal move of that piece to see if a check is possible. If not, not a forked piece.
+                        for (const move of legalMoves)
+                        {
+                            const c = boardCopy._lightweightCloneForCheckVerification();
+                            c.turn = attackerColor == PieceColor.WHITE ? false : true;
+
+                            c.completeMove(coord, move);
+                            
+                            const attackerIsInCheck = c.isInCheck(attackerColor);
+                            if (attackerIsInCheck)
+                            {
+                                attackedPlayerHasCheckWithPiece = true;
+                                break;
+                            }
+                        }
+
+                        if (!attackedPlayerHasCheckWithPiece)
+                        {
+                            return true;
+                        }
                     }
 
                     return false;
