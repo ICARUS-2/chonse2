@@ -144,10 +144,18 @@ export class CoachUtils
         `${CoachUtils.TURN_PLACEHOLDER} slipped up, allowing the opponent to force checkmate with correct play. `
     ];
 
+    //If the opponent missed an opportunity to fork two pieces.
     private static readonly MISSED_FORK_SENTENCES: Array<string> =
     [
         `${CoachUtils.TURN_PLACEHOLDER} just missed an opportunity to win material through a fork. `
     ];
+
+    //Allowed an opponent to fork them.
+    private static readonly ALLOWED_FORK_SENTENCES: Array<string> = 
+    [
+        `This allows the opponent to win material through a fork. `,
+        `${CoachUtils.TURN_PLACEHOLDER} just allowed their own piece to get forked. `
+    ]
 
     //Good============
     //Player accurately found a mating sequence.
@@ -207,6 +215,11 @@ export class CoachUtils
             //Can only do analysis if all of the necessary components exist.
             if (state && move && posEval && posEval.bestMove)
             {
+                //What the next best state will be.
+                const nextBestMove = CoachUtils.convertUciToChonse2Move(posEval.bestMove);
+                const nextBestState = state.getFullDeepCopy();
+                nextBestState.completeMove(nextBestMove.fromSquare, nextBestMove.toSquare, nextBestMove.promotion);
+
                 //If this is a move the coach played (like a follow up), it doesn't need an evaluation since it is already the best move.
                 if (move.coachComment == CoachUtils.COACH_MOVE_DELIMITER)
                 {
@@ -235,7 +248,7 @@ export class CoachUtils
                         previousStateCopy.completeMove(previousBestMove.fromSquare, previousBestMove.toSquare, previousBestMove.promotion);  
                         missedState = previousStateCopy;
                     }
-
+                    
                     //Case: Player leaves a piece hanging.
                     {
                         const bestMove = CoachUtils.convertUciToChonse2Move(posEval.bestMove);
@@ -378,6 +391,41 @@ export class CoachUtils
                                 move.coachComment += newSentence;
 
                                 move.coachFlags.push(CoachFlagType.MissedFork)
+                            }
+                        }
+                    }
+
+                    //Case: Player allowed the opportunity to fork
+                    {
+                        if (previousState)
+                        {
+                            let allowedFork: boolean = false;
+
+                            const attackerColor = whiteToMove ? PieceColor.WHITE : PieceColor.BLACK;
+                            const currentForksForOpponent: Array<Fork> = Chonse2Extensions.getForksOnBoard(state, attackerColor);
+
+                            //Subcase 1: Opponent moved one of their own pieces into a fork.
+                            if (currentForksForOpponent.length > 0)
+                            {
+                                allowedFork = true;
+                            }
+                            //Subcase 2: Opponent failed to move one of their pieces out of the fork.
+                            else
+                            {
+                                const nextBestStateForks = Chonse2Extensions.getForksOnBoard(nextBestState, attackerColor);
+
+                                if (nextBestStateForks.length > 0)
+                                {
+                                    allowedFork = true;
+                                }
+                            }
+
+                            if (allowedFork)
+                            {
+                                let newSentence = CoachUtils.ALLOWED_FORK_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.ALLOWED_FORK_SENTENCES.length)];
+                                newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, oppositeColorText, "");
+                                move.coachComment += newSentence;   
+                                move.coachFlags.push(CoachFlagType.AllowedFork);
                             }
                         }
                     }
