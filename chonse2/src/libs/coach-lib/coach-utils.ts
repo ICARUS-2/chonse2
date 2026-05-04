@@ -385,6 +385,8 @@ export class CoachUtils
                         let displayPiece = PieceType.NONE;
                         let displayPieceValue = 0;
 
+                        //Goes through all of the pieces to find the second highest value pieces of each fork.
+                        //Finding the highest second most valuable piece will display the guaranteed piece profit to the user.
                         if (currentForks.length > previousForks.length)
                         {
                             for(const fk of currentForks)
@@ -398,9 +400,11 @@ export class CoachUtils
                                     return materialValB - materialValA;
                                 } )
 
+                                //Get the second highest valued piece of this specific fork.
                                 const secondHighestPiece = forkedPieces[1];
                                 const secondHighestPieceMaterialValue = PieceMaterial.getMaterialFromPiece(secondHighestPiece);
 
+                                //If it is the highest second-highest value piece, update display value.
                                 if (secondHighestPieceMaterialValue > displayPieceValue)
                                 {
                                     displayPiece = secondHighestPiece;
@@ -411,6 +415,7 @@ export class CoachUtils
                             let newSentence = CoachUtils.FOUND_FORK_SENTENCES[this.getRandomIndex(CoachUtils.FOUND_FORK_SENTENCES.length)];
                             newSentence = this.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, CoachUtils.convertPieceToText(displayPiece));
                             move.coachComment += newSentence;
+                            move.coachFlags.push(CoachFlagType.OpportunityToFork);
                         }
                     }
                 }

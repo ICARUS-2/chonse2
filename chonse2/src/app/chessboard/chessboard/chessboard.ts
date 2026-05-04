@@ -695,6 +695,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return "Show hanging piece";
     }
 
+    if (move.coachFlags.includes(CoachFlagType.OpportunityToFork))
+    {
+      return "Show fork";
+    }
+
     return "Show follow-up";
   }
 
