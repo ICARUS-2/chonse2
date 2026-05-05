@@ -248,7 +248,8 @@ export default class Chonse2Extensions
                     //Need to check legal moves to see what squares it hits.
                     if (piece != PieceType.WHITE_KING && piece != PieceType.BLACK_KING)
                     {
-                        legalMoves = boardCopy.getLegalMoves(coord);
+                        //legalMoves = boardCopy.getLegalMoves(coord);
+                        legalMoves = boardCopy._getPotentiallyLegalMoves(coord);
                     }
                     else 
                     {

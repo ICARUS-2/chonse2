@@ -628,15 +628,15 @@
     {
         <div>White: {{ad.white}}</div>
         <div>Black: {{ad.black}}</div>
-    }
+}-->
 
-    @if (Chonse2Extensions.getHangingPieces(boardState().getCurrentState()); as hp)
+    <!-- @if (Chonse2Extensions.getHangingPieces(boardState().getCurrentState()); as hp)
     {
         <div>White pieces hanging : {{hp.white}}</div>
         <div>Black pieces hanging: {{hp.black}}</div>
-    } -->
+    } 
 
-    <!-- <div>
+    <div>
         @if(Chonse2Extensions.getForksOnBoard(boardState().getCurrentState(), PieceColor.WHITE); as whiteForks)
         {
             @for(fork of whiteForks; track $index)

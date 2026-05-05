@@ -792,7 +792,7 @@ export default class Chonse2
 
   //#region Inner legal move helper functions
 
-  private _getPotentiallyLegalMoves(coordinate: string): Array<string>
+  public _getPotentiallyLegalMoves(coordinate: string): Array<string>
   {
     const index = Chonse2.findIndexFromCoordinate(coordinate);
     const piece = this.pieceState[index.rowIndex][index.colIndex];
