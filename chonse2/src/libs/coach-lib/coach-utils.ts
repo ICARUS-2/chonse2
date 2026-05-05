@@ -128,6 +128,13 @@ export class CoachUtils
         `The best bet here was to capture a vulnerable ${CoachUtils.PIECE_PLACEHOLDER}. `
     ];
 
+    //If the player correctly identifies the best capture but did so with the wrong piece.
+    private static readonly CAPTURED_WITH_WRONG_PIECE_SENTENCES: Array<string> = 
+    [
+        `${CoachUtils.TURN_PLACEHOLDER} correctly captured the piece, but with the wrong attacker. `,
+        `The correct capture was identified, but the best bet was to capture the ${CoachUtils.PIECE_PLACEHOLDER} with a different piece. `
+    ]
+
     //If the player had a viable checkmate but missed it.
     private static readonly MISSED_CHECKMATE_SENTENCES: Array<string> = 
     [
@@ -144,7 +151,7 @@ export class CoachUtils
         `${CoachUtils.TURN_PLACEHOLDER} slipped up, allowing the opponent to force checkmate with correct play. `
     ];
 
-    //If the opponent missed an opportunity to fork two pieces.
+    //If the opponent missed an opportunity to fork two+ pieces.
     private static readonly MISSED_FORK_SENTENCES: Array<string> =
     [
         `${CoachUtils.TURN_PLACEHOLDER} just missed an opportunity to win material through a fork. `
@@ -268,11 +275,8 @@ export class CoachUtils
                                 if (bestMove.toSquare == hangingPieceCoord)
                                 {
                                     pieceToTake = hangingPiece;
-                                    let newSentence = CoachUtils.PIECE_HANG_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.PIECE_HANG_SENTENCES.length)]
 
-                                    newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, CoachUtils.convertPieceToText(pieceToTake));
-                                    move.coachComment += newSentence;
-
+                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PIECE_HANG_SENTENCES, colorToMoveText, pieceToTake);
                                     move.coachFlags.push(CoachFlagType.LeftPieceHanging);
 
                                     break;
@@ -296,16 +300,21 @@ export class CoachUtils
                                 for (let i = 0; i < previousHangingPiecesArrToCheck.length; i++)
                                 {
                                     const coord = previousHangingPiecesArrToCheck[i];
+                                    const pieceToCapture = Chonse2Extensions.findPieceAtCoordinate(previousState, previousBestMove.toSquare);
                                     
                                     if (coord === previousBestMove.toSquare)
-                                    {   
-                                        const pieceToCapture = CoachUtils.convertPieceToText(Chonse2Extensions.findPieceAtCoordinate(state, previousBestMove.toSquare));
-
-                                        let newSentence = CoachUtils.MISSED_HANGING_PIECE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.MISSED_HANGING_PIECE_SENTENCES.length)];
-                                        newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, pieceToCapture);
-
-                                        move.coachFlags.push(CoachFlagType.MissedHangingPiece);
-                                        move.coachComment += newSentence;
+                                    {                  
+                                        //Subcase 1: If they correctly captured the piece but did so with the wrong attacker.
+                                        if (previousBestMove.toSquare === move.toCoord)
+                                        {
+                                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.CAPTURED_WITH_WRONG_PIECE_SENTENCES, colorToMoveText, pieceToCapture);
+                                            move.coachFlags.push(CoachFlagType.CapturedPieceWithWrongAttacker);
+                                        }
+                                        else //Subcase 2: If they missed the capture altogether.
+                                        {
+                                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_HANGING_PIECE_SENTENCES, colorToMoveText, pieceToCapture);
+                                            move.coachFlags.push(CoachFlagType.MissedHangingPiece);
+                                        }
                                     }
                                 }
                             }
@@ -323,12 +332,8 @@ export class CoachUtils
                             if (previousEngineLine && currentEngineLine)
                             {
                                 if (previousEngineLine.mate && !currentEngineLine.mate)
-                                {
-                                    let newSentence = CoachUtils.MISSED_CHECKMATE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.MISSED_CHECKMATE_SENTENCES.length)]
-                                    newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
-                                    
-                                    
-                                    move.coachComment += newSentence;
+                                {   
+                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_CHECKMATE_SENTENCES, colorToMoveText, "");
                                     move.coachFlags.push(CoachFlagType.MissedCheckmate);
                                 }
                             }
@@ -347,10 +352,7 @@ export class CoachUtils
                             {
                                 if (!previousEngineLine.mate && currentEngineLine.mate)
                                 {
-                                    let newSentence = CoachUtils.ALLOWED_CHECKMATE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.ALLOWED_CHECKMATE_SENTENCES.length)]
-                                    newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
-                                    move.coachComment += newSentence;
-
+                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ALLOWED_CHECKMATE_SENTENCES, colorToMoveText, "");
                                     move.coachFlags.push(CoachFlagType.AllowedCheckmate);
                                 }
                             }
@@ -386,10 +388,7 @@ export class CoachUtils
 
                             if (didMissFork)
                             {
-                                let newSentence = CoachUtils.MISSED_FORK_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.MISSED_FORK_SENTENCES.length)];
-                                newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
-                                move.coachComment += newSentence;
-
+                                move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_FORK_SENTENCES, colorToMoveText, "");
                                 move.coachFlags.push(CoachFlagType.MissedFork)
                             }
                         }
@@ -422,9 +421,7 @@ export class CoachUtils
 
                             if (allowedFork)
                             {
-                                let newSentence = CoachUtils.ALLOWED_FORK_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.ALLOWED_FORK_SENTENCES.length)];
-                                newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, oppositeColorText, "");
-                                move.coachComment += newSentence;   
+                                move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ALLOWED_FORK_SENTENCES, colorToMoveText, "");
                                 move.coachFlags.push(CoachFlagType.AllowedFork);
                             }
                         }
@@ -454,15 +451,11 @@ export class CoachUtils
                                 {
                                     if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
                                     {
-                                        let newSentence = CoachUtils.FOUND_MATE_SENTENCES[this.getRandomIndex(CoachUtils.FOUND_MATE_SENTENCES.length)];
-                                        newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
-                                        move.coachComment += newSentence;
+                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_MATE_SENTENCES, colorToMoveText, "");
                                     }
                                     else 
                                     {
-                                        let newSentence = CoachUtils.FOUND_MATE_SENTENCES[this.getRandomIndex(CoachUtils.FOUND_MATE_SENTENCES.length)];
-                                        newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, oppositeColorText, "");
-                                        move.coachComment += newSentence;
+                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_MATE_SENTENCES, oppositeColorText, "");
                                     }
                                 }   
 
@@ -471,9 +464,7 @@ export class CoachUtils
                                 {
                                     if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
                                     {
-                                        let newSentence = CoachUtils.ON_ROAD_TO_CHECKMATE_SENTENCES[this.getRandomIndex(CoachUtils.ON_ROAD_TO_CHECKMATE_SENTENCES.length)];
-                                        newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
-                                        move.coachComment += newSentence;
+                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ON_ROAD_TO_CHECKMATE_SENTENCES, colorToMoveText, "");
                                     }
                                 }
                             }
@@ -516,9 +507,7 @@ export class CoachUtils
                                 }
                             }
 
-                            let newSentence = CoachUtils.FOUND_FORK_SENTENCES[this.getRandomIndex(CoachUtils.FOUND_FORK_SENTENCES.length)];
-                            newSentence = this.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, CoachUtils.convertPieceToText(displayPiece));
-                            move.coachComment += newSentence;
+                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_FORK_SENTENCES, colorToMoveText, displayPiece)
                             move.coachFlags.push(CoachFlagType.OpportunityToFork);
                         }
                     }
@@ -610,6 +599,14 @@ export class CoachUtils
             .replace(CoachUtils.TURN_PLACEHOLDER, playerColor)
             .replace(CoachUtils.PIECE_PLACEHOLDER, piece);
     }
+
+    private static selectAndFormatSentence(arr: Array<string>, playerColor: string, piece: string)
+    {
+        let newSentence = arr[CoachUtils.getRandomIndex(arr.length)];
+        newSentence = this.formatCoachStringWithPlaceholders(newSentence, playerColor, CoachUtils.convertPieceToText(piece));
+
+        return newSentence;
+    }
 }
 
 export enum CoachMoveSequenceType
@@ -624,6 +621,7 @@ export enum CoachFlagType
     //Bad
     LeftPieceHanging,
     MissedHangingPiece,
+    CapturedPieceWithWrongAttacker,
     AllowedCheckmate,
     MissedCheckmate,
     AllowedFork,

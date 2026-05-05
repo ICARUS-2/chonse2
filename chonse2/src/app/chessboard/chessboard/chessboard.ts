@@ -720,6 +720,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return "Show missed capture";
     }
 
+    if (move.coachFlags.includes(CoachFlagType.CapturedPieceWithWrongAttacker))
+    {
+      return "Show alternative";
+    }
+
     return "Show miss";
   }
   //#endregion
