@@ -115,15 +115,24 @@ export default class Chonse2Extensions
         const allHangingPieces = _ == null ? Chonse2Extensions.getHangingPieces(boardCopy) : _;
 
         //Will need to get a handle on the attacker's hanging pieces to make sure the piece "forking" isn't actually hanging itself.
-        const attackerHangingPieceCoords = attackerColor == PieceColor.WHITE ? allHangingPieces.white : allHangingPieces.black;
+        //const attackerHangingPieceCoords = attackerColor == PieceColor.WHITE ? allHangingPieces.white : allHangingPieces.black;
         
         //Need to check through every piece to find which ones might be forking.
         for(let i = 0; i < piecesAndCoords.coords.length; i++)
         {
             const currentPieceCoordinate = piecesAndCoords.coords[i];
-            
+            //const currentPiece = Chonse2Extensions.findPieceAtCoordinate(boardCopy, currentPieceCoordinate);
+            //const currentPieceMaterialValue = PieceMaterial.getMaterialFromPiece(currentPiece);
             //If that piece is currently hanging, it can't be forking anything since it would just get captured.
-            if (attackerHangingPieceCoords.includes(currentPieceCoordinate))
+            // if (attackerHangingPieceCoords.includes(currentPieceCoordinate))
+            // {
+            //     continue;
+            // }
+
+            const squareHits = this.getPiecesThatHitSquare(boardCopy, currentPieceCoordinate);
+            const squareHitsToCheck = attackerColor == PieceColor.WHITE ? squareHits.black : squareHits.white;
+
+            if (squareHitsToCheck.length > 0)
             {
                 continue;
             }
@@ -150,11 +159,12 @@ export default class Chonse2Extensions
 
             //Filter out the potential candidates to find the pieces that are either hanging or are the king.
             const opponentHangingPieceCoords = attackerColor == PieceColor.WHITE ? allHangingPieces.black : allHangingPieces.white;
-            const filteredCandidates = candidatePieceCoordinatesToFork.filter( coord =>
+            const filteredCandidatesForCheckAndCapturePotential = candidatePieceCoordinatesToFork.filter( coord =>
                 {
                     //If the piece is the king (aka the most important piece) and can't be "defended" by anything, it's a filtered candidate.
                     const pieceInCoord = Chonse2Extensions.findPieceAtCoordinate(boardCopy, coord);
-                    
+                    const pieceInCoordMaterialValue = PieceMaterial.getMaterialFromPiece(pieceInCoord);
+
                     if (pieceInCoord.endsWith(PieceType.KING))
                     {
                         return true;
@@ -163,7 +173,7 @@ export default class Chonse2Extensions
                     //If the piece is hanging, it might be a filtered candidate.
                     if (opponentHangingPieceCoords.includes(coord))
                     {
-                        //Only thing barring it from being a filtered candidate is if this piece can give a check stopping the fork.
+                        //One thing barring it from being a filtered candidate is if this piece can give a check stopping the fork.
                         const lightweightClone = boardCopy._lightweightCloneForCheckVerification();
                         lightweightClone.turn = attackerColor == PieceColor.WHITE ? false : true;
 
@@ -173,6 +183,18 @@ export default class Chonse2Extensions
                         //Check every legal move of that piece to see if a check is possible. If not, not a forked piece.
                         for (const move of legalMoves)
                         {
+                            //Also, if the piece can capture something greater than or equal to in value, it isn't a fork.
+                            const pieceInLegalMoveSpot = Chonse2Extensions.findPieceAtCoordinate(lightweightClone, move);
+                            if (pieceInLegalMoveSpot)
+                            {
+                                const materialValueOfPieceInLegalMoveSpot = PieceMaterial.getMaterialFromPiece(pieceInLegalMoveSpot);
+                                if (materialValueOfPieceInLegalMoveSpot >= pieceInCoordMaterialValue)
+                                {
+                                    return false;
+                                }
+                            }
+
+                            //Lightweight clone and complete the move to verify if there is a check.
                             const c = boardCopy._lightweightCloneForCheckVerification();
                             c.turn = attackerColor == PieceColor.WHITE ? false : true;
 
@@ -186,6 +208,7 @@ export default class Chonse2Extensions
                             }
                         }
 
+                        //If there is no check here, 
                         if (!attackedPlayerHasCheckWithPiece)
                         {
                             return true;
@@ -196,10 +219,88 @@ export default class Chonse2Extensions
                 }
             )
 
-            //If two or more candidates meet the criteria, it is a fork. Add it.
-            if (filteredCandidates.length >= 2)
+            //If there are more than two candidates, it's definitely a fork.
+            if (filteredCandidatesForCheckAndCapturePotential.length > 2)
             {
-                allForks.push( new Fork(currentPieceCoordinate, filteredCandidates) );
+                allForks.push( new Fork(currentPieceCoordinate, filteredCandidatesForCheckAndCapturePotential) );
+            }
+            //If there are only two candidates, it's definitely a fork if no king is involved. It might not be a fork if:
+            //The king and another piece are hit but the player can move a piece to block the check AND defend the piece.
+            else if (filteredCandidatesForCheckAndCapturePotential.length == 2)
+            {
+                let containsKing: boolean = false;
+                filteredCandidatesForCheckAndCapturePotential.forEach( c => 
+                {
+                    const p = Chonse2Extensions.findPieceAtCoordinate(boardCopy, c);
+
+                    if (p.endsWith(PieceType.KING))
+                    {
+                        containsKing = true;
+                    }
+                }
+                )
+
+                //If it's a fork of two non-king pieces, it's a valid fork.
+                if (!containsKing)
+                {
+                    allForks.push( new Fork(currentPieceCoordinate, filteredCandidatesForCheckAndCapturePotential) );
+                }
+                else //If it does contain a king, verify that the defender cannot move a piece to block the check and defend the other piece at the same time. 
+                {
+                    //Get the coordinate of the non-king piece.
+                    const nonKingPieceCoordinate = filteredCandidatesForCheckAndCapturePotential.filter( c =>
+                    {
+                        const p = Chonse2Extensions.findPieceAtCoordinate(boardCopy, c);
+
+                        return (!p.endsWith(PieceType.KING));
+                    }
+                    )[0];
+
+                    //Must get the defender pieces to check each other one to ensure that it cannot move to block the check and defend the other piece.
+                    const defenderColor = attackerColor == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+                    const defenderPieces = boardCopy._getAllPiecesAndCoordsByColor(defenderColor);
+                    
+                    //Get the list of every defender piece that isn't the one being hit in the potential fork.
+                    const filteredDefenderPieceCoords = defenderPieces.coords.filter( c => 
+                        {
+                            return nonKingPieceCoordinate != c;
+                        }
+                    )
+
+                    //Check that any of the defender pieces cannot block the check and defend the piece at the same time.
+                    let pieceCanBlockCheckAndDefendForkedPiece: boolean = false;
+                    for(const defenderPieceCoord of filteredDefenderPieceCoords )
+                    {
+                        const legalMovesForDefenderPiece = boardCopy.getLegalMoves(defenderPieceCoord);
+                        boardCopy.turn = !boardCopy.turn;
+
+                        //For each of the legal moves of the defender pieces, check if it can hit the forked piece and defend it.
+                        for(const legalMove of legalMovesForDefenderPiece)
+                        {
+                            //Clone the object and complete the move (this is horribly inefficient but all I can think of right now, fix this shit later).
+                            const clone = boardCopy.getFullDeepCopy();
+                            clone.turn = !clone.turn;
+                            clone.completeMove(defenderPieceCoord, legalMove);
+
+                            //Get the pieces that defend the forked square.
+                            const piecesThatHitForkedPieceSquare = Chonse2Extensions.getPiecesThatHitSquare(clone, nonKingPieceCoordinate);
+                            const piecesDefendingForkedPieceSquare = attackerColor == PieceColor.WHITE ? piecesThatHitForkedPieceSquare.black : piecesThatHitForkedPieceSquare.white;
+
+                            //If the moved piece defends the forked square, it's not a fork.                            
+                            if (piecesDefendingForkedPieceSquare.length > 0)
+                            {
+                                pieceCanBlockCheckAndDefendForkedPiece = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    //If no other piece can block the check and defend at the same time, it's a fork.
+                    if (!pieceCanBlockCheckAndDefendForkedPiece)
+                    {
+                        allForks.push( new Fork(currentPieceCoordinate, filteredCandidatesForCheckAndCapturePotential) );
+                    }
+                }
             }
         }
 
