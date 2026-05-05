@@ -128,6 +128,12 @@ export class CoachUtils
         `The best bet here was to capture a vulnerable ${CoachUtils.PIECE_PLACEHOLDER}. `
     ];
 
+    //If the player correctly identifies the best capture but did so with the wrong piece.
+    private static readonly CAPTURED_WITH_WRONG_PIECE_SENTENCES: Array<string> = 
+    [
+        `${CoachUtils.TURN_PLACEHOLDER} correctly captured the piece, but with the wrong attacker. `
+    ]
+
     //If the player had a viable checkmate but missed it.
     private static readonly MISSED_CHECKMATE_SENTENCES: Array<string> = 
     [
@@ -144,7 +150,7 @@ export class CoachUtils
         `${CoachUtils.TURN_PLACEHOLDER} slipped up, allowing the opponent to force checkmate with correct play. `
     ];
 
-    //If the opponent missed an opportunity to fork two pieces.
+    //If the opponent missed an opportunity to fork two+ pieces.
     private static readonly MISSED_FORK_SENTENCES: Array<string> =
     [
         `${CoachUtils.TURN_PLACEHOLDER} just missed an opportunity to win material through a fork. `
@@ -299,12 +305,23 @@ export class CoachUtils
                                     
                                     if (coord === previousBestMove.toSquare)
                                     {   
-                                        const pieceToCapture = CoachUtils.convertPieceToText(Chonse2Extensions.findPieceAtCoordinate(state, previousBestMove.toSquare));
+                                        let newSentence = "";
+                                        if (previousBestMove.toSquare === move.toCoord)
+                                        {
+                                            newSentence = CoachUtils.CAPTURED_WITH_WRONG_PIECE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.CAPTURED_WITH_WRONG_PIECE_SENTENCES.length)];
+                                            newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, "");
 
-                                        let newSentence = CoachUtils.MISSED_HANGING_PIECE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.MISSED_HANGING_PIECE_SENTENCES.length)];
-                                        newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, pieceToCapture);
+                                            move.coachFlags.push(CoachFlagType.CapturedPieceWithWrongAttacker);
+                                        }
+                                        else 
+                                        {
+                                            const pieceToCapture = CoachUtils.convertPieceToText(Chonse2Extensions.findPieceAtCoordinate(previousState, previousBestMove.toSquare));
 
-                                        move.coachFlags.push(CoachFlagType.MissedHangingPiece);
+                                            newSentence = CoachUtils.MISSED_HANGING_PIECE_SENTENCES[CoachUtils.getRandomIndex(CoachUtils.MISSED_HANGING_PIECE_SENTENCES.length)];
+                                            newSentence = CoachUtils.formatCoachStringWithPlaceholders(newSentence, colorToMoveText, pieceToCapture);
+
+                                            move.coachFlags.push(CoachFlagType.MissedHangingPiece);
+                                        }
                                         move.coachComment += newSentence;
                                     }
                                 }
@@ -610,6 +627,11 @@ export class CoachUtils
             .replace(CoachUtils.TURN_PLACEHOLDER, playerColor)
             .replace(CoachUtils.PIECE_PLACEHOLDER, piece);
     }
+
+    private static selectAndFormatSentence(arr: Array<string>, playerColor: string, piece: string)
+    {
+        
+    }
 }
 
 export enum CoachMoveSequenceType
@@ -624,6 +646,7 @@ export enum CoachFlagType
     //Bad
     LeftPieceHanging,
     MissedHangingPiece,
+    CapturedPieceWithWrongAttacker,
     AllowedCheckmate,
     MissedCheckmate,
     AllowedFork,
