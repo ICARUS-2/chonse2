@@ -162,7 +162,7 @@
     <div class="boardControls" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
         <div class="engineDashboard d-flex" [style.color]="themeService.getThemeInstance().getTextColor()" [style.border-bottom]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`" >
             <!--Top box that displays engine type and depth-->
-            <div class="w-25 p-2 d-flex flex-column justify-content-center" [style.border-right]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+            <div class="w-25 p-2 d-flex flex-column justify-content-center overflow-auto" [style.border-right]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
                 @if (this.boardState().doEvaluateGame())
                 {
                     @if(this.boardState().engine(); as engine)

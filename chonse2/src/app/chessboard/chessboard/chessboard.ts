@@ -326,6 +326,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   handleResetClicked()
   {
     this.boardState().isCoachMoveShowing.set(false);
+    this.boardState().isCoachIdeaShowing.set(false);
 
     const bs: BoardState = new BoardState();
     this.chessBoardService.deleteGame(this.gameId());
@@ -943,6 +944,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   moveClicked(index: number)
   {
     if (this.boardState().isCoachMoveShowing())
+    {
+      return;
+    }
+
+    if (this.boardState().isCoachIdeaShowing())
     {
       return;
     }
