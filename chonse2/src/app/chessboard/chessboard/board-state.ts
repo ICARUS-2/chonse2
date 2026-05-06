@@ -41,6 +41,7 @@ export default class BoardState
 
     //Coach stuff
     isCoachMoveShowing: WritableSignal<boolean> = signal(false);
+    isCoachIdeaShowing: WritableSignal<boolean> = signal(false);
     coachMoveSequenceType: WritableSignal<CoachMoveSequenceType> = signal(CoachMoveSequenceType.None)
 
     //Vs ai stuff

@@ -17,6 +17,8 @@ export class IconButton {
   disabled = input<boolean>(false);
   extraClasses = input<string>('');
   iconClass = input<string>('bi-download'); // Default Bootstrap icon
+  overridePrimaryBackgroundColor = input<string>("");
+  overrideSecondaryBackgroundColor = input<string>("");
 
   buttonClick = output<PointerEvent>();
 

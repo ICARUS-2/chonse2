@@ -31,7 +31,7 @@ import { EngineName, EngineInformation, EngineType, MoveClassification, moveClas
 import { EvalSource, LineEval, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
-import {CoachFlagType, CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
+import {CoachIdeaFlagType, CoachMoveFlagType, CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
 import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
 import { IconButton } from "../../ui/icon-button/icon-button";
 
@@ -685,17 +685,17 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       mate = ev.lines[0].mate;
     }
 
-    if (move.coachFlags.includes(CoachFlagType.AllowedCheckmate) || mate)
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.AllowedCheckmate) || mate)
     {
       return "Show checkmate";
     }
 
-    if (move.coachFlags.includes(CoachFlagType.LeftPieceHanging))
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging))
     {
       return "Show hanging piece";
     }
 
-    if (move.coachFlags.includes(CoachFlagType.OpportunityToFork))
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.OpportunityToFork))
     {
       return "Show fork";
     }
@@ -705,27 +705,44 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   getMissButtonText(move: MoveResult): string
   {
-    if (move.coachFlags.includes(CoachFlagType.MissedCheckmate))
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedCheckmate))
     {
       return "Show missed checkmate";
     }
 
-    if (move.coachFlags.includes(CoachFlagType.MissedFork))
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedFork))
     {
       return "Show missed fork";
     }
 
-    if (move.coachFlags.includes(CoachFlagType.MissedHangingPiece))
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedHangingPiece))
     {
       return "Show missed capture";
     }
 
-    if (move.coachFlags.includes(CoachFlagType.CapturedPieceWithWrongAttacker))
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.CapturedPieceWithWrongAttacker))
     {
       return "Show alternative";
     }
 
     return "Show miss";
+  }
+
+  getIdeaButtonText(flag: CoachIdeaFlagType)
+  {
+    const BASE = "Show Idea: ";
+
+    if (flag == CoachIdeaFlagType.ForkIdea)
+    {
+      return BASE + "Fork";
+    }
+
+    return BASE;
+  }
+
+  showIdeaButtonClicked()
+  {
+
   }
   //#endregion
 
@@ -980,7 +997,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   onSquareLeftClick = () =>
   {
     this.resetClickedSquares();
-    this.arrows.set(this.arrows().filter( a => a.context == ArrowContext.Engine));
+    this.arrows.set(this.arrows().filter( a => a.context != ArrowContext.Player));
   }
 
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: PointerEvent })

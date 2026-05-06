@@ -1,3 +1,4 @@
+import { Arrow, ArrowContext, createArrow } from "../../app/chessboard/chessboard/arrow";
 import MoveResult from "../../app/chessboard/chessboard/move-result";
 import Chonse2 from "../chonse2-lib/chonse2";
 import Chonse2Extensions, { Fork } from "../chonse2-lib/extensions";
@@ -181,8 +182,8 @@ export class CoachUtils
     //Player has positioned a piece to win material through a fork.
     private static readonly FOUND_FORK_SENTENCES: Array<string> = 
     [
-        `${CoachUtils.TURN_PLACEHOLDER} will pick up a ${CoachUtils.PIECE_PLACEHOLDER} with that fork. `,
-        `${CoachUtils.TURN_PLACEHOLDER} will be winning a ${CoachUtils.PIECE_PLACEHOLDER} with that fork. `,
+        `${CoachUtils.TURN_PLACEHOLDER} is able to pick up a ${CoachUtils.PIECE_PLACEHOLDER} with that fork. `,
+        `${CoachUtils.TURN_PLACEHOLDER} can now win a ${CoachUtils.PIECE_PLACEHOLDER} with that fork. `,
     ]
     //#endregion
 
@@ -277,7 +278,7 @@ export class CoachUtils
                                     pieceToTake = hangingPiece;
 
                                     move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PIECE_HANG_SENTENCES, colorToMoveText, pieceToTake);
-                                    move.coachFlags.push(CoachFlagType.LeftPieceHanging);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.LeftPieceHanging);
 
                                     break;
                                 }
@@ -308,12 +309,12 @@ export class CoachUtils
                                         if (previousBestMove.toSquare === move.toCoord)
                                         {
                                             move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.CAPTURED_WITH_WRONG_PIECE_SENTENCES, colorToMoveText, pieceToCapture);
-                                            move.coachFlags.push(CoachFlagType.CapturedPieceWithWrongAttacker);
+                                            move.coachMoveFlags.push(CoachMoveFlagType.CapturedPieceWithWrongAttacker);
                                         }
                                         else //Subcase 2: If they missed the capture altogether.
                                         {
                                             move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_HANGING_PIECE_SENTENCES, colorToMoveText, pieceToCapture);
-                                            move.coachFlags.push(CoachFlagType.MissedHangingPiece);
+                                            move.coachMoveFlags.push(CoachMoveFlagType.MissedHangingPiece);
                                         }
                                     }
                                 }
@@ -334,7 +335,7 @@ export class CoachUtils
                                 if (previousEngineLine.mate && !currentEngineLine.mate)
                                 {   
                                     move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_CHECKMATE_SENTENCES, colorToMoveText, "");
-                                    move.coachFlags.push(CoachFlagType.MissedCheckmate);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedCheckmate);
                                 }
                             }
                         }
@@ -353,7 +354,7 @@ export class CoachUtils
                                 if (!previousEngineLine.mate && currentEngineLine.mate)
                                 {
                                     move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ALLOWED_CHECKMATE_SENTENCES, colorToMoveText, "");
-                                    move.coachFlags.push(CoachFlagType.AllowedCheckmate);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.AllowedCheckmate);
                                 }
                             }
                         }
@@ -389,7 +390,7 @@ export class CoachUtils
                             if (didMissFork)
                             {
                                 move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_FORK_SENTENCES, colorToMoveText, "");
-                                move.coachFlags.push(CoachFlagType.MissedFork)
+                                move.coachMoveFlags.push(CoachMoveFlagType.MissedFork)
                             }
                         }
                     }
@@ -422,7 +423,7 @@ export class CoachUtils
                             if (allowedFork)
                             {
                                 move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ALLOWED_FORK_SENTENCES, colorToMoveText, "");
-                                move.coachFlags.push(CoachFlagType.AllowedFork);
+                                move.coachMoveFlags.push(CoachMoveFlagType.AllowedFork);
                             }
                         }
                     }
@@ -507,8 +508,22 @@ export class CoachUtils
                                 }
                             }
 
+                            const arrows = new Array<Arrow>();
+                            for(const fk of currentForks)
+                            {
+                                for(const forkedPieceCoord of fk.coordinatesAttacked)
+                                {
+                                    const newArrow = createArrow(fk.attackerCoordinate, forkedPieceCoord, "hotpink", ArrowContext.Coach);
+                                    
+                                    if(newArrow)
+                                    {
+                                        arrows.push(newArrow);
+                                    }
+                                }
+                            }
+
                             move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_FORK_SENTENCES, colorToMoveText, displayPiece)
-                            move.coachFlags.push(CoachFlagType.OpportunityToFork);
+                            move.coachIdeas.set( CoachIdeaFlagType.ForkIdea, arrows );
                         }
                     }
                 }
@@ -616,7 +631,7 @@ export enum CoachMoveSequenceType
     MissedOpportunity = "MissedOpportunity"
 }
 
-export enum CoachFlagType 
+export enum CoachMoveFlagType 
 {
     //Bad
     LeftPieceHanging,
@@ -628,12 +643,16 @@ export enum CoachFlagType
     AllowedSkewer,
     MissedFork,
 
-    //Good (future)
+    //Good (show follow up)
     OpportunityToCheckmate,
-    OpportunityToFork,
     OpportunityToSkewer,
 
-    //Good (current)
+    //Good (show idea)
     PinnedPiece,
+    OpportunityToFork,
+}
 
+export enum CoachIdeaFlagType
+{
+    ForkIdea
 }
