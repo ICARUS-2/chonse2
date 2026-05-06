@@ -24,7 +24,7 @@
                     class="arrowOverlay"
                     [attr.viewBox]="'0 0 8 8'"
                     preserveAspectRatio="none">
-                    @for( arrow of arrows(); track $index )
+                    @for( arrow of this.boardState().arrows(); track $index )
                     {
                         <ng-container>
                             <line
@@ -162,7 +162,7 @@
     <div class="boardControls" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
         <div class="engineDashboard d-flex" [style.color]="themeService.getThemeInstance().getTextColor()" [style.border-bottom]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`" >
             <!--Top box that displays engine type and depth-->
-            <div class="w-25 p-2 d-flex flex-column justify-content-center" [style.border-right]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+            <div class="w-25 p-2 d-flex flex-column justify-content-center overflow-auto" [style.border-right]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
                 @if (this.boardState().doEvaluateGame())
                 {
                     @if(this.boardState().engine(); as engine)
@@ -239,8 +239,17 @@
                                     <div class="d-flex">
                                         @if (root.eval.lines[0]; as line)
                                         {
-                                            @if (!boardState().isCoachMoveShowing())
+                                            @if (!boardState().isCoachMoveShowing() && !boardState().isCoachIdeaShowing())
                                             {
+                                                
+                                                @if(root.move.coachIdeas.size > 0)
+                                                {
+                                                    @for(key of root.move.coachIdeas.keys(); track $index)
+                                                    {
+                                                        <app-icon-button extraClasses="m-1 small" (buttonClick)="showIdeaButtonClicked(root.move.coachIdeas.get(key))" [label]="getIdeaButtonText(key)" overridePrimaryBackgroundColor="rgb(52, 175, 0)" overrideSecondaryBackgroundColor="green" iconClass="bi-lightbulb"></app-icon-button>
+                                                    }
+                                                }
+
                                                 @if(!this.boardState().getCurrentState().gameState.isGameOver)
                                                 {
                                                     <app-icon-button (buttonClick)="showFollowUpClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 small" [label]="getFollowUpButtonText(root.move, root.eval)" iconClass="bi-arrow-right"></app-icon-button>
@@ -254,9 +263,15 @@
                                                         <app-icon-button (buttonClick)="showMissedOpportunityClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 small" [label]="getMissButtonText(root.move)" iconClass="bi-arrow-90deg-left"></app-icon-button>
                                                     }
                                             }
-                                            @else 
+
+                                            @if(boardState().isCoachMoveShowing())
                                             {
                                                 <app-icon-button (buttonClick)="hideSequence()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 small" label="Hide Sequence" iconClass="bi-backspace"></app-icon-button>
+                                            }
+
+                                            @if(boardState().isCoachIdeaShowing())
+                                            {
+                                                <app-icon-button (buttonClick)="hideIdeaButtonClicked()" extraClasses="m-1 small" label="Hide Ideas" iconClass="bi-lightbulb-off"  overridePrimaryBackgroundColor="rgb(52, 175, 0)" overrideSecondaryBackgroundColor="green"></app-icon-button>
                                             }
                                         }
                                     </div>

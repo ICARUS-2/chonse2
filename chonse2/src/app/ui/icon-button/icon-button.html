@@ -1,5 +1,5 @@
 <button 
-    [style.background-color]="themeService.getThemeInstance().getPrimaryColor()"
+    [style.background-color]="this.overridePrimaryBackgroundColor() ? this.overridePrimaryBackgroundColor() : themeService.getThemeInstance().getPrimaryColor()"
     class="button" 
     [class]="extraClasses()"
     [disabled]="disabled()"
@@ -9,7 +9,7 @@
     <span class="button__text">{{ label() }}</span>
 
     <span class="button__icon"
-    [style.background-color]="themeService.getThemeInstance().getHoverColor()"
+    [style.background-color]="this.overrideSecondaryBackgroundColor() ? this.overrideSecondaryBackgroundColor() : themeService.getThemeInstance().getHoverColor()"
     >
     <i [class]="'bi ' + iconClass()"></i>
     </span>

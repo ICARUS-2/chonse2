@@ -240,10 +240,41 @@ export default class Chonse2Extensions
                 }
                 )
 
-                //If it's a fork of two non-king pieces, it's a valid fork.
+                //If it's a fork of two non-king pieces, it's a valid fork as long as a piece cannot move to make the other two pieces not hanging.
                 if (!containsKing)
                 {
-                    allForks.push( new Fork(currentPieceCoordinate, filteredCandidatesForCheckAndCapturePotential) );
+                    //Need to check that a piece cannot move to defend both (ex: a bishop moving out of the way to both defend one piece and open up a discovered defence on another)
+                    let pieceHasLegalMoveThatCanDefendBothPieces = false;
+                    const defenderColor = attackerColor == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+                    const defenderPieces = boardCopy._getAllPiecesAndCoordsByColor(defenderColor);
+                    boardCopy.turn = !boardCopy.turn;
+
+                    for(const defenderPieceCoord of defenderPieces.coords)
+                    {
+                        const legalMoves = boardCopy.getLegalMoves(defenderPieceCoord);
+
+                        for(const move in legalMoves)
+                        {
+                            const cp = boardCopy.getFullDeepCopy();
+
+                            cp.completeMove(defenderPieceCoord, move);
+                            const hangingPiecesAfterMove = Chonse2Extensions.getHangingPieces(cp);
+                            const hangingPiecesToCheck = boardCopy.turn ? hangingPiecesAfterMove.white : hangingPiecesAfterMove.black;
+
+                            for(const candidate in filteredCandidatesForCheckAndCapturePotential)
+                            {
+                                if (!hangingPiecesToCheck.includes(candidate))
+                                {
+                                    pieceHasLegalMoveThatCanDefendBothPieces = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if(!pieceHasLegalMoveThatCanDefendBothPieces)
+                    {
+                        allForks.push( new Fork(currentPieceCoordinate, filteredCandidatesForCheckAndCapturePotential) );
+                    }
                 }
                 else //If it does contain a king, verify that the defender cannot move a piece to block the check and defend the other piece at the same time. 
                 {
@@ -269,17 +300,17 @@ export default class Chonse2Extensions
 
                     //Check that any of the defender pieces cannot block the check and defend the piece at the same time.
                     let pieceCanBlockCheckAndDefendForkedPiece: boolean = false;
+
+                    boardCopy.turn = !boardCopy.turn;
                     for(const defenderPieceCoord of filteredDefenderPieceCoords )
                     {
                         const legalMovesForDefenderPiece = boardCopy.getLegalMoves(defenderPieceCoord);
-                        boardCopy.turn = !boardCopy.turn;
 
                         //For each of the legal moves of the defender pieces, check if it can hit the forked piece and defend it.
                         for(const legalMove of legalMovesForDefenderPiece)
                         {
                             //Clone the object and complete the move (this is horribly inefficient but all I can think of right now, fix this shit later).
                             const clone = boardCopy.getFullDeepCopy();
-                            clone.turn = !clone.turn;
                             clone.completeMove(defenderPieceCoord, legalMove);
 
                             //Get the pieces that defend the forked square.
@@ -295,8 +326,15 @@ export default class Chonse2Extensions
                         }
                     }
 
+                    //If a forked piece has a legal move that can block a check, it's not a fork.
+                    let forkedPieceCanBlockCheck: boolean = false 
+                    if ( boardCopy.getLegalMoves(nonKingPieceCoordinate).length != 0 )
+                    {
+                        forkedPieceCanBlockCheck = true;
+                    }
+
                     //If no other piece can block the check and defend at the same time, it's a fork.
-                    if (!pieceCanBlockCheckAndDefendForkedPiece)
+                    if (!pieceCanBlockCheckAndDefendForkedPiece && !forkedPieceCanBlockCheck)
                     {
                         allForks.push( new Fork(currentPieceCoordinate, filteredCandidatesForCheckAndCapturePotential) );
                     }
