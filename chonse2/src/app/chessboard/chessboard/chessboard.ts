@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import LocalStorageHelper from './local-storage-helper';
 import { FormsModule } from '@angular/forms';
 import { ChessBoardService as ChessBoardService } from './chess-board-service';
-import {Arrow, ArrowContext } from './arrow';
+import {Arrow, ArrowContext, createArrow } from './arrow';
 import BoardState from './board-state';
 import Sound from './sound';
 import { ImportModal } from '../import-modal.ts/import-modal';
@@ -85,7 +85,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   private resizeObserver: ResizeObserver;
   mouseX = signal(0);
   mouseY = signal(0);
-  arrows = signal<Arrow[]>([]);
+  //arrows = signal<Arrow[]>([]);
   @ViewChild('board', { static: false }) boardElement!: ElementRef<HTMLDivElement>;
   boardPixelSize = signal(0);
   animatedPiece = signal('');
@@ -331,7 +331,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.chessBoardService.deleteGame(this.gameId());
     this.chessBoardService.addGame(this.gameId(), bs);
     this.boardState.set(this.chessBoardService.getGame(this.gameId()));
-    this.arrows.set([]);
+    this.boardState().arrows.set([]);
   }
   //#endregion
 
@@ -426,7 +426,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       const from = bestMove[0] + bestMove[1];
       const to = bestMove[2] + bestMove[3];
 
-      const arrow = this.createArrow(from, to, "rgba(0,128,0,0.6)", ArrowContext.Engine);
+      const arrow = createArrow(from, to, "rgba(0,128,0,0.6)", ArrowContext.Engine);
 
       return arrow;
     }
@@ -448,7 +448,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       const from = bestMove[0] + bestMove[1];
       const to = bestMove[2] + bestMove[3];
 
-      const arrow = this.createArrow(from, to, "rgba(0, 183, 255, 0.6)", ArrowContext.Engine);
+      const arrow = createArrow(from, to, "rgba(0, 183, 255, 0.6)", ArrowContext.Engine);
 
       return arrow;
     }
@@ -740,9 +740,23 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     return BASE;
   }
 
-  showIdeaButtonClicked()
+  showIdeaButtonClicked(arrows: Array<Arrow> | undefined)
   {
+    if (!arrows)
+    {
+      return;
+    }
 
+    this.boardState().isLocked.set(true);
+    this.boardState().isCoachIdeaShowing.set(true);
+    this.boardState().arrows.set([...this.boardState().arrows(), ...arrows] )
+  }
+
+  hideIdeaButtonClicked()
+  {
+    this.boardState().isCoachIdeaShowing.set(false);
+    this.boardState().isLocked.set(false);
+    this.boardState().arrows.set(this.boardState().arrows().filter( a => a.context != ArrowContext.Coach));
   }
   //#endregion
 
@@ -891,6 +905,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return false;
     }
 
+    if (this.boardState().isCoachIdeaShowing())
+    {
+      return false;
+    }
+
     return this.boardState().mainStackPointer() != 0 || this.boardState().divergenceStateStack().length != 0;
   })
 
@@ -901,6 +920,10 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return false;
     }
 
+    if (this.boardState().isCoachIdeaShowing())
+    {
+      return false;
+    }
 
     //If we are deviating from the main game (by going back) then you can't logically go forward.
     if (this.boardState().divergenceStateStack().length != 0)
@@ -997,7 +1020,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   onSquareLeftClick = () =>
   {
     this.resetClickedSquares();
-    this.arrows.set(this.arrows().filter( a => a.context != ArrowContext.Player));
+    //this.arrows.set(this.arrows().filter( a => a.context != ArrowContext.Player));
+    this.boardState().arrows.set(this.boardState().arrows().filter( a => a.context != ArrowContext.Player));
   }
 
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: PointerEvent })
@@ -1114,11 +1138,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       }
       else //If the squares are different, they are drawing an arrow.
       {
-        const arrow = this.createArrow(this.fromRightClickSquare(), this.toRightClickSquare());
+        const arrow = createArrow(this.fromRightClickSquare(), this.toRightClickSquare());
         
         if (arrow)
         {
-          this.arrows.set([...this.arrows() , arrow]); 
+          this.boardState().arrows.set([...this.boardState().arrows() , arrow]); 
         }
       }
 
@@ -1220,32 +1244,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     };
   }
 
-  createArrow(fromCoordinate: string, toCoordinate: string, color: string = "rgba(0,0,255,0.6", context: ArrowContext = ArrowContext.Player) : Arrow | null
-  {
-    //Cannot create an arrow from or to a nonextistant place.
-    if (!fromCoordinate || !toCoordinate)
-    {
-      return null;
-    }
-
-    //Cannot create an arrow from -> to the same square
-    if (fromCoordinate == toCoordinate)
-    {
-      return null;
-    }
-
-    //Get the indeces and create the arrow from that.
-    const fromIdx = Chonse2.findIndexFromCoordinate(fromCoordinate);
-    const toIdx = Chonse2.findIndexFromCoordinate(toCoordinate);
-
-    return { 
-      fromRank: fromIdx.rowIndex, 
-      fromFile: fromIdx.colIndex, 
-      toRank: toIdx.rowIndex, 
-      toFile: toIdx.colIndex, 
-      color: color,
-      context: context}
-  }
   //#endregion
 
   //#region Endgame square animation

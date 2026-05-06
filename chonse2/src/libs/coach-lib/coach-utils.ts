@@ -513,7 +513,7 @@ export class CoachUtils
                             {
                                 for(const forkedPieceCoord of fk.coordinatesAttacked)
                                 {
-                                    const newArrow = createArrow(fk.attackerCoordinate, forkedPieceCoord, "hotpink", ArrowContext.Coach);
+                                    const newArrow = createArrow(fk.attackerCoordinate, forkedPieceCoord, "cyan", ArrowContext.Coach);
                                     
                                     if(newArrow)
                                     {
