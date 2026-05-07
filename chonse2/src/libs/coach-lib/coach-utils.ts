@@ -1,4 +1,4 @@
-import { Arrow, ArrowContext, createArrow } from "../../app/chessboard/chessboard/arrow";
+import { Arrow, ArrowColors, ArrowContext, createArrow } from "../../app/chessboard/chessboard/arrow";
 import MoveResult from "../../app/chessboard/chessboard/move-result";
 import Chonse2 from "../chonse2-lib/chonse2";
 import Chonse2Extensions, { Fork } from "../chonse2-lib/extensions";
@@ -417,6 +417,34 @@ export class CoachUtils
                                 if (nextBestStateForks.length > 0)
                                 {
                                     allowedFork = true;
+
+                                    //We want to show the possible fork with the coach arrows.
+                                    const arrowsArr: Array<Arrow> = [];
+                                    const moveToForkArrow = createArrow(nextBestMove.fromSquare, nextBestMove.toSquare, ArrowColors.IDEA, ArrowContext.Coach);
+                                    
+                                    //First, add the move that the piece takes to fork the other 2+ pieces.
+                                    if (moveToForkArrow)
+                                    {
+                                        arrowsArr.push(moveToForkArrow);
+                                    }
+
+                                    //Then, add all of the arrows to the actual forked pieces that are hit once the best move is made.
+                                    for(const fork of nextBestStateForks)
+                                    {
+                                        const attackercoord = fork.attackerCoordinate;
+                                        
+                                        for(const forkedPiece of fork.coordinatesAttacked)
+                                        {
+                                            const newArrow = createArrow(attackercoord, forkedPiece, ArrowColors.IDEA, ArrowContext.Coach);
+
+                                            if (newArrow)
+                                            {
+                                                arrowsArr.push(newArrow);
+                                            }
+                                        }
+                                    }
+
+                                    move.coachIdeas.set(CoachIdeaFlagType.ForkIdea, arrowsArr);
                                 }
                             }
 
