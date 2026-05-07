@@ -16,7 +16,15 @@ export enum ArrowContext
   Coach
 }
 
-export function createArrow(fromCoordinate: string, toCoordinate: string, color: string = "rgba(0,0,255,0.6", context: ArrowContext = ArrowContext.Player) : Arrow | null
+export class ArrowColors 
+{
+  static readonly FUTURE_BEST_MOVE = "rgba(0, 183, 255, 0.6)";
+  static readonly PAST_BEST_MOVE = "rgba(0,128,0,0.6)";
+  static readonly IDEA = "cyan";
+  static readonly PLAYER_DRAWN_DEFAULT = "rgba(0,0,255,0.6)"
+}
+
+export function createArrow(fromCoordinate: string, toCoordinate: string, color: string = ArrowColors.PLAYER_DRAWN_DEFAULT, context: ArrowContext = ArrowContext.Player) : Arrow | null
 {
   //Cannot create an arrow from or to a nonextistant place.
   if (!fromCoordinate || !toCoordinate)

@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import LocalStorageHelper from './local-storage-helper';
 import { FormsModule } from '@angular/forms';
 import { ChessBoardService as ChessBoardService } from './chess-board-service';
-import {Arrow, ArrowContext, createArrow } from './arrow';
+import {Arrow, ArrowColors, ArrowContext, createArrow } from './arrow';
 import BoardState from './board-state';
 import Sound from './sound';
 import { ImportModal } from '../import-modal.ts/import-modal';
@@ -427,7 +427,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       const from = bestMove[0] + bestMove[1];
       const to = bestMove[2] + bestMove[3];
 
-      const arrow = createArrow(from, to, "rgba(0,128,0,0.6)", ArrowContext.Engine);
+      const arrow = createArrow(from, to, ArrowColors.PAST_BEST_MOVE, ArrowContext.Engine);
 
       return arrow;
     }
@@ -449,7 +449,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       const from = bestMove[0] + bestMove[1];
       const to = bestMove[2] + bestMove[3];
 
-      const arrow = createArrow(from, to, "rgba(0, 183, 255, 0.6)", ArrowContext.Engine);
+      const arrow = createArrow(from, to, ArrowColors.FUTURE_BEST_MOVE, ArrowContext.Engine);
 
       return arrow;
     }
