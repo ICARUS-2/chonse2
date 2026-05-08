@@ -1,0 +1,44 @@
+.app-background {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  min-height: 100vh;
+
+  padding: 24px;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  font-family: Inter, sans-serif;
+}
+
+.app-shell {
+  width: 100%;
+
+  max-width: 1800px;
+
+  min-height: calc(100vh - 48px);
+
+  padding: 24px;
+
+  border-radius: 32px;
+
+  overflow: hidden;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.12);
+
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  box-shadow:
+    0 8px 32px rgba(31, 38, 135, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+
+  border-radius: 32px;
+}

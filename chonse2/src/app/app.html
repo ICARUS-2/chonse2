@@ -1,4 +1,24 @@
-<div [style.background-color]="themeService.getThemeInstance().getBackgroundColor()" style="min-height: 100vh;">
+<!-- <div 
+    [style.background-color]="themeService.getThemeInstance().getBackgroundColor()" style="min-height: 100vh;">
     <app-navbar></app-navbar>
     <router-outlet></router-outlet>
+</div>
+ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+ <div
+  [style.background-image]="'url(img/backgrounds/sky-bg.png)'"
+  style="
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    font-family: Inter;
+  "
+>
+
+    <div class="glass-panel app-shell">
+        <router-outlet></router-outlet> 
+    </div>
 </div>
