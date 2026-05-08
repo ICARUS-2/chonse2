@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 import ThemeService from '../../themes/theme-service';
 import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
+import { PgnComments } from '../chessboard/pgn-misc';
 
 @Component({
   selector: 'app-board-player-info',
@@ -11,6 +12,8 @@ import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BoardPlayerInfo {
+  CLOCK = PgnComments.CLOCK;
+
   for = input<string>('');
   capturedPieces = input<string[]>([]);
   advantage = input<number>(0);

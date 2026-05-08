@@ -23,8 +23,8 @@
     
     <div class="m-1"></div>
 
-    @if (clock())
+    @if (clock(); as clock)
     {
-        <p class="badge text-bg-secondary">{{clock()}}</p>
+        <p class="badge text-bg-secondary">{{clock.includes(CLOCK) ? clock.split(CLOCK)[1] : clock}}</p>
     }
 </div>

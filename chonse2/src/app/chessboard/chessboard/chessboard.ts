@@ -37,6 +37,7 @@ import { BoardArrowButtons } from '../board-arrow-buttons/board-arrow-buttons';
 import { BoardOptions } from '../board-options/board-options';
 import { MovesTable } from '../moves-table/moves-table';
 import { EngineLineDisplay } from "../engine-line-display/engine-line-display";
+import { GameInfo } from "../game-info/game-info";
 
 @Component({
   selector: 'app-chessboard',
@@ -52,7 +53,8 @@ import { EngineLineDisplay } from "../engine-line-display/engine-line-display";
     EvalBar,
     EvaluationChart,
     IconButton,
-    EngineLineDisplay
+    EngineLineDisplay,
+    GameInfo
 ],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',

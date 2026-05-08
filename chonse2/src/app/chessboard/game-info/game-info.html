@@ -1,0 +1,15 @@
+<!-- game-info.component.html -->
+<div class="glass-subpanel">
+  <div
+    [style.color]="themeService.getThemeInstance().getTextColor()"
+    class="evalTextData d-flex flex-column justify-content-center"
+  >
+    {{ statusText }}
+  </div>
+  <div
+    [style.color]="themeService.getThemeInstance().getTextColor()"
+    class="evalTextData d-flex flex-column justify-content-center mb-1"
+  >
+    {{ getOpeningDisplay()() }}
+  </div>
+</div>

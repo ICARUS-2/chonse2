@@ -6,6 +6,7 @@
         }
         <div class="boardOuterContainer" [class]="boardState().isFlipped() ? 'boardOuterContainerFlipped' : ''">
             <app-board-player-info [playerName]="boardState().pgnHeaders().black" [playerElo]="boardState().pgnHeaders().blackElo" for="b" [clock]="getClockForPlayer('b')()" [capturedPieces]="boardState().getCurrentState().piecesBlackCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
+            
             <div #board class="boardContainerInner" [class]="boardState().isFlipped() ? 'boardContainerInnerFlipped' : ''">
                 @if(animatedPiece())
                 {
@@ -156,9 +157,11 @@
                     </ng-container>
                 }
             </div>
+            
             <app-board-player-info [playerName]="boardState().pgnHeaders().white" [playerElo]="boardState().pgnHeaders().whiteElo" for="w" [clock]="getClockForPlayer('w')()" [capturedPieces]="boardState().getCurrentState().piecesWhiteCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
         </div>
     </div>
+
     <div class="boardControls" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
         <div class="engineDashboard d-flex" [style.color]="themeService.getThemeInstance().getTextColor()" [style.border-bottom]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`" >
             <!--Top box that displays engine type and depth-->
@@ -305,10 +308,10 @@
     </app-board-options>
 
         <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
-        <div class="ps-2 pe-2">
-            <div [style.color]="themeService.getThemeInstance().getTextColor()" class="evalTextData d-flex flex-column justify-content-center">{{this.boardState().pgnHeaders().termination ? ( this.boardState().pgnHeaders().termination != "Normal" ? this.boardState().pgnHeaders().termination + " - " : this.boardState().pgnHeaders().result + " - ") : "-"}} {{this.boardState().getCurrentState().gameState.isGameOver ? this.boardState().getCurrentState().gameState.reason + " " + this.boardState().getCurrentState().gameState.gameScore: boardState().getCurrentState().turn ? "White to move" : "Black to move"}}</div>
-            <div [style.color]="themeService.getThemeInstance().getTextColor()" class="evalTextData d-flex flex-column justify-content-center mb-1">{{this.getOpeningDisplay()}}</div>
-        </div>
+        <app-game-info
+            [boardState]="boardState()"
+            [getOpeningDisplay]="getOpeningDisplay"
+        />
 
         <div [style.color]="themeService.getThemeInstance().getTextColor()" class="d-flex movesAndAccuracies">
             <div class="evalSectionLeft d-flex flex-column">
