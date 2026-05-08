@@ -13,12 +13,12 @@
             <img class="capturedPieceImg" [src]="`piece/merida/${key}.svg`" alt="piece" />
             <p>{{count}}</p>
         }
-
-        @if(getAbsoluteAdvantage() > 0)
-        {
-            <p class="ms-3" [style.color]="themeService.getThemeInstance().getPrimaryColor()">+{{getAbsoluteAdvantage()}}</p>
-        }
     </div>
+    
+    @if(getAbsoluteAdvantage() > 0)
+    {
+        <p class="ms-3" [style.color]="themeService.getThemeInstance().getPrimaryColor()">+{{getAbsoluteAdvantage()}}</p>
+    }
 
     @if (clock(); as clock)
     {

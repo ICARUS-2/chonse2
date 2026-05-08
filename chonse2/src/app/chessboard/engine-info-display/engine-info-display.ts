@@ -19,7 +19,7 @@ export class EngineInfoDisplay {
 
   protected engine = computed(() => this.boardState().engine());
   protected mostRecentEval = computed(() => this.boardState().getMostRecentEval());
-  protected shouldShow = computed(() => this.boardState().doEvaluateGame());
+  protected shouldShowEngineInfo = computed(() => this.boardState().doEvaluateGame());
 
   protected engineMetadata = computed(() => {
     const engine = this.engine();

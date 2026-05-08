@@ -7,7 +7,7 @@
 
 .playerInfo 
 {
-  height: 82vmin;
+  height: 85vmin;
   justify-content: space-between;
 }
 
@@ -15,8 +15,8 @@
 {
   height: 85vmin;
   justify-content: space-between;
-  padding-left: 4vmin;
-  padding-right: 4vmin;
+  padding-left: 3vmin;
+  padding-right: 3vmin;
 }
 
 .boardOuterContainer
@@ -156,7 +156,7 @@
 {
   display: flex;
   flex-direction: column;
-  height: 80vmin;
+  height: 85vmin;
   width: 70vmin;
   touch-action: manipulation;
 }
@@ -171,11 +171,6 @@
 .controlButton
 {
   touch-action: manipulation;
-}
-
-.movesAndAccuracies
-{
-  height: 52vmin;
 }
 
 .animatedPiece {

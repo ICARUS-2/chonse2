@@ -1,5 +1,44 @@
-<div class="d-flex flex-column justify-content-start overflow-x-scroll glass-subpanel">
-  
+<div class="d-flex flex-column justify-content-between overflow-x-scroll glass-subpanel coachDisplay p-4">
+  @if (shouldShowEngineInfo()) {
+    @if (engine(); as engineData) {
+      <!-- Engine Info -->
+      <div class="small d-flex justify-content-between">
+        <div>
+          <span><i class="bi bi-info-circle me-2"></i>Coach Explanation</span>
+        </div>
+
+        <div>
+        {{ engineMetadata()?.displayName }}
+        <span class="badge" 
+              [ngClass]="{ 
+                'bg-success': engineMetadata()?.type === EngineType.NNUE, 
+                'bg-danger': engineMetadata()?.type === EngineType.HCE 
+              }">
+          {{ engineMetadata()?.type }}
+        </span>
+
+        @if (engineData.isCloudHybridMode) {
+          <span class="badge bg-info ms-1 text-secondary">Cloud Hybrid</span>
+        }
+
+        -
+
+        @if (mostRecentEval(); as evalData) {
+          @if (evalData.lines[0]) {
+            <span>
+              Depth {{ evalData.lines[0].depth }}
+
+              @if (evalData.source === EvalSource.Cloud) {
+                <span class="badge bg-info ms-1 text-secondary">CLOUD</span>
+              }
+            </span>
+          }
+        }
+        </div>
+      </div>
+    }
+  }
+
   <!-- Loading Quotes -->
   @if (isShowingQuote()) {
     @if (quote(); as q) {
@@ -11,22 +50,23 @@
   <!-- Analysis Content -->
   @if (root(); as rootData) {
     @if (rootData.move && rootData.eval) {
-      <div>
         @let classification = rootData.eval.moveClassification ?? MoveClassification.None;
         @let iconSource = ChessboardHelper.getIconSourceForMoveClassification(classification);
 
         @if (iconSource() !== "") {
-          <div class="fw-bold">
-            <img [src]="iconSource()" class="coachClassificationIcon" alt="move classification"/>
-            {{ rootData.move.notation }} is {{ moveClassificationLabels[classification] }}
-          </div>
+          <div>
+            <div class="fw-bold">
+              <img [src]="iconSource()" class="coachClassificationIcon" alt="move classification"/>
+              {{ rootData.move.notation }} is {{ moveClassificationLabels[classification] }}
+            </div>
 
-          <div class="small">
-            {{ rootData.move.coachComment }}
+            <div class="small">
+              {{ rootData.move.coachComment }}
 
-            @if (rootData.move.notation.includes("#")) {
-              Checkmate is always the best move!
-            }
+              @if (rootData.move.notation.includes("#")) {
+                Checkmate is always the best move!
+              }
+            </div>
           </div>
 
           <!-- Action Buttons -->
@@ -57,8 +97,8 @@
                 }
               
                 @if (classification === MoveClassification.Inaccuracy || 
-                     classification === MoveClassification.Mistake || 
-                     classification === MoveClassification.Blunder) {
+                    classification === MoveClassification.Mistake || 
+                    classification === MoveClassification.Blunder) {
                   <app-icon-button 
                     (buttonClick)="showMissedOpportunityClicked.emit()" 
                     [disabled]="coachButtonsDisabled()" 
@@ -92,7 +132,6 @@
             }
           </div>
         }
-      </div>
     }
   }
 </div>

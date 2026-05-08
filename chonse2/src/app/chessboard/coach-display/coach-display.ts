@@ -1,20 +1,22 @@
 import { Component, computed, input, output } from '@angular/core';
-import { MoveClassification, moveClassificationLabels } from '../../../libs/engine-lib/types/enums';
+import { EngineInformation, EngineType, MoveClassification, moveClassificationLabels } from '../../../libs/engine-lib/types/enums';
 import { IconButton } from '../../ui/icon-button/icon-button';
 import BoardState from '../chessboard/board-state';
 import MoveResult from '../chessboard/move-result';
 import { CoachIdeaFlagType, CoachMoveFlagType } from '../../../libs/coach-lib/coach-utils';
-import { PositionEval } from '../../../libs/engine-lib/types/eval';
+import { EvalSource, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { Arrow, ArrowContext } from '../chessboard/arrow';
 import ChessboardHelper from '../helpers';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-coach-display',
-  imports: [IconButton],
+  imports: [IconButton, CommonModule],
   templateUrl: './coach-display.html',
   styleUrl: './coach-display.css',
 })
 export class CoachDisplay {
+  protected readonly MoveClassification = MoveClassification;
   moveClassificationLabels = moveClassificationLabels;
   ChessboardHelper = ChessboardHelper;
 
@@ -27,9 +29,7 @@ export class CoachDisplay {
   showMissedOpportunityClicked = output<void>();
   hideSequence = output<void>();
 
-  // --- Computed State for Template Efficiency ---
-  protected readonly MoveClassification = MoveClassification;
-
+  //coach
   protected root = computed(() => this.boardState().getRootForFollowUp());
   protected progress = computed(() => this.boardState().evalProgress());
   protected quote = computed(() => this.boardState().displayedQuote());
@@ -38,6 +38,21 @@ export class CoachDisplay {
     const p = this.progress();
     return p > 0 && p < 97.1;
   });
+  
+  //engine display
+  protected readonly EngineType = EngineType;
+  protected readonly EvalSource = EvalSource;
+  protected readonly EngineInformation = EngineInformation;
+
+  protected engine = computed(() => this.boardState().engine());
+  protected mostRecentEval = computed(() => this.boardState().getMostRecentEval());
+  protected shouldShowEngineInfo = computed(() => this.boardState().doEvaluateGame());
+
+  protected engineMetadata = computed(() => {
+    const engine = this.engine();
+    return engine ? EngineInformation.get(engine.name) : null;
+  });
+
 
   getFollowUpButtonText(move: MoveResult, ev: PositionEval): string
   {
