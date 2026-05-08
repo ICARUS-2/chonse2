@@ -89,6 +89,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   
   //Controls
   coachButtonsDisabled: WritableSignal<boolean> = signal(false);
+  activeTab = signal<'moves' | 'overview'>('moves');
 
   //Coach stuff
   static readonly COACH_FOLLOW_UP_LENGTH = 10;
