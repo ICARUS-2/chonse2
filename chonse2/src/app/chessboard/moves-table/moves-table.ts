@@ -3,6 +3,7 @@ import BoardState from '../chessboard/board-state';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { CommonModule } from '@angular/common';
 import { DivergenceTableEntry } from '../divergence-table-entry/divergence-table-entry';
+import ChessboardHelper from '../helpers';
 
 @Component({
   selector: 'app-moves-table',
@@ -11,9 +12,10 @@ import { DivergenceTableEntry } from '../divergence-table-entry/divergence-table
   styleUrl: './moves-table.css',
 })
 export class MovesTable {
+  ChessboardHelper = ChessboardHelper
+
   // Inputs
   boardState = input.required<BoardState>();
-  getIconSourceForMoveClassification = input.required<(classification: MoveClassification) => () => string>();
 
   // Outputs
   moveClicked = output<number>();

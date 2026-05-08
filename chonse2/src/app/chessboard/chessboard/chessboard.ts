@@ -18,7 +18,6 @@ import MoveClassificationList from './move-classification-list';
 import { Router } from '@angular/router';
 import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-helper';
 import ThemeService from '../../themes/theme-service';
-import { DivergenceTableEntry } from '../divergence-table-entry/divergence-table-entry';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
 import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
 import Chonse2 from '../../../libs/chonse2-lib/chonse2';
@@ -38,6 +37,10 @@ import { BoardOptions } from '../board-options/board-options';
 import { MovesTable } from '../moves-table/moves-table';
 import { EngineLineDisplay } from "../engine-line-display/engine-line-display";
 import { GameInfo } from "../game-info/game-info";
+import { MoveOverview } from "../move-overview/move-overview";
+import { EngineInfoDisplay } from "../engine-info-display/engine-info-display";
+import { CoachDisplay } from "../coach-display/coach-display";
+import ChessboardHelper from '../helpers';
 
 @Component({
   selector: 'app-chessboard',
@@ -54,7 +57,10 @@ import { GameInfo } from "../game-info/game-info";
     EvaluationChart,
     IconButton,
     EngineLineDisplay,
-    GameInfo
+    GameInfo,
+    MoveOverview,
+    EngineInfoDisplay,
+    CoachDisplay
 ],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
@@ -414,22 +420,12 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
         if (mostRecentMove.toCoord == coord)
         {
-          return this.getIconSourceForMoveClassification(lastEval.moveClassification)();
+          return ChessboardHelper.getIconSourceForMoveClassification(lastEval.moveClassification)();
         }   
       }
     }
     return "";
   } )
-
-  getIconSourceForMoveClassification = (classification: MoveClassification) => computed( () => 
-  {
-    if (classification == MoveClassification.None)
-    {
-      return "";
-    }
-
-    return "icons/" + classification + ".png";
-  })
 
   getPastEngineArrow = computed( (): Arrow | null => 
   {

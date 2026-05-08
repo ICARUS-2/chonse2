@@ -1,0 +1,98 @@
+<div class="d-flex flex-column justify-content-start overflow-x-scroll glass-subpanel">
+  
+  <!-- Loading Quotes -->
+  @if (isShowingQuote()) {
+    @if (quote(); as q) {
+      <div>"{{ q.text }}"</div>
+      <div class="fw-bold">-{{ q.author }}</div>
+    }
+  }
+
+  <!-- Analysis Content -->
+  @if (root(); as rootData) {
+    @if (rootData.move && rootData.eval) {
+      <div>
+        @let classification = rootData.eval.moveClassification ?? MoveClassification.None;
+        @let iconSource = ChessboardHelper.getIconSourceForMoveClassification(classification);
+
+        @if (iconSource() !== "") {
+          <div class="fw-bold">
+            <img [src]="iconSource()" class="coachClassificationIcon" alt="move classification"/>
+            {{ rootData.move.notation }} is {{ moveClassificationLabels[classification] }}
+          </div>
+
+          <div class="small">
+            {{ rootData.move.coachComment }}
+
+            @if (rootData.move.notation.includes("#")) {
+              Checkmate is always the best move!
+            }
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-flex coachButtons">
+            @if (rootData.eval.lines?.[0]) {
+              
+              @if (!boardState().isCoachMoveShowing() && !boardState().isCoachIdeaShowing()) {
+                
+                @for (key of rootData.move.coachIdeas.keys(); track key) {
+                  <app-icon-button 
+                    extraClasses="m-1 small" 
+                    (buttonClick)="showIdeaButtonClicked(rootData.move.coachIdeas.get(key))" 
+                    [label]="getIdeaButtonText(key)" 
+                    overridePrimaryBackgroundColor="rgb(52, 175, 0)" 
+                    overrideSecondaryBackgroundColor="green" 
+                    iconClass="bi-lightbulb">
+                  </app-icon-button>
+                }
+
+                @if (!boardState().getCurrentState().gameState.isGameOver) {
+                  <app-icon-button 
+                    (buttonClick)="showFollowUpClicked.emit()" 
+                    [disabled]="coachButtonsDisabled()" 
+                    extraClasses="m-1 small" 
+                    [label]="getFollowUpButtonText(rootData.move, rootData.eval)" 
+                    iconClass="bi-arrow-right">
+                  </app-icon-button>
+                }
+              
+                @if (classification === MoveClassification.Inaccuracy || 
+                     classification === MoveClassification.Mistake || 
+                     classification === MoveClassification.Blunder) {
+                  <app-icon-button 
+                    (buttonClick)="showMissedOpportunityClicked.emit()" 
+                    [disabled]="coachButtonsDisabled()" 
+                    extraClasses="m-1 small" 
+                    [label]="getMissButtonText(rootData.move)" 
+                    iconClass="bi-arrow-90deg-left">
+                  </app-icon-button>
+                }
+              }
+
+              @if (boardState().isCoachMoveShowing()) {
+                <app-icon-button 
+                  (buttonClick)="hideSequence.emit()" 
+                  [disabled]="coachButtonsDisabled()" 
+                  extraClasses="m-1 small" 
+                  label="Hide Sequence" 
+                  iconClass="bi-backspace">
+                </app-icon-button>
+              }
+
+              @if (boardState().isCoachIdeaShowing()) {
+                <app-icon-button 
+                  (buttonClick)="hideIdeaButtonClicked()" 
+                  extraClasses="m-1 small" 
+                  label="Hide Ideas" 
+                  iconClass="bi-lightbulb-off"  
+                  overridePrimaryBackgroundColor="rgb(52, 175, 0)" 
+                  overrideSecondaryBackgroundColor="green">
+                </app-icon-button>
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

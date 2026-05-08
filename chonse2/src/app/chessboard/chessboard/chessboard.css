@@ -145,11 +145,6 @@
   touch-action: manipulation;
 }
 
-.engineDashboard 
-{
-  height: 14vmin;
-}
-
 .boardControlButtons
 {
   display: flex;
@@ -165,15 +160,6 @@
 .movesAndAccuracies
 {
   height: 52vmin;
-}
-
-.evalSectionRight
-{
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
 }
 
 .animatedPiece {
@@ -208,16 +194,6 @@
   z-index: 2;
 }
 
-.engineMoveInfoText
-{
-  min-height: 3vmin;
-}
-
-.engineMoveInfoText img
-{
-  height: 2vmin;
-}
-
 .moveClassificationsList
 {
   text-align: center;
@@ -226,26 +202,9 @@
   width: 100%;
 }
 
-.playerNameInTable
-{
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: 10vmin;
-}
-
-.moveClassificationListIcon
-{
-  width: 3.7vmin;
-}
-
 .engineLinesContainer
 {
   flex: 1;
-}
-
-.coachClassificationIcon
-{
-  height: 2vmin;
 }
 
 @media screen and (max-width: 1200px) 
@@ -261,11 +220,6 @@
     height: unset;
   }
 
-  .engineDashboard
-  {
-    height: 30vmin;
-  }
-
   .movesAndAccuracies
   {
     flex-direction: column;
@@ -276,11 +230,6 @@
   .evalTextData
   {
     font-size: small;
-  }
-
-  .engineLinesContainer 
-  {
-    flex: unset;
   }
 
   .iconButtonContainer 

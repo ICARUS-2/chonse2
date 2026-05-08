@@ -23,7 +23,7 @@
                 @if (eval.positions[$index + 1]) {
                   <img
                     class="inlineMoveIcon"
-                    [src]="getIconSourceForMoveClassification()(eval.positions[$index + 1].moveClassification ?? MoveClassification.None)()">
+                    [src]="ChessboardHelper.getIconSourceForMoveClassification(eval.positions[$index + 1].moveClassification ?? MoveClassification.None)()">
                 }
               }
               <div
@@ -42,7 +42,7 @@
                 @if (eval.positions[$index + 2]) {
                   <img
                     class="inlineMoveIcon"
-                    [src]="getIconSourceForMoveClassification()(eval.positions[$index + 2].moveClassification ?? MoveClassification.None)()">
+                    [src]="ChessboardHelper.getIconSourceForMoveClassification(eval.positions[$index + 2].moveClassification ?? MoveClassification.None)()">
                 }
               }
               <div

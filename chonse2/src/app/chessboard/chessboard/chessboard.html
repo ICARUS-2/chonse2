@@ -162,129 +162,19 @@
         </div>
     </div>
 
-    <div class="boardControls" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
-        <div class="engineDashboard d-flex" [style.color]="themeService.getThemeInstance().getTextColor()" [style.border-bottom]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`" >
-            <!--Top box that displays engine type and depth-->
-            <div class="w-25 p-2 d-flex flex-column justify-content-center overflow-auto" [style.border-right]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
-                @if (this.boardState().doEvaluateGame())
-                {
-                    @if(this.boardState().engine(); as engine)
-                    {
-                        <!--Engine-->
-                        <div>
-                            {{EngineInformation.get(engine.name)?.displayName}} 
-                            <span class="badge" [ngClass]="{ 'bg-success' : EngineInformation.get(engine.name)?.type == EngineType.NNUE, 'bg-danger' : EngineInformation.get(engine.name)?.type == EngineType.HCE}">{{EngineInformation.get(engine.name)?.type}}</span>
-                            
-                            @if(engine.isCloudHybridMode)
-                            {
-                                <span class="badge bg-info ms-1 text-secondary">Cloud Hybrid</span>
-                            }
-                        </div>
+    <div class="boardControls">
+        
+    <!--Top box that displays engine type and depth-->
+    <app-engine-info-display [boardState]="boardState()"></app-engine-info-display>
 
-                        <!--Depth-->
-                        <div>
-                            @if(this.boardState().getMostRecentEval(); as eval)
-                            {
-                                @if(eval.lines[0])
-                                {
-                                    <div>
-                                        Depth {{eval.lines[0].depth}}
-                                    
-                                        @if(eval.source == EvalSource.Cloud)
-                                        {
-                                            <span class="badge bg-info ms-1 text-secondary">CLOUD</span>
-                                        }
-                                    </div>
-                                }
-                            }
-                        </div>
-                    }
-                }
-            
-            </div>
-
-            <!--Top box that displays coach info-->
-            <div class="w-75 p-2 d-flex flex-column justify-content-start overflow-x-scroll">
-                @if( this.boardState().evalProgress() > 0 && this.boardState().evalProgress() < 97.1)
-                {
-                    @if (this.boardState().displayedQuote(); as q)
-                    {
-                        <div>"{{q.text}}"</div>
-                        <div class="fw-bold">-{{q.author}}</div>
-                    }
-                }
-
-                @if (this.boardState().getRootForFollowUp(); as root)
-                {
-                    @if (root.move && root.eval)
-                    {
-                        <div class="">
-                            @if (getIconSourceForMoveClassification(root.eval.moveClassification ?? MoveClassification.None); as iconSource)
-                            {
-                                @if (iconSource() != "")
-                                {
-                                    <div class="fw-bold">
-                                        <img [src]="iconSource()" class="coachClassificationIcon" alt="move classification"/>
-                                        {{root.move.notation}} is {{moveClassificationLabels[root.eval.moveClassification ?? MoveClassification.None]}}
-                                    </div>
-
-                                    <div class=""></div>
-
-                                    <div class="small">
-                                        {{root.move.coachComment}}
-
-                                        @if (root.move.notation.includes("#"))
-                                        {
-                                            Checkmate is always the best move!
-                                        }
-                                    </div>
-
-                                    <div class="d-flex coachButtons">
-                                        @if (root.eval.lines[0]; as line)
-                                        {
-                                            @if (!boardState().isCoachMoveShowing() && !boardState().isCoachIdeaShowing())
-                                            {
-                                                
-                                                @if(root.move.coachIdeas.size > 0)
-                                                {
-                                                    @for(key of root.move.coachIdeas.keys(); track $index)
-                                                    {
-                                                        <app-icon-button extraClasses="m-1 small" (buttonClick)="showIdeaButtonClicked(root.move.coachIdeas.get(key))" [label]="getIdeaButtonText(key)" overridePrimaryBackgroundColor="rgb(52, 175, 0)" overrideSecondaryBackgroundColor="green" iconClass="bi-lightbulb"></app-icon-button>
-                                                    }
-                                                }
-
-                                                @if(!this.boardState().getCurrentState().gameState.isGameOver)
-                                                {
-                                                    <app-icon-button (buttonClick)="showFollowUpClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 small" [label]="getFollowUpButtonText(root.move, root.eval)" iconClass="bi-arrow-right"></app-icon-button>
-                                                }
-                                            
-                                                @if (
-                                                    root.eval.moveClassification == MoveClassification.Inaccuracy ||
-                                                    root.eval.moveClassification == MoveClassification.Mistake ||
-                                                    root.eval.moveClassification == MoveClassification.Blunder)
-                                                    {
-                                                        <app-icon-button (buttonClick)="showMissedOpportunityClicked()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 small" [label]="getMissButtonText(root.move)" iconClass="bi-arrow-90deg-left"></app-icon-button>
-                                                    }
-                                            }
-
-                                            @if(boardState().isCoachMoveShowing())
-                                            {
-                                                <app-icon-button (buttonClick)="hideSequence()" [disabled]="coachButtonsDisabled()" extraClasses="m-1 small" label="Hide Sequence" iconClass="bi-backspace"></app-icon-button>
-                                            }
-
-                                            @if(boardState().isCoachIdeaShowing())
-                                            {
-                                                <app-icon-button (buttonClick)="hideIdeaButtonClicked()" extraClasses="m-1 small" label="Hide Ideas" iconClass="bi-lightbulb-off"  overridePrimaryBackgroundColor="rgb(52, 175, 0)" overrideSecondaryBackgroundColor="green"></app-icon-button>
-                                            }
-                                        }
-                                    </div>
-                                }
-                            }
-                        </div>
-                    }
-                }
-            </div>
-    </div>
+    <app-coach-display 
+        [boardState]="this.boardState()" 
+        (showMissedOpportunityClicked)="showMissedOpportunityClicked()"
+        (showFollowUpClicked)="showFollowUpClicked()"
+        (hideSequence)="hideSequence()"
+        [coachButtonsDisabled]="coachButtonsDisabled()"
+        >
+    </app-coach-display>
 
     <app-board-arrow-buttons
         [areBackButtonsEnabled]="areBackButtonsEnabled()"
@@ -318,7 +208,6 @@
                 
                 <app-moves-table
                     [boardState]="boardState()"
-                    [getIconSourceForMoveClassification]="getIconSourceForMoveClassification"
                     (moveClicked)="moveClicked($event)">
                 </app-moves-table>
 
@@ -329,93 +218,10 @@
                 </app-engine-line-display>
 
             </div>
-            @if (this.boardState().eval(); as eval)
-            {
-            <div class="evalSectionRight p-2" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
 
-                <div class="d-flex">
-                    <div class="badge text-bg-light border d-inline-block">
-                        <h4>{{eval.estimatedElo?.white?.toFixed(0)}} / {{eval.accuracy.white.toFixed(1)}}%</h4>
-                    </div>
-                    
-                    <div class="m-2"></div>
-
-                    <div class="badge text-bg-dark d-inline-block">
-                        <h4>{{eval.estimatedElo?.black?.toFixed(0)}} / {{eval.accuracy.black.toFixed(1)}}%</h4>
-                    </div>
-                </div>
-
-                <div class="evalTextData engineMoveInfoText d-flex flex-column justify-content-center">
-                    @if (this.boardState().getMostRecentEval(); as mostRecentEval)
-                    {
-                        @if(this.boardState().getMostRecentMove().notation; as notation)
-                        {
-
-                            <div>
-                                <img class="engineLineDisplayIcon" [src]="getIconSourceForMoveClassification(mostRecentEval.moveClassification ?? MoveClassification.None)()" />
-                                {{notation}}
-
-                                @if (!(
-                                mostRecentEval.moveClassification == MoveClassification.Opening ||
-                                mostRecentEval.moveClassification == MoveClassification.Best ||
-                                mostRecentEval.moveClassification == MoveClassification.Forced || 
-                                mostRecentEval.moveClassification == MoveClassification.Perfect ||
-                                mostRecentEval.moveClassification == MoveClassification.Splendid) 
-                                && this.boardState().getPreviousMostRecentEval(); as previousEval)
-                                {   -
-                                    <img class="engineLineDisplayIcon" [src]="getIconSourceForMoveClassification(MoveClassification.Best)()">
-                                    {{previousEval.bestMove}}                                    
-                                }
-                            </div>
-                        } 
-                        @else
-                        {
-                            <div>Starting Position</div>
-                        }
-
-                    }
-                </div>
-
-                <table class="moveClassificationsList">
-                    <tr>
-                        <th>
-                            <div class="badge text-bg-light border d-inline-block playerNameInTable">
-                                {{this.boardState().pgnHeaders().white}}
-                            </div>
-                        </th>
-                        <th>
-                        
-                        </th>
-                        <th></th>
-                        <th>
-                            <div class="badge text-bg-dark border d-inline-block playerNameInTable">
-                                {{this.boardState().pgnHeaders().black}}
-                            </div>
-                        </th>
-                    </tr>
-                    @for( item of Object.values(MoveClassification); track $index )
-                    {
-                        @if (item != MoveClassification.None)
-                        {
-                            <tr class="align-middle" [ngStyle]="{`color` : Chessboard.moveClassificationColors.get(item)}">
-                                <td class="pe-4" style="text-align: right;" (click)="moveClassificationClicked(PieceColor.WHITE, item)">
-                                    {{boardState().whiteMoveClassificationList().getFromString(item).length}}
-                                </td>
-                                <td>
-                                    <img class="moveClassificationListIcon" [src]='`icons/${item}.png`'>
-                                </td>
-                                <td style="text-align: left;">
-                                    &nbsp;&nbsp;{{item}}
-                                </td>
-                                <td class="ps-4" style="text-align: left;" (click)="moveClassificationClicked(PieceColor.BLACK, item)">
-                                    {{boardState().blackMoveClassificationList().getFromString(item).length}}
-                                </td>
-                            </tr>
-                        }
-                    }
-                </table>
-            </div>
-            }
+        <app-move-overview 
+            [boardState]="boardState()"
+            (moveClassificationClicked)="moveClassificationClicked($event.color, $event.classification)" />
         </div>
 
 

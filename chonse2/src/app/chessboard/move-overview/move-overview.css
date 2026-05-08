@@ -1,0 +1,35 @@
+.engineMoveInfoText
+{
+  min-height: 3vmin;
+}
+
+.engineMoveInfoText img
+{
+  height: 2vmin;
+}
+
+.engineLineDisplayIcon
+{
+  height: 3vmin;
+}
+
+.moveClassificationListIcon
+{
+  width: 3.7vmin;
+}
+
+
+.playerNameInTable
+{
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 10vmin;
+}
+
+.evalSectionRight
+{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
