@@ -1,201 +1,207 @@
 <div class="componentContainer pt-1">
-    <div class="boardAndEvalBar d-flex align-items-center">
-        @if(this.boardState().doEvaluateGame())
-        {
-            <app-eval-bar [data]="getEvalBarData()"></app-eval-bar>
-        }
-        <div class="boardOuterContainer" [class]="boardState().isFlipped() ? 'boardOuterContainerFlipped' : ''">
-            <app-board-player-info [playerName]="boardState().pgnHeaders().black" [playerElo]="boardState().pgnHeaders().blackElo" for="b" [clock]="getClockForPlayer('b')()" [capturedPieces]="boardState().getCurrentState().piecesBlackCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
-            
-            <div #board class="boardContainerInner" [class]="boardState().isFlipped() ? 'boardContainerInnerFlipped' : ''">
-                @if(animatedPiece())
-                {
-                    <img class="animatedPiece"
-                        [ngClass]="{'animatedPieceFlipped': boardState().isFlipped()}"
-                        [src]="`piece/merida/${animatedPiece()}.svg`"
-                        [style.transform]="'
-                            translate(' + animatedPieceX() + 'px,' + animatedPieceY() + 'px)' 
-                            + (boardState().isFlipped() ? ' rotate(180deg)' : '')"
-
-                        [style.transition]="'all ' + animationDuration + 'ms ease-in-out'"
-                        (transitionend)="onAnimationEnd()"/>
-                }
-                <!-- ARROW OVERLAY -->
-                <svg
-                    class="arrowOverlay"
-                    [attr.viewBox]="'0 0 8 8'"
-                    preserveAspectRatio="none">
-                    @for( arrow of this.boardState().arrows(); track $index )
-                    {
-                        <ng-container>
-                            <line
-                                [attr.x1]="_getArrowCoords(arrow).x1"
-                                [attr.y1]="_getArrowCoords(arrow).y1"
-                                [attr.x2]="_getArrowCoords(arrow).x2"
-                                [attr.y2]="_getArrowCoords(arrow).y2"
-                                [attr.stroke]="arrow.color"
-                                stroke-width="0.13"
-                                marker-end="url(#arrowhead)" />
-                        </ng-container>
-                    }
-
-                    @if (getPastEngineArrow(); as engineArrow)
-                    {
-                        <ng-container>
-                            <line
-                                [attr.x1]="_getArrowCoords(engineArrow).x1"
-                                [attr.y1]="_getArrowCoords(engineArrow).y1"
-                                [attr.x2]="_getArrowCoords(engineArrow).x2"
-                                [attr.y2]="_getArrowCoords(engineArrow).y2"
-                                [attr.stroke]="engineArrow.color"
-                                stroke-width="0.13"
-                                marker-end="url(#arrowhead)" />
-                        </ng-container>
-                    }
-
-                    @if (getFutureEngineArrow(); as engineArrow)
-                    {
-                        <ng-container>
-                            <line
-                                [attr.x1]="_getArrowCoords(engineArrow).x1"
-                                [attr.y1]="_getArrowCoords(engineArrow).y1"
-                                [attr.x2]="_getArrowCoords(engineArrow).x2"
-                                [attr.y2]="_getArrowCoords(engineArrow).y2"
-                                [attr.stroke]="engineArrow.color"
-                                stroke-width="0.13"
-                                marker-end="url(#arrowhead)" />
-                        </ng-container>
-                    }
-
-                    <defs>
-                        <marker
-                            id="arrowhead"
-                            markerWidth="3"
-                            markerHeight="3"
-                            refX="1.5"
-                            refY="1.5"
-                            orient="auto"
-                            markerUnits="strokeWidth">
-                            <polygon points="0 0, 3 1.5, 0 3" fill="context-stroke" />
-                        </marker>
-                    </defs>
-                </svg>
-                @for( rank of boardState().getCurrentState().pieceState; let rankIndex = $index; track rankIndex)
-                {
-                    <ng-container>
-                        @for ( piece of rank; let fileIndex = $index; track fileIndex; )
-                        {
-                            <div style="position: relative; width: 100%; height: 100%;">
-                                <app-square 
-                                    [coordinate]="this.COORDS[rankIndex][fileIndex]" 
-                                    [piece]="boardState().getCurrentState().pieceState[rankIndex][fileIndex]"
-                                    [isDark]="(rankIndex + fileIndex) % 2 == 1"
-                                    [showFile]="rankIndex == rank.length - 1"
-                                    [showRank]="fileIndex == 0"
-                                    [showPiece]="animatedPieceCoord() ? this.COORDS[rankIndex][fileIndex] != animatedPieceCoord() : LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE) ? true : this.COORDS[rankIndex][fileIndex] != fromSquare()"
-                                    [isFlipped]="boardState().isFlipped()"
-                                    [isLegalMove]="currentLegalMoves().includes(this.COORDS[rankIndex][fileIndex])"
-                                    [isInCheck]="(boardState().getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState().getCurrentState().isInCheck(PieceColor.WHITE)) || (boardState().getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState().getCurrentState().isInCheck(PieceColor.BLACK)) "
-                                    [isClicked]="getRightClickedStatusForSquare(this.COORDS[rankIndex][fileIndex])()"
-                                    [moveClassification]="getMoveClassificationForSquare(this.COORDS[rankIndex][fileIndex])()"
-                                    (mouseDown)="onSquareMouseDown($event)"
-                                    (mouseUp)="onSquareMouseUp($event)"
-                                    (leftClick)="onSquareLeftClick()">
-                                </app-square>
-
-                                @if (_isSquareEndgameKingSquare(rankIndex, fileIndex)())
-                                {
-                                    <div class="squareOverlay" 
-                                    [ngClass]="{'squareOverlayFlipped': boardState().isFlipped()}">
-                                        <div class="fade-out-bg squareBackground"
-                                            [style]="{'background-color' : _getEndgameSquareBackgroundColor(rankIndex, fileIndex)()}">
-                                        </div>
-
-                                        <img class="move-up-right-shrink squareImage"
-                                            [src]="_getEndgameSquareImgSrc(rankIndex, fileIndex)()"
-                                            style="width: 10vmin;" />
-
-                                        <div class="corner-text fade-out-bg"
-                                            [style]="{'background-color' : _getEndgameSquareBackgroundColor(rankIndex, fileIndex)()}">
-                                            {{_getEndgameSquareText(rankIndex, fileIndex)()}}
-                                        </div>
-                                    </div>
-                                }
-
-                                @if(this.getMoveClassificationIconSourceForCoord(this.COORDS[rankIndex][fileIndex])(); as iconSrc)
-                                {
-                                    @if (getMoveClassificationForSquare(this.COORDS[rankIndex][fileIndex])(); as classification)
-                                    {
-                                        @if (classification == MoveClassification.Splendid || classification == MoveClassification.Perfect)
-                                        {
-                                            <div class="squareOverlay" 
-                                            [ngClass]="{'squareOverlayFlipped': boardState().isFlipped()}">
-                                                <div class="fade-out-bg squareBackground"
-                                                    [style]="{'background-color' : _getLuminousOrPerfectBackgroundColor(classification)()}">
-                                                </div>
-
-                                                <img class="move-up-right-shrink-sm squareImage"
-                                                    [src]="iconSrc"
-                                                    style="width: 10vmin;" />
-
-                                                <div class="corner-text fade-out-bg"
-                                                    [style]="{'background-color' : _getLuminousOrPerfectBackgroundColor(classification)()}">
-                                                    {{_getLuminousOrPerfectSquareText(classification)()}}
-                                                </div>
-                                            </div>
-                                        }
-                                        @else 
-                                        {
-                                            <div class="moveClassificationIconOverlay" [ngClass]="{'moveClassificationIconOverlayFlipped': boardState().isFlipped()}">
-                                                <img alt="moveClassificationIcon" class="moveClassificationIcon" [src]="iconSrc" draggable="false">
-                                            </div>
-                                        }
-                                    }
-                                }
-                            </div>
-                        }
-                    </ng-container>
-                }
-            </div>
-            
-            <app-board-player-info [playerName]="boardState().pgnHeaders().white" [playerElo]="boardState().pgnHeaders().whiteElo" for="w" [clock]="getClockForPlayer('w')()" [capturedPieces]="boardState().getCurrentState().piecesWhiteCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
-        </div>
+    <div class="playerInfo d-flex flex-column justify-space-between">
+        <app-board-player-info [playerName]="boardState().pgnHeaders().black" [playerElo]="boardState().pgnHeaders().blackElo" for="b" [clock]="getClockForPlayer('b')()" [capturedPieces]="boardState().getCurrentState().piecesBlackCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
+        <app-board-player-info [playerName]="boardState().pgnHeaders().white" [playerElo]="boardState().pgnHeaders().whiteElo" for="w" [clock]="getClockForPlayer('w')()" [capturedPieces]="boardState().getCurrentState().piecesWhiteCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
     </div>
 
-    <div class="boardControls">
+    <div class="boardEvalBarAndArrows d-flex flex-column">
+
+        <div class="boardAndEvalBar d-flex align-items-center">
+            @if(this.boardState().doEvaluateGame())
+            {
+                <app-eval-bar [data]="getEvalBarData()"></app-eval-bar>
+            }
+            <div class="boardOuterContainer" [class]="boardState().isFlipped() ? 'boardOuterContainerFlipped' : ''">
+                
+                <div #board class="boardContainerInner" [class]="boardState().isFlipped() ? 'boardContainerInnerFlipped' : ''">
+                    @if(animatedPiece())
+                    {
+                        <img class="animatedPiece"
+                            [ngClass]="{'animatedPieceFlipped': boardState().isFlipped()}"
+                            [src]="`piece/merida/${animatedPiece()}.svg`"
+                            [style.transform]="'
+                                translate(' + animatedPieceX() + 'px,' + animatedPieceY() + 'px)' 
+                                + (boardState().isFlipped() ? ' rotate(180deg)' : '')"
+
+                            [style.transition]="'all ' + animationDuration + 'ms ease-in-out'"
+                            (transitionend)="onAnimationEnd()"/>
+                    }
+                    <!-- ARROW OVERLAY -->
+                    <svg
+                        class="arrowOverlay"
+                        [attr.viewBox]="'0 0 8 8'"
+                        preserveAspectRatio="none">
+                        @for( arrow of this.boardState().arrows(); track $index )
+                        {
+                            <ng-container>
+                                <line
+                                    [attr.x1]="_getArrowCoords(arrow).x1"
+                                    [attr.y1]="_getArrowCoords(arrow).y1"
+                                    [attr.x2]="_getArrowCoords(arrow).x2"
+                                    [attr.y2]="_getArrowCoords(arrow).y2"
+                                    [attr.stroke]="arrow.color"
+                                    stroke-width="0.13"
+                                    marker-end="url(#arrowhead)" />
+                            </ng-container>
+                        }
+
+                        @if (getPastEngineArrow(); as engineArrow)
+                        {
+                            <ng-container>
+                                <line
+                                    [attr.x1]="_getArrowCoords(engineArrow).x1"
+                                    [attr.y1]="_getArrowCoords(engineArrow).y1"
+                                    [attr.x2]="_getArrowCoords(engineArrow).x2"
+                                    [attr.y2]="_getArrowCoords(engineArrow).y2"
+                                    [attr.stroke]="engineArrow.color"
+                                    stroke-width="0.13"
+                                    marker-end="url(#arrowhead)" />
+                            </ng-container>
+                        }
+
+                        @if (getFutureEngineArrow(); as engineArrow)
+                        {
+                            <ng-container>
+                                <line
+                                    [attr.x1]="_getArrowCoords(engineArrow).x1"
+                                    [attr.y1]="_getArrowCoords(engineArrow).y1"
+                                    [attr.x2]="_getArrowCoords(engineArrow).x2"
+                                    [attr.y2]="_getArrowCoords(engineArrow).y2"
+                                    [attr.stroke]="engineArrow.color"
+                                    stroke-width="0.13"
+                                    marker-end="url(#arrowhead)" />
+                            </ng-container>
+                        }
+
+                        <defs>
+                            <marker
+                                id="arrowhead"
+                                markerWidth="3"
+                                markerHeight="3"
+                                refX="1.5"
+                                refY="1.5"
+                                orient="auto"
+                                markerUnits="strokeWidth">
+                                <polygon points="0 0, 3 1.5, 0 3" fill="context-stroke" />
+                            </marker>
+                        </defs>
+                    </svg>
+                    @for( rank of boardState().getCurrentState().pieceState; let rankIndex = $index; track rankIndex)
+                    {
+                        <ng-container>
+                            @for ( piece of rank; let fileIndex = $index; track fileIndex; )
+                            {
+                                <div style="position: relative; width: 100%; height: 100%;">
+                                    <app-square 
+                                        [coordinate]="this.COORDS[rankIndex][fileIndex]" 
+                                        [piece]="boardState().getCurrentState().pieceState[rankIndex][fileIndex]"
+                                        [isDark]="(rankIndex + fileIndex) % 2 == 1"
+                                        [showFile]="rankIndex == rank.length - 1"
+                                        [showRank]="fileIndex == 0"
+                                        [showPiece]="animatedPieceCoord() ? this.COORDS[rankIndex][fileIndex] != animatedPieceCoord() : LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE) ? true : this.COORDS[rankIndex][fileIndex] != fromSquare()"
+                                        [isFlipped]="boardState().isFlipped()"
+                                        [isLegalMove]="currentLegalMoves().includes(this.COORDS[rankIndex][fileIndex])"
+                                        [isInCheck]="(boardState().getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState().getCurrentState().isInCheck(PieceColor.WHITE)) || (boardState().getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState().getCurrentState().isInCheck(PieceColor.BLACK)) "
+                                        [isClicked]="getRightClickedStatusForSquare(this.COORDS[rankIndex][fileIndex])()"
+                                        [moveClassification]="getMoveClassificationForSquare(this.COORDS[rankIndex][fileIndex])()"
+                                        (mouseDown)="onSquareMouseDown($event)"
+                                        (mouseUp)="onSquareMouseUp($event)"
+                                        (leftClick)="onSquareLeftClick()">
+                                    </app-square>
+
+                                    @if (_isSquareEndgameKingSquare(rankIndex, fileIndex)())
+                                    {
+                                        <div class="squareOverlay" 
+                                        [ngClass]="{'squareOverlayFlipped': boardState().isFlipped()}">
+                                            <div class="fade-out-bg squareBackground"
+                                                [style]="{'background-color' : _getEndgameSquareBackgroundColor(rankIndex, fileIndex)()}">
+                                            </div>
+
+                                            <img class="move-up-right-shrink squareImage"
+                                                [src]="_getEndgameSquareImgSrc(rankIndex, fileIndex)()"
+                                                style="width: 10vmin;" />
+
+                                            <div class="corner-text fade-out-bg"
+                                                [style]="{'background-color' : _getEndgameSquareBackgroundColor(rankIndex, fileIndex)()}">
+                                                {{_getEndgameSquareText(rankIndex, fileIndex)()}}
+                                            </div>
+                                        </div>
+                                    }
+
+                                    @if(this.getMoveClassificationIconSourceForCoord(this.COORDS[rankIndex][fileIndex])(); as iconSrc)
+                                    {
+                                        @if (getMoveClassificationForSquare(this.COORDS[rankIndex][fileIndex])(); as classification)
+                                        {
+                                            @if (classification == MoveClassification.Splendid || classification == MoveClassification.Perfect)
+                                            {
+                                                <div class="squareOverlay" 
+                                                [ngClass]="{'squareOverlayFlipped': boardState().isFlipped()}">
+                                                    <div class="fade-out-bg squareBackground"
+                                                        [style]="{'background-color' : _getLuminousOrPerfectBackgroundColor(classification)()}">
+                                                    </div>
+
+                                                    <img class="move-up-right-shrink-sm squareImage"
+                                                        [src]="iconSrc"
+                                                        style="width: 10vmin;" />
+
+                                                    <div class="corner-text fade-out-bg"
+                                                        [style]="{'background-color' : _getLuminousOrPerfectBackgroundColor(classification)()}">
+                                                        {{_getLuminousOrPerfectSquareText(classification)()}}
+                                                    </div>
+                                                </div>
+                                            }
+                                            @else 
+                                            {
+                                                <div class="moveClassificationIconOverlay" [ngClass]="{'moveClassificationIconOverlayFlipped': boardState().isFlipped()}">
+                                                    <img alt="moveClassificationIcon" class="moveClassificationIcon" [src]="iconSrc" draggable="false">
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            }
+                        </ng-container>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <app-board-arrow-buttons
+            [areBackButtonsEnabled]="areBackButtonsEnabled()"
+            [areForwardButtonsEnabled]="areForwardButtonsEnabled()"
+            (flipClicked)="handleFlipClicked()"
+            (backClicked)="handleBackButtonClicked()"
+            (doubleBackClicked)="handleDoubleBackButtonClicked()"
+            (forwardClicked)="handleForwardButtonClicked()"
+            (doubleForwardClicked)="handleDoubleForwardButtonClicked()">
+        </app-board-arrow-buttons>
+    </div>
+
+
+    <div class="boardRight">
         
-    <!--Top box that displays engine type and depth-->
-    <app-engine-info-display [boardState]="boardState()"></app-engine-info-display>
+        <!--Top box that displays engine type and depth-->
+        <app-engine-info-display [boardState]="boardState()"></app-engine-info-display>
 
-    <app-coach-display 
-        [boardState]="this.boardState()" 
-        (showMissedOpportunityClicked)="showMissedOpportunityClicked()"
-        (showFollowUpClicked)="showFollowUpClicked()"
-        (hideSequence)="hideSequence()"
-        [coachButtonsDisabled]="coachButtonsDisabled()"
-        >
-    </app-coach-display>
+        <app-coach-display 
+            [boardState]="this.boardState()" 
+            (showMissedOpportunityClicked)="showMissedOpportunityClicked()"
+            (showFollowUpClicked)="showFollowUpClicked()"
+            (hideSequence)="hideSequence()"
+            [coachButtonsDisabled]="coachButtonsDisabled()"
+            >
+        </app-coach-display>
 
-    <app-board-arrow-buttons
-        [areBackButtonsEnabled]="areBackButtonsEnabled()"
-        [areForwardButtonsEnabled]="areForwardButtonsEnabled()"
-        (flipClicked)="handleFlipClicked()"
-        (backClicked)="handleBackButtonClicked()"
-        (doubleBackClicked)="handleDoubleBackButtonClicked()"
-        (forwardClicked)="handleForwardButtonClicked()"
-        (doubleForwardClicked)="handleDoubleForwardButtonClicked()">
-    </app-board-arrow-buttons>
-
-    <app-board-options
-        [boardState]="boardState()"
-        (importClicked)="handleImportClicked()"
-        (resetClicked)="handleResetClicked()"
-        (analyzeClicked)="handleAnalyzeClicked()"
-        (exportGameClicked)="exportGameClicked()"
-        (resignVsAiClicked)="resignVsAiClicked()"
-        (beginGameVsAiClicked)="beginGameVsAiClicked()"
-        (analyzeAiGameClicked)="analyzeAiGameClicked()">
-    </app-board-options>
+        <app-board-options
+            [boardState]="boardState()"
+            (importClicked)="handleImportClicked()"
+            (resetClicked)="handleResetClicked()"
+            (analyzeClicked)="handleAnalyzeClicked()"
+            (exportGameClicked)="exportGameClicked()"
+            (resignVsAiClicked)="resignVsAiClicked()"
+            (beginGameVsAiClicked)="beginGameVsAiClicked()"
+            (analyzeAiGameClicked)="analyzeAiGameClicked()">
+        </app-board-options>
 
         <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
         <app-game-info
@@ -204,35 +210,34 @@
         />
 
         <div [style.color]="themeService.getThemeInstance().getTextColor()" class="d-flex movesAndAccuracies">
-            <div class="evalSectionLeft d-flex flex-column">
-                
-                <app-moves-table
-                    [boardState]="boardState()"
-                    (moveClicked)="moveClicked($event)">
-                </app-moves-table>
+        
+        <div class="d-flex flex-column">
+            
+            <app-moves-table
+                [boardState]="boardState()"
+                (moveClicked)="moveClicked($event)">
+            </app-moves-table>
 
 
-                <app-engine-line-display
-                    [boardState]="boardState()"
-                    [getImageSourceForEnginePiece]="getImageSourceForEnginePiece">
-                </app-engine-line-display>
+            <app-engine-line-display
+                [boardState]="boardState()"
+                [getImageSourceForEnginePiece]="getImageSourceForEnginePiece">
+            </app-engine-line-display>
 
-            </div>
+        </div>
 
         <app-move-overview 
             [boardState]="boardState()"
             (moveClassificationClicked)="moveClassificationClicked($event.color, $event.classification)" />
         </div>
 
-
-        <!--PROGRESS BAR-->
-        @if( this.boardState().evalProgress() > 0 && this.boardState().evalProgress() < 97.1)
+        @if(this.boardState().evalProgress() > 0 && this.boardState().evalProgress() < 97.1)
         {
-            <div >
+            <div>
                 <ngb-progressbar class="mb-3" type="info" [value]="getEvalProgress()" [striped]="true" [animated]="true"><i>{{this.getEvalProgress()}}% [{{this.getEngineDisplayName()}}]</i></ngb-progressbar>
             </div>
         }
-        <!---->
+
 
         @if(this.boardState().doEvaluateGame())
         {
@@ -264,11 +269,11 @@
     <p>Divergence stack length: {{this.boardState().divergenceStateStack().length}}</p>
     <p>Divergence move stack length: {{this.boardState().divergenceMoveStack().length}}</p>
     <p>Divergence eval stack length: {{this.boardState().divergenceEvalStack().length}}</p> -->
-    <!-- @if(Chonse2Extensions.getPiecesThatHitSquare(boardState().getCurrentState() ,"b5"); as ad)
+   <!-- @if(Chonse2Extensions.getPiecesThatHitSquare(boardState().getCurrentState() ,"b5"); as ad)
     {
         <div>White: {{ad.white}}</div>
         <div>Black: {{ad.black}}</div>
-    } -->
+    }  -->
 
     <!-- @if (Chonse2Extensions.getHangingPieces(boardState().getCurrentState()); as hp)
     {

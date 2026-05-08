@@ -17,8 +17,8 @@
 .app-shell {
   width: 100%;
 
-  max-width: 1800px;
-  min-height: calc(100vh - 48px);
+  max-width: 97%;
+  min-height: calc(100vh - 20px);
   max-height: 90vmin;
 
   border-radius: 32px;

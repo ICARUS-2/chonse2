@@ -1,30 +1,27 @@
-<div class="boardPlayerInfoContainer d-flex align-items-center">
+<div class="boardPlayerInfoContainer d-flex flex-column glass-subpanel p-4">
     
-    <p [style.color]="themeService.getThemeInstance().getTextColor()">{{playerName()}} {{playerElo() ? `(${playerElo()})` : ""}}</p>
-    
-    <div class="m-1"></div>
+    <div>
+        <div [style.color]="themeService.getThemeInstance().getTextColor()">{{playerName()}}</div>
+        <div [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{playerElo() ? `${playerElo()}` : ""}}</div>
+    </div>
 
     <div class="pieceGroupContainer">
         @for(key of getDisplayMap().keys(); track $index)
         {
-            <div class="piece-group">
-                @for(i of [].constructor(getDisplayMap().get(key)); track $index)
-                {
-                    <img class="capturedPieceImg" [src]="`piece/merida/${key}.svg`" alt="piece" />
-                }
-            </div>
+            @let count = getDisplayMap().get(key);
+
+            <img class="capturedPieceImg" [src]="`piece/merida/${key}.svg`" alt="piece" />
+            <p>{{count}}</p>
+        }
+
+        @if(getAbsoluteAdvantage() > 0)
+        {
+            <p class="ms-3" [style.color]="themeService.getThemeInstance().getPrimaryColor()">+{{getAbsoluteAdvantage()}}</p>
         }
     </div>
 
-    @if(getAbsoluteAdvantage() > 0)
-    {
-        <p class="m-0" [style.color]="themeService.getThemeInstance().getPrimaryColor()">+{{getAbsoluteAdvantage()}}</p>
-    }
-    
-    <div class="m-1"></div>
-
     @if (clock(); as clock)
     {
-        <p class="badge text-bg-secondary">{{clock.includes(CLOCK) ? clock.split(CLOCK)[1] : clock}}</p>
+        <div class="badge text-bg-secondary">{{clock.includes(CLOCK) ? clock.split(CLOCK)[1] : clock}}</div>
     }
 </div>

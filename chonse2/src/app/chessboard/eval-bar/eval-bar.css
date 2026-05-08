@@ -6,7 +6,7 @@
 
 
 .progress-vertical {
-    height: 82vmin;        /* total height */
+    height: 77vmin;        /* total height */
     display: flex;
     align-items: flex-end; /* makes it fill from bottom */
     border-radius: 0;

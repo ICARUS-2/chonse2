@@ -1,14 +1,31 @@
 .componentContainer
 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.playerInfo 
+{
+  height: 82vmin;
+  justify-content: space-between;
+}
+
+.boardEvalBarAndArrows
+{
+  height: 85vmin;
+  justify-content: space-between;
+  padding-left: 4vmin;
+  padding-right: 4vmin;
 }
 
 .boardOuterContainer
 {
     display: flex;
     flex-direction: column;
+      box-shadow:
+    0 8px 32px rgba(31, 38, 135, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .boardOuterContainerFlipped
@@ -22,10 +39,9 @@
   display: grid;
   grid-template-rows: repeat(8, 1fr);
   grid-template-columns: repeat(8, 1fr);
-  width: 82vmin; /* scale board to viewport, always square */
-  height: 82vmin;
+  width: 77vmin; /* scale board to viewport, always square */
+  height: 77vmin;
   gap: 0;
-  border: 1px solid;
   user-select: none;
   touch-action: none;
 }
@@ -136,12 +152,12 @@
     z-index: 10;
 }
 
-.boardControls
+.boardRight
 {
   display: flex;
   flex-direction: column;
-  height: 96vmin;
-  width: 83vmin;
+  height: 80vmin;
+  width: 70vmin;
   touch-action: manipulation;
 }
 
@@ -200,11 +216,6 @@
   user-select: none;
   table-layout: fixed;
   width: 100%;
-}
-
-.engineLinesContainer
-{
-  flex: 1;
 }
 
 @media screen and (max-width: 1200px) 

@@ -55,7 +55,6 @@ import ChessboardHelper from '../helpers';
     NgbProgressbar,
     EvalBar,
     EvaluationChart,
-    IconButton,
     EngineLineDisplay,
     GameInfo,
     MoveOverview,

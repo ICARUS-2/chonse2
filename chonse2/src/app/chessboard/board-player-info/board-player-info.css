@@ -1,18 +1,13 @@
 .boardPlayerInfoContainer
 {
-    height: 7vmin;
-    width: 82vmin;
-}
-
-.piece-group
-{
-    margin-right: 3vmin;
+    height: 20vmin;
+    width: 30vmin;
+    justify-content: space-between;
 }
 
 .capturedPieceImg
 {
-    width: 5vmin;
-    margin-right: -3vmin;
+    width: 4vmin;
 }
 
 .pieceGroupContainer
