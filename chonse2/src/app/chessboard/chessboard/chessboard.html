@@ -179,9 +179,6 @@
 
 
     <div class="boardRight">
-        
-        <!--Top box that displays engine type and depth-->
-        <!-- <app-engine-info-display [boardState]="boardState()"></app-engine-info-display> -->
 
         <app-coach-display 
             [boardState]="this.boardState()" 
@@ -191,6 +188,34 @@
             [coachButtonsDisabled]="coachButtonsDisabled()"
             >
         </app-coach-display>
+
+        <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
+        <app-game-info [boardState]="boardState()" [getOpeningDisplay]="getOpeningDisplay"></app-game-info>
+        
+        <div class="d-flex justify-content-between">
+            <app-moves-table
+                class="w-50 me-1"
+                [boardState]="boardState()"
+                (moveClicked)="moveClicked($event)">
+            </app-moves-table>
+
+            <app-engine-line-display
+                class="w-50 ms-1"
+                [boardState]="boardState()"
+                [getImageSourceForEnginePiece]="getImageSourceForEnginePiece">
+            </app-engine-line-display>
+        </div>
+        <!-- <div class="d-flex flex-column">
+
+
+
+
+        </div>
+
+        <app-move-overview 
+            [boardState]="boardState()"
+            (moveClassificationClicked)="moveClassificationClicked($event.color, $event.classification)" />
+        </div> -->
 
         <app-board-options
             [boardState]="boardState()"
@@ -203,34 +228,6 @@
             (analyzeAiGameClicked)="analyzeAiGameClicked()">
         </app-board-options>
 
-        <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
-        <app-game-info
-            [boardState]="boardState()"
-            [getOpeningDisplay]="getOpeningDisplay"
-        />
-
-        <div [style.color]="themeService.getThemeInstance().getTextColor()" class="d-flex movesAndAccuracies">
-        
-        <div class="d-flex flex-column">
-            
-            <app-moves-table
-                [boardState]="boardState()"
-                (moveClicked)="moveClicked($event)">
-            </app-moves-table>
-
-
-            <app-engine-line-display
-                [boardState]="boardState()"
-                [getImageSourceForEnginePiece]="getImageSourceForEnginePiece">
-            </app-engine-line-display>
-
-        </div>
-
-        <app-move-overview 
-            [boardState]="boardState()"
-            (moveClassificationClicked)="moveClassificationClicked($event.color, $event.classification)" />
-        </div>
-
         @if(this.boardState().evalProgress() > 0 && this.boardState().evalProgress() < 97.1)
         {
             <div>
@@ -239,6 +236,7 @@
         }
 
 
+        <!--
         @if(this.boardState().doEvaluateGame())
         {
             @if (this.boardState().eval(); as eval)
@@ -251,6 +249,7 @@
                 }
             }
         }
+            -->
     </div>
 
     @if(currentlyHeldPiece() != "")
@@ -260,8 +259,6 @@
             [style.left.px]="mouseX()"
             [style.top.px]="mouseY()">
     }
-</div>
-
 <div class="testingPurposes">
     <!-- <p>Main stack length: {{this.boardState().mainStateStack().length}}</p>
     <p>Main move stack length: {{this.boardState().mainMoveStack().length}}</p>

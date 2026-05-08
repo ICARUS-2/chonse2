@@ -38,7 +38,6 @@ import { MovesTable } from '../moves-table/moves-table';
 import { EngineLineDisplay } from "../engine-line-display/engine-line-display";
 import { GameInfo } from "../game-info/game-info";
 import { MoveOverview } from "../move-overview/move-overview";
-import { EngineInfoDisplay } from "../engine-info-display/engine-info-display";
 import { CoachDisplay } from "../coach-display/coach-display";
 import ChessboardHelper from '../helpers';
 
@@ -58,7 +57,6 @@ import ChessboardHelper from '../helpers';
     EngineLineDisplay,
     GameInfo,
     MoveOverview,
-    EngineInfoDisplay,
     CoachDisplay
 ],
   templateUrl: './chessboard.html',
