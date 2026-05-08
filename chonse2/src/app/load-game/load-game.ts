@@ -26,7 +26,7 @@ export class LoadGame implements OnInit {
 
   ngOnInit(): void 
   {
-    this.router.navigate(['/'], {state: {"site" : this.site, "username": this.username, "gameId": this.gameId}})
+    this.router.navigate(['/analysis'], {state: {"site" : this.site, "username": this.username, "gameId": this.gameId}})
   }
 
   isError()

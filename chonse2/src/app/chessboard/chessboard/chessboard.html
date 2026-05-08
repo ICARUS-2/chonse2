@@ -201,7 +201,7 @@
             </div>
 
             <!--Top box that displays coach info-->
-            <div class="w-75 p-2 d-flex flex-column justify-content-start overflow-auto">
+            <div class="w-75 p-2 d-flex flex-column justify-content-start overflow-x-scroll">
                 @if( this.boardState().evalProgress() > 0 && this.boardState().evalProgress() < 97.1)
                 {
                     @if (this.boardState().displayedQuote(); as q)
@@ -236,7 +236,7 @@
                                         }
                                     </div>
 
-                                    <div class="d-flex">
+                                    <div class="d-flex coachButtons">
                                         @if (root.eval.lines[0]; as line)
                                         {
                                             @if (!boardState().isCoachMoveShowing() && !boardState().isCoachIdeaShowing())
@@ -281,235 +281,49 @@
                     }
                 }
             </div>
-        </div>
-        <div class="boardControlButtons ps-2 pe-2 pt-1">
-            <app-bootstrap-button 
-                (buttonClick)="handleFlipClicked()" 
-                label="↑↓"
-                extraClasses="btn-lg">
-            </app-bootstrap-button>
+    </div>
 
-            <app-bootstrap-button 
-                (buttonClick)="handleDoubleBackButtonClicked()" 
-                [disabled]="!areBackButtonsEnabled()" 
-                label="&lt;&lt;-" 
-                extraClasses="btn-lg">
-            </app-bootstrap-button>
-            
-            <app-bootstrap-button 
-                (buttonClick)="handleBackButtonClicked()" 
-                [disabled]="!areBackButtonsEnabled()" 
-                label="&lt;" 
-                extraClasses="btn-lg">
-            </app-bootstrap-button>
-            
-            <app-bootstrap-button 
-                (buttonClick)="handleForwardButtonClicked()" 
-                [disabled]="!areForwardButtonsEnabled()" 
-                label=">" 
-                extraClasses="btn-lg">
-            </app-bootstrap-button>
-            
-            <app-bootstrap-button 
-                (buttonClick)="handleDoubleForwardButtonClicked()" 
-                [disabled]="!areForwardButtonsEnabled()" 
-                label="->>" 
-                extraClasses="btn-lg"></app-bootstrap-button>
-        </div>
-        @if(!this.boardState().isVsAi())
-        {
-            <div class="iconButtonContainer d-flex w-100 justify-content-around mt-2">
+    <app-board-arrow-buttons
+        [areBackButtonsEnabled]="areBackButtonsEnabled()"
+        [areForwardButtonsEnabled]="areForwardButtonsEnabled()"
+        (flipClicked)="handleFlipClicked()"
+        (backClicked)="handleBackButtonClicked()"
+        (doubleBackClicked)="handleDoubleBackButtonClicked()"
+        (forwardClicked)="handleForwardButtonClicked()"
+        (doubleForwardClicked)="handleDoubleForwardButtonClicked()">
+    </app-board-arrow-buttons>
 
-                <app-icon-button 
-                    label="Import Game"
-                    extraClasses="m-1 small"
-                    iconClass="bi-box-arrow-in-down-left"
-                    (buttonClick)="handleImportClicked()"
-                    >
-                </app-icon-button>
+    <app-board-options
+        [boardState]="boardState()"
+        (importClicked)="handleImportClicked()"
+        (resetClicked)="handleResetClicked()"
+        (analyzeClicked)="handleAnalyzeClicked()"
+        (exportGameClicked)="exportGameClicked()"
+        (resignVsAiClicked)="resignVsAiClicked()"
+        (beginGameVsAiClicked)="beginGameVsAiClicked()"
+        (analyzeAiGameClicked)="analyzeAiGameClicked()">
+    </app-board-options>
 
-                <app-icon-button
-                    label="Reset"
-                    extraClasses="m-1 small"
-                    iconClass="bi-bootstrap-reboot"
-                    (buttonClick)="handleResetClicked()">
-                </app-icon-button>
-
-                @if(!boardState().doEvaluateGame() && boardState().mainStateStack().length > 1)
-                {
-                    <app-icon-button
-                        label="Analyze"
-                        iconClass="bi-cpu"
-                        extraClasses="m-1 small"
-                        (buttonClick)="handleAnalyzeClicked()">
-                    </app-icon-button>
-                }
-
-                
-                @if (boardState().mainStateStack().length > 1)
-                {
-                    <app-icon-button
-                        label="Export Game"
-                        extraClasses="m-1 small"
-                        iconClass="bi-share"
-                        (buttonClick)="exportGameClicked()">
-                    </app-icon-button>
-                }
-            </div>
-        }
-        @else 
-        {
-            <div class="d-flex w-100 justify-content-start mt-2 ms-2">
-
-                @if (!getMostCurrentMainState().gameState.isGameOver && boardState().engine())
-                {
-                    <app-icon-button
-                        label="Resign"
-                        (buttonClick)="resignVsAiClicked()"
-                        iconClass="bi-flag"
-                        extraClasses="m1-1">
-                    </app-icon-button>
-                }
-                @else 
-                {
-                    <app-icon-button
-                        label="New game"
-                        extraClasses="m-1"
-                        iconClass="bi-plus"
-                        (buttonClick)="beginGameVsAiClicked()">
-                    </app-icon-button>
-
-                    @if (boardState().mainStateStack().length > 1)
-                    {
-                        <app-icon-button
-                            label="Analyze Game"
-                            extraClasses="m-1"
-                            iconClass="bi-cpu"
-                            (buttonClick)="analyzeAiGameClicked()">
-                        </app-icon-button>
-                    }
-                }
-
-            </div> 
-        }
         <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
         <div class="ps-2 pe-2">
             <div [style.color]="themeService.getThemeInstance().getTextColor()" class="evalTextData d-flex flex-column justify-content-center">{{this.boardState().pgnHeaders().termination ? ( this.boardState().pgnHeaders().termination != "Normal" ? this.boardState().pgnHeaders().termination + " - " : this.boardState().pgnHeaders().result + " - ") : "-"}} {{this.boardState().getCurrentState().gameState.isGameOver ? this.boardState().getCurrentState().gameState.reason + " " + this.boardState().getCurrentState().gameState.gameScore: boardState().getCurrentState().turn ? "White to move" : "Black to move"}}</div>
             <div [style.color]="themeService.getThemeInstance().getTextColor()" class="evalTextData d-flex flex-column justify-content-center mb-1">{{this.getOpeningDisplay()}}</div>
         </div>
+
         <div [style.color]="themeService.getThemeInstance().getTextColor()" class="d-flex movesAndAccuracies">
             <div class="evalSectionLeft d-flex flex-column">
-                <div class="algebraicContainer" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
-                    <!--Moves table-->
-                    <table class="w-100">
-                        <tbody>
-                                                            
-                        <!--If we are diverging from this row in the stack, show the diverged moves.-->
-                        <!--
-                        -->
-                        @if (boardState().divergenceStateStack().length != 0 && boardState().mainStackPointer() == 0)
-                        {
-                            <tr 
-                            app-divergence-table-entry
-                            [moveStack]="boardState().divergenceMoveStack()"
-                            [evalStack]="boardState().divergenceEvalStack()">
-                            </tr>
-                        }
-                        @for (item of boardState().mainMoveStack(); track $index) 
-                        {
-                            @if ($index % 2 == 0)
-                            {
+                
+                <app-moves-table
+                    [boardState]="boardState()"
+                    [getIconSourceForMoveClassification]="getIconSourceForMoveClassification"
+                    (moveClicked)="moveClicked($event)">
+                </app-moves-table>
 
-                                <tr class="">
-                                    <td>
-                                        <p class="d-inline move-number">{{ ($index / 2) + 1 }}. </p>
-                                    </td>
 
-                                    <td>
-                                        @if (this.boardState().eval(); as eval)
-                                        {
-                                            @if (eval.positions[$index + 1])
-                                            {
-                                                <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(eval.positions[$index + 1].moveClassification ?? MoveClassification.None)()">
-                                            }
-                                        }
-                                        <div
-                                        class="d-inline" 
-                                        (click)="moveClicked($index + 1)"
-                                        [ngClass]="{
-                                            'text-primary' : $index == boardState().mainStackPointer() - 1 && boardState().divergenceStateStack().length == 0,
-                                            'text-danger' : $index == boardState().mainStackPointer() - 1 && boardState().divergenceStateStack().length != 0}"
-                                            >{{item.notation}} 
-                                        </div>
-                                    </td>
-
-                                    <td>
-                                        @if (this.boardState().eval(); as eval)
-                                        {
-                                            @if (eval.positions[$index + 2])
-                                            {
-                                                <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(eval.positions[$index + 2].moveClassification ?? MoveClassification.None)()">
-                                            }
-                                        }
-                                        <div class="d-inline" 
-                                        (click)="boardState().mainMoveStack()[$index + 1] == null ? moveClicked($index + 1) : moveClicked($index + 2)"
-                                        [ngClass]="{
-                                            'text-primary' : $index == boardState().mainStackPointer() - 2 && boardState().divergenceStateStack().length == 0,
-                                            'text-danger' : $index == boardState().mainStackPointer() - 2 && boardState().divergenceStateStack().length != 0}"
-                                            >{{boardState().mainMoveStack()[$index + 1] == null ? "-" : boardState().mainMoveStack()[$index + 1].notation}} </div>
-
-                                    </td>
-                                </tr>
-
-                                <!--If we are diverging from this row in the stack, show the diverged moves.-->
-                                @if (boardState().divergenceStateStack().length != 0 && 
-                                    ( $index == boardState().mainStackPointer() - 1 || $index == boardState().mainStackPointer() - 2))
-                                {
-                                    <tr 
-                                        app-divergence-table-entry
-                                        [moveStack]="boardState().divergenceMoveStack()"
-                                        [evalStack]="boardState().divergenceEvalStack()">
-                                    </tr>
-                                }
-                            }
-                        }
-                        </tbody>
-                    </table>
-                </div>
-                @if(this.boardState().eval())
-                {
-                    <div class="engineLinesContainer d-flex flex-column justify-content-around" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
-                    @for(engineLine of boardState().getMostRecentEval()?.lines ; track $index)
-                    {
-                        <div class="engineLineDisplay d-flex align-items-center p-2">
-                            <img class="engineLineDisplayIcon me-2" [src]="`icons/${$index == 0 ? MoveClassification.Best : ($index == 1 ? MoveClassification.Excellent : MoveClassification.Okay)}.png`">
-                            
-                            <div>
-                                @if(getImageSourceForEnginePiece(engineLine.pv[0])(); as pieceImgSrc)
-                                {
-                                    <img class="engineLineDisplayIcon me-2" [src]="pieceImgSrc">
-                                }
-                                {{engineLine.pv[0]}}
-                            </div>
-                            @if (engineLine.cp; as cp)
-                            {
-                                ->
-                                <div class="badge border d-inline-block" [ngClass]="{ 'text-bg-light' : cp >= 0, 'text-bg-dark': cp < 0 }">
-                                    {{(engineLine.cp / 100).toFixed(1)}}
-                                </div>
-                            }
-
-                            @if (engineLine.mate; as mate)
-                            {
-                                ->
-                                <div class="badge border d-inline-block" [ngClass]="{ 'text-bg-light' : mate >= 0, 'text-bg-dark': mate < 0 }">
-                                    M{{Math.abs(engineLine.mate)}}
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-                }
+                <app-engine-line-display
+                    [boardState]="boardState()"
+                    [getImageSourceForEnginePiece]="getImageSourceForEnginePiece">
+                </app-engine-line-display>
 
             </div>
             @if (this.boardState().eval(); as eval)

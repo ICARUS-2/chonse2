@@ -17,7 +17,6 @@ import { EvalBar } from '../eval-bar/eval-bar';
 import MoveClassificationList from './move-classification-list';
 import { Router } from '@angular/router';
 import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-helper';
-import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
 import { DivergenceTableEntry } from '../divergence-table-entry/divergence-table-entry';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
@@ -34,10 +33,27 @@ import MoveResult from './move-result';
 import {CoachIdeaFlagType, CoachMoveFlagType, CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
 import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
 import { IconButton } from "../../ui/icon-button/icon-button";
+import { BoardArrowButtons } from '../board-arrow-buttons/board-arrow-buttons';
+import { BoardOptions } from '../board-options/board-options';
+import { MovesTable } from '../moves-table/moves-table';
+import { EngineLineDisplay } from "../engine-line-display/engine-line-display";
 
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart, BootstrapButton, DivergenceTableEntry, IconButton],
+  imports: [
+    MovesTable,
+    Square,
+    BoardArrowButtons,
+    BoardOptions,
+    BoardPlayerInfo,
+    CommonModule,
+    FormsModule,
+    NgbProgressbar,
+    EvalBar,
+    EvaluationChart,
+    IconButton,
+    EngineLineDisplay
+],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -836,7 +852,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const moves = this.boardState().mainMoveStack().map(m => structuredClone(m));
     const pgnHeaders = structuredClone(this.boardState().pgnHeaders());
 
-    this.router.navigate(['/'], {state: { "vsAiStates": states, "vsAiGameStates": gameStates, "vsAiMoves": moves, "vsAiPgnHeaders": pgnHeaders}});
+    this.router.navigate(['/analysis'], {state: { "vsAiStates": states, "vsAiGameStates": gameStates, "vsAiMoves": moves, "vsAiPgnHeaders": pgnHeaders}});
   }
 
   getMostCurrentMainState()

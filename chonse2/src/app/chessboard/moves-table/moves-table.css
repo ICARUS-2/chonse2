@@ -1,0 +1,21 @@
+.algebraicContainer
+{
+  padding: 5px;
+  height: 35vmin;
+  width: 40vmin;
+  overflow-y: auto;
+  overflow-x: hidden;
+  user-select: none;
+}
+.inlineMoveIcon
+{
+  width: 3vmin;
+}
+
+@media screen and (max-width: 1200px) 
+{
+    .algebraicContainer
+    {
+        width: 100%;
+    }
+}

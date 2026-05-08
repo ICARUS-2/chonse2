@@ -1,0 +1,40 @@
+@if (boardState().eval()) {
+  <div class="engineLinesContainer d-flex flex-column justify-content-around glass-subpanel">
+
+    @for (engineLine of boardState().getMostRecentEval()?.lines; track $index) {
+      <div class="engineLineDisplay d-flex align-items-center p-2">
+
+        <img
+          class="engineLineDisplayIcon me-2"
+          [src]="'icons/' + ($index == 0 ? MoveClassification.Best : ($index == 1 ? MoveClassification.Excellent : MoveClassification.Okay)) + '.png'">
+
+        <div>
+          @if (getImageSourceForEnginePiece()(engineLine.pv[0])(); as pieceImgSrc) {
+            <img class="engineLineDisplayIcon me-2" [src]="pieceImgSrc">
+          }
+          {{ engineLine.pv[0] }}
+        </div>
+
+        @if (engineLine.cp; as cp) {
+          ->
+          <div
+            class="badge border d-inline-block"
+            [ngClass]="{ 'text-bg-light': cp >= 0, 'text-bg-dark': cp < 0 }">
+            {{ (engineLine.cp / 100).toFixed(1) }}
+          </div>
+        }
+
+        @if (engineLine.mate; as mate) {
+          ->
+          <div
+            class="badge border d-inline-block"
+            [ngClass]="{ 'text-bg-light': mate >= 0, 'text-bg-dark': mate < 0 }">
+            M{{ Math.abs(engineLine.mate) }}
+          </div>
+        }
+
+      </div>
+    }
+
+  </div>
+}

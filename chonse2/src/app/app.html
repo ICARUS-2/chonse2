@@ -16,9 +16,13 @@
     min-height: 100vh;
     font-family: Inter;
   "
+  class="d-flex justify-content-center align-items-center"
 >
 
     <div class="glass-panel app-shell">
-        <router-outlet></router-outlet> 
+        <div style="z-index: 1;">
+          <app-navbar></app-navbar>
+          <router-outlet></router-outlet> 
+        </div>
     </div>
 </div>

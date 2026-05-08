@@ -25,7 +25,7 @@ export class LoadPgn {
 
   ngOnInit(): void 
   {
-    this.router.navigate(['/'], {state: {"pgn" : this.decompressedPgn()}})
+    this.router.navigate(['/analysis'], {state: {"pgn" : this.decompressedPgn()}})
   }
 
   isError()

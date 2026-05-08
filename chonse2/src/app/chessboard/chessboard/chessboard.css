@@ -167,16 +167,6 @@
   height: 52vmin;
 }
 
-.algebraicContainer
-{
-  padding: 5px;
-  height: 35vmin;
-  width: 40vmin;
-  overflow-y: auto;
-  overflow-x: hidden;
-  user-select: none;
-}
-
 .evalSectionRight
 {
   display: flex;
@@ -248,19 +238,9 @@
   width: 3.7vmin;
 }
 
-.inlineMoveIcon
-{
-  width: 3vmin;
-}
-
 .engineLinesContainer
 {
   flex: 1;
-}
-
-.engineLineDisplayIcon
-{
-  height: 3vmin;
 }
 
 .coachClassificationIcon
@@ -303,14 +283,14 @@
     flex: unset;
   }
 
-  .algebraicContainer
-  {
-    width: 100%;
-  }
-
   .iconButtonContainer 
   {
     flex-direction: column;
     margin: 2vmin
+  }
+
+  .coachButtons
+  {
+    flex-direction: column;
   }
 }
