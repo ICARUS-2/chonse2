@@ -1,6 +1,6 @@
 <div class="componentContainer pt-1">
     <div 
-        class="playerInfo d-flex flex-column justify-space-between align-items-center"
+        class="boardPlayerInfo justify-space-between align-items-center"
         [ngClass]="{ 'flex-column-reverse' : this.boardState().isFlipped()}">
         <app-board-player-info [playerName]="boardState().pgnHeaders().black" [playerElo]="boardState().pgnHeaders().blackElo" for="b" [clock]="getClockForPlayer('b')()" [capturedPieces]="boardState().getCurrentState().piecesBlackCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
         
@@ -9,6 +9,10 @@
         <app-board-player-info [playerName]="boardState().pgnHeaders().white" [playerElo]="boardState().pgnHeaders().whiteElo" for="w" [clock]="getClockForPlayer('w')()" [capturedPieces]="boardState().getCurrentState().piecesWhiteCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
     </div>
 
+    <div class="compactBoardPlayerInfoContainer">
+        <app-compact-board-player-info [boardState]="boardState()"></app-compact-board-player-info>
+    </div>
+    
     <div class="boardEvalBarAndArrows d-flex flex-column">
 
         <div class="boardAndEvalBar d-flex align-items-center">
@@ -172,6 +176,7 @@
         </div>
 
         <app-board-arrow-buttons
+            class="boardArrowButtons"
             [areBackButtonsEnabled]="areBackButtonsEnabled()"
             [areForwardButtonsEnabled]="areForwardButtonsEnabled()"
             (flipClicked)="handleFlipClicked()"
@@ -186,6 +191,7 @@
     <div class="boardRight">
 
         <app-coach-display 
+            class="coachDisplay"
             [boardState]="this.boardState()" 
             (showMissedOpportunityClicked)="showMissedOpportunityClicked()"
             (showFollowUpClicked)="showFollowUpClicked()"
@@ -197,31 +203,30 @@
         <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
         <div class="d-flex justify-content-between">
             <app-engine-line-display
-                class=""
+                class="engineLineDisplay"
                 [ngClass]="{ 'w-100': boardState().eval(), 'd-none': !boardState().eval()}"
                 [boardState]="boardState()"
                 [getImageSourceForEnginePiece]="getImageSourceForEnginePiece">
             </app-engine-line-display>
         </div>
         
-        <div class="d-flex justify-content-between">
+        <div class="movesAndOverview d-flex justify-content-between">
             <app-moves-table
-                class="me-1"
+                class="me-1 movesTable"
                 [ngClass]="{ 'w-50': boardState().eval(), 'w-100': !boardState().eval()}"
                 [boardState]="boardState()"
                 (moveClicked)="moveClicked($event)">
             </app-moves-table>
 
             <app-move-overview 
-                class="ms-1"
+                class="ms-1 movesOverview"
                 [ngClass]="{ 'w-50': boardState().eval(), 'd-none': !boardState().eval()}"
                 [boardState]="boardState()"
                 (moveClassificationClicked)="moveClassificationClicked($event.color, $event.classification)">
             </app-move-overview>
         </div>
         
-        <div class="d-flex flex-column">
-
+        <div class="d-flex flex-column evalChart">
 
             @if(this.boardState().doEvaluateGame())
             {

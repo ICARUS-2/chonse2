@@ -7,3 +7,21 @@
 {
   height: 3vmin;
 }
+
+@media screen and (max-width: 1200px)
+{
+  .engineLinesContainer
+  {
+    height: unset;
+  }
+
+  .engineLineDisplayIcon
+  {
+    height: 6vmin;
+  }
+
+  .engineLinesContainer
+  {
+    flex-wrap: wrap;
+  }
+}

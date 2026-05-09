@@ -1,4 +1,4 @@
-<div class="boardPlayerInfoContainer d-flex flex-column glass-subpanel p-4">
+<div class="boardPlayerInfoContainer d-flex glass-subpanel p-4">
     
     <div>
         <div [style.color]="themeService.getThemeInstance().getTextColor()">{{playerName()}}</div>
@@ -22,6 +22,6 @@
 
     @if (clock(); as clock)
     {
-        <div class="badge text-bg-secondary">{{clock.includes(CLOCK) ? clock.split(CLOCK)[1] : clock}}</div>
+        <div class="badge text-bg-secondary clock">{{clock.includes(CLOCK) ? clock.split(CLOCK)[1] : clock}}</div>
     }
 </div>

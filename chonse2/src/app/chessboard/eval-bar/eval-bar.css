@@ -48,4 +48,9 @@
     {
         font-size: x-small;
     }
+
+    .progress-vertical
+    {
+      height: 88vmin;
+    }
 }

@@ -40,6 +40,7 @@ import { GameInfo } from "../game-info/game-info";
 import { MoveOverview } from "../move-overview/move-overview";
 import { CoachDisplay } from "../coach-display/coach-display";
 import ChessboardHelper from '../helpers';
+import { CompactBoardPlayerInfo } from '../compact-board-player-info/compact-board-player-info';
 
 @Component({
   selector: 'app-chessboard',
@@ -49,6 +50,7 @@ import ChessboardHelper from '../helpers';
     BoardArrowButtons,
     BoardOptions,
     BoardPlayerInfo,
+    CompactBoardPlayerInfo,
     CommonModule,
     FormsModule,
     NgbProgressbar,

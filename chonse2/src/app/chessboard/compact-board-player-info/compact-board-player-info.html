@@ -1,0 +1,36 @@
+<div class="compactBoardPlayerInfoContainer glass-subpanel p-2 mb-2">
+
+    @let adv = getAdvantage();
+
+    <span [style.text-decoration]="boardState().getCurrentState().turn ? 'underline' : ''">W: {{getShortenedName(boardState().pgnHeaders().white)}}</span>
+    @if(boardState().pgnHeaders().whiteElo; as whiteElo)
+    {
+        <span 
+            [style.color]="themeService.getThemeInstance().getPrimaryColor()"
+        >
+            ({{whiteElo}})
+        </span>
+    }
+
+    @if (adv > 0;)
+    {
+        +{{adv}}
+    }
+
+    <span class="m-4"></span>
+
+    <span [style.text-decoration]="boardState().getCurrentState().turn ? '' : 'underline'">B: {{getShortenedName(boardState().pgnHeaders().black)}}</span>
+    @if(boardState().pgnHeaders().blackElo; as blackElo)
+    {
+        <span 
+            [style.color]="themeService.getThemeInstance().getPrimaryColor()"
+        >
+            ({{blackElo}})
+        </span>
+    }
+
+    @if (adv < 0)
+    {
+        +{{Math.abs(adv)}}
+    }
+</div>

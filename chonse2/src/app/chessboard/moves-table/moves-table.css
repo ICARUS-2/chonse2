@@ -16,5 +16,6 @@
     .algebraicContainer
     {
         width: 100%;
+        height: 50vmin;
     }
 }

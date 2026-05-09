@@ -34,3 +34,11 @@
   overflow: hidden;
   max-width: 10vmin;
 }
+
+@media screen and (max-width: 1200px)
+{
+  .moveOverview
+  {
+    height: 70vmin;
+  }
+}

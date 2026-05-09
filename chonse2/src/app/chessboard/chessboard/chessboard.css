@@ -5,10 +5,17 @@
   align-items: center;
 }
 
-.playerInfo 
+.boardPlayerInfo 
 {
+  display: flex;
+  flex-direction: column;
   height: 85vmin;
   justify-content: space-between;
+}
+
+.compactBoardPlayerInfo
+{
+  display: none;
 }
 
 .boardEvalBarAndArrows
@@ -221,32 +228,56 @@
     flex-direction: column;
   }    
 
-  .boardControls
+  .compactBoardPlayerInfo
   {
-    width: 100%;
-    height: unset;
+    display: block;
   }
 
-  .movesAndAccuracies
+  .boardPlayerInfo
   {
-    flex-direction: column;
-    height: auto;
-    min-height: unset;
+    display: none;
   }
 
-  .evalTextData
+  .boardContainerInner
   {
-    font-size: small;
+    width: 88vmin;
+    height: 88vmin;
   }
 
-  .iconButtonContainer 
+  .boardArrowButtons
   {
-    flex-direction: column;
-    margin: 2vmin
+    touch-action: manipulation;
+  }
+
+  .boardEvalBarAndArrows
+  {
+    margin-bottom: 100px;
   }
 
   .coachButtons
   {
     flex-direction: column;
+  }
+
+  .boardRight
+  {
+    height: unset;
+  }
+
+  /*Board Right (underneath on mobile) components*/
+  .coachDisplay, .boardArrowButtons ,.engineLineDisplay, .movesTable, .movesOverview, .evalChart
+  {
+    margin-bottom: 20px;
+  }
+  
+  .movesAndOverview
+  {
+    flex-direction: column;
+  }
+
+  .movesTable, .movesOverview
+  {
+    width: 100% !important;
+    margin-left: 0 !important;
   }
 }
