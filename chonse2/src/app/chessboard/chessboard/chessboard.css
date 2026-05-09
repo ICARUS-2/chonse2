@@ -158,7 +158,7 @@
   flex-direction: column;
   justify-content: space-between;
   height: 85vmin;
-  width: 70vmin;
+  width: 77vmin;
   touch-action: manipulation;
 }
 
@@ -206,12 +206,12 @@
   z-index: 2;
 }
 
-.moveClassificationsList
+@media screen and (min-width: 1900px) and (min-height: 1050px)
 {
-  text-align: center;
-  user-select: none;
-  table-layout: fixed;
-  width: 100%;
+  .boardRight
+  {
+    width: 30vw;
+  }
 }
 
 @media screen and (max-width: 1200px) 

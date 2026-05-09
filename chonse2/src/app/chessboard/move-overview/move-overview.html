@@ -1,15 +1,17 @@
 @if (boardState().eval(); as eval) {
-<div class="moveOverview glass-subpanel p-4 overflow-y-scroll">
+<div class="moveOverview glass-subpanel p-3 overflow-y-scroll">
 
     <!-- Elo and Accuracy Header -->
     <div class="d-flex">
         <div class="badge text-bg-light border d-inline-block">
+            <p>{{boardState().pgnHeaders().white}}</p>
             <h6>{{eval.estimatedElo?.white?.toFixed(0)}} / {{eval.accuracy.white.toFixed(1)}}%</h6>
         </div>
         
         <div class="m-2"></div>
 
         <div class="badge text-bg-dark d-inline-block">
+            <p>{{boardState().pgnHeaders().black}}</p>
             <h6>{{eval.estimatedElo?.black?.toFixed(0)}} / {{eval.accuracy.black.toFixed(1)}}%</h6>
         </div>
     </div>
@@ -43,7 +45,7 @@
 
     <!-- Move Classification Table -->
     <table class="moveClassificationsList">
-        <thead>
+        <!-- <thead>
             <tr>
                 <th>
                     <div class="badge text-bg-light border d-inline-block playerNameInTable">
@@ -58,7 +60,7 @@
                     </div>
                 </th>
             </tr>
-        </thead>
+        </thead> -->
         <tbody>
             @for(item of Object.values(MoveClassification); track item) {
                 @if (item !== MoveClassification.None) {

@@ -1,6 +1,11 @@
 <div class="componentContainer pt-1">
-    <div class="playerInfo d-flex flex-column justify-space-between">
+    <div 
+        class="playerInfo d-flex flex-column justify-space-between align-items-center"
+        [ngClass]="{ 'flex-column-reverse' : this.boardState().isFlipped()}">
         <app-board-player-info [playerName]="boardState().pgnHeaders().black" [playerElo]="boardState().pgnHeaders().blackElo" for="b" [clock]="getClockForPlayer('b')()" [capturedPieces]="boardState().getCurrentState().piecesBlackCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
+        
+        <app-game-info [boardState]="boardState()"></app-game-info>
+
         <app-board-player-info [playerName]="boardState().pgnHeaders().white" [playerElo]="boardState().pgnHeaders().whiteElo" for="w" [clock]="getClockForPlayer('w')()" [capturedPieces]="boardState().getCurrentState().piecesWhiteCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
     </div>
 
@@ -190,7 +195,14 @@
         </app-coach-display>
 
         <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
-        <app-game-info [boardState]="boardState()" [getOpeningDisplay]="getOpeningDisplay"></app-game-info>
+        <div class="d-flex justify-content-between">
+            <app-engine-line-display
+                class=""
+                [ngClass]="{ 'w-100': boardState().eval(), 'd-none': !boardState().eval()}"
+                [boardState]="boardState()"
+                [getImageSourceForEnginePiece]="getImageSourceForEnginePiece">
+            </app-engine-line-display>
+        </div>
         
         <div class="d-flex justify-content-between">
             <app-moves-table
@@ -201,16 +213,11 @@
             </app-moves-table>
 
             <app-move-overview 
-                [boardState]="boardState()"
-                (moveClassificationClicked)="moveClassificationClicked($event.color, $event.classification)">
-            </app-move-overview>
-
-            <!-- <app-engine-line-display
                 class="ms-1"
                 [ngClass]="{ 'w-50': boardState().eval(), 'd-none': !boardState().eval()}"
                 [boardState]="boardState()"
-                [getImageSourceForEnginePiece]="getImageSourceForEnginePiece">
-            </app-engine-line-display> -->
+                (moveClassificationClicked)="moveClassificationClicked($event.color, $event.classification)">
+            </app-move-overview>
         </div>
         
         <div class="d-flex flex-column">
@@ -256,42 +263,4 @@
             [style.left.px]="mouseX()"
             [style.top.px]="mouseY()">
     }
-<div class="testingPurposes">
-    <!-- <p>Main stack length: {{this.boardState().mainStateStack().length}}</p>
-    <p>Main move stack length: {{this.boardState().mainMoveStack().length}}</p>
-    <p>Main eval stack length: {{this.boardState().eval()?.positions?.length}}</p>
-    <p>Divergence stack length: {{this.boardState().divergenceStateStack().length}}</p>
-    <p>Divergence move stack length: {{this.boardState().divergenceMoveStack().length}}</p>
-    <p>Divergence eval stack length: {{this.boardState().divergenceEvalStack().length}}</p> -->
-   <!-- @if(Chonse2Extensions.getPiecesThatHitSquare(boardState().getCurrentState() ,"b5"); as ad)
-    {
-        <div>White: {{ad.white}}</div>
-        <div>Black: {{ad.black}}</div>
-    }  -->
-
-    <!-- @if (Chonse2Extensions.getHangingPieces(boardState().getCurrentState()); as hp)
-    {
-        <div>White pieces hanging : {{hp.white}}</div>
-        <div>Black pieces hanging: {{hp.black}}</div>
-    }  -->
-
-    <!-- <div>
-        @if(Chonse2Extensions.getForksOnBoard(boardState().getCurrentState(), PieceColor.WHITE); as whiteForks)
-        {
-            @for(fork of whiteForks; track $index)
-            {
-                <p>attacker {{fork.attackerCoordinate}}</p>
-                <p>forked: {{fork.coordinatesAttacked}}</p>
-            }
-        } 
-
-        @if(Chonse2Extensions.getForksOnBoard(boardState().getCurrentState(), PieceColor.BLACK); as blackForks)
-        {
-            @for(fork of blackForks; track $index)
-            {
-                <p>attacker {{fork.attackerCoordinate}}</p>
-                <p>forked: {{fork.coordinatesAttacked}}</p>
-            }
-        }
-    </div> -->
-</div>
+</div>  

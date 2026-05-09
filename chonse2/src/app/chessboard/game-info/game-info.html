@@ -1,15 +1,31 @@
 <!-- game-info.component.html -->
-<div class="glass-subpanel p-4">
+<div class="glass-subpanel p-4 gameInfo">
+
+  <!--Whose turn it is-->
   <div
     [style.color]="themeService.getThemeInstance().getTextColor()"
     class="evalTextData d-flex flex-column justify-content-center"
   >
-    {{ statusText }}
+    {{  turn }}
   </div>
+
+  <hr>
+
+  <!--The opening-->
   <div
     [style.color]="themeService.getThemeInstance().getTextColor()"
-    class="evalTextData d-flex flex-column justify-content-center mb-1"
+    class="evalTextData d-flex flex-column justify-content-center"
   >
-    {{ getOpeningDisplay()() }}
+    {{ getOpeningDisplay() }}
+  </div>
+
+  <hr>
+
+  <!--Game status-->
+  <div
+    [style.color]="themeService.getThemeInstance().getTextColor()"
+    class="evalTextData d-flex flex-column justify-content-center"
+  >
+    {{  statusText }}
   </div>
 </div>

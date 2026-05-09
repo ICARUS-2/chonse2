@@ -15,9 +15,8 @@
 }
 
 .app-shell {
-  width: 100%;
+  width: 97%;
 
-  max-width: 97%;
   min-height: calc(100vh - 20px);
   max-height: 90vmin;
 

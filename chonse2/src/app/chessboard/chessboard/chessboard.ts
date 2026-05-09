@@ -517,37 +517,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     return `piece/merida/${piece}.svg`;
   }) 
 
-  getOpeningDisplay = computed( () : string => 
-  {
-    if (!this.boardState().eval)
-    {
-      return "-";
-    }
-
-    const recentEval: PositionEval | undefined = this.boardState().getMostRecentEval();
-
-    if (!recentEval)
-    {
-      return "-";
-    }
-    else 
-    {
-      if (recentEval.opening)
-      {
-        return recentEval.opening;
-      }
-      else 
-      {
-        const evaluation = this.boardState().eval();
-        if (evaluation?.positions)
-        {
-          const l = evaluation.positions.length - 1;
-          return evaluation.positions[l].opening ?? "-";
-        }
-      }
-    }
-    return "-";
-  } )
   //#endregion
 
   //#region Coach

@@ -1,5 +1,5 @@
 @if (boardState().eval()) {
-  <div class="engineLinesContainer d-flex flex-column justify-content-around glass-subpanel">
+  <div class="engineLinesContainer d-flex justify-content-between glass-subpanel p-3">
 
     @for (engineLine of boardState().getMostRecentEval()?.lines; track $index) {
       <div class="engineLineDisplay d-flex align-items-center p-2">
@@ -16,7 +16,7 @@
         </div>
 
         @if (engineLine.cp; as cp) {
-          ->
+          →
           <div
             class="badge border d-inline-block"
             [ngClass]="{ 'text-bg-light': cp >= 0, 'text-bg-dark': cp < 0 }">
@@ -25,7 +25,7 @@
         }
 
         @if (engineLine.mate; as mate) {
-          ->
+          →
           <div
             class="badge border d-inline-block"
             [ngClass]="{ 'text-bg-light': mate >= 0, 'text-bg-dark': mate < 0 }">
