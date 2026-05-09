@@ -1,10 +1,11 @@
 import { Component, input, output } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import { IconButton } from '../../ui/icon-button/icon-button';
+import { NgbProgressbar } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-board-options',
-  imports: [IconButton],
+  imports: [IconButton, NgbProgressbar],
   templateUrl: './board-options.html',
   styleUrl: './board-options.css',
 })

@@ -31,7 +31,6 @@ import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
 import {CoachIdeaFlagType, CoachMoveFlagType, CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
 import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
-import { IconButton } from "../../ui/icon-button/icon-button";
 import { BoardArrowButtons } from '../board-arrow-buttons/board-arrow-buttons';
 import { BoardOptions } from '../board-options/board-options';
 import { MovesTable } from '../moves-table/moves-table';
@@ -41,6 +40,7 @@ import { MoveOverview } from "../move-overview/move-overview";
 import { CoachDisplay } from "../coach-display/coach-display";
 import ChessboardHelper from '../helpers';
 import { CompactBoardPlayerInfo } from '../compact-board-player-info/compact-board-player-info';
+import { ProgressToast } from '../progress-toast/progress-toast';
 
 @Component({
   selector: 'app-chessboard',
@@ -53,13 +53,13 @@ import { CompactBoardPlayerInfo } from '../compact-board-player-info/compact-boa
     CompactBoardPlayerInfo,
     CommonModule,
     FormsModule,
-    NgbProgressbar,
     EvalBar,
     EvaluationChart,
     EngineLineDisplay,
     GameInfo,
     MoveOverview,
-    CoachDisplay
+    CoachDisplay,
+    ProgressToast
 ],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',

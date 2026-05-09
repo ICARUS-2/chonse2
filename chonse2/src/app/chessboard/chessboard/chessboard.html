@@ -1,4 +1,10 @@
 <div class="componentContainer pt-1">
+    
+    @if (boardState().evalProgress() > 0 && boardState().evalProgress() < 97.1) 
+    {
+        <app-progress-toast [boardState]="boardState()"></app-progress-toast>
+    }
+
     <div 
         class="boardPlayerInfo justify-space-between align-items-center"
         [ngClass]="{ 'flex-column-reverse' : this.boardState().isFlipped()}">
@@ -190,25 +196,29 @@
 
     <div class="boardRight">
 
-        <app-coach-display 
-            class="coachDisplay"
-            [boardState]="this.boardState()" 
-            (showMissedOpportunityClicked)="showMissedOpportunityClicked()"
-            (showFollowUpClicked)="showFollowUpClicked()"
-            (hideSequence)="hideSequence()"
-            [coachButtonsDisabled]="coachButtonsDisabled()"
-            >
-        </app-coach-display>
+        @if(boardState().eval())
+        {
+            <!--Coach display-->
+            <app-coach-display 
+                class="coachDisplay"
+                [boardState]="this.boardState()" 
+                (showMissedOpportunityClicked)="showMissedOpportunityClicked()"
+                (showFollowUpClicked)="showFollowUpClicked()"
+                (hideSequence)="hideSequence()"
+                [coachButtonsDisabled]="coachButtonsDisabled()"
+                >
+            </app-coach-display>
 
-        <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
-        <div class="d-flex justify-content-between">
-            <app-engine-line-display
-                class="engineLineDisplay"
-                [ngClass]="{ 'w-100': boardState().eval(), 'd-none': !boardState().eval()}"
-                [boardState]="boardState()"
-                [getImageSourceForEnginePiece]="getImageSourceForEnginePiece">
-            </app-engine-line-display>
-        </div>
+            <!--Show termination if exists -- Show either whose turn it is or the result + score.-->
+            <div class="d-flex justify-content-between">
+                <app-engine-line-display
+                    class="engineLineDisplay"
+                    [ngClass]="{ 'w-100': boardState().eval(), 'd-none': !boardState().eval()}"
+                    [boardState]="boardState()"
+                    [getImageSourceForEnginePiece]="getImageSourceForEnginePiece">
+                </app-engine-line-display>
+            </div>
+        }
         
         <div class="movesAndOverview d-flex justify-content-between">
             <app-moves-table
@@ -252,13 +262,6 @@
             (beginGameVsAiClicked)="beginGameVsAiClicked()"
             (analyzeAiGameClicked)="analyzeAiGameClicked()">
         </app-board-options>
-
-        @if(this.boardState().evalProgress() > 0 && this.boardState().evalProgress() < 97.1)
-        {
-            <div>
-                <ngb-progressbar class="mb-3" type="info" [value]="getEvalProgress()" [striped]="true" [animated]="true"><i>{{this.getEvalProgress()}}% [{{this.getEngineDisplayName()}}]</i></ngb-progressbar>
-            </div>
-        }
     </div>
 
     @if(currentlyHeldPiece() != "")

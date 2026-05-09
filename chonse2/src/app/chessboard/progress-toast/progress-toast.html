@@ -1,0 +1,15 @@
+<div class="progress-toast" #toast>
+    <div class="toast-body">
+        <span class="toast-icon">
+        <i class="bi bi-info-circle-fill"></i>
+        </span>
+        <span class="toast-message">Analyzing {{boardState().evalProgress().toFixed(1)}}%</span>
+    </div>
+
+    <ngb-progressbar
+        type="info"
+        [value]="boardState().evalProgress()"
+        [striped]="true"
+        [animated]="true"
+    />
+</div>
