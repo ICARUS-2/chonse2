@@ -1,4 +1,4 @@
-export default interface IAppTheme
+export interface IAppTheme
 {
     getPrimaryColor(): string;
     getHoverColor(): string;
@@ -8,4 +8,13 @@ export default interface IAppTheme
 
     getChessboardLightColor(): string
     getChessboardDarkColor(): string
+
+    getBackgroundImgUrl(): string
+    getGlassPanelTheme(): string
+}
+
+export enum GlassPanelTheme 
+{
+    Light = "glass-subpanel-light",
+    Dark = "glass-subpanel-dark",
 }

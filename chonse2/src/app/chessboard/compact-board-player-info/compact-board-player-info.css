@@ -1,0 +1,12 @@
+.compactBoardPlayerInfoContainer
+{
+    display: none;
+}
+
+@media screen and (max-width: 1200px)
+{
+    .compactBoardPlayerInfoContainer
+    {
+        display: block;
+    }
+}

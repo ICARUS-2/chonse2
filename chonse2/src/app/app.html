@@ -1,4 +1,27 @@
-<div [style.background-color]="themeService.getThemeInstance().getBackgroundColor()" style="min-height: 100vh;">
-    <app-navbar></app-navbar>
-    <router-outlet></router-outlet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<div class="fixed-blur-overlay"></div>
+<div
+  [style.background-image]="`url(${themeService.getThemeInstance().getBackgroundImgUrl()})`"
+  style="
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    font-family: Inter;
+  "
+  class="d-flex justify-content-center align-items-center"
+>
+    @let glassPanelTheme = themeService.getThemeInstance().getGlassPanelTheme();
+
+    <div 
+      class="app-shell"
+      [ngClass]="{ 'glass-panel-light': glassPanelTheme == GlassPanelTheme.Light, 'glass-panel-dark': glassPanelTheme == GlassPanelTheme.Dark }">
+        <div style="z-index: 1;">
+          <app-navbar></app-navbar>
+          <router-outlet></router-outlet> 
+        </div>
+    </div>
 </div>

@@ -1,0 +1,44 @@
+.moveOverview
+{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 35vmin;
+}
+
+.engineMoveInfoText
+{
+  min-height: 3vmin;
+}
+
+.engineMoveInfoText img
+{
+  height: 2vmin;
+}
+
+.engineLineDisplayIcon
+{
+  height: 3vmin;
+}
+
+.moveClassificationListIcon
+{
+  width: 3.7vmin;
+}
+
+
+.playerNameInTable
+{
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 10vmin;
+}
+
+@media screen and (max-width: 1200px)
+{
+  .moveOverview
+  {
+    height: 70vmin;
+  }
+}

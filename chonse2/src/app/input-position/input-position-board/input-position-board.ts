@@ -443,7 +443,7 @@ export class InputPositionBoard {
 
     const copy: Chonse2 = this.model().game().getFullDeepCopy();
 
-    this.router.navigate(['/'], {state: { "inputtedPosition" : copy }})
+    this.router.navigate(['/analysis'], {state: { "inputtedPosition" : copy }})
   }
 
   playVsAiButtonClicked()

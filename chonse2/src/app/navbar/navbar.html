@@ -1,62 +1,57 @@
-<nav class="navbar navbar-expand-lg p-2 navbar-dark" [style.background-color]="themeService.getThemeInstance().getPrimaryColor()">
-  <div class="container-fluid">
+ <!-- NAVBAR -->
+  <nav class="top-navbar glass-navbar">
 
-    <!-- Brand -->
-    <a class="navbar-brand text-light link-underline link-underline-0" routerLink="/">
-        CHONSE2
-    </a>
+    <!-- LEFT -->
+    <div class="nav-left">
 
-    <!-- Hamburger button (mobile) -->
-    <button 
-      class="navbar-toggler text-light border-0" 
-      type="button" 
-      data-bs-toggle="collapse" 
-      data-bs-target="#mainNavbar"
-      aria-controls="mainNavbar" 
-      aria-expanded="false" 
-      aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+      <div class="brand">
+        <a routerLink="/" class="brand-text">
+          CHONSE2
+        </a>
+      </div>
 
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="mainNavbar">
+      <div class="nav-links">
 
-      <!-- Left side links -->
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a routerLink="/" class="nav-link text-light">Analysis</a>
-        </li>
+        <a routerLink="/analysis"
+           routerLinkActive="active-link"
+           class="nav-link">
+          Analysis
+        </a>
 
-        <li class="nav-item">
-          <a routerLink="/editor" class="nav-link text-light">Board Editor</a>
-        </li>
-        
-        <li class="nav-item">
-          <a routerLink="/vs-ai" class="nav-link text-light">Play vs AI</a>
-        </li>
+        <a routerLink="/editor"
+           routerLinkActive="active-link"
+           class="nav-link">
+          Board Editor
+        </a>
 
-        <li class="nav-item">
-          <a routerLink="/pgn-link" class="nav-link text-light">PGN Link</a>
-        </li>
-      </ul>
+        <a routerLink="/vs-ai"
+           routerLinkActive="active-link"
+           class="nav-link">
+          Play vs AI
+        </a>
 
-      <!-- Right side icons -->
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a routerLink="/settings" class="nav-link text-light">
-            <i class="bi bi-gear fs-3"></i>
-          </a>
-        </li>
+        <a routerLink="/pgn-link"
+           routerLinkActive="active-link"
+           class="nav-link">
+          PGN Link
+        </a>
 
-        <li class="nav-item">
-          <a href="https://github.com/ICARUS-2/chonse2/" 
-             class="nav-link text-light" 
-             target="_blank">
-            <i class="bi bi-github fs-3"></i>
-          </a>
-        </li>
-      </ul>
+      </div>
+    </div>
+
+
+    <!-- RIGHT -->
+    <div class="nav-right">
+
+      <a class="icon-btn"
+        routerLink="/settings">
+        <i class="bi bi-gear"></i>
+      </a>
+
+      <a class="icon-btn" href="https://github.com/ICARUS-2/chonse2/" target="_blank">
+        <i class="bi bi-github"></i>
+      </a>
 
     </div>
-  </div>
-</nav>
+
+  </nav>

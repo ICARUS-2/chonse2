@@ -1,4 +1,4 @@
-import IAppTheme from "./i-app-theme";
+import {GlassPanelTheme, IAppTheme} from "./i-app-theme";
 
 export default class BlackRedTheme implements IAppTheme
 {
@@ -37,4 +37,13 @@ export default class BlackRedTheme implements IAppTheme
         return "rgb(75,75,75)";
     }
     
+    getBackgroundImgUrl(): string 
+    {
+        return "img/backgrounds/dragon-bg.webp"
+    }
+
+    getGlassPanelTheme(): string 
+    {
+        return GlassPanelTheme.Dark;    
+    }
 }

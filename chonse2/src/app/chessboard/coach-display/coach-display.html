@@ -1,0 +1,142 @@
+@if(boardState().eval())
+{
+  <div class="d-flex flex-column justify-content-between overflow-x-scroll coachDisplay p-4"
+  [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()"
+  [style.color]="themeService.getThemeInstance().getTextColor()">
+    @if (shouldShowEngineInfo()) {
+      @if (engine(); as engineData) {
+        <!-- Engine Info -->
+        <div class="small d-flex justify-content-between">
+          <div>
+            <span><i class="bi bi-info-circle me-2"></i>Coach Feedback</span>
+          </div>
+
+          <div>
+          {{ engineMetadata()?.displayName }}
+          <span class="badge" 
+                [ngClass]="{ 
+                  'bg-success': engineMetadata()?.type === EngineType.NNUE, 
+                  'bg-danger': engineMetadata()?.type === EngineType.HCE 
+                }">
+            {{ engineMetadata()?.type }}
+          </span>
+
+          @if (engineData.isCloudHybridMode) {
+            <span class="badge bg-info ms-1 text-secondary">Cloud Hybrid</span>
+          }
+
+          -
+
+          @if (mostRecentEval(); as evalData) {
+            @if (evalData.lines[0]) {
+              <span>
+                Depth {{ evalData.lines[0].depth }}
+
+                @if (evalData.source === EvalSource.Cloud) {
+                  <span class="badge bg-info ms-1 text-secondary">CLOUD</span>
+                }
+              </span>
+            }
+          }
+          </div>
+        </div>
+      }
+    }
+
+    <!-- Loading Quotes -->
+    @if (isShowingQuote()) {
+      @if (quote(); as q) {
+        <div>"{{ q.text }}"</div>
+        <div class="fw-bold">-{{ q.author }}</div>
+      }
+    }
+
+    <!-- Analysis Content -->
+    @if (root(); as rootData) {
+      @if (rootData.move && rootData.eval) {
+          @let classification = rootData.eval.moveClassification ?? MoveClassification.None;
+          @let iconSource = ChessboardHelper.getIconSourceForMoveClassification(classification);
+
+          @if (iconSource() !== "") {
+            <div>
+              <div class="fw-bold">
+                <img [src]="iconSource()" class="coachClassificationIcon" alt="move classification"/>
+                {{ rootData.move.notation }} is {{ moveClassificationLabels[classification] }}
+              </div>
+
+              <div class="small">
+                {{ rootData.move.coachComment }}
+
+                @if (rootData.move.notation.includes("#")) {
+                  Checkmate is always the best move!
+                }
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex coachButtons">
+              @if (rootData.eval.lines[0]) {
+                
+                @if (!boardState().isCoachMoveShowing() && !boardState().isCoachIdeaShowing()) {
+                  
+                  @for (key of rootData.move.coachIdeas.keys(); track key) {
+                    <app-icon-button 
+                      extraClasses="m-1 small" 
+                      (buttonClick)="showIdeaButtonClicked(rootData.move.coachIdeas.get(key))" 
+                      [label]="getIdeaButtonText(key)" 
+                      overridePrimaryBackgroundColor="rgb(52, 175, 0)" 
+                      overrideSecondaryBackgroundColor="green" 
+                      iconClass="bi-lightbulb">
+                    </app-icon-button>
+                  }
+
+                  @if (!boardState().getCurrentState().gameState.isGameOver) {
+                    <app-icon-button 
+                      (buttonClick)="showFollowUpClicked.emit()" 
+                      [disabled]="coachButtonsDisabled()" 
+                      extraClasses="m-1 small" 
+                      [label]="getFollowUpButtonText(rootData.move, rootData.eval)" 
+                      iconClass="bi-arrow-right">
+                    </app-icon-button>
+                  }
+                
+                  @if (classification === MoveClassification.Inaccuracy || 
+                      classification === MoveClassification.Mistake || 
+                      classification === MoveClassification.Blunder) {
+                    <app-icon-button 
+                      (buttonClick)="showMissedOpportunityClicked.emit()" 
+                      [disabled]="coachButtonsDisabled()" 
+                      extraClasses="m-1 small" 
+                      [label]="getMissButtonText(rootData.move)" 
+                      iconClass="bi-arrow-90deg-left">
+                    </app-icon-button>
+                  }
+                }
+
+                @if (boardState().isCoachMoveShowing()) {
+                  <app-icon-button 
+                    (buttonClick)="hideSequence.emit()" 
+                    [disabled]="coachButtonsDisabled()" 
+                    extraClasses="m-1 small" 
+                    label="Hide Sequence" 
+                    iconClass="bi-backspace">
+                  </app-icon-button>
+                }
+
+                @if (boardState().isCoachIdeaShowing()) {
+                  <app-icon-button 
+                    (buttonClick)="hideIdeaButtonClicked()" 
+                    extraClasses="m-1 small" 
+                    label="Hide Ideas" 
+                    iconClass="bi-lightbulb-off"  
+                    overridePrimaryBackgroundColor="rgb(52, 175, 0)" 
+                    overrideSecondaryBackgroundColor="green">
+                  </app-icon-button>
+                }
+              }
+            </div>
+          }
+      }
+    }
+  </div>
+}

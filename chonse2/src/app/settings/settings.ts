@@ -70,12 +70,26 @@ export class Settings {
   //Cloud hybrid
   handleCloudHybridChanged(val: boolean)
   {
+    //If they enabled cloud hybrid, set thread count to 1.
+    if (val)
+    {
+      this.form.engineThreadCount().value.set(1);
+      LocalStorageHelper.setNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1);
+    }
+
     LocalStorageHelper.setBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, this.form.cloudHybridMode().value());   
   }
 
   //Workers number
   handleThreadCountChanged()
   {
+    //If they changed the thread count to higher than 1, disable cloud hybrid.
+    if (this.form.engineThreadCount().value() > 1)
+    {
+      this.form.cloudHybridMode().value.set(false);
+      LocalStorageHelper.setBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, false);   
+    }
+
     LocalStorageHelper.setNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, this.form.engineThreadCount().value());
   }
 

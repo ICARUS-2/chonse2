@@ -1,0 +1,37 @@
+<div 
+  class="d-flex justify-content-between p-2"
+  [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()">
+  <app-bootstrap-button
+    (buttonClick)="flipClicked.emit()"
+    label="↑↓"
+    extraClasses="btn-lg">
+  </app-bootstrap-button>
+
+  <app-bootstrap-button
+    (buttonClick)="doubleBackClicked.emit()"
+    [disabled]="!areBackButtonsEnabled()"
+    label="&lt;--"
+    extraClasses="btn-lg">
+  </app-bootstrap-button>
+
+  <app-bootstrap-button
+    (buttonClick)="backClicked.emit()"
+    [disabled]="!areBackButtonsEnabled()"
+    label="&lt;"
+    extraClasses="btn-lg">
+  </app-bootstrap-button>
+
+  <app-bootstrap-button
+    (buttonClick)="forwardClicked.emit()"
+    [disabled]="!areForwardButtonsEnabled()"
+    label=">"
+    extraClasses="btn-lg">
+  </app-bootstrap-button>
+
+  <app-bootstrap-button
+    (buttonClick)="doubleForwardClicked.emit()"
+    [disabled]="!areForwardButtonsEnabled()"
+    label="-->"
+    extraClasses="btn-lg">
+  </app-bootstrap-button>
+</div>

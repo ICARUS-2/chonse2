@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
-import { Homepage } from './homepage/homepage';
+import { AnalysisPage } from './analysis-page/analysis-page';
 import { Settings } from './settings/settings';
 import { LoadGame } from './load-game/load-game';
 import { InputPosition } from './input-position/input-position';
 import { VsAi } from './vs-ai/vs-ai';
 import { PgnLink } from './pgn-link/pgn-link';
 import { LoadPgn } from './load-pgn/load-pgn';
+import { Homepage } from './homepage/homepage';
 
 export enum RouteConstants {
     ROUTE_SITE = "site",
@@ -23,11 +24,15 @@ export enum RouteConstants {
 }
 
 export const routes: Routes = [
+    //pages
     {path: "", component: Homepage},
+    {path: "analysis", component: AnalysisPage},
     {path: "settings", component: Settings},
     {path: "editor", component: InputPosition},
-    {path: `game/:${RouteConstants.ROUTE_SITE}/:${RouteConstants.ROUTE_USERNAME}/:${RouteConstants.ROUTE_GAMEID}`, component: LoadGame},
     {path: `vs-ai`, component: VsAi},
     {path: "pgn-link", component: PgnLink},
+
+    //redirects
+    {path: `game/:${RouteConstants.ROUTE_SITE}/:${RouteConstants.ROUTE_USERNAME}/:${RouteConstants.ROUTE_GAMEID}`, component: LoadGame},
     {path: `pgn/:${RouteConstants.ROUTE_PGN}`, component: LoadPgn}
 ];

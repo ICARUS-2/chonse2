@@ -1,0 +1,34 @@
+.progress-toast {
+  position: fixed;
+  top: 120px;
+  right: 50px;
+  width: 260px;
+  background-color: #212529;   /* dark charcoal */
+  border-radius: 6px;
+  overflow: hidden;             /* clips the progress bar to rounded corners */
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Top row: icon + message + close button */
+.toast-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 36px 10px 14px; /* right padding leaves room for × */
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.toast-icon {
+  color: #0dcaf0;   /* Bootstrap info blue */
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* Make the progress bar flush to the bottom — no margin */
+.progress-toast ngb-progressbar {
+  margin: 0 !important;
+  border-radius: 0;
+  height: 5px;
+}

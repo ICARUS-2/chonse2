@@ -1,14 +1,39 @@
 .componentContainer
 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.boardPlayerInfo 
+{
+  display: flex;
+  flex-direction: column;
+  height: 85vmin;
+  justify-content: space-between;
+}
+
+.compactBoardPlayerInfo
+{
+  display: none;
+}
+
+.boardEvalBarAndArrows
+{
+  height: 85vmin;
+  justify-content: space-between;
+  padding-left: 3vmin;
+  padding-right: 3vmin;
 }
 
 .boardOuterContainer
 {
     display: flex;
     flex-direction: column;
+      box-shadow:
+    0 8px 32px rgba(31, 38, 135, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .boardOuterContainerFlipped
@@ -22,10 +47,9 @@
   display: grid;
   grid-template-rows: repeat(8, 1fr);
   grid-template-columns: repeat(8, 1fr);
-  width: 82vmin; /* scale board to viewport, always square */
-  height: 82vmin;
+  width: 77vmin; /* scale board to viewport, always square */
+  height: 77vmin;
   gap: 0;
-  border: 1px solid;
   user-select: none;
   touch-action: none;
 }
@@ -136,18 +160,14 @@
     z-index: 10;
 }
 
-.boardControls
+.boardRight
 {
   display: flex;
   flex-direction: column;
-  height: 96vmin;
-  width: 83vmin;
+  justify-content: space-between;
+  height: 85vmin;
+  width: 77vmin;
   touch-action: manipulation;
-}
-
-.engineDashboard 
-{
-  height: 14vmin;
 }
 
 .boardControlButtons
@@ -160,30 +180,6 @@
 .controlButton
 {
   touch-action: manipulation;
-}
-
-.movesAndAccuracies
-{
-  height: 52vmin;
-}
-
-.algebraicContainer
-{
-  padding: 5px;
-  height: 35vmin;
-  width: 40vmin;
-  overflow-y: auto;
-  overflow-x: hidden;
-  user-select: none;
-}
-
-.evalSectionRight
-{
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
 }
 
 .animatedPiece {
@@ -218,54 +214,12 @@
   z-index: 2;
 }
 
-.engineMoveInfoText
+@media screen and (min-width: 1900px) and (min-height: 1050px)
 {
-  min-height: 3vmin;
-}
-
-.engineMoveInfoText img
-{
-  height: 2vmin;
-}
-
-.moveClassificationsList
-{
-  text-align: center;
-  user-select: none;
-  table-layout: fixed;
-  width: 100%;
-}
-
-.playerNameInTable
-{
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: 10vmin;
-}
-
-.moveClassificationListIcon
-{
-  width: 3.7vmin;
-}
-
-.inlineMoveIcon
-{
-  width: 3vmin;
-}
-
-.engineLinesContainer
-{
-  flex: 1;
-}
-
-.engineLineDisplayIcon
-{
-  height: 3vmin;
-}
-
-.coachClassificationIcon
-{
-  height: 2vmin;
+  .boardRight
+  {
+    width: 30vw;
+  }
 }
 
 @media screen and (max-width: 1200px) 
@@ -275,42 +229,56 @@
     flex-direction: column;
   }    
 
-  .boardControls
+  .compactBoardPlayerInfo
   {
-    width: 100%;
+    display: block;
+  }
+
+  .boardPlayerInfo
+  {
+    display: none;
+  }
+
+  .boardContainerInner
+  {
+    width: 88vmin;
+    height: 88vmin;
+  }
+
+  .boardArrowButtons
+  {
+    touch-action: manipulation;
+  }
+
+  .boardEvalBarAndArrows
+  {
+    margin-bottom: 100px;
+  }
+
+  .coachButtons
+  {
+    flex-direction: column;
+  }
+
+  .boardRight
+  {
     height: unset;
   }
 
-  .engineDashboard
+  /*Board Right (underneath on mobile) components*/
+  .coachDisplay, .boardArrowButtons ,.engineLineDisplay, .movesTable, .movesOverview, .evalChart
   {
-    height: 30vmin;
+    margin-bottom: 20px;
   }
-
-  .movesAndAccuracies
+  
+  .movesAndOverview
   {
     flex-direction: column;
-    height: auto;
-    min-height: unset;
   }
 
-  .evalTextData
+  .movesTable, .movesOverview
   {
-    font-size: small;
-  }
-
-  .engineLinesContainer 
-  {
-    flex: unset;
-  }
-
-  .algebraicContainer
-  {
-    width: 100%;
-  }
-
-  .iconButtonContainer 
-  {
-    flex-direction: column;
-    margin: 2vmin
+    width: 100% !important;
+    margin-left: 0 !important;
   }
 }

@@ -17,9 +17,7 @@ import { EvalBar } from '../eval-bar/eval-bar';
 import MoveClassificationList from './move-classification-list';
 import { Router } from '@angular/router';
 import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-helper';
-import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
-import { DivergenceTableEntry } from '../divergence-table-entry/divergence-table-entry';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
 import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
 import Chonse2 from '../../../libs/chonse2-lib/chonse2';
@@ -33,11 +31,36 @@ import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
 import {CoachIdeaFlagType, CoachMoveFlagType, CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
 import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
-import { IconButton } from "../../ui/icon-button/icon-button";
+import { BoardArrowButtons } from '../board-arrow-buttons/board-arrow-buttons';
+import { BoardOptions } from '../board-options/board-options';
+import { MovesTable } from '../moves-table/moves-table';
+import { EngineLineDisplay } from "../engine-line-display/engine-line-display";
+import { GameInfo } from "../game-info/game-info";
+import { MoveOverview } from "../move-overview/move-overview";
+import { CoachDisplay } from "../coach-display/coach-display";
+import ChessboardHelper from '../helpers';
+import { CompactBoardPlayerInfo } from '../compact-board-player-info/compact-board-player-info';
+import { ProgressToast } from '../progress-toast/progress-toast';
 
 @Component({
   selector: 'app-chessboard',
-  imports: [Square, BoardPlayerInfo, CommonModule, FormsModule, NgbProgressbar, EvalBar, EvaluationChart, BootstrapButton, DivergenceTableEntry, IconButton],
+  imports: [
+    MovesTable,
+    Square,
+    BoardArrowButtons,
+    BoardOptions,
+    BoardPlayerInfo,
+    CompactBoardPlayerInfo,
+    CommonModule,
+    FormsModule,
+    EvalBar,
+    EvaluationChart,
+    EngineLineDisplay,
+    GameInfo,
+    MoveOverview,
+    CoachDisplay,
+    ProgressToast
+],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -68,6 +91,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   
   //Controls
   coachButtonsDisabled: WritableSignal<boolean> = signal(false);
+  activeTab = signal<'moves' | 'overview'>('moves');
 
   //Coach stuff
   static readonly COACH_FOLLOW_UP_LENGTH = 10;
@@ -396,22 +420,12 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
         if (mostRecentMove.toCoord == coord)
         {
-          return this.getIconSourceForMoveClassification(lastEval.moveClassification)();
+          return ChessboardHelper.getIconSourceForMoveClassification(lastEval.moveClassification)();
         }   
       }
     }
     return "";
   } )
-
-  getIconSourceForMoveClassification = (classification: MoveClassification) => computed( () => 
-  {
-    if (classification == MoveClassification.None)
-    {
-      return "";
-    }
-
-    return "icons/" + classification + ".png";
-  })
 
   getPastEngineArrow = computed( (): Arrow | null => 
   {
@@ -505,37 +519,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     return `piece/merida/${piece}.svg`;
   }) 
 
-  getOpeningDisplay = computed( () : string => 
-  {
-    if (!this.boardState().eval)
-    {
-      return "-";
-    }
-
-    const recentEval: PositionEval | undefined = this.boardState().getMostRecentEval();
-
-    if (!recentEval)
-    {
-      return "-";
-    }
-    else 
-    {
-      if (recentEval.opening)
-      {
-        return recentEval.opening;
-      }
-      else 
-      {
-        const evaluation = this.boardState().eval();
-        if (evaluation?.positions)
-        {
-          const l = evaluation.positions.length - 1;
-          return evaluation.positions[l].opening ?? "-";
-        }
-      }
-    }
-    return "-";
-  } )
   //#endregion
 
   //#region Coach
@@ -836,7 +819,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const moves = this.boardState().mainMoveStack().map(m => structuredClone(m));
     const pgnHeaders = structuredClone(this.boardState().pgnHeaders());
 
-    this.router.navigate(['/'], {state: { "vsAiStates": states, "vsAiGameStates": gameStates, "vsAiMoves": moves, "vsAiPgnHeaders": pgnHeaders}});
+    this.router.navigate(['/analysis'], {state: { "vsAiStates": states, "vsAiGameStates": gameStates, "vsAiMoves": moves, "vsAiPgnHeaders": pgnHeaders}});
   }
 
   getMostCurrentMainState()
