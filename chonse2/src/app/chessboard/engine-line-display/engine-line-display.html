@@ -1,5 +1,7 @@
 @if (boardState().eval()) {
-  <div class="engineLinesContainer d-flex justify-content-between glass-subpanel p-3">
+  <div class="engineLinesContainer d-flex justify-content-between p-3"
+    [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()"
+    [style.color]="themeService.getThemeInstance().getTextColor()">
 
     @for (engineLine of boardState().getMostRecentEval()?.lines; track $index) {
       <div class="engineLineDisplay d-flex justify-content-center align-items-center">

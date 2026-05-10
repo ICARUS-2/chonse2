@@ -5,10 +5,11 @@ import { ActiveElement, Chart, ChartConfiguration, ChartEvent } from 'chart.js';
 import ThemeService from '../../themes/theme-service';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { PositionEval } from '../../../libs/engine-lib/types/eval';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-evaluation-chart',
-  imports: [BaseChartDirective],
+  imports: [BaseChartDirective, CommonModule],
   templateUrl: './evaluation-chart.html',
   styleUrl: './evaluation-chart.css',
   changeDetection: ChangeDetectionStrategy.OnPush

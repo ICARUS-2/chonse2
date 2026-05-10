@@ -1,4 +1,4 @@
-import IAppTheme from "./i-app-theme";
+import { GlassPanelTheme, IAppTheme } from "./i-app-theme";
 
 export default class WhiteBlueTheme implements IAppTheme
 {
@@ -37,4 +37,13 @@ export default class WhiteBlueTheme implements IAppTheme
         return "rgb(85,150,242)";
     }
     
+    getBackgroundImgUrl(): string 
+    {
+        return "img/backgrounds/sky-bg.png"
+    }
+
+    getGlassPanelTheme(): string 
+    {
+        return GlassPanelTheme.Light;   
+    }
 }

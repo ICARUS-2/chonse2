@@ -1,4 +1,5 @@
-<div class="boardPlayerInfoContainer d-flex glass-subpanel p-4">
+<div class="boardPlayerInfoContainer d-flex p-4"
+[ngClass]="themeService.getThemeInstance().getGlassPanelTheme()">
     
     <div>
         <div [style.color]="themeService.getThemeInstance().getTextColor()">{{playerName()}}</div>

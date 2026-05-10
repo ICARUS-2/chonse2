@@ -1,5 +1,5 @@
 import { Injectable, signal } from "@angular/core";
-import IAppTheme from "./app-themes/i-app-theme";
+import { IAppTheme } from "./app-themes/i-app-theme";
 import { Themes } from "./themes";
 import LocalStorageHelper from "../chessboard/chessboard/local-storage-helper";
 import WhiteBlueTheme from "./app-themes/white-blue-theme";

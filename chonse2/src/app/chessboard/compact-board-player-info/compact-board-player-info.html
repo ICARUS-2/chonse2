@@ -1,4 +1,6 @@
-<div class="compactBoardPlayerInfoContainer glass-subpanel p-2 mb-2">
+<div class="compactBoardPlayerInfoContainer p-2 mb-2"
+  [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()"
+  [style.color]="themeService.getThemeInstance().getTextColor()">
 
     @let adv = getAdvantage();
 

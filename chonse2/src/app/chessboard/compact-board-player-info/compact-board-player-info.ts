@@ -1,10 +1,11 @@
 import { Component, computed, input } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import ThemeService from '../../themes/theme-service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-compact-board-player-info',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './compact-board-player-info.html',
   styleUrl: './compact-board-player-info.css',
 })

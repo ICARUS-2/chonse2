@@ -2,6 +2,7 @@ import { Component, input } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import { CommonModule } from '@angular/common';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
+import ThemeService from '../../themes/theme-service';
 
 @Component({
   selector: 'app-engine-line-display',
@@ -15,4 +16,9 @@ export class EngineLineDisplay {
 
   protected readonly MoveClassification = MoveClassification;
   protected readonly Math = Math;
+
+  constructor(public themeService: ThemeService)
+  {
+
+  }
 }

@@ -1,6 +1,7 @@
 <div class="componentContainer">
+    <app-piece-selector [for]="PieceColor.BLACK" [isKingActive]="model().game().getKingCoordinate(PieceColor.BLACK) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
+     <app-piece-selector [for]="PieceColor.WHITE" [isKingActive]="model().game().getKingCoordinate(PieceColor.WHITE) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
     <div class="boardOuterContainer" [class]="model().isFlipped() ? 'boardOuterContainerFlipped' : ''">
-        <app-piece-selector [for]="PieceColor.BLACK" [isKingActive]="model().game().getKingCoordinate(PieceColor.BLACK) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
         <div #board class="boardContainerInner" [class]="model().isFlipped() ? 'boardContainerInnerFlipped' : ''">
             <!-- ARROW OVERLAY -->
             <svg
@@ -64,7 +65,6 @@
                 </ng-container>
             }
         </div>
-        <app-piece-selector [for]="PieceColor.WHITE" [isKingActive]="model().game().getKingCoordinate(PieceColor.WHITE) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
     </div>
 
     <div class="boardControls" 

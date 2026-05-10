@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-homepage',
@@ -7,5 +8,15 @@ import { Component } from '@angular/core';
   styleUrl: './homepage.css',
 })
 export class Homepage {
+
+  constructor(private router: Router)
+  {
+
+  }
+
+  ngOnInit()
+  {
+    this.router.navigate(["/analysis"]);
+  }
 
 }

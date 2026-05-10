@@ -1,5 +1,7 @@
 @if (boardState().eval(); as eval) {
-<div class="moveOverview glass-subpanel p-3 overflow-y-scroll">
+<div class="moveOverview p-3 overflow-y-scroll"
+  [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()"
+  [style.color]="themeService.getThemeInstance().getTextColor()">
 
     <!-- Elo and Accuracy Header -->
     <div class="d-flex">
@@ -15,6 +17,8 @@
             <h6>{{eval.estimatedElo?.black?.toFixed(0)}} / {{eval.accuracy.black.toFixed(1)}}%</h6>
         </div>
     </div>
+
+    <div class="m-2"></div>
 
     <!-- Engine Move Info -->
     <div class="evalTextData engineMoveInfoText d-flex flex-column justify-content-center">

@@ -8,6 +8,7 @@ import { EvalSource, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { Arrow, ArrowContext } from '../chessboard/arrow';
 import ChessboardHelper from '../helpers';
 import { CommonModule } from '@angular/common';
+import ThemeService from '../../themes/theme-service';
 
 @Component({
   selector: 'app-coach-display',
@@ -53,6 +54,10 @@ export class CoachDisplay {
     return engine ? EngineInformation.get(engine.name) : null;
   });
 
+  constructor(public themeService: ThemeService)
+  {
+    
+  }
 
   getFollowUpButtonText(move: MoveResult, ev: PositionEval): string
   {

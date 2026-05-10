@@ -1,5 +1,6 @@
 @if (!boardState().isVsAi()) {
-  <div class="iconButtonContainer d-flex flex-wrap w-100 justify-content-around glass-subpanel p-1">
+  <div class="iconButtonContainer d-flex flex-wrap w-100 justify-content-around p-1"
+  [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()">
 
     <app-icon-button
       label="Import Game"
@@ -35,7 +36,8 @@
 
   </div>
 } @else {
-  <div class="iconButtonContainer d-flex flex-wrap w-100 justify-content-around glass-subpanel p-1">
+  <div class="iconButtonContainer d-flex flex-wrap w-100 justify-content-around p-1" 
+  [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()">
 
     @if (!mostCurrentMainState.gameState.isGameOver && boardState().engine()) {
       <app-icon-button

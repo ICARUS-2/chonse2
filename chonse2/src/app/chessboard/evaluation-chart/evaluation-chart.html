@@ -1,4 +1,7 @@
-<div class="componentContainer glass-subpanel" [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+<div class="componentContainer" 
+  [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`"
+  [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()"
+  [style.color]="themeService.getThemeInstance().getTextColor()">
   <canvas baseChart
     [data]="getChartData()"
     [options]="this.lineChartOptions"

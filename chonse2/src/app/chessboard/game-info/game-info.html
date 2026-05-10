@@ -1,5 +1,7 @@
 <!-- game-info.component.html -->
-<div class="glass-subpanel p-4 gameInfo">
+<div class="p-4 gameInfo"
+  [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()"
+  [style.color]="themeService.getThemeInstance().getTextColor()">
 
   <!--Whose turn it is-->
   <div

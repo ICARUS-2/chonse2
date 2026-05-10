@@ -1,4 +1,6 @@
-<div class="algebraicContainer glass-subpanel p-4">
+<div class="algebraicContainer p-4"
+  [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()"
+  [style.color]="themeService.getThemeInstance().getTextColor()">
   <table class="w-100">
     <tbody>
 

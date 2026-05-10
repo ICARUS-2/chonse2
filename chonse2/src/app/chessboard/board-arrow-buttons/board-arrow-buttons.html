@@ -1,4 +1,6 @@
-<div class="d-flex justify-content-between glass-subpanel p-2">
+<div 
+  class="d-flex justify-content-between p-2"
+  [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()">
   <app-bootstrap-button
     (buttonClick)="flipClicked.emit()"
     label="↑↓"

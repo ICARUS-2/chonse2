@@ -1,15 +1,23 @@
 import { Component, input, output } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import { IconButton } from '../../ui/icon-button/icon-button';
-import { NgbProgressbar } from '@ng-bootstrap/ng-bootstrap';
+import ThemeService from '../../themes/theme-service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-board-options',
-  imports: [IconButton, NgbProgressbar],
+  imports: [IconButton, CommonModule],
   templateUrl: './board-options.html',
   styleUrl: './board-options.css',
 })
 export class BoardOptions {
+
+  constructor(public themeService: ThemeService)
+  {
+
+  }
+  
+
   boardState = input.required<BoardState>();
  
   importClicked = output<void>();

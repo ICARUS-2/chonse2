@@ -13,4 +13,13 @@
 .componentContainer 
 {
     touch-action: none;
+    flex-direction: column;
+}
+
+@media screen and (max-width: 1200px)
+{
+    .componentContainer 
+    {
+        flex-direction: row;
+    }
 }

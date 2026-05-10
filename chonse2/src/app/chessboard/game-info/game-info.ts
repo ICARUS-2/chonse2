@@ -2,10 +2,11 @@ import { Component, computed, inject, input } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import ThemeService from '../../themes/theme-service';
 import { PositionEval } from '../../../libs/engine-lib/types/eval';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-game-info',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './game-info.html',
   styleUrl: './game-info.css',
 })
@@ -19,7 +20,7 @@ export class GameInfo {
 
     const prefix = headers.termination
       ? headers.termination !== 'Normal'
-        ? headers.termination + ' - '
+        ? headers.termination
         : headers.result
       : '- ';
 
