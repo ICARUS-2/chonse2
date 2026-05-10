@@ -12,7 +12,7 @@
             @let count = getDisplayMap().get(key);
 
             <img class="capturedPieceImg" [src]="`piece/merida/${key}.svg`" alt="piece" />
-            <p>{{count}}</p>
+            <p [style.color]="themeService.getThemeInstance().getTextColor()">{{count}}</p>
         }
     </div>
     
