@@ -12,7 +12,10 @@
 
         <div>
           @if (getImageSourceForEnginePiece()(engineLine.pv[0])(); as pieceImgSrc) {
-            <img class="engineLineDisplayIcon" [src]="pieceImgSrc">
+            @if (!pieceImgSrc.endsWith("/.svg"))
+            {
+              <img class="engineLineDisplayIcon" [src]="pieceImgSrc">
+            }
           }
           {{ engineLine.pv[0] }}
         </div>
