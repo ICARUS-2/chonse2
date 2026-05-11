@@ -1,5 +1,6 @@
 <button 
     [style.background-color]="this.overridePrimaryBackgroundColor() ? this.overridePrimaryBackgroundColor() : themeService.getThemeInstance().getPrimaryColor()"
+    [style]="extraStyle()"
     class="button" 
     [class]="extraClasses()"
     [disabled]="disabled()"

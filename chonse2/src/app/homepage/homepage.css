@@ -1,0 +1,28 @@
+.homepageContainer 
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.topHeader
+{
+    font-size: 10vmin;
+}
+
+.middleContainer 
+{
+    width: 50%;
+}
+
+@media screen and (max-width: 1200px)
+{
+    .middleContainer
+    {
+        width: unset;
+        flex-direction: column;
+    }
+}

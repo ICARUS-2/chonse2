@@ -1,1 +1,42 @@
-<p>homepage works!</p>
+<div class="homepageContainer">
+    <div class="topHeader" [style.color]="themeService.getThemeInstance().getPrimaryColor()">CHONSE2</div>
+    <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Luminous chess analytics.</h1>
+    <h4 [style.color]="themeService.getThemeInstance().getTextColor()">Open-source. Unlimited. No account required.</h4>
+
+    <div class="m-5"></div>
+
+    <div class="middleContainer d-flex justify-content-between align-items-center">
+        <div class="stackedButtons d-flex flex-column">
+            
+            @let btns = 
+            [
+                {'label': 'Board Editor', 'iconClass': 'bi-border-all', 'click': boardEditorButtonClicked},
+                {'label': 'Play vs Stockfish', 'iconClass': 'bi-code-slash', 'click': vsStockfishButtonClicked},
+                {'label': 'PGN Link', 'iconClass': 'bi-link-45deg', 'click': pgnLinkButtonClicked}
+            ];
+
+            @let btnStyle = { 'width': '300px', 'height': '60px', 'font-size' : '25px'};
+
+            <app-icon-button (buttonClick)="analysisButtonClicked()" [extraStyle]="btnStyle" extraClasses="" label="Analysis" iconClass="bi-cpu" overridePrimaryBackgroundColor="rgb(52, 175, 0)" overrideSecondaryBackgroundColor="green"></app-icon-button>
+            <div class="m-2"></div>
+            
+            @for(btn of btns; track $index)
+            {
+                <app-icon-button (buttonClick)="btn.click.call(this)" [extraStyle]="btnStyle" extraClasses="" [label]="btn.label" [iconClass]="btn.iconClass"></app-icon-button>
+            
+                <div class="m-2"></div>
+            }
+            
+        </div>
+<!-- 
+        <div class="d-flex flex-column">
+            <app-static-chessboard [size]="'30vmin'"></app-static-chessboard>
+            <app-icon-button label="Analyze game: white vs black" [extraStyle]="{'width': '30vmin'}" iconClass="bi-arrow-up-right"></app-icon-button>
+        </div> -->
+
+        <div class="d-flex flex-column">
+            <app-static-chessboard [size]="'40vmin'"></app-static-chessboard>
+            <app-icon-button label="Analysis Demo" [extraStyle]="{'width': '40vmin'}" iconClass="bi-arrow-up-right" (buttonClick)="demoButtonClicked()"></app-icon-button>
+        </div>
+    </div>
+</div>
