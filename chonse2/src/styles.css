@@ -24,8 +24,8 @@
   position: absolute;
   inset: 0;
   border-radius: 10px;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  /* backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px); */
   z-index: -1;
   pointer-events: none;
 }
