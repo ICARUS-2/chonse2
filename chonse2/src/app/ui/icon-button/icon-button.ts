@@ -15,10 +15,12 @@ export class IconButton {
 
   label = input<string>('BUTTON_LABEL');
   disabled = input<boolean>(false);
-  extraClasses = input<string>('');
   iconClass = input<string>('bi-download'); // Default Bootstrap icon
   overridePrimaryBackgroundColor = input<string>("");
   overrideSecondaryBackgroundColor = input<string>("");
+
+  extraClasses = input<string>('');
+  extraStyle = input<Record<string, string | number>>({});
 
   buttonClick = output<PointerEvent>();
 
