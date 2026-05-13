@@ -1,29 +1,32 @@
-<div class="componentContainer d-flex flex-column p-5"  [style.background-color]="`${themeService.getThemeInstance().getBackgroundColor()}`" [style.color]="themeService.getThemeInstance().getTextColor()">
-    <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Configure game vs AI</h2>
+<div class="componentContainer d-flex flex-column p-3" [class]="themeService.getThemeInstance().getGlassPanelTheme()" [style.background-image]="`url(${themeService.getThemeInstance().getBackgroundImgUrl()})`" [style.color]="themeService.getThemeInstance().getTextColor()">
+    
+    <div [class]="themeService.getThemeInstance().getGlassPanelTheme()" class="p-4">
+        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Configure game vs AI</h2>
 
-    <hr>
+        <hr>
 
-    <div [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
-        <label>Set AI Elo</label>
-        <input [formField]="form.elo" type="range" class="form-range custom-range"  id="range2">
-        <p>{{form.elo().value()}}</p>
-    </div>
- 
-    <div class="m-3"></div>
-
-    <div class="">
-        <label>I play as white.</label>
-        <div class="form-check form-switch"
-        [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
-            <input
-                class="form-check-input custom-switch"
-                type="checkbox"
-                [formField]="form.isHumanPlayerWhite"
-            />
+        <div [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
+            <label>Set AI Elo</label>
+            <input [formField]="form.elo" type="range" class="form-range custom-range"  id="range2">
+            <p>{{form.elo().value()}}</p>
         </div>
+    
+        <div class="m-3"></div>
+
+        <div class="">
+            <label>I play as white.</label>
+            <div class="form-check form-switch"
+            [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
+                <input
+                    class="form-check-input custom-switch"
+                    type="checkbox"
+                    [formField]="form.isHumanPlayerWhite"
+                />
+            </div>
+        </div>
+
+        <hr>
+
+        <app-bootstrap-button (buttonClick)="submitClicked()" label="Begin Game"></app-bootstrap-button>
     </div>
-
-    <hr>
-
-    <app-bootstrap-button (buttonClick)="submitClicked()" label="Begin Game"></app-bootstrap-button>
 </div>

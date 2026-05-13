@@ -86,6 +86,12 @@ export class AnalysisPage implements OnInit{
             boardState.doEvaluateGame.set(true);
             this.gameService.deleteGame(BoardNames.Analysis);
             this.gameService.addGame(BoardNames.Analysis, boardState);
+
+            if (boardState.pgnHeaders().white.toLowerCase() != this.username.toLowerCase())
+            {
+              boardState.isFlipped.set(true);
+            }
+
             this.cdr.markForCheck();
             this.toastrService.success("Game import successful.");
           }
@@ -113,6 +119,13 @@ export class AnalysisPage implements OnInit{
             boardState.doEvaluateGame.set(true);
             this.gameService.deleteGame(BoardNames.Analysis);
             this.gameService.addGame(BoardNames.Analysis, boardState);
+
+            if (boardState.pgnHeaders().white.toLowerCase() != this.username.toLowerCase())
+            {
+              boardState.isFlipped.set(true);
+            }
+
+
             this.cdr.markForCheck();
             this.toastrService.success("Game import successful.");
           }

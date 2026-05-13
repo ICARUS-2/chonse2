@@ -65,13 +65,13 @@ export class ImportModal implements OnInit
   //Close and resolve with selected PGN.
   handleSubmitClicked()
   {
-    this.activeModal.close(this.form.pgn().value());
+    this.activeModal.close({pgn: this.form.pgn().value(), username: ""});
   }
 
   //Close and resolve with the selected game from the chess.com API.
   handleChessComGameClicked(g: ChessComGame)
   {
-    this.activeModal.close(g.pgn);
+    this.activeModal.close({pgn: g.pgn, username: this.form.siteUsername().value()});
   }
 
   //#region Username stuff
@@ -213,7 +213,7 @@ export class ImportModal implements OnInit
 
   handleLichessGameClicked(game: LichessGame)
   {
-    this.activeModal.close(game.pgn);
+    this.activeModal.close({pgn: game.pgn, username: this.form.siteUsername().value()});
   }
 
   async handleLichessGameLinkClicked(event: PointerEvent, game: LichessGame)
