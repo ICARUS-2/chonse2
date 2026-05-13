@@ -41,7 +41,7 @@ export class Settings {
 
     //Engine thread count
     min(schema.engineThreadCount, 1),
-    max(schema.engineThreadCount, 4)
+    max(schema.engineThreadCount, 12)
   })
 
   constructor(public themeService: ThemeService)

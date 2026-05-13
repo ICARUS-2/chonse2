@@ -1,6 +1,9 @@
 <div class="componentContainer">
-    <app-piece-selector [for]="PieceColor.BLACK" [isKingActive]="model().game().getKingCoordinate(PieceColor.BLACK) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
-     <app-piece-selector [for]="PieceColor.WHITE" [isKingActive]="model().game().getKingCoordinate(PieceColor.WHITE) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
+
+    <div class="d-flex pieceSelectors">
+        <app-piece-selector [for]="PieceColor.BLACK" [isKingActive]="model().game().getKingCoordinate(PieceColor.BLACK) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
+        <app-piece-selector [for]="PieceColor.WHITE" [isKingActive]="model().game().getKingCoordinate(PieceColor.WHITE) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
+    </div>
     <div class="boardOuterContainer" [class]="model().isFlipped() ? 'boardOuterContainerFlipped' : ''">
         <div #board class="boardContainerInner" [class]="model().isFlipped() ? 'boardContainerInnerFlipped' : ''">
             <!-- ARROW OVERLAY -->
@@ -65,11 +68,12 @@
                 </ng-container>
             }
         </div>
+    
     </div>
 
-    <div class="boardControls" 
+    <div class="boardControls" [class]="themeService.getThemeInstance().getGlassPanelTheme()" 
         [style.color]="themeService.getThemeInstance().getTextColor()"
-        [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
+        >
         <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Board Editor</h2>
         <div class="d-flex justify-content-between flex-wrap">
             <app-bootstrap-button (buttonClick)="handleResetClicked()" label="Reset"></app-bootstrap-button>

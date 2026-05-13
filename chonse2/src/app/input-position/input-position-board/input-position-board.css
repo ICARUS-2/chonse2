@@ -1,19 +1,10 @@
 .componentContainer
 {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
-}
-
-.boardOuterContainer
-{
-  display: flex;
-  flex-direction: column;
-}
-
-.boardOuterContainerFlipped
-{
-    flex-direction: column-reverse;
+  padding-left: 20vmin;
+  padding-right: 20vmin;
 }
 
 .boardContainerInner
@@ -25,14 +16,13 @@
   width: 75vmin; /* scale board to viewport, always square */
   height: 75vmin;
   gap: 0;
-  border: 1px solid;
   user-select: none;
   touch-action: none;
 }
 
 .boardContainerInnerFlipped 
 {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 
 .currentlyHeldPiece
@@ -106,6 +96,11 @@
     flex-direction: column;
     width: 100%;
   }    
+
+  .pieceSelectors 
+  {
+    flex-direction: column;
+  }
 
   .boardContainerInner 
   {

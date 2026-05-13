@@ -1,85 +1,117 @@
 
 <div class="container" [style.color]="themeService.getThemeInstance().getTextColor()">
-    <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Settings</h1>
+    <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()" class="p-4" [class]="themeService.getThemeInstance().getGlassPanelTheme()">Settings</h1>
     <hr>
 
-    <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Board</h2>
-    <h4 class="text-secondary">Click to move</h4>
+    <!--Board and appearance settings-->
+    <div class="d-flex justify-content-between">
+        <!--Board Settings-->
+        <div class="p-4 w-50 me-2" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
+            <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Board</h2>
+            <h4 class="text-secondary">Click to move</h4>
 
-    <div
-    class="form-check form-switch"
-    [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
-    >
-    <input
-        class="form-check-input custom-switch"
-        type="checkbox"
-        [formField]="form.clickToMove"
-        (change)="handleClickToMoveSwitchPressed($event.target.checked)"
-    />
-    </div>
-    
-    <hr>
-    <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Engine</h2>
-    <h4 class="text-secondary">Select Engine</h4>
-    <select [formField]="form.selectedEngine" class="form-select" (change)="handleEngineDropdownSelectionChanged()">
-        @for(engine of Object.values(EngineName); track $index)
-        {
-            @if(EngineInformation.get(engine); as engineInfo)
-            {
-                <option [value]="engine">
-                    {{engineInfo.displayName}}
+            <div
+            class="form-check form-switch"
+            [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+            >
+            <input
+                class="form-check-input custom-switch"
+                type="checkbox"
+                [formField]="form.clickToMove"
+                (change)="handleClickToMoveSwitchPressed($event.target.checked)"
+            />
+            </div>
+        </div>
 
-                    @if (engineInfo.additionalText)
+        <!--Appearance Settings-->
+        <div class="p-4 w-50 ms-2" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
+            <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Appearance</h2>
+                <h4 class="text-secondary">Select Theme</h4>
+                <select [formField]="form.selectedTheme" class="form-select" (change)="handleThemeDropdownSelectionChanged()">
+                    @for(theme of Object.values(Themes); track $index)
                     {
-                        ({{engineInfo.additionalText}})
+                        <option [value]="theme">{{theme}}</option>
                     }
-                </option>
-            }
-        }
-    </select>
-        
-    <div class="m-4"></div>
+            </select>
+        </div>
 
-    <h4 class="text-secondary">Engine Depth</h4>
-    <div class="d-flex" [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
-        <input (change)="handleEngineDepthChanged()" [formField]="form.engineDepth" type="range" class="form-range custom-range" id="range2">
-        <p>{{form.engineDepth().value()}}</p>
     </div>
-
-    <div class="m-4"></div>
-
-    <h4 class="text-secondary">Cloud Hybrid Mode (Single-thread only) <span class="bi bi-patch-question text-info" ngbTooltip="Delegate evaluations to Lichess cloud eval wherever possible. Can yield increased depth, faster evaluations and less CPU usage. Intended for devices that cannot take advantage of multithreading"></span> </h4>
-    <div
-    class="form-check form-switch"
-    [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
-    >
-    <input
-        class="form-check-input custom-switch"
-        type="checkbox"
-        [formField]="form.cloudHybridMode"
-        (change)="handleCloudHybridChanged($event.target.checked)"
-    /></div>
-
-    <div class="m-4"></div>
-
-    <h4 class="text-secondary">Thread Count</h4>
-    <div class="d-flex" [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
-        <input (change)="handleThreadCountChanged()" [formField]="form.engineThreadCount" type="range" class="form-range custom-range" id="range3">
-        <p>{{form.engineThreadCount().value()}}</p>
-    </div>
-
-    <div class="m-4"></div>
-
     <hr>
 
-    <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Appearance</h2>
-    <h4 class="text-secondary">Select Theme</h4>
-    <select [formField]="form.selectedTheme" class="form-select" (change)="handleThemeDropdownSelectionChanged()">
-        @for(theme of Object.values(Themes); track $index)
-        {
-            <option [value]="theme">{{theme}}</option>
-        }
-    </select>
+    <!--Engine Settings-->
+    <div class="p-4" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
+
+        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Engine</h2>
+
+        <!--Select Engine and Cloud Hybrid-->
+        <div class="d-flex">
+
+            <!--Select engine-->
+            <div class="w-50 me-4">
+                <h4 class="text-secondary">Select Engine</h4>
+                <select [formField]="form.selectedEngine" class="form-select" (change)="handleEngineDropdownSelectionChanged()">
+                    @for(engine of Object.values(EngineName); track $index)
+                    {
+                        @if(EngineInformation.get(engine); as engineInfo)
+                        {
+                            <option [value]="engine">
+                                {{engineInfo.displayName}}
+
+                                @if (engineInfo.additionalText)
+                                {
+                                    ({{engineInfo.additionalText}})
+                                }
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <!--Cloud Hybrid-->
+            <div class="w-50 ms-4">
+                <h4 class="text-secondary">Cloud Hybrid Mode (Single-thread only) <span class="bi bi-patch-question text-info" ngbTooltip="Delegate evaluations to Lichess cloud eval wherever possible. Can yield increased depth, faster evaluations and less CPU usage. Intended for devices that cannot take advantage of multithreading"></span> </h4>
+                <div
+                class="form-check form-switch"
+                [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+                >
+                <input
+                    class="form-check-input custom-switch"
+                    type="checkbox"
+                    [formField]="form.cloudHybridMode"
+                    (change)="handleCloudHybridChanged($event.target.checked)"
+                /></div>
+            </div>
+        </div>
+            
+        <div class="m-4"></div>
+
+        <!--Engine depth and thread count-->
+
+        <div class="d-flex justify-content-between">
+            <!--Engine depth-->
+            <div class="w-50 me-4">
+                <h4 class="text-secondary">Engine Depth</h4>
+                <div class="d-flex" [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
+                    <input (change)="handleEngineDepthChanged()" [formField]="form.engineDepth" type="range" class="form-range custom-range" id="range2">
+                    <p>{{form.engineDepth().value()}}</p>
+                </div>
+            </div>
+
+            <!--Thread count-->
+            <div class="w-50 ms-4">
+                <h4 class="text-secondary">Thread Count</h4>
+                <div class="d-flex" [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
+                    <input (change)="handleThreadCountChanged()" [formField]="form.engineThreadCount" type="range" class="form-range custom-range" id="range3">
+                    <p>{{form.engineThreadCount().value()}}</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="m-4"></div>
+
+    </div>
+    <hr>
 
     <hr>
 
