@@ -114,8 +114,7 @@ export class InputPositionBoard {
     this.toSquare.set("");
   }
 
-  //Controls
-  //#region 
+  //#region Controls
   handleFlipClicked()
   {
     this.model().isFlipped.update( f => !f);
@@ -138,11 +137,37 @@ export class InputPositionBoard {
     this._afterStateChanged();
   }
 
-  
+  submitButtonClicked()
+  {
+    if (!this.doesValidationPass())
+    {
+      return;
+    }
+
+    const copy: Chonse2 = this.model().game().getFullDeepCopy();
+
+    this.router.navigate(['/analysis'], {state: { "inputtedPosition" : copy }})
+  }
+
+  playVsAiButtonClicked()
+  {
+    if (!this.doesValidationPass())
+    {
+      return;
+    }
+
+    const copy: Chonse2 = this.model().game().getFullDeepCopy();
+
+    this.router.navigate(['/vs-ai'], {state: { "inputtedPosition" : copy }})
+  }
+
+  flipButtonClicked()
+  {
+    this.model().isFlipped.update( v => !v );
+  }
   //#endregion
 
-  //Left click/pointer
-  //#region 
+  //#region Left click/pointer
   onSquareLeftClick = () =>
   {
     this.resetClickedSquares();
@@ -280,6 +305,7 @@ export class InputPositionBoard {
     this.model().game().enPassantSquare = "";
   }
 
+  //#region Board
   getPotentialEnPassantSquares(): Array<string>
   {
     const arr: string[] = [];
@@ -433,34 +459,11 @@ export class InputPositionBoard {
 
     return true;
   }
+
   
-  submitButtonClicked()
-  {
-    if (!this.doesValidationPass())
-    {
-      return;
-    }
-
-    const copy: Chonse2 = this.model().game().getFullDeepCopy();
-
-    this.router.navigate(['/analysis'], {state: { "inputtedPosition" : copy }})
-  }
-
-  playVsAiButtonClicked()
-  {
-    if (!this.doesValidationPass())
-    {
-      return;
-    }
-
-    const copy: Chonse2 = this.model().game().getFullDeepCopy();
-
-    this.router.navigate(['/vs-ai'], {state: { "inputtedPosition" : copy }})
-  }
   //#endregion
 
-  //Square highlight logic
-  //#region 
+  //#region Square highlight logic
 
   //For the coordinate, get whether it is right clicked or not.
   getRightClickedStatusForSquare(coordinate: string)

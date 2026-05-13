@@ -71,11 +71,12 @@
         [style.color]="themeService.getThemeInstance().getTextColor()"
         [style.border]="`1px solid ${themeService.getThemeInstance().getBorderColor()}`">
         <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Board Editor</h2>
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between flex-wrap">
             <app-bootstrap-button (buttonClick)="handleResetClicked()" label="Reset"></app-bootstrap-button>
             <app-bootstrap-button (buttonClick)="handleClearClicked()" label="Clear"></app-bootstrap-button>
             <app-bootstrap-button (buttonClick)="submitButtonClicked()" label="Analyze" [disabled]="!doesValidationPass()"></app-bootstrap-button>
             <app-bootstrap-button (buttonClick)="playVsAiButtonClicked()" label="Play vs AI" [disabled]="!doesValidationPass()"></app-bootstrap-button>
+            <app-bootstrap-button (buttonClick)="flipButtonClicked()" label="↑↓"></app-bootstrap-button>
         </div>
 
         <hr>
