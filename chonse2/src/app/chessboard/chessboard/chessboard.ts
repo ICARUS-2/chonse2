@@ -308,7 +308,14 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //#region Import/Reset/Analyze/Copy PGN
   handleImportClicked()
   {
-    const ref = this.modalService.open(ImportModal, {size: 'lg'});
+    const ref = this.modalService.open
+    (
+      ImportModal, 
+      
+      {
+        size: 'lg',
+      }
+    );
 
     ref.result.then( async result => 
       {

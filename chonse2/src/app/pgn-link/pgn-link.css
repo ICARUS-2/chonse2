@@ -6,3 +6,11 @@
     margin-top: 1vmin;
     margin-bottom: 1vmin;
 }
+
+@media screen and (max-width: 1200px)
+{
+    .pgnTextArea
+    {
+        width: 100%;
+    }
+}

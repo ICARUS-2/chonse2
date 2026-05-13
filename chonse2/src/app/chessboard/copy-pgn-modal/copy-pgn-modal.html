@@ -1,10 +1,12 @@
-<div class="componentContainer">
+<div class="componentContainer p-3" [class]="themeService.getThemeInstance().getGlassPanelTheme()" [style.background-image]="`url(${themeService.getThemeInstance().getBackgroundImgUrl()})`">
 
-    <h1 [style.color]="`${themeService.getThemeInstance().getPrimaryColor()}`">Export Game</h1>
+    <div [class]="themeService.getThemeInstance().getGlassPanelTheme()" class="p-4">
+        <h1 [style.color]="`${themeService.getThemeInstance().getPrimaryColor()}`">Export Game</h1>
     
-    <div class="d-flex justify-content-between w-100">
-        <app-bootstrap-button label="Copy raw PGN" (buttonClick)="handleCopyPgnClicked()"></app-bootstrap-button>
+        <div class="d-flex justify-content-between w-100">
+            <app-bootstrap-button label="Copy raw PGN" (buttonClick)="handleCopyPgnClicked()"></app-bootstrap-button>
 
-        <app-bootstrap-button label="Get PGN link" (buttonClick)="handleCopyPgnLinkClicked()"></app-bootstrap-button>
+            <app-bootstrap-button label="Get PGN link" (buttonClick)="handleCopyPgnLinkClicked()"></app-bootstrap-button>
+        </div>
     </div>
 </div>
