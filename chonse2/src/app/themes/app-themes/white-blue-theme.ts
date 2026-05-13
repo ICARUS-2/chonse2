@@ -4,8 +4,8 @@ export default class WhiteBlueTheme implements IAppTheme
 {
     getPrimaryColor(): string 
     {
-        //return "rgb(13,110,253)"
-        return "rgb(13, 140, 255)"
+        return "rgb(13,110,253)"
+        //return "rgb(13, 140, 255)"
     }
 
     getHoverColor(): string 

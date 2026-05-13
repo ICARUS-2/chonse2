@@ -315,12 +315,20 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         try 
         {
           //Create a new instance to put the game in.
-          const newBoard: BoardState = BoardState.parsePGN(result);
+          const newBoard: BoardState = BoardState.parsePGN(result.pgn);
           newBoard.doEvaluateGame.set(true);
           
           //Remove the old one and add the new one.
           this.chessBoardService.deleteGame(this.gameId());
           this.chessBoardService.addGame(this.gameId(), newBoard);
+
+          if (result.username)
+          {
+            if (result.username.toLowerCase() != newBoard.pgnHeaders().white.toLowerCase())
+            {
+              newBoard.isFlipped.set(true);
+            }
+          }
 
           //Update current component state.
           this.boardState.set(this.chessBoardService.getGame(this.gameId()));
