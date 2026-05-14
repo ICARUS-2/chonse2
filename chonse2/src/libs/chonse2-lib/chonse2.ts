@@ -180,17 +180,22 @@ export default class Chonse2
     //The moves disregarding checks.
     const potentiallyLegalMoves = this._getPotentiallyLegalMoves(coordinate);
 
+    //Clone the object once.
+    const deepCopy: Chonse2 = this.getFullDeepCopy();
+
     //Out of the available potential legal moves, use dummy moves to see if the player would be in check after. If so, it is not a legal move.
     const legalMoves = potentiallyLegalMoves.filter(item =>
       {
-        //Create a deep copy with all its functions.
-        const deepCopy: Chonse2 = this._lightweightCloneForCheckVerification();
-
         //Test the dummy move using a stripped-down version
         Chonse2._playDummyMove(deepCopy, coordinate, item);
 
         //Return true if the player was not in check after the legal move, false if the move would put them in check
-        return this.turn ? !deepCopy.isInCheck(PieceColor.WHITE) : !deepCopy.isInCheck(PieceColor.BLACK);
+        const isCheck = this.turn ? !deepCopy.isInCheck(PieceColor.WHITE) : !deepCopy.isInCheck(PieceColor.BLACK);
+      
+        //Undo the move so that this object can be reused to check the legality of the next
+        deepCopy.undoMostRecentMove();
+
+        return isCheck;
       }
     )
 
@@ -221,6 +226,9 @@ export default class Chonse2
     {
       return {result: false, notation: "", fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: ""};
     }
+
+    //Cache the current state in case this object is needed for undoing the most recent move.
+    this.cacheState();
 
     //Begin building algebraic notation for move
     const notation: AlgebraicNotationMaker = new AlgebraicNotationMaker();
@@ -1157,6 +1165,9 @@ export default class Chonse2
 
   private static _playDummyMove(inst: Chonse2, fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN)
   {
+    //Caching the state so that the move can be undone
+    inst.cacheState();
+
     //In piece state, where the current piece is moving to.
     const toSquareIndex = Chonse2.findIndexFromCoordinate(toCoordinate);
 
