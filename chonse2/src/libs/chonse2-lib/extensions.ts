@@ -92,8 +92,6 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Forks
-    //disclaimer to whoever reads this, this fork detection code is the most janky inefficient piece of garbage i've ever written.
-    //you have been warned.
     public static getForksOnBoard(
         board: Chonse2, 
         attackerColor: string, 
@@ -166,17 +164,17 @@ export default class Chonse2Extensions
                     if (opponentHangingPieceCoords.includes(coord))
                     {
                         //One thing barring it from being a filtered candidate is if this piece can give a check stopping the fork.
-                        const lightweightClone = boardCopy._lightweightCloneForCheckVerification();
-                        lightweightClone.turn = attackerColor == PieceColor.WHITE ? false : true;
+                        boardCopy.turn = attackerColor == PieceColor.WHITE ? false : true;
+                        const legalMoves = boardCopy.getLegalMoves(coord);
+                        boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
 
-                        const legalMoves = lightweightClone.getLegalMoves(coord);
                         let attackedPlayerHasCheckWithPiece = false;
 
                         //Check every legal move of that piece to see if a check is possible. If not, not a forked piece.
                         for (const move of legalMoves)
                         {
                             //Also, if the piece can capture something greater than or equal to in value, it isn't a fork.
-                            const pieceInLegalMoveSpot = Chonse2Extensions.findPieceAtCoordinate(lightweightClone, move);
+                            const pieceInLegalMoveSpot = Chonse2Extensions.findPieceAtCoordinate(boardCopy, move);
                             if (pieceInLegalMoveSpot)
                             {
                                 const materialValueOfPieceInLegalMoveSpot = PieceMaterial.getMaterialFromPiece(pieceInLegalMoveSpot);
@@ -186,13 +184,14 @@ export default class Chonse2Extensions
                                 }
                             }
 
-                            //Lightweight clone and complete the move to verify if there is a check.
-                            const c = boardCopy._lightweightCloneForCheckVerification();
-                            c.turn = attackerColor == PieceColor.WHITE ? false : true;
+                            //verify if there is a check.
+                            boardCopy.turn = attackerColor == PieceColor.WHITE ? false : true;
+                            boardCopy.completeMove(coord, move);
 
-                            c.completeMove(coord, move);
                             
-                            const attackerIsInCheck = c.isInCheck(attackerColor);
+                            const attackerIsInCheck = boardCopy.isInCheck(attackerColor);
+                            boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
+                            boardCopy.undoMostRecentMove();
                             if (attackerIsInCheck)
                             {
                                 attackedPlayerHasCheckWithPiece = true;
@@ -270,12 +269,14 @@ export default class Chonse2Extensions
                         for(const legalMove of legalMovesForDefenderPiece)
                         {
                             //Clone the object and complete the move (this is horribly inefficient but all I can think of right now, fix this shit later).
-                            const clone = boardCopy.getFullDeepCopy();
-                            clone.turn = !clone.turn;
-                            clone.completeMove(defenderPieceCoord, legalMove);
+                            //const clone = boardCopy.getFullDeepCopy();
+                            boardCopy.turn = !boardCopy.turn;
+                            boardCopy.completeMove(defenderPieceCoord, legalMove);
+                            boardCopy.turn = !boardCopy.turn;
 
                             //Get the pieces that defend the forked square.
-                            const piecesThatHitForkedPieceSquare = Chonse2Extensions.getPiecesThatHitSquare(clone, nonKingPieceCoordinate);
+                            const piecesThatHitForkedPieceSquare = Chonse2Extensions.getPiecesThatHitSquare(boardCopy, nonKingPieceCoordinate);
+                            boardCopy.undoMostRecentMove();
                             const piecesDefendingForkedPieceSquare = attackerColor == PieceColor.WHITE ? piecesThatHitForkedPieceSquare.black : piecesThatHitForkedPieceSquare.white;
 
                             //If the moved piece defends the forked square, it's not a fork.                            

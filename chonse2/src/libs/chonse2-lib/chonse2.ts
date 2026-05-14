@@ -110,6 +110,9 @@ export default class Chonse2
   //used to track repetition
   private _previousPositionMap: Map<string, number> = new Map<string, number>();
 
+  //previous state cache
+  stateCache: PreviousStateCache = new PreviousStateCache();
+
   //instantiates with either a passed game state or the default one.
   constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]))
   {
@@ -123,10 +126,10 @@ export default class Chonse2
     //validates correct number of files per rank.
     this.pieceState.forEach( rank => 
     {
-    if (rank.length != Chonse2.SIZE)
-    {
-        throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
-    }
+      if (rank.length != Chonse2.SIZE)
+      {
+          throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
+      }
     });
     
     //Starting position always counts towards the repetition.
@@ -177,17 +180,22 @@ export default class Chonse2
     //The moves disregarding checks.
     const potentiallyLegalMoves = this._getPotentiallyLegalMoves(coordinate);
 
+    //Clone the object once.
+    const deepCopy: Chonse2 = this.getFullDeepCopy();
+
     //Out of the available potential legal moves, use dummy moves to see if the player would be in check after. If so, it is not a legal move.
     const legalMoves = potentiallyLegalMoves.filter(item =>
       {
-        //Create a deep copy with all its functions.
-        const deepCopy: Chonse2 = this._lightweightCloneForCheckVerification();
-
         //Test the dummy move using a stripped-down version
         Chonse2._playDummyMove(deepCopy, coordinate, item);
 
         //Return true if the player was not in check after the legal move, false if the move would put them in check
-        return this.turn ? !deepCopy.isInCheck(PieceColor.WHITE) : !deepCopy.isInCheck(PieceColor.BLACK);
+        const isCheck = this.turn ? !deepCopy.isInCheck(PieceColor.WHITE) : !deepCopy.isInCheck(PieceColor.BLACK);
+      
+        //Undo the move so that this object can be reused to check the legality of the next
+        deepCopy.undoMostRecentMove();
+
+        return isCheck;
       }
     )
 
@@ -218,6 +226,9 @@ export default class Chonse2
     {
       return {result: false, notation: "", fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: ""};
     }
+
+    //Cache the current state in case this object is needed for undoing the most recent move.
+    this.cacheState();
 
     //Begin building algebraic notation for move
     const notation: AlgebraicNotationMaker = new AlgebraicNotationMaker();
@@ -787,6 +798,9 @@ export default class Chonse2
     //state tracker
     copy._previousPositionMap = structuredClone(this._previousPositionMap);
 
+    //cached state
+    copy.stateCache = this.stateCache.deepCopy();
+
     return copy;
   }
 
@@ -1151,6 +1165,9 @@ export default class Chonse2
 
   private static _playDummyMove(inst: Chonse2, fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN)
   {
+    //Caching the state so that the move can be undone
+    inst.cacheState();
+
     //In piece state, where the current piece is moving to.
     const toSquareIndex = Chonse2.findIndexFromCoordinate(toCoordinate);
 
@@ -1245,19 +1262,6 @@ export default class Chonse2
 
     //Return it if it exists or empty string otherwise.
     return val == null ? "" : val;
-  }
-
-  public _lightweightCloneForCheckVerification()
-  {
-    const copy = new Chonse2();
-
-    copy.pieceState = structuredClone(this.pieceState);
-    copy.turn = this.turn;
-    copy.enPassantSquare = this.enPassantSquare;
-    copy.whiteCastlingRights = structuredClone(this.whiteCastlingRights);
-    copy.blackCastlingRights = structuredClone(this.blackCastlingRights);
-
-    return copy;
   }
 
   checkIsGameOver()
@@ -1397,5 +1401,172 @@ export default class Chonse2
 
     return posKey
   }
+
+  private cacheState()
+  {
+    //Turn
+    this.stateCache.turn = this.turn;
+
+    //Piece captures
+    this.stateCache.piecesWhiteCaptured.length = 0;
+    this.stateCache.piecesBlackCaptured.length = 0;
+    this.piecesWhiteCaptured.forEach( p => {this.stateCache.piecesWhiteCaptured.push(p)} );
+    this.piecesBlackCaptured.forEach( p => {this.stateCache.piecesBlackCaptured.push(p)} );
+
+    //Piece state
+    for(let rank = 0; rank < this.pieceState.length; rank++)
+    {
+      for(let file = 0; file < this.pieceState.length; file++)
+      {
+        this.stateCache.pieceState[rank][file] = this.pieceState[rank][file];
+      }
+    }
+
+    //Game state
+    this.stateCache.isGameOver = this.gameState.isGameOver;
+    this.stateCache.gameOverReason = this.gameState.reason;
+    this.stateCache.winner = this.gameState.winner;
+    this.stateCache.gameScore = this.gameState.gameScore;
+
+    //Castling rights
+    this.stateCache.whiteKingsideCastlingRights = this.whiteCastlingRights.kingSide;
+    this.stateCache.whiteQueensideCastlingRights = this.whiteCastlingRights.queenSide;
+    this.stateCache.blackKingsideCastlingRights = this.blackCastlingRights.kingSide;
+    this.stateCache.blackQueensideCastlingRights = this.blackCastlingRights.queenSide;
+
+    //Move counters
+    this.stateCache.halfMovesWithoutPawnMovementsOrCaptures = this.halfMovesWithoutPawnMovementsOrCaptures;
+    this.stateCache.fullMoveCounter = this.fullMoveCounter;
+
+    //Previous fen key
+    this.stateCache.previousStateMap.clear();
+    for(const [k, v] of this._previousPositionMap)
+    {
+      this.stateCache.previousStateMap.set(k, v);
+    }
+  }
+
+public undoMostRecentMove()
+{
+  //Turn
+  this.turn = this.stateCache.turn;
+
+  //Piece captures
+  this.piecesWhiteCaptured.length = 0;
+  this.piecesBlackCaptured.length = 0;
+  this.stateCache.piecesWhiteCaptured.forEach(p => { this.piecesWhiteCaptured.push(p); });
+  this.stateCache.piecesBlackCaptured.forEach(p => { this.piecesBlackCaptured.push(p); });
+
+  //piece state
+  for(let rank = 0; rank < this.stateCache.pieceState.length; rank++)
+  {
+    for(let file = 0; file < this.stateCache.pieceState.length; file++)
+    {
+      this.pieceState[rank][file] = this.stateCache.pieceState[rank][file];
+    }
+  }
+
+  //game state
+  this.gameState.isGameOver = this.stateCache.isGameOver;
+  this.gameState.reason = this.stateCache.gameOverReason;
+  this.gameState.winner = this.stateCache.winner;
+  this.gameState.gameScore = this.stateCache.gameScore;
+
+  //Castling rights
+  this.whiteCastlingRights.kingSide = this.stateCache.whiteKingsideCastlingRights;
+  this.whiteCastlingRights.queenSide = this.stateCache.whiteQueensideCastlingRights;
+  this.blackCastlingRights.kingSide = this.stateCache.blackKingsideCastlingRights;
+  this.blackCastlingRights.queenSide = this.stateCache.blackQueensideCastlingRights;
+
+  //Move counters
+  this.halfMovesWithoutPawnMovementsOrCaptures = this.stateCache.halfMovesWithoutPawnMovementsOrCaptures;
+  this.fullMoveCounter = this.stateCache.fullMoveCounter;
+
+  //Previous fen key
+  this._previousPositionMap.clear();
+
+  for(const [k, v] of this.stateCache.previousStateMap)
+  {
+    this._previousPositionMap.set(k, v);
+  }
+}
   //#endregion
+}
+
+export class PreviousStateCache
+{
+  //captures
+  piecesWhiteCaptured: string[] = [];
+  piecesBlackCaptured: string[] = [];
+
+  //the state of the board
+  pieceState: Array<Array<string>> = 
+  [
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+  ];
+
+  //game state
+  isGameOver: boolean = false;
+  gameOverReason: GameOverReason = GameOverReason.None;
+  winner: string = "";
+  gameScore: string = GameScore.IN_PROGRESS;
+
+  //true: White's turn, false: black's turn
+  turn: boolean = true; 
+    
+  //Special cases (castling/en passant)
+  whiteKingsideCastlingRights = true;
+  whiteQueensideCastlingRights = true;
+  blackKingsideCastlingRights = true;
+  blackQueensideCastlingRights = true;
+  enPassantSquare: string = "";
+
+  //move counters
+  halfMovesWithoutPawnMovementsOrCaptures: number = 0;
+  fullMoveCounter: number = 1;
+
+  //used to track repetition
+  previousStateMap: Map<string, number> = new Map<string, number>();
+
+  deepCopy(): PreviousStateCache {
+  const copy = new PreviousStateCache();
+
+  // arrays
+  copy.piecesWhiteCaptured = [...this.piecesWhiteCaptured];
+  copy.piecesBlackCaptured = [...this.piecesBlackCaptured];
+
+  // 2D board array
+  copy.pieceState = this.pieceState.map(row => [...row]);
+
+  // primitives
+  copy.isGameOver = this.isGameOver;
+  copy.gameOverReason = this.gameOverReason;
+  copy.winner = this.winner;
+  copy.gameScore = this.gameScore;
+
+  copy.turn = this.turn;
+
+  copy.whiteKingsideCastlingRights = this.whiteKingsideCastlingRights;
+  copy.whiteQueensideCastlingRights = this.whiteQueensideCastlingRights;
+  copy.blackKingsideCastlingRights = this.blackKingsideCastlingRights;
+  copy.blackQueensideCastlingRights = this.blackQueensideCastlingRights;
+
+  copy.enPassantSquare = this.enPassantSquare;
+
+  copy.halfMovesWithoutPawnMovementsOrCaptures = this.halfMovesWithoutPawnMovementsOrCaptures;
+
+  copy.fullMoveCounter = this.fullMoveCounter;
+
+  // Map deep copy
+  copy.previousStateMap = new Map(this.previousStateMap);
+
+  return copy;
+  }
 }
