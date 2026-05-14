@@ -1506,7 +1506,7 @@ public undoMostRecentMove()
   //#endregion
 }
 
-class PreviousStateCache
+export class PreviousStateCache
 {
   //captures
   piecesWhiteCaptured: string[] = [];

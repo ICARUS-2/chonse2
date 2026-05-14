@@ -166,17 +166,19 @@ export default class Chonse2Extensions
                     if (opponentHangingPieceCoords.includes(coord))
                     {
                         //One thing barring it from being a filtered candidate is if this piece can give a check stopping the fork.
-                        const lightweightClone = boardCopy._lightweightCloneForCheckVerification();
-                        lightweightClone.turn = attackerColor == PieceColor.WHITE ? false : true;
+                        //const clone = boardCopy._lightweightCloneForCheckVerification();
+                        //clone.turn = attackerColor == PieceColor.WHITE ? false : true;
+                        boardCopy.turn = attackerColor == PieceColor.WHITE ? false : true;
+                        const legalMoves = boardCopy.getLegalMoves(coord);
+                        boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
 
-                        const legalMoves = lightweightClone.getLegalMoves(coord);
                         let attackedPlayerHasCheckWithPiece = false;
 
                         //Check every legal move of that piece to see if a check is possible. If not, not a forked piece.
                         for (const move of legalMoves)
                         {
                             //Also, if the piece can capture something greater than or equal to in value, it isn't a fork.
-                            const pieceInLegalMoveSpot = Chonse2Extensions.findPieceAtCoordinate(lightweightClone, move);
+                            const pieceInLegalMoveSpot = Chonse2Extensions.findPieceAtCoordinate(boardCopy, move);
                             if (pieceInLegalMoveSpot)
                             {
                                 const materialValueOfPieceInLegalMoveSpot = PieceMaterial.getMaterialFromPiece(pieceInLegalMoveSpot);

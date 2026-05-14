@@ -10,7 +10,7 @@ import { RouteConstants } from '../app.routes';
 import { PgnHeaders } from '../chessboard/chessboard/pgn-misc';
 import { LichessAPI } from '../../libs/server-api-lib/lichess-api';
 import ThemeService from '../themes/theme-service';
-import Chonse2 from '../../libs/chonse2-lib/chonse2';
+import Chonse2, { PreviousStateCache } from '../../libs/chonse2-lib/chonse2';
 import { GameState } from '../../libs/chonse2-lib/game-state';
 import MoveResult from '../chessboard/chessboard/move-result';
 
@@ -152,6 +152,7 @@ export class AnalysisPage implements OnInit{
       //Reconstructs the passed data into a Chonse2 object and reinitializes the game state.
       const restoredPosition = Object.assign(new Chonse2(), this.inputtedPosition);
       restoredPosition.gameState = new GameState();
+      restoredPosition.stateCache = new PreviousStateCache();
 
       restoredPosition.checkIsGameOver();
 
@@ -172,6 +173,13 @@ export class AnalysisPage implements OnInit{
       //Set positions.
       const restoredPositions = this.vsAiStates.map( s => Object.assign(new Chonse2, s) );
       bs.mainStateStack.set(restoredPositions);
+
+      //ensures that every state has a cache
+      restoredPositions.forEach(p => 
+        {
+          p.stateCache = new PreviousStateCache();  
+        }
+      )
 
       //Set game states for the positions.
       const restoredGameStates = this.vsAiGameStates?.map( s => Object.assign(new GameState, s) );
