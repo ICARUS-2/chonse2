@@ -1264,19 +1264,6 @@ export default class Chonse2
     return val == null ? "" : val;
   }
 
-  public _lightweightCloneForCheckVerification()
-  {
-    const copy = new Chonse2();
-
-    copy.pieceState = structuredClone(this.pieceState);
-    copy.turn = this.turn;
-    copy.enPassantSquare = this.enPassantSquare;
-    copy.whiteCastlingRights = structuredClone(this.whiteCastlingRights);
-    copy.blackCastlingRights = structuredClone(this.blackCastlingRights);
-
-    return copy;
-  }
-
   checkIsGameOver()
   {
     const nextPlayerHasLegalMoves = this._playerHasLegalMoves(this.turn);
