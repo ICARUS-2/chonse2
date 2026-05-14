@@ -110,6 +110,9 @@ export default class Chonse2
   //used to track repetition
   private _previousPositionMap: Map<string, number> = new Map<string, number>();
 
+  //previous state cache
+  stateCache: PreviousStateCache = new PreviousStateCache();
+
   //instantiates with either a passed game state or the default one.
   constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]))
   {
@@ -123,10 +126,10 @@ export default class Chonse2
     //validates correct number of files per rank.
     this.pieceState.forEach( rank => 
     {
-    if (rank.length != Chonse2.SIZE)
-    {
-        throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
-    }
+      if (rank.length != Chonse2.SIZE)
+      {
+          throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
+      }
     });
     
     //Starting position always counts towards the repetition.
@@ -787,6 +790,9 @@ export default class Chonse2
     //state tracker
     copy._previousPositionMap = structuredClone(this._previousPositionMap);
 
+    //cached state
+    copy.stateCache = this.stateCache.deepCopy();
+
     return copy;
   }
 
@@ -1397,5 +1403,172 @@ export default class Chonse2
 
     return posKey
   }
+
+  private cacheState()
+  {
+    //Turn
+    this.stateCache.turn = this.turn;
+
+    //Piece captures
+    this.stateCache.piecesWhiteCaptured.length = 0;
+    this.stateCache.piecesBlackCaptured.length = 0;
+    this.piecesWhiteCaptured.forEach( p => {this.stateCache.piecesWhiteCaptured.push(p)} );
+    this.piecesBlackCaptured.forEach( p => {this.stateCache.piecesBlackCaptured.push(p)} );
+
+    //Piece state
+    for(let rank = 0; rank < this.pieceState.length; rank++)
+    {
+      for(let file = 0; file < this.pieceState.length; file++)
+      {
+        this.stateCache.pieceState[rank][file] = this.pieceState[rank][file];
+      }
+    }
+
+    //Game state
+    this.stateCache.isGameOver = this.gameState.isGameOver;
+    this.stateCache.gameOverReason = this.gameState.reason;
+    this.stateCache.winner = this.gameState.winner;
+    this.stateCache.gameScore = this.gameState.gameScore;
+
+    //Castling rights
+    this.stateCache.whiteKingsideCastlingRights = this.whiteCastlingRights.kingSide;
+    this.stateCache.whiteQueensideCastlingRights = this.whiteCastlingRights.queenSide;
+    this.stateCache.blackKingsideCastlingRights = this.blackCastlingRights.kingSide;
+    this.stateCache.blackQueensideCastlingRights = this.blackCastlingRights.queenSide;
+
+    //Move counters
+    this.stateCache.halfMovesWithoutPawnMovementsOrCaptures = this.halfMovesWithoutPawnMovementsOrCaptures;
+    this.stateCache.fullMoveCounter = this.fullMoveCounter;
+
+    //Previous fen key
+    this.stateCache.previousStateMap.clear();
+    for(const [k, v] of this._previousPositionMap)
+    {
+      this.stateCache.previousStateMap.set(k, v);
+    }
+  }
+
+public undoMostRecentMove()
+{
+  //Turn
+  this.turn = this.stateCache.turn;
+
+  //Piece captures
+  this.piecesWhiteCaptured.length = 0;
+  this.piecesBlackCaptured.length = 0;
+  this.stateCache.piecesWhiteCaptured.forEach(p => { this.piecesWhiteCaptured.push(p); });
+  this.stateCache.piecesBlackCaptured.forEach(p => { this.piecesBlackCaptured.push(p); });
+
+  //piece state
+  for(let rank = 0; rank < this.stateCache.pieceState.length; rank++)
+  {
+    for(let file = 0; file < this.stateCache.pieceState.length; file++)
+    {
+      this.pieceState[rank][file] = this.stateCache.pieceState[rank][file];
+    }
+  }
+
+  //game state
+  this.gameState.isGameOver = this.stateCache.isGameOver;
+  this.gameState.reason = this.stateCache.gameOverReason;
+  this.gameState.winner = this.stateCache.winner;
+  this.gameState.gameScore = this.stateCache.gameScore;
+
+  //Castling rights
+  this.whiteCastlingRights.kingSide = this.stateCache.whiteKingsideCastlingRights;
+  this.whiteCastlingRights.queenSide = this.stateCache.whiteQueensideCastlingRights;
+  this.blackCastlingRights.kingSide = this.stateCache.blackKingsideCastlingRights;
+  this.blackCastlingRights.queenSide = this.stateCache.blackQueensideCastlingRights;
+
+  //Move counters
+  this.halfMovesWithoutPawnMovementsOrCaptures = this.stateCache.halfMovesWithoutPawnMovementsOrCaptures;
+  this.fullMoveCounter = this.stateCache.fullMoveCounter;
+
+  //Previous fen key
+  this._previousPositionMap.clear();
+
+  for(const [k, v] of this.stateCache.previousStateMap)
+  {
+    this._previousPositionMap.set(k, v);
+  }
+}
   //#endregion
+}
+
+class PreviousStateCache
+{
+  //captures
+  piecesWhiteCaptured: string[] = [];
+  piecesBlackCaptured: string[] = [];
+
+  //the state of the board
+  pieceState: Array<Array<string>> = 
+  [
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+  ];
+
+  //game state
+  isGameOver: boolean = false;
+  gameOverReason: GameOverReason = GameOverReason.None;
+  winner: string = "";
+  gameScore: string = GameScore.IN_PROGRESS;
+
+  //true: White's turn, false: black's turn
+  turn: boolean = true; 
+    
+  //Special cases (castling/en passant)
+  whiteKingsideCastlingRights = true;
+  whiteQueensideCastlingRights = true;
+  blackKingsideCastlingRights = true;
+  blackQueensideCastlingRights = true;
+  enPassantSquare: string = "";
+
+  //move counters
+  halfMovesWithoutPawnMovementsOrCaptures: number = 0;
+  fullMoveCounter: number = 1;
+
+  //used to track repetition
+  previousStateMap: Map<string, number> = new Map<string, number>();
+
+  deepCopy(): PreviousStateCache {
+  const copy = new PreviousStateCache();
+
+  // arrays
+  copy.piecesWhiteCaptured = [...this.piecesWhiteCaptured];
+  copy.piecesBlackCaptured = [...this.piecesBlackCaptured];
+
+  // 2D board array
+  copy.pieceState = this.pieceState.map(row => [...row]);
+
+  // primitives
+  copy.isGameOver = this.isGameOver;
+  copy.gameOverReason = this.gameOverReason;
+  copy.winner = this.winner;
+  copy.gameScore = this.gameScore;
+
+  copy.turn = this.turn;
+
+  copy.whiteKingsideCastlingRights = this.whiteKingsideCastlingRights;
+  copy.whiteQueensideCastlingRights = this.whiteQueensideCastlingRights;
+  copy.blackKingsideCastlingRights = this.blackKingsideCastlingRights;
+  copy.blackQueensideCastlingRights = this.blackQueensideCastlingRights;
+
+  copy.enPassantSquare = this.enPassantSquare;
+
+  copy.halfMovesWithoutPawnMovementsOrCaptures = this.halfMovesWithoutPawnMovementsOrCaptures;
+
+  copy.fullMoveCounter = this.fullMoveCounter;
+
+  // Map deep copy
+  copy.previousStateMap = new Map(this.previousStateMap);
+
+  return copy;
+  }
 }
