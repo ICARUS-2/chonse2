@@ -1,17 +1,16 @@
-import { LineEval, PositionEval } from "../types/eval";
-import {
-  getLineWinPercentage,
-  getPositionWinPercentage,
-} from "./winPercentage";
-import { MoveClassification } from "../types/enums";
-import { openings } from "../data/openings";
-import { getIsPieceSacrifice, isHangingPieceCapture, isSimplePieceRecapture, uciMoveParams2 } from "../helpers/chessHelper";
+// Thresholds for move quality classification (in win percentage points)
 
+import { openings } from "../data/openings";
+import { MoveClassification } from "../types/enums";
+import { PositionEval } from "../types/eval";
+import { getIsPieceSacrifice, isHangingPieceCapture, uciMoveParams2 } from "./chessHelper";
+import { getLineWinPercentage, getPositionWinPercentage } from "./winPercentage";
+
+// Chess.com seems to adjust these dynamically based on the player's strength... Maybe we could do something similar in the future
 const BLUNDER_THRESHOLD = -20;
 const MISTAKE_THRESHOLD = -10;
 const INACCURACY_THRESHOLD = -5;
 const EXCELLENT_THRESHOLD = -2;
-
 
 export const getMovesClassification = (
   rawPositions: PositionEval[],
@@ -25,6 +24,8 @@ export const getMovesClassification = (
     if (index === 0) return rawPosition;
 
     const currentFen = fens[index].split(" ")[0];
+
+    // Book move: known opening position
     const opening = openings.find((opening) => opening.fen === currentFen);
     if (opening) {
       currentOpening = opening.name;
@@ -35,11 +36,19 @@ export const getMovesClassification = (
       };
     }
 
-    const playedMove = uciMoves[index - 1];
+    const sideToMove = fens[index - 1].split(" ")[1];
+    const isWhiteMove = sideToMove === "w";
+    //const playedMove = uciMoves[index - 1];
+    const uciParamsMove = uciMoveParams2(uciMoves[index - 1], isWhiteMove ? "w" : "b");
+    const playedMove = uciParamsMove.from + uciParamsMove.to + (uciParamsMove.promotion == undefined ? "" : uciParamsMove.promotion);
     const prevPosition = rawPositions[index - 1];
     const alternativeLine = prevPosition.lines.find((line) => line.pv[0] !== playedMove);
+    
+    
+    
 
-    if (prevPosition.lines.length === 1 || !alternativeLine) {
+    // Forced move: only one legal response available
+    if (!alternativeLine) {
       return {
         ...rawPosition,
         opening: currentOpening,
@@ -47,31 +56,15 @@ export const getMovesClassification = (
       };
     }
 
-
-    const lastPositionAlternativeLine: LineEval | undefined =
-      prevPosition.lines.filter((line) => line.pv[0] !== playedMove)?.[0];
-    const lastPositionAlternativeLineWinPercentage = lastPositionAlternativeLine
-      ? getLineWinPercentage(lastPositionAlternativeLine)
-      : undefined;
-
-    const sideToMove = fens[index - 1].split(" ")[1];
-    const isWhiteMove = sideToMove === "w";
     const lastWinPct = positionsWinPercentage[index - 1];
     const currentWinPct = positionsWinPercentage[index];
     const winPctChange = (currentWinPct - lastWinPct) * (isWhiteMove ? 1 : -1);
     const alternativeWinPct = getLineWinPercentage(alternativeLine);
     const alternativeWinPctChange = (alternativeWinPct - lastWinPct) * (isWhiteMove ? 1 : -1);
 
-    //Added because my chonse2 library outputs moves in SAN, this converts it to UCI.
-    const normalizedPlayedMove = uciMoveParams2(playedMove, isWhiteMove ? "w" : "b");
-    const normalizedPlayedMoveAsString = normalizedPlayedMove.from + normalizedPlayedMove.to + (normalizedPlayedMove.promotion == undefined ? "" : normalizedPlayedMove.promotion);
-
-
-    console.log(`Played move: ${playedMove} -- Best move: ${prevPosition.bestMove} -- Normalized played move: ${normalizedPlayedMoveAsString}`)
-
-    if (playedMove === prevPosition.bestMove || normalizedPlayedMoveAsString === prevPosition.bestMove) {
+    if (playedMove === prevPosition.bestMove) {
       const alternativesCollapseSignificantly = alternativeWinPctChange < winPctChange - 10;
-      const hangingPieceCapture = isHangingPieceCapture(fens[index - 1], normalizedPlayedMoveAsString);
+      const hangingPieceCapture = isHangingPieceCapture(fens[index - 1], playedMove);
       // Sometimes close to checkmate winPctChange becomes a bad metric, so we also use:
       const alternativeIsUselessSacrifice =
         getIsPieceSacrifice(fens[index - 1], alternativeLine.pv[0], alternativeLine.pv.slice(1)) &&
@@ -86,9 +79,8 @@ export const getMovesClassification = (
         };
       }
 
-
       // Brilliant: The move played involves a piece sacrifice and is the only good move (alternatives collapse significantly)
-      if (getIsPieceSacrifice(fens[index - 1], normalizedPlayedMoveAsString, rawPosition.lines[0].pv)) {
+      if (getIsPieceSacrifice(fens[index - 1], playedMove, rawPosition.lines[0].pv)) {
         return {
           ...rawPosition,
           opening: currentOpening,
@@ -122,5 +114,3 @@ const classifyByWinPctChange = (winPctChange: number): MoveClassification => {
   if (winPctChange < EXCELLENT_THRESHOLD) return MoveClassification.Okay;
   return MoveClassification.Excellent;
 };
-
-
