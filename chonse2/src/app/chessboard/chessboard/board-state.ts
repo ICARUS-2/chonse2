@@ -320,16 +320,6 @@ export default class BoardState
                     this.processEvaluationQueue();
                     return;
                 }
-                
-                //Sanitizes for move classification consistency across different evaluations.
-                const previousMostRecentEval = this.getPreviousMostRecentEval();
-                if (previousMostRecentEval?.bestMove)
-                {
-                    if (move.notation.replace(/[+#x]/g, '').endsWith(previousMostRecentEval.bestMove) && (resultOfEval.moveClassification == MoveClassification.Excellent || MoveClassification.Okay))
-                    {
-                        resultOfEval.moveClassification = MoveClassification.Best;
-                    }
-                }
 
                 if (this.mainStackPointer() != this.mainStateStack().length - 1 || this.isReadOnly())
                 {
@@ -782,31 +772,6 @@ export default class BoardState
             const evalResult = await engine.evaluateGame(params);
 
             this.eval.set(evalResult);
-        }
-
-
-        //Sanitizes any excellent moves that also appear as best moves.
-        for(let i = 0; i < this.mainMoveStack().length; i++)
-        {
-            const mv = this.mainMoveStack()[i];
-            const ev = this.eval()?.positions[i];
-            const previousEv = this.eval()?.positions[i + 1]
-
-            const moveCoords = mv.fromCoord+mv.toCoord;
-            const bestCoords = ev?.bestMove;
-
-            if (moveCoords == bestCoords 
-                && (previousEv?.moveClassification == MoveClassification.Excellent 
-                    || previousEv?.moveClassification == MoveClassification.Okay))
-            {
-                previousEv.moveClassification = MoveClassification.Best;
-            }
-
-            //Accounts for promotion.
-            if (bestCoords?.replace("x", "").startsWith(moveCoords) && mv.notation.endsWith(PieceType.QUEEN) && bestCoords.endsWith(PieceType.QUEEN.toLowerCase()) && previousEv?.moveClassification == MoveClassification.Excellent)
-            {
-                previousEv.moveClassification = MoveClassification.Best;
-            }
         }
 
         //Computes how many moves of each classification there are

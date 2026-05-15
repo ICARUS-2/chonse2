@@ -19,8 +19,9 @@ export class CoachUtils
     private static readonly BASE_SENTENCES: Map<MoveClassification, string[]> = new Map<MoveClassification, string[]>(
         [
             //Luminous moves.
-            [MoveClassification.Splendid, 
+            [MoveClassification.Luminous, 
                 [
+                    `Well done, a luminous sacrifice!`,
                     `A luminous sacrifice. Leaving that piece hanging will improve the position. I see what ${this.TURN_PLACEHOLDER} is trying to do here. `
                 ]
             ],
@@ -84,6 +85,14 @@ export class CoachUtils
                 [
                     `${this.TURN_PLACEHOLDER} just made a blunder. `,
                     `This move is going to cost ${this.TURN_PLACEHOLDER}. `
+                ]
+            ],
+
+            [
+                MoveClassification.Miss,
+                [
+                    `${this.TURN_PLACEHOLDER} missed the chance to capitalize on the opponent's hang, not taking enough time to spot it. `,
+                    `The opponent slipped up and hung a piece, but ${this.TURN_PLACEHOLDER} overlooked it. `
                 ]
             ],
 
@@ -242,7 +251,8 @@ export class CoachUtils
                 //=======Bad
                 if (posEval.moveClassification == MoveClassification.Inaccuracy ||
                     posEval.moveClassification == MoveClassification.Mistake || 
-                    posEval.moveClassification == MoveClassification.Blunder
+                    posEval.moveClassification == MoveClassification.Blunder ||
+                    posEval.moveClassification == MoveClassification.Miss
                 )
                 {
                     const allHangingPieceCoords = Chonse2Extensions.getHangingPieces(state);

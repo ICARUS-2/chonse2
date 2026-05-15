@@ -182,7 +182,7 @@ export class EvaluationChart implements OnInit {
         return 'lime';
       case MoveClassification.Perfect: 
         return 'purple';
-      case MoveClassification.Splendid: 
+      case MoveClassification.Luminous: 
         return 'cyan';
       default: 
         return 'transparent';
@@ -198,6 +198,8 @@ export class EvaluationChart implements OnInit {
     
     switch (this.arr[this.selectedIndex].moveClassification) 
     {
+      case MoveClassification.Miss:
+        return "indianred";
       case MoveClassification.Blunder: 
         return 'red';
       case MoveClassification.Mistake: 
@@ -212,7 +214,7 @@ export class EvaluationChart implements OnInit {
         return 'yellow'
       case MoveClassification.Perfect: 
         return 'purple';
-      case MoveClassification.Splendid: 
+      case MoveClassification.Luminous: 
         return 'aquamarine';
       case MoveClassification.Forced:
         return 'gray';
