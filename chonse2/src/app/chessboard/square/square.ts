@@ -45,7 +45,7 @@ export class Square {
   static readonly lightMoveClassificationColors = new Map<string,string>([
     [MoveClassification.Opening, "LightGray"],
     [MoveClassification.Forced, "LightGray"],
-    [MoveClassification.Splendid, "Aquamarine"],
+    [MoveClassification.Luminous, "Aquamarine"],
     [MoveClassification.Perfect, "Purple"],
     [MoveClassification.Best, "Lime"],
     [MoveClassification.Excellent, "Lime"],
@@ -53,13 +53,14 @@ export class Square {
     [MoveClassification.Inaccuracy, "Yellow"],
     [MoveClassification.Mistake, "Orange"],
     [MoveClassification.Blunder, "Red"],
+    [MoveClassification.Miss, "LightCoral"],
     [MoveClassification.None, "None"]
   ]);
 
   static readonly darkMoveClassificationColors = new Map<string,string>([
     [MoveClassification.Opening, "Gray"],
     [MoveClassification.Forced, "Gray"],
-    [MoveClassification.Splendid, "MediumTurquoise"],
+    [MoveClassification.Luminous, "MediumTurquoise"],
     [MoveClassification.Perfect, "Indigo"],
     [MoveClassification.Best, "LimeGreen"],
     [MoveClassification.Excellent, "LimeGreen"],
@@ -67,6 +68,7 @@ export class Square {
     [MoveClassification.Inaccuracy, "Gold"],
     [MoveClassification.Mistake, "DarkOrange"],
     [MoveClassification.Blunder, "DarkRed"],
+    [MoveClassification.Miss, "IndianRed"],
     [MoveClassification.None, "None"]
   ]);
 

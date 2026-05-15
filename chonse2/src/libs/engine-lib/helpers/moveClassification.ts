@@ -1,4 +1,4 @@
-// Thresholds for move quality classification (in win percentage points)
+//Modified engine code adapted from https://github.com/GuillaumeSD/Chesskit/pull/93
 
 import { openings } from "../data/openings";
 import { MoveClassification } from "../types/enums";
@@ -6,7 +6,6 @@ import { PositionEval } from "../types/eval";
 import { getIsPieceSacrifice, isHangingPieceCapture, uciMoveParams2 } from "./chessHelper";
 import { getLineWinPercentage, getPositionWinPercentage } from "./winPercentage";
 
-// Chess.com seems to adjust these dynamically based on the player's strength... Maybe we could do something similar in the future
 const BLUNDER_THRESHOLD = -20;
 const MISTAKE_THRESHOLD = -10;
 const INACCURACY_THRESHOLD = -5;
@@ -25,7 +24,7 @@ export const getMovesClassification = (
 
     const currentFen = fens[index].split(" ")[0];
 
-    // Book move: known opening position
+    //Book move: known opening position
     const opening = openings.find((opening) => opening.fen === currentFen);
     if (opening) {
       currentOpening = opening.name;
@@ -38,7 +37,6 @@ export const getMovesClassification = (
 
     const sideToMove = fens[index - 1].split(" ")[1];
     const isWhiteMove = sideToMove === "w";
-    //const playedMove = uciMoves[index - 1];
     const uciParamsMove = uciMoveParams2(uciMoves[index - 1], isWhiteMove ? "w" : "b");
     const playedMove = uciParamsMove.from + uciParamsMove.to + (uciParamsMove.promotion == undefined ? "" : uciParamsMove.promotion);
     const prevPosition = rawPositions[index - 1];
@@ -47,7 +45,7 @@ export const getMovesClassification = (
     
     
 
-    // Forced move: only one legal response available
+    //Forced move: only one legal response available
     if (!alternativeLine) {
       return {
         ...rawPosition,
@@ -61,6 +59,15 @@ export const getMovesClassification = (
     const winPctChange = (currentWinPct - lastWinPct) * (isWhiteMove ? 1 : -1);
     const alternativeWinPct = getLineWinPercentage(alternativeLine);
     const alternativeWinPctChange = (alternativeWinPct - lastWinPct) * (isWhiteMove ? 1 : -1);
+
+    // Miss (for now only): You could have picked up a hanging piece but failed to do so
+    if (isHangingPieceCapture(fens[index - 1], alternativeLine.pv[0]) && winPctChange < MISTAKE_THRESHOLD) {
+      return {
+        ...rawPosition,
+        opening: currentOpening,
+        moveClassification: MoveClassification.Miss,
+      };
+    }
 
     if (playedMove === prevPosition.bestMove) {
       const alternativesCollapseSignificantly = alternativeWinPctChange < winPctChange - 10;
@@ -79,16 +86,16 @@ export const getMovesClassification = (
         };
       }
 
-      // Brilliant: The move played involves a piece sacrifice and is the only good move (alternatives collapse significantly)
+      //Luminous: The move played involves a piece sacrifice and is the only good move (alternatives collapse significantly)
       if (getIsPieceSacrifice(fens[index - 1], playedMove, rawPosition.lines[0].pv)) {
         return {
           ...rawPosition,
           opening: currentOpening,
-          moveClassification: MoveClassification.Splendid,
+          moveClassification: MoveClassification.Luminous,
         };
       }
 
-      // Great: The move played is the only good move (alternatives collapse significantly)
+      //Perfect: The move played is the only good move (alternatives collapse significantly)
       return {
         ...rawPosition,
         opening: currentOpening,
@@ -96,7 +103,7 @@ export const getMovesClassification = (
       };
     }
 
-    // Standard classifications
+    //regular classifications
     return {
       ...rawPosition,
       opening: currentOpening,

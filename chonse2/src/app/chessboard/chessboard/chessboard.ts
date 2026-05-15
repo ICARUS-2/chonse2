@@ -122,7 +122,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     [
       [MoveClassification.Opening, "Gray"],
       [MoveClassification.Forced, "Gray"],
-      [MoveClassification.Splendid, "MediumTurquoise"],
+      [MoveClassification.Luminous, "MediumTurquoise"],
       [MoveClassification.Perfect, "Indigo"],
       [MoveClassification.Best, "LimeGreen"],
       [MoveClassification.Excellent, "LimeGreen"],
@@ -130,6 +130,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       [MoveClassification.Inaccuracy, "Gold"],
       [MoveClassification.Mistake, "DarkOrange"],
       [MoveClassification.Blunder, "DarkRed"],
+      [MoveClassification.Miss, "IndianRed"],
       [MoveClassification.None, "None"]
     ]
   )
@@ -1337,7 +1338,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //#region Animation for luminous/perfect squares
   _getLuminousOrPerfectSquareText = (classification: MoveClassification) => computed( (): string =>
   {
-    if (classification == MoveClassification.Splendid)
+    if (classification == MoveClassification.Luminous)
     {
       return "LUM1NOUS!";
     }
@@ -1352,7 +1353,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   _getLuminousOrPerfectBackgroundColor = (classification: MoveClassification) => computed( (): string =>
   {
-    if (classification == MoveClassification.Splendid)
+    if (classification == MoveClassification.Luminous)
     {
       return "darkcyan";
     }
