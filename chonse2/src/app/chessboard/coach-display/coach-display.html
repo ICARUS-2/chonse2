@@ -102,7 +102,9 @@
                 
                   @if (classification === MoveClassification.Inaccuracy || 
                       classification === MoveClassification.Mistake || 
-                      classification === MoveClassification.Blunder) {
+                      classification === MoveClassification.Blunder ||
+                      classification === MoveClassification.Miss
+                      ) {
                     <app-icon-button 
                       (buttonClick)="showMissedOpportunityClicked.emit()" 
                       [disabled]="coachButtonsDisabled()" 
