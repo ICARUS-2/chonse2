@@ -7,10 +7,9 @@ import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    //provideZoneChangeDetection({ eventCoalescing: true }),
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideToastr({progressBar: true, closeButton: true, positionClass: "toast-bottom-right", timeOut: 2000}),
+    provideToastr({progressBar: true, closeButton: true, positionClass: "toast-bottom-left", timeOut: 2000}),
     provideCharts(withDefaultRegisterables())
   ]
 };
