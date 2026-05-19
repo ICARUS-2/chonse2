@@ -109,7 +109,7 @@ export default class Chonse2Extensions
         boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
 
         //All of the pieces/coords belonging to the attacker.
-        const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board._getAllPiecesAndCoordsByColor(attackerColor);
+        const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board.getAllPiecesAndCoordsByColor(attackerColor);
         
         //All of the hanging pieces on the board regardless of color.
         const allHangingPieces = _ == null ? Chonse2Extensions.getHangingPieces(boardCopy) : _;
@@ -249,7 +249,7 @@ export default class Chonse2Extensions
 
                     //Must get the defender pieces to check each other one to ensure that it cannot move to block the check and defend the other piece.
                     const defenderColor = attackerColor == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-                    const defenderPieces = boardCopy._getAllPiecesAndCoordsByColor(defenderColor);
+                    const defenderPieces = boardCopy.getAllPiecesAndCoordsByColor(defenderColor);
                     
                     //Get the list of every defender piece that isn't the one being hit in the potential fork.
                     const filteredDefenderPieceCoords = defenderPieces.coords.filter( c => 
@@ -299,6 +299,66 @@ export default class Chonse2Extensions
 
         //And then return all the forks.
         return allForks;
+    }
+    //#endregion
+
+    //#region Pins
+    getPinsOnBoard(board: Chonse2)
+    {
+        //A piece can only be pinned by a bishop, a rook or a queen.
+        const ATTACKER_TYPES = [PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN];
+
+        //Will need to check all of the pieces to see which ones could be attackers.
+        const pieceData = [board.getAllPiecesAndCoordsByColor(PieceColor.WHITE), board.getAllPiecesAndCoordsByColor(PieceColor.BLACK)];
+        const candidateAttackers: { pieces: Array<string>, coords: Array<string> } = { pieces: [], coords: [] };
+
+        //Check through all of the pieces and get the ones that could potentially be attackers (aka bishops, rooks, and queens which can pin a piece).
+        pieceData.forEach( collection => 
+            {
+                for(let i = 0; i < collection.coords.length; i++)
+                {
+                    const coord = collection.coords[i];
+                    const piece = collection.pieces[i];
+                    const lastChar = piece[piece.length - 1];
+
+                    if (ATTACKER_TYPES.includes(lastChar))
+                    {
+                        candidateAttackers.pieces.push(piece);
+                        candidateAttackers.coords.push(coord);
+                    }
+                }
+            }
+        )
+
+        for( let i = 0; i < candidateAttackers.pieces.length; i++ )
+        {
+            //the current piece/coord data.
+            const currentPiece = candidateAttackers.pieces[i];
+            const currentCoord = candidateAttackers.coords[i];
+            //represents what type of piece it is.
+            const lastCharOfPiece = currentPiece[currentPiece.length - 1];
+            
+            //will need to determine how exactly that piece can move depending on what it is.
+            let vectorX = [];
+            let vectorY = [];
+
+            switch(lastCharOfPiece)
+            {
+                case PieceType.BISHOP:
+                    vectorX = Chonse2._BISHOP_VECTOR_X;
+                    vectorY = Chonse2._BISHOP_VECTOR_Y;
+                    break;
+
+                case PieceType.ROOK:
+                    vectorX = Chonse2._ROOK_VECTOR_X;
+                    vectorY = Chonse2._ROOK_VECTOR_Y;
+                    break;
+
+                case PieceType.QUEEN:
+                    vectorX = Chonse2._QUEEN_KING_VECTOR_X;
+                    vectorY = Chonse2._QUEEN_KING_VECTOR_Y;
+            }
+        }
     }
     //#endregion
 
@@ -376,6 +436,7 @@ export default class Chonse2Extensions
 
         return board.pieceState[rowIndex][colIndex];
     }   
+    //#endregion
 }
 
 export class Fork 
@@ -388,4 +449,11 @@ export class Fork
         this.attackerCoordinate = attackerCoordinate_;
         this.coordinatesAttacked = coordinatesAttacked_;
     }
+}
+
+export class Pin 
+{
+    attackerCoordinate: string = "";
+    pinnedPieceCoordinate: string = "";
+    highValuePieceCoordinate: string = "";
 }
