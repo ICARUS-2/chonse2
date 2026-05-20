@@ -303,8 +303,10 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Pins
-    getPinsOnBoard(board: Chonse2)
+    static getPinsOnBoard(board: Chonse2, excludePawns: boolean = false)
     {
+        const pins: Array<Pin> = [];
+
         //A piece can only be pinned by a bishop, a rook or a queen.
         const ATTACKER_TYPES = [PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN];
 
@@ -376,7 +378,7 @@ export default class Chonse2Extensions
             //This is the current index within the piece state array that the coordinate lies in. Need this for checking the squares it sees.
             const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(currentCoord);
 
-            for(let offsetIndex = 0; offsetIndex < vectorX.length; i++)
+            for(let offsetIndex = 0; offsetIndex < vectorX.length; offsetIndex++)
             {
                 //change in x and y coordinates that will be applied as offsets.
                 let dx = vectorX[offsetIndex];
@@ -386,12 +388,12 @@ export default class Chonse2Extensions
                 let runCount = 0;
 
                 //Will be the lower-value target of the pin.
-                const pinnedPieceCoordinate = "";
-                const pinnedPieceType = "";
+                let pinnedPieceCoordinate = "";
+                let pinnedPieceType = "";
 
                 //Will be the higher-value piece behind the low value one.
-                const highValuePieceCoordinate = "";
-                const highValuePieceType = "";
+                let highValuePieceCoordinate = "";
+                let highValuePieceType = "";
 
                 for( 
                     let currentXOffset = dx, currentYOffset = dy; //starts at the places of the vector components relative to the piece.
@@ -424,17 +426,47 @@ export default class Chonse2Extensions
                             //if the piece is an enemy one and there is no pinned piece already, make that the pinned piece.
                             if (!pinnedPieceCoordinate)
                             {
-
+                                pinnedPieceCoordinate = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                                pinnedPieceType = squareInQuestionPiece;
+                                //after the first piece is found, continue the loop and search for a potential piece for this one to be pinned to.
+                                continue;
                             }
 
-
+                            
                             //if the pinned piece is already defined, then check if this piece is an enemy
+                            const materialOfPinnedPiece = PieceMaterial.getMaterialFromPiece(pinnedPieceType);
+                            const materialOfPotentialSecondPiece = PieceMaterial.getMaterialFromPiece(squareInQuestionPiece);
 
+                            //console.log("Got as far as checking piece material")
+                            if (materialOfPotentialSecondPiece > materialOfPinnedPiece)
+                            {
+                                if (excludePawns)
+                                {
+                                    if (pinnedPieceType.endsWith(PieceType.PAWN))
+                                    {
+                                        continue;
+                                    }
+                                }
+
+                                const newPin = new Pin();
+
+                                newPin.attackerCoordinate = currentCoord;
+                                newPin.pinnedPieceCoordinate = pinnedPieceCoordinate;
+                                newPin.highValuePieceCoordinate = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                            
+                                pins.push(newPin);
+                            }
+                            else 
+                            {
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
+
+        return pins;
     }
     //#endregion
 
