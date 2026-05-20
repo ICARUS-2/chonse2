@@ -615,10 +615,13 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
             const piece = currentState.pieceState[rawPieceIndex.rowIndex][rawPieceIndex.colIndex];
 
             
-            //First, do the animation
-            this.animateMove(fromSquare, toSquare, piece);
-            await this.delay(this.animationDuration);
-            
+            if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS))
+            {
+              //First, do the animation
+              this.animateMove(fromSquare, toSquare, piece);
+              await this.delay(this.animationDuration);
+            }
+
             //Then play the move.
             const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
             moveResult.coachComment = CoachUtils.COACH_MOVE_DELIMITER;
@@ -740,13 +743,23 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
     const pieceToAnimate = this.getMostCurrentMainState().pieceState[fromIdx.rowIndex][fromIdx.colIndex];
     
-    this.animateMove(fromSquare, toSquare, pieceToAnimate);
-    setTimeout( () => 
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS))
     {
-      const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
-      this.forcePushState(stateCopy, moveResult);
-      Sound.playSoundForMove(moveResult.notation);
-    }, this.animationDuration);
+      this.animateMove(fromSquare, toSquare, pieceToAnimate);
+      setTimeout( () => 
+      {
+        const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
+        this.forcePushState(stateCopy, moveResult);
+        Sound.playSoundForMove(moveResult.notation);
+      }, this.animationDuration);
+    }
+    else 
+    {
+        const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
+        this.forcePushState(stateCopy, moveResult);
+        Sound.playSoundForMove(moveResult.notation);
+    }
+
   }
 
   resignVsAiClicked()
@@ -806,26 +819,45 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const mostRecentMove = this.boardState().getMostRecentMove();
 
-    this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS))
+    {
+      this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
 
-    setTimeout( () =>
+      setTimeout( () =>
+      {
+        this.boardState().goBack();
+        Sound.playSound(Sound.MOVE);
+
+      }, this.animationDuration )
+    }    
+    else 
     {
       this.boardState().goBack();
       Sound.playSound(Sound.MOVE);
+    }
 
-    }, this.animationDuration )
   }
 
   handleForwardButtonClicked()
   {
     const mostRecentMove = this.boardState().getFutureMove();
-    this.animateMove(mostRecentMove.fromCoord, mostRecentMove.toCoord, mostRecentMove.piece);
-    setTimeout( () =>
+
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS))
+    {
+      this.animateMove(mostRecentMove.fromCoord, mostRecentMove.toCoord, mostRecentMove.piece);
+      setTimeout( () =>
+      {
+        this.boardState().goForward();
+        Sound.playSoundForMove(mostRecentMove.notation);
+
+      }, this.animationDuration )
+    }
+    else 
     {
       this.boardState().goForward();
       Sound.playSoundForMove(mostRecentMove.notation);
+    }
 
-    }, this.animationDuration )
   }   
 
   handleDoubleForwardButtonClicked()

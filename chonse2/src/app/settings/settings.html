@@ -8,18 +8,42 @@
         <!--Board Settings-->
         <div class="p-4 w-50 me-2" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
             <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Board</h2>
-            <h4 class="text-secondary">Click to move</h4>
 
-            <div
-            class="form-check form-switch"
-            [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
-            >
-            <input
-                class="form-check-input custom-switch"
-                type="checkbox"
-                [formField]="form.clickToMove"
-                (change)="handleClickToMoveSwitchPressed($event.target.checked)"
-            />
+            <!--Click to move and piece animation-->
+            <div class="d-flex justify-content-between">
+                <!--Click to move-->
+                <div>
+                    <h4 class="text-secondary">Click to move</h4>
+
+                    <div
+                    class="form-check form-switch"
+                    [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+                    >
+                    <input
+                        class="form-check-input custom-switch"
+                        type="checkbox"
+                        [formField]="form.clickToMove"
+                        (change)="handleClickToMoveSwitchPressed($event.target.checked)"
+                    />
+                    </div>
+                </div>
+
+                <!--Piece Animation-->
+                <div>
+                    <h4 class="text-secondary">Piece Animation</h4>
+
+                    <div
+                    class="form-check form-switch"
+                    [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+                    >
+                    <input
+                        class="form-check-input custom-switch"
+                        type="checkbox"
+                        [formField]="form.animatedPieces"
+                        (change)="handlePieceAnimationSwitchPressed($event.target.checked)"
+                    />
+                    </div>
+                </div>
             </div>
         </div>
 
