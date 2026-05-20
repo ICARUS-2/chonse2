@@ -29,7 +29,7 @@ import { EngineName, EngineInformation, EngineType, MoveClassification, moveClas
 import { EvalSource, LineEval, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
-import {CoachIdeaFlagType, CoachMoveFlagType, CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
+import {CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
 import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
 import { BoardArrowButtons } from '../board-arrow-buttons/board-arrow-buttons';
 import { BoardOptions } from '../board-options/board-options';
@@ -675,18 +675,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       this.coachButtonsDisabled.set(false);
     }, duration);
-  }
-
-  getIdeaButtonText(flag: CoachIdeaFlagType)
-  {
-    const BASE = "Show Idea: ";
-
-    if (flag == CoachIdeaFlagType.ForkIdea)
-    {
-      return BASE + "Fork";
-    }
-
-    return BASE;
   }
 
   showIdeaButtonClicked(arrows: Array<Arrow> | undefined)

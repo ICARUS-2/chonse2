@@ -186,7 +186,7 @@ export class CoachUtils
     private static readonly IGNORED_PIN_SENTENCES = 
     [
         `${CoachUtils.TURN_PLACEHOLDER} completely ignored the pin of their ${CoachUtils.PIECE_PLACEHOLDER}, and now their ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER} is lost. `,
-        `${CoachUtils.TURN_PLACEHOLDER} didn't notice their ${CoachUtils.PIECE_PLACEHOLDER} was pinned. This will cost a ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}. `
+        `${CoachUtils.TURN_PLACEHOLDER} didn't notice their ${CoachUtils.PIECE_PLACEHOLDER} was pinned, exposing the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER} behind it. `
     ]
 
     //Good============
@@ -213,9 +213,9 @@ export class CoachUtils
     //Player has pinned a piece.
     private static readonly FOUND_PIN_SENTENCES: Array<string> = 
     [
-        `This is a good move, as it pins a ${CoachUtils.PIECE_PLACEHOLDER} to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}. `,
+        `This is a good move as it pins a ${CoachUtils.PIECE_PLACEHOLDER} to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}, restricting its control over further squares. `,
         `The opponent will have to watch the pin on their ${CoachUtils.PIECE_PLACEHOLDER}. `,
-        `${CoachUtils.TURN_PLACEHOLDER} just pinned the ${CoachUtils.PIECE_PLACEHOLDER} to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}, restricting its mobility outright. `
+        `${CoachUtils.TURN_PLACEHOLDER} just pinned the ${CoachUtils.PIECE_PLACEHOLDER} to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}, restricting its mobility. `
     ]
     //#endregion
 
@@ -268,7 +268,7 @@ export class CoachUtils
 
                 const whiteToMove = state.turn;
 
-                const colorToMoveText = whiteToMove ? "Black" : "White";
+                const colorThatMovedText = whiteToMove ? "Black" : "White";
                 const oppositeColorText = whiteToMove ? "White" : "Black";
             
                 //=======Bad
@@ -310,7 +310,7 @@ export class CoachUtils
                                 {
                                     pieceToTake = hangingPiece;
 
-                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PIECE_HANG_SENTENCES, colorToMoveText, pieceToTake);
+                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PIECE_HANG_SENTENCES, colorThatMovedText, pieceToTake);
                                     move.coachMoveFlags.push(CoachMoveFlagType.LeftPieceHanging);
 
                                     break;
@@ -341,12 +341,12 @@ export class CoachUtils
                                         //Subcase 1: If they correctly captured the piece but did so with the wrong attacker.
                                         if (previousBestMove.toSquare === move.toCoord)
                                         {
-                                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.CAPTURED_WITH_WRONG_PIECE_SENTENCES, colorToMoveText, pieceToCapture);
+                                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.CAPTURED_WITH_WRONG_PIECE_SENTENCES, colorThatMovedText, pieceToCapture);
                                             move.coachMoveFlags.push(CoachMoveFlagType.CapturedPieceWithWrongAttacker);
                                         }
                                         else //Subcase 2: If they missed the capture altogether.
                                         {
-                                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_HANGING_PIECE_SENTENCES, colorToMoveText, pieceToCapture);
+                                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_HANGING_PIECE_SENTENCES, colorThatMovedText, pieceToCapture);
                                             move.coachMoveFlags.push(CoachMoveFlagType.MissedHangingPiece);
                                         }
                                     }
@@ -367,7 +367,7 @@ export class CoachUtils
                             {
                                 if (previousEngineLine.mate && !currentEngineLine.mate)
                                 {   
-                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_CHECKMATE_SENTENCES, colorToMoveText, "");
+                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_CHECKMATE_SENTENCES, colorThatMovedText, "");
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedCheckmate);
                                 }
                             }
@@ -386,7 +386,7 @@ export class CoachUtils
                             {
                                 if (!previousEngineLine.mate && currentEngineLine.mate)
                                 {
-                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ALLOWED_CHECKMATE_SENTENCES, colorToMoveText, "");
+                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ALLOWED_CHECKMATE_SENTENCES, colorThatMovedText, "");
                                     move.coachMoveFlags.push(CoachMoveFlagType.AllowedCheckmate);
                                 }
                             }
@@ -422,7 +422,7 @@ export class CoachUtils
 
                             if (didMissFork)
                             {
-                                move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_FORK_SENTENCES, colorToMoveText, "");
+                                move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_FORK_SENTENCES, colorThatMovedText, "");
                                 move.coachMoveFlags.push(CoachMoveFlagType.MissedFork)
                             }
                         }
@@ -477,13 +477,16 @@ export class CoachUtils
                                         }
                                     }
 
-                                    move.coachIdeas.set(CoachIdeaFlagType.ForkIdea, arrowsArr);
+                                    const coachIdea = new CoachIdea();
+                                    coachIdea.arrows = arrowsArr;
+
+                                    move.coachIdeas.set(CoachIdeaFlagType.ForkIdea, coachIdea);
                                 }
                             }
 
                             if (allowedFork)
                             {
-                                move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ALLOWED_FORK_SENTENCES, colorToMoveText, "");
+                                move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ALLOWED_FORK_SENTENCES, colorThatMovedText, "");
                                 move.coachMoveFlags.push(CoachMoveFlagType.AllowedFork);
                             }
                         }
@@ -493,14 +496,16 @@ export class CoachUtils
                     {
                         if (missedState && previousState && previousBestMove)
                         {
+                            //Must check if the best move in this position included pinning something
                             const missedStatePins = Chonse2Extensions.getPinsOnBoard(missedState, true);
 
                             let bestMoveWasToPinPiece = false;
                             let correspondingPin: Pin | null = null;
 
+                            //Need to check over all of the pins that existed.
                             for(const pin of missedStatePins)
                             {
-                                console.log(previousBestMove.toSquare + " " + pin.attackerCoordinate)
+                                //If the best move in that position was to pin a piece, show it.
                                 if (previousBestMove.toSquare == pin.attackerCoordinate)
                                 {
                                     bestMoveWasToPinPiece = true;
@@ -510,11 +515,10 @@ export class CoachUtils
 
                             if (bestMoveWasToPinPiece && correspondingPin != null)
                             {
-                                //const attackerPiece = Chonse2Extensions.findPieceAtCoordinate(missedState, correspondingPin.attackerCoordinate);
                                 const pinnedPiece = Chonse2Extensions.findPieceAtCoordinate(missedState, correspondingPin.pinnedPieceCoordinate);
                                 const highValuePiece = Chonse2Extensions.findPieceAtCoordinate(missedState, correspondingPin.highValuePieceCoordinate);
 
-                                move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_PIN_SENTENCES, colorToMoveText, pinnedPiece, highValuePiece);
+                                move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
                                 move.coachMoveFlags.push(CoachMoveFlagType.MissedPin);
                             }
                         }
@@ -522,7 +526,40 @@ export class CoachUtils
 
                     //Case: Ignored a pin on a piece and lost what was behind it
                     {
+                        if (previousState)
+                        {
+                            //Need to check that the piece was indeed pinned before it moved.
+                            const previousStatePins = Chonse2Extensions.getPinsOnBoard(previousState);
 
+                            let ignoredPin: Pin | null = null;
+                            let playerDidMovePinnedPiece = false;
+
+                            //If the player moved a pinned piece, register it.
+                            for(const pin of previousStatePins)
+                            {
+                                if (move.fromCoord == pin.pinnedPieceCoordinate)
+                                {
+                                    ignoredPin = pin;
+                                    playerDidMovePinnedPiece = true;
+                                }
+                            }
+
+                            //If the player indeed fucked up and ignored the pin, check that the piece is actually hanging.
+                            if (ignoredPin != null && playerDidMovePinnedPiece)
+                            {
+                                const hangingPiecesToCheck = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
+
+                                //If the piece is hanging, then it's considered an inaccurately ignored pin.
+                                if (hangingPiecesToCheck.includes(ignoredPin.highValuePieceCoordinate))
+                                {
+                                    const pinnedPiece = Chonse2Extensions.findPieceAtCoordinate(previousState, ignoredPin.pinnedPieceCoordinate);
+                                    const highValuePiece = Chonse2Extensions.findPieceAtCoordinate(previousState, ignoredPin.highValuePieceCoordinate);
+
+
+                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.IGNORED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece)
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -549,7 +586,7 @@ export class CoachUtils
                                 {
                                     if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
                                     {
-                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_MATE_SENTENCES, colorToMoveText, "");
+                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_MATE_SENTENCES, colorThatMovedText, "");
                                     }
                                     else 
                                     {
@@ -562,7 +599,7 @@ export class CoachUtils
                                 {
                                     if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
                                     {
-                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ON_ROAD_TO_CHECKMATE_SENTENCES, colorToMoveText, "");
+                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ON_ROAD_TO_CHECKMATE_SENTENCES, colorThatMovedText, "");
                                     }
                                 }
                             }
@@ -619,20 +656,54 @@ export class CoachUtils
                                 }
                             }
 
-                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_FORK_SENTENCES, colorToMoveText, displayPiece)
-                            move.coachIdeas.set( CoachIdeaFlagType.ForkIdea, arrows );
+                            const coachIdea = new CoachIdea();
+                            coachIdea.arrows = arrows;
+
+                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_FORK_SENTENCES, colorThatMovedText, displayPiece)
+                            move.coachIdeas.set( CoachIdeaFlagType.ForkIdea, coachIdea );
                         }
                     }
 
                     //Case: Player accurately pinned a piece.
                     {
+                        const pins = Chonse2Extensions.getPinsOnBoard(state, true);
 
+                        let initiatedPin = null;
+
+                        //Check through all of the pins on the board and if the player moved a piece to where the current attacker is, it's the pin we're dealing with.
+                        for(const pin of pins)
+                        {
+                            if (pin.attackerCoordinate == move.toCoord)
+                            {
+                                initiatedPin = pin;
+                            }
+                        }
+
+                        //If this is the pin the player initiated it, add it.
+                        if (initiatedPin)
+                        {
+                            const pinnedPiece = Chonse2Extensions.findPieceAtCoordinate(previousState, initiatedPin.pinnedPieceCoordinate);
+                            const highValuePiece = Chonse2Extensions.findPieceAtCoordinate(previousState, initiatedPin.highValuePieceCoordinate);
+
+                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
+
+                            const idea = new CoachIdea();
+                            const arrow = createArrow(initiatedPin.attackerCoordinate, initiatedPin.highValuePieceCoordinate, ArrowColors.IDEA, ArrowContext.Coach);
+                            if (arrow)
+                            {
+                                idea.arrows.push(arrow);
+                            }
+                            idea.highlightedSquares.push(initiatedPin.highValuePieceCoordinate);
+                            idea.highlightedSquares.push(initiatedPin.pinnedPieceCoordinate);
+
+                            move.coachIdeas.set(CoachIdeaFlagType.PinIdea, idea);
+                        }
                     }
                 }
             
                 if (move.coachComment == "")
                 {
-                    move.coachComment = this.getBaseSentence(posEval.moveClassification ?? MoveClassification.None).replace(this.TURN_PLACEHOLDER, colorToMoveText);
+                    move.coachComment = this.getBaseSentence(posEval.moveClassification ?? MoveClassification.None).replace(this.TURN_PLACEHOLDER, colorThatMovedText);
                 }
             }
         }
@@ -725,6 +796,12 @@ export class CoachUtils
 
         return newSentence;
     }
+}
+
+export class CoachIdea 
+{
+    arrows: Array<Arrow> = [];
+    highlightedSquares: Array<string> = [];
 }
 
 export enum CoachMoveSequenceType

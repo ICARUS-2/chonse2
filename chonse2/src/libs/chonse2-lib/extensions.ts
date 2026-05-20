@@ -391,10 +391,6 @@ export default class Chonse2Extensions
                 let pinnedPieceCoordinate = "";
                 let pinnedPieceType = "";
 
-                //Will be the higher-value piece behind the low value one.
-                let highValuePieceCoordinate = "";
-                let highValuePieceType = "";
-
                 for( 
                     let currentXOffset = dx, currentYOffset = dy; //starts at the places of the vector components relative to the piece.
                     runCount < Chonse2.SIZE; //ensures that it does not check outside the bounds.
