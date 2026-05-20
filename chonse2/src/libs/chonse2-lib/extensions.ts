@@ -330,18 +330,32 @@ export default class Chonse2Extensions
             }
         )
 
+        const hangingPieceCoords = Chonse2Extensions.getHangingPieces(board);
+
         for( let i = 0; i < candidateAttackers.pieces.length; i++ )
         {
             //the current piece/coord data.
             const currentPiece = candidateAttackers.pieces[i];
             const currentCoord = candidateAttackers.coords[i];
+
             //represents what type of piece it is.
             const lastCharOfPiece = currentPiece[currentPiece.length - 1];
+
+            //indicates the color of the piece
+            const colorOfPiece: PieceColor = currentPiece[0];
+
+            //if the attacking piece is hanging, it can't viably pin something.
+            const attackerHangingPieces = colorOfPiece == PieceColor.WHITE ? hangingPieceCoords.white : hangingPieceCoords.black;
+            if (attackerHangingPieces.includes(currentCoord))
+            {
+                continue;
+            }
             
             //will need to determine how exactly that piece can move depending on what it is.
-            let vectorX = [];
-            let vectorY = [];
+            let vectorX: Array<number> = [];
+            let vectorY: Array<number>  = [];
 
+            //get the corresponding vector (diagonals for bishop, horizontal for rook, and a combination of both for queen).
             switch(lastCharOfPiece)
             {
                 case PieceType.BISHOP:
@@ -357,6 +371,68 @@ export default class Chonse2Extensions
                 case PieceType.QUEEN:
                     vectorX = Chonse2._QUEEN_KING_VECTOR_X;
                     vectorY = Chonse2._QUEEN_KING_VECTOR_Y;
+            }
+
+            //This is the current index within the piece state array that the coordinate lies in. Need this for checking the squares it sees.
+            const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(currentCoord);
+
+            for(let offsetIndex = 0; offsetIndex < vectorX.length; i++)
+            {
+                //change in x and y coordinates that will be applied as offsets.
+                let dx = vectorX[offsetIndex];
+                let dy = vectorY[offsetIndex];
+
+                //cap to ensure that it cannot run longer than the chessboard itself.
+                let runCount = 0;
+
+                //Will be the lower-value target of the pin.
+                const pinnedPieceCoordinate = "";
+                const pinnedPieceType = "";
+
+                //Will be the higher-value piece behind the low value one.
+                const highValuePieceCoordinate = "";
+                const highValuePieceType = "";
+
+                for( 
+                    let currentXOffset = dx, currentYOffset = dy; //starts at the places of the vector components relative to the piece.
+                    runCount < Chonse2.SIZE; //ensures that it does not check outside the bounds.
+                    currentXOffset += dx, currentYOffset += dy, runCount++ //keep incrementing the offsets accordingly
+                )   
+                {
+                    const rowInQuestion = board.pieceState[rowIndex + currentXOffset];
+                    
+                    if (rowInQuestion)
+                    {
+                        //the square that is being checked.
+                        const squareInQuestionPiece = rowInQuestion[colIndex + currentYOffset];
+
+                        if (squareInQuestionPiece != undefined)
+                        {
+                            //If there's nothing in that square, then this piece can't do anything.
+                            if (squareInQuestionPiece == "")
+                            {
+                                continue;
+                            }
+                            
+                            const enemyPieceColor: PieceColor = colorOfPiece == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+                            //if the piece is a friendly piece, then it's not pinning anything.
+                            if (!squareInQuestionPiece.startsWith(enemyPieceColor.toString()))
+                            {
+                                break;
+                            }
+
+                            //if the piece is an enemy one and there is no pinned piece already, make that the pinned piece.
+                            if (!pinnedPieceCoordinate)
+                            {
+
+                            }
+
+
+                            //if the pinned piece is already defined, then check if this piece is an enemy
+
+                        }
+                    }
+                }
             }
         }
     }
