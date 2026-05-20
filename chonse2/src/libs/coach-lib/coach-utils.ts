@@ -1,7 +1,7 @@
 import { Arrow, ArrowColors, ArrowContext, createArrow } from "../../app/chessboard/chessboard/arrow";
 import MoveResult from "../../app/chessboard/chessboard/move-result";
 import Chonse2 from "../chonse2-lib/chonse2";
-import Chonse2Extensions, { Fork } from "../chonse2-lib/extensions";
+import Chonse2Extensions, { Fork, Pin } from "../chonse2-lib/extensions";
 import { PieceColor } from "../chonse2-lib/piece-color";
 import PieceMaterial from "../chonse2-lib/piece-material";
 import { PieceType } from "../chonse2-lib/piece-type";
@@ -14,6 +14,7 @@ export class CoachUtils
     static readonly COACH_MOVE_DELIMITER = "*";
     static readonly TURN_PLACEHOLDER = "{turn}";
     static readonly PIECE_PLACEHOLDER = "{piece}";
+    static readonly SECONDARY_PIECE_PLACEHOLDER = "{piece2}";
 
     //At minimum one sentence should be displayed.
     private static readonly BASE_SENTENCES: Map<MoveClassification, string[]> = new Map<MoveClassification, string[]>(
@@ -174,6 +175,20 @@ export class CoachUtils
         `${CoachUtils.TURN_PLACEHOLDER} just allowed their own piece to get forked. `
     ]
 
+    //Missed the opportunity to pin a piece
+    private static readonly MISSED_PIN_SENTENCES = 
+    [
+        `${CoachUtils.TURN_PLACEHOLDER} has missed an opportunity to pin a ${CoachUtils.PIECE_PLACEHOLDER} to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}. `,
+        `The best move for ${CoachUtils.TURN_PLACEHOLDER} was to cut the mobility of the opponent's ${CoachUtils.PIECE_PLACEHOLDER} by pinning it to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}. `
+    ]
+
+    //Ignored a relative pin
+    private static readonly IGNORED_PIN_SENTENCES = 
+    [
+        `${CoachUtils.TURN_PLACEHOLDER} completely ignored the pin of their ${CoachUtils.PIECE_PLACEHOLDER}, and now their ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER} is lost. `,
+        `${CoachUtils.TURN_PLACEHOLDER} didn't notice their ${CoachUtils.PIECE_PLACEHOLDER} was pinned. This will cost a ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}. `
+    ]
+
     //Good============
     //Player accurately found a mating sequence.
     private static readonly FOUND_MATE_SENTENCES: Array<string> = 
@@ -193,6 +208,14 @@ export class CoachUtils
     [
         `${CoachUtils.TURN_PLACEHOLDER} is able to pick up a ${CoachUtils.PIECE_PLACEHOLDER} with that fork. `,
         `${CoachUtils.TURN_PLACEHOLDER} can now win a ${CoachUtils.PIECE_PLACEHOLDER} with that fork. `,
+    ]
+
+    //Player has pinned a piece.
+    private static readonly FOUND_PIN_SENTENCES: Array<string> = 
+    [
+        `This is a good move, as it pins a ${CoachUtils.PIECE_PLACEHOLDER} to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}. `,
+        `The opponent will have to watch the pin on their ${CoachUtils.PIECE_PLACEHOLDER}. `,
+        `${CoachUtils.TURN_PLACEHOLDER} just pinned the ${CoachUtils.PIECE_PLACEHOLDER} to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}, restricting its mobility outright. `
     ]
     //#endregion
 
@@ -465,6 +488,42 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Missed an opportunity to pin a piece
+                    {
+                        if (missedState && previousState && previousBestMove)
+                        {
+                            const missedStatePins = Chonse2Extensions.getPinsOnBoard(missedState, true);
+
+                            let bestMoveWasToPinPiece = false;
+                            let correspondingPin: Pin | null = null;
+
+                            for(const pin of missedStatePins)
+                            {
+                                console.log(previousBestMove.toSquare + " " + pin.attackerCoordinate)
+                                if (previousBestMove.toSquare == pin.attackerCoordinate)
+                                {
+                                    bestMoveWasToPinPiece = true;
+                                    correspondingPin = pin;
+                                }
+                            }
+
+                            if (bestMoveWasToPinPiece && correspondingPin != null)
+                            {
+                                //const attackerPiece = Chonse2Extensions.findPieceAtCoordinate(missedState, correspondingPin.attackerCoordinate);
+                                const pinnedPiece = Chonse2Extensions.findPieceAtCoordinate(missedState, correspondingPin.pinnedPieceCoordinate);
+                                const highValuePiece = Chonse2Extensions.findPieceAtCoordinate(missedState, correspondingPin.highValuePieceCoordinate);
+
+                                move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_PIN_SENTENCES, colorToMoveText, pinnedPiece, highValuePiece);
+                                move.coachMoveFlags.push(CoachMoveFlagType.MissedPin);
+                            }
+                        }
+                    }
+
+                    //Case: Ignored a pin on a piece and lost what was behind it
+                    {
+
+                    }
                 }
 
 
@@ -564,6 +623,11 @@ export class CoachUtils
                             move.coachIdeas.set( CoachIdeaFlagType.ForkIdea, arrows );
                         }
                     }
+
+                    //Case: Player accurately pinned a piece.
+                    {
+
+                    }
                 }
             
                 if (move.coachComment == "")
@@ -646,17 +710,18 @@ export class CoachUtils
         return "piece";
     }
 
-    private static formatCoachStringWithPlaceholders(sentence: string, playerColor: string, piece: string): string
+    private static formatCoachStringWithPlaceholders(sentence: string, playerColor: string, piece: string, secondaryPiece: string): string
     {
         return sentence
             .replace(CoachUtils.TURN_PLACEHOLDER, playerColor)
-            .replace(CoachUtils.PIECE_PLACEHOLDER, piece);
+            .replace(CoachUtils.PIECE_PLACEHOLDER, piece)
+            .replace(CoachUtils.SECONDARY_PIECE_PLACEHOLDER, secondaryPiece);
     }
 
-    private static selectAndFormatSentence(arr: Array<string>, playerColor: string, piece: string)
+    private static selectAndFormatSentence(arr: Array<string>, playerColor: string, piece: string = "", secondaryPiece: string = "")
     {
         let newSentence = arr[CoachUtils.getRandomIndex(arr.length)];
-        newSentence = this.formatCoachStringWithPlaceholders(newSentence, playerColor, CoachUtils.convertPieceToText(piece));
+        newSentence = this.formatCoachStringWithPlaceholders(newSentence, playerColor, CoachUtils.convertPieceToText(piece), CoachUtils.convertPieceToText(secondaryPiece));
 
         return newSentence;
     }
@@ -680,17 +745,17 @@ export enum CoachMoveFlagType
     AllowedFork,
     AllowedSkewer,
     MissedFork,
+    MissedPin,
+    IgnoredPin,
 
     //Good (show follow up)
     OpportunityToCheckmate,
     OpportunityToSkewer,
-
-    //Good (show idea)
-    PinnedPiece,
     OpportunityToFork,
 }
 
 export enum CoachIdeaFlagType
 {
-    ForkIdea
+    ForkIdea,
+    PinIdea
 }

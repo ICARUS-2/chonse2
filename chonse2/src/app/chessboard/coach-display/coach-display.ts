@@ -107,6 +107,11 @@ export class CoachDisplay {
       return "Show alternative";
     }
 
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedPin))
+    {
+      return "Show missed pin";
+    }
+
     return "Show miss";
   }
 

@@ -437,7 +437,7 @@ export default class Chonse2Extensions
                             const materialOfPinnedPiece = PieceMaterial.getMaterialFromPiece(pinnedPieceType);
                             const materialOfPotentialSecondPiece = PieceMaterial.getMaterialFromPiece(squareInQuestionPiece);
 
-                            //console.log("Got as far as checking piece material")
+                            //If the piece behind the candidate pinned piece is worth more than it, then it is indeed a pin.
                             if (materialOfPotentialSecondPiece > materialOfPinnedPiece)
                             {
                                 if (excludePawns)

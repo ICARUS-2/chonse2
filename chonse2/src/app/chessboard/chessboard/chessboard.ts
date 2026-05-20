@@ -677,57 +677,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }, duration);
   }
 
-  getFollowUpButtonText(move: MoveResult, ev: PositionEval): string
-  {
-    let mate = undefined;
-    if (ev.lines[0])
-    {
-      mate = ev.lines[0].mate;
-    }
-
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.AllowedCheckmate) || mate)
-    {
-      return "Show checkmate";
-    }
-
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging))
-    {
-      return "Show hanging piece";
-    }
-
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.OpportunityToFork))
-    {
-      return "Show fork";
-    }
-
-    return "Show follow-up";
-  }
-
-  getMissButtonText(move: MoveResult): string
-  {
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedCheckmate))
-    {
-      return "Show missed checkmate";
-    }
-
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedFork))
-    {
-      return "Show missed fork";
-    }
-
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedHangingPiece))
-    {
-      return "Show missed capture";
-    }
-
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.CapturedPieceWithWrongAttacker))
-    {
-      return "Show alternative";
-    }
-
-    return "Show miss";
-  }
-
   getIdeaButtonText(flag: CoachIdeaFlagType)
   {
     const BASE = "Show Idea: ";
