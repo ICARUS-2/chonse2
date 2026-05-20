@@ -29,7 +29,7 @@ import { EngineName, EngineInformation, EngineType, MoveClassification, moveClas
 import { EvalSource, LineEval, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
-import {CoachIdeaFlagType, CoachMoveFlagType, CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
+import {CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachMoveSequenceType, CoachUtils} from '../../../libs/coach-lib/coach-utils';
 import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
 import { BoardArrowButtons } from '../board-arrow-buttons/board-arrow-buttons';
 import { BoardOptions } from '../board-options/board-options';
@@ -615,10 +615,13 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
             const piece = currentState.pieceState[rawPieceIndex.rowIndex][rawPieceIndex.colIndex];
 
             
-            //First, do the animation
-            this.animateMove(fromSquare, toSquare, piece);
-            await this.delay(this.animationDuration);
-            
+            if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS))
+            {
+              //First, do the animation
+              this.animateMove(fromSquare, toSquare, piece);
+              await this.delay(this.animationDuration);
+            }
+
             //Then play the move.
             const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
             moveResult.coachComment = CoachUtils.COACH_MOVE_DELIMITER;
@@ -675,69 +678,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       this.coachButtonsDisabled.set(false);
     }, duration);
-  }
-
-  getFollowUpButtonText(move: MoveResult, ev: PositionEval): string
-  {
-    let mate = undefined;
-    if (ev.lines[0])
-    {
-      mate = ev.lines[0].mate;
-    }
-
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.AllowedCheckmate) || mate)
-    {
-      return "Show checkmate";
-    }
-
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging))
-    {
-      return "Show hanging piece";
-    }
-
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.OpportunityToFork))
-    {
-      return "Show fork";
-    }
-
-    return "Show follow-up";
-  }
-
-  getMissButtonText(move: MoveResult): string
-  {
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedCheckmate))
-    {
-      return "Show missed checkmate";
-    }
-
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedFork))
-    {
-      return "Show missed fork";
-    }
-
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedHangingPiece))
-    {
-      return "Show missed capture";
-    }
-
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.CapturedPieceWithWrongAttacker))
-    {
-      return "Show alternative";
-    }
-
-    return "Show miss";
-  }
-
-  getIdeaButtonText(flag: CoachIdeaFlagType)
-  {
-    const BASE = "Show Idea: ";
-
-    if (flag == CoachIdeaFlagType.ForkIdea)
-    {
-      return BASE + "Fork";
-    }
-
-    return BASE;
   }
 
   showIdeaButtonClicked(arrows: Array<Arrow> | undefined)
@@ -803,13 +743,23 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
     const pieceToAnimate = this.getMostCurrentMainState().pieceState[fromIdx.rowIndex][fromIdx.colIndex];
     
-    this.animateMove(fromSquare, toSquare, pieceToAnimate);
-    setTimeout( () => 
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS))
     {
-      const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
-      this.forcePushState(stateCopy, moveResult);
-      Sound.playSoundForMove(moveResult.notation);
-    }, this.animationDuration);
+      this.animateMove(fromSquare, toSquare, pieceToAnimate);
+      setTimeout( () => 
+      {
+        const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
+        this.forcePushState(stateCopy, moveResult);
+        Sound.playSoundForMove(moveResult.notation);
+      }, this.animationDuration);
+    }
+    else 
+    {
+        const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
+        this.forcePushState(stateCopy, moveResult);
+        Sound.playSoundForMove(moveResult.notation);
+    }
+
   }
 
   resignVsAiClicked()
@@ -869,26 +819,45 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const mostRecentMove = this.boardState().getMostRecentMove();
 
-    this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS))
+    {
+      this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
 
-    setTimeout( () =>
+      setTimeout( () =>
+      {
+        this.boardState().goBack();
+        Sound.playSound(Sound.MOVE);
+
+      }, this.animationDuration )
+    }    
+    else 
     {
       this.boardState().goBack();
       Sound.playSound(Sound.MOVE);
+    }
 
-    }, this.animationDuration )
   }
 
   handleForwardButtonClicked()
   {
     const mostRecentMove = this.boardState().getFutureMove();
-    this.animateMove(mostRecentMove.fromCoord, mostRecentMove.toCoord, mostRecentMove.piece);
-    setTimeout( () =>
+
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS))
+    {
+      this.animateMove(mostRecentMove.fromCoord, mostRecentMove.toCoord, mostRecentMove.piece);
+      setTimeout( () =>
+      {
+        this.boardState().goForward();
+        Sound.playSoundForMove(mostRecentMove.notation);
+
+      }, this.animationDuration )
+    }
+    else 
     {
       this.boardState().goForward();
       Sound.playSoundForMove(mostRecentMove.notation);
+    }
 
-    }, this.animationDuration )
   }   
 
   handleDoubleForwardButtonClicked()

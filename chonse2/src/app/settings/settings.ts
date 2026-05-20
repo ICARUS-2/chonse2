@@ -26,6 +26,7 @@ export class Settings {
   formModel = signal<FormModel>(
   {
     clickToMove:  LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, false),
+    animatedPieces: LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true),
     selectedEngine: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName,
     engineDepth:  LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
     cloudHybridMode: LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, false),
@@ -53,6 +54,11 @@ export class Settings {
   handleClickToMoveSwitchPressed(val: boolean)
   {
     LocalStorageHelper.setBoolean(LocalStorageHelper.CLICK_TO_MOVE, val);
+  }
+  
+  handlePieceAnimationSwitchPressed(val: boolean)
+  {
+    LocalStorageHelper.setBoolean(LocalStorageHelper.PIECE_ANIMATIONS, val);
   }
 
   //Pick engine setting
@@ -105,6 +111,7 @@ export class Settings {
 interface FormModel 
 {
   clickToMove: boolean;
+  animatedPieces: boolean;
   selectedEngine: EngineName;
   engineDepth: number;
   cloudHybridMode: boolean;

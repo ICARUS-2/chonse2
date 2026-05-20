@@ -59,12 +59,12 @@ export default class Chonse2
   static readonly DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD = 100; //50 full moves * 2
 
   private static readonly _FEN_SPLIT_POSKEY_INDEX = 2
-  private static readonly _BISHOP_VECTOR_X = [-1, -1, 1, 1];
-  private static readonly _BISHOP_VECTOR_Y = [-1, 1, -1, 1];
-  private static readonly _ROOK_VECTOR_X = [-1, 1, 0, 0];
-  private static readonly _ROOK_VECTOR_Y = [0, 0, -1, 1];
-  private static readonly _QUEEN_KING_VECTOR_X = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
-  private static readonly _QUEEN_KING_VECTOR_Y = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
+  public static readonly _BISHOP_VECTOR_X = [-1, -1, 1, 1];
+  public static readonly _BISHOP_VECTOR_Y = [-1, 1, -1, 1];
+  public static readonly _ROOK_VECTOR_X = [-1, 1, 0, 0];
+  public static readonly _ROOK_VECTOR_Y = [0, 0, -1, 1];
+  public static readonly _QUEEN_KING_VECTOR_X = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
+  public static readonly _QUEEN_KING_VECTOR_Y = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
   private static readonly _WHITE_EP_TRIGGERS = new Map<string, string>([
       ["a2-a4", "a3"],
       ["b2-b4", "b3"],
@@ -522,8 +522,8 @@ export default class Chonse2
   getMaterialAdvantage(): number
   {
     //get each player's pieces in a separate array.
-    const whitePieceData = this._getAllPiecesAndCoordsByColor(PieceColor.WHITE);
-    const blackPieceData = this._getAllPiecesAndCoordsByColor(PieceColor.BLACK);
+    const whitePieceData = this.getAllPiecesAndCoordsByColor(PieceColor.WHITE);
+    const blackPieceData = this.getAllPiecesAndCoordsByColor(PieceColor.BLACK);
 
     let adv = 0;
 
@@ -1130,7 +1130,7 @@ export default class Chonse2
     return legalMoves.length != 0;
   }
 
-  public _getAllPiecesAndCoordsByColor(color: string): {pieces: Array<string>, coords: Array<string>}
+  public getAllPiecesAndCoordsByColor(color: string): {pieces: Array<string>, coords: Array<string>}
   {
     if (color != PieceColor.WHITE && color != PieceColor.BLACK)
     {
@@ -1297,8 +1297,8 @@ export default class Chonse2
     }
 
     //Insufficient material
-    const whitePieceData = this._getAllPiecesAndCoordsByColor(PieceColor.WHITE);
-    const blackPieceData = this._getAllPiecesAndCoordsByColor(PieceColor.BLACK);
+    const whitePieceData = this.getAllPiecesAndCoordsByColor(PieceColor.WHITE);
+    const blackPieceData = this.getAllPiecesAndCoordsByColor(PieceColor.BLACK);
 
     //Insufficient material case 1: King vs king
     const isKingVsKing: boolean = (

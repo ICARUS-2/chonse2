@@ -3,12 +3,14 @@ import { EngineInformation, EngineType, MoveClassification, moveClassificationLa
 import { IconButton } from '../../ui/icon-button/icon-button';
 import BoardState from '../chessboard/board-state';
 import MoveResult from '../chessboard/move-result';
-import { CoachIdeaFlagType, CoachMoveFlagType } from '../../../libs/coach-lib/coach-utils';
+import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType } from '../../../libs/coach-lib/coach-utils';
 import { EvalSource, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { Arrow, ArrowContext } from '../chessboard/arrow';
 import ChessboardHelper from '../helpers';
 import { CommonModule } from '@angular/common';
 import ThemeService from '../../themes/theme-service';
+import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
+import Chonse2 from '../../../libs/chonse2-lib/chonse2';
 
 @Component({
   selector: 'app-coach-display',
@@ -107,6 +109,11 @@ export class CoachDisplay {
       return "Show alternative";
     }
 
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedPin))
+    {
+      return "Show missed pin";
+    }
+
     return "Show miss";
   }
 
@@ -119,19 +126,25 @@ export class CoachDisplay {
       return BASE + "Fork";
     }
 
+    if (flag == CoachIdeaFlagType.PinIdea)
+    {
+      return BASE + "Pinned Piece";
+    }
+
     return BASE;
   }
 
-  showIdeaButtonClicked(arrows: Array<Arrow> | undefined)
+  showIdeaButtonClicked(idea: CoachIdea | undefined)
   {
-    if (!arrows)
+    if (!idea)
     {
       return;
     }
 
     this.boardState().isLocked.set(true);
     this.boardState().isCoachIdeaShowing.set(true);
-    this.boardState().arrows.set([...this.boardState().arrows(), ...arrows] )
+    this.boardState().arrows.set([...this.boardState().arrows(), ...idea.arrows] );
+    this.highlightOrUnhilightCoords(idea.highlightedSquares, true);
   }
 
   hideIdeaButtonClicked()
@@ -139,5 +152,66 @@ export class CoachDisplay {
     this.boardState().isCoachIdeaShowing.set(false);
     this.boardState().isLocked.set(false);
     this.boardState().arrows.set(this.boardState().arrows().filter( a => a.context != ArrowContext.Coach));
+    this.clearHighlights();
+  }
+
+  //highlights or unhighlights the passed in coordinates, boolean controls highlight/unhighlight.,
+  highlightOrUnhilightCoords(coords: Array<string>, val: boolean)
+  {
+    const highlightIndices = coords.map( coord => 
+      {
+        return Chonse2.findIndexFromCoordinate(coord);
+      }
+    )
+
+    this.boardState().squareHighlightStatuses.update(grid =>
+    {
+      //copy to trigger signal update.
+      const copy = grid.map(r => [...r]);
+
+      //for each row and column in the board.
+      for(let row = 0; row < copy.length; row++)
+      {
+        const currentRow = copy[row];
+
+        for(let col = 0; col < currentRow.length; col++)
+        {
+          //if the square should be highlighted (present in the indices), highlight/unhighlight it.
+          const matchingIndices = highlightIndices.some(rc => 
+          { 
+            return rc.rowIndex == row && rc.colIndex == col 
+          });
+
+          if (matchingIndices)
+          {
+            currentRow[col] = val;
+          }
+        }
+      }
+
+        return copy;
+    });
+  }
+
+  clearHighlights()
+  {
+    this.boardState().squareHighlightStatuses.update(grid =>
+    {
+      //copy to trigger signal update.
+      const copy = grid.map(r => [...r]);
+
+      //for each row and column in the board.
+      for(let row = 0; row < copy.length; row++)
+      {
+        const currentRow = copy[row];
+
+        for(let col = 0; col < currentRow.length; col++)
+        {
+          currentRow[col] = false;
+        }
+      }
+
+        return copy;
+    });
   }
 }

@@ -109,7 +109,7 @@ export default class Chonse2Extensions
         boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
 
         //All of the pieces/coords belonging to the attacker.
-        const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board._getAllPiecesAndCoordsByColor(attackerColor);
+        const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board.getAllPiecesAndCoordsByColor(attackerColor);
         
         //All of the hanging pieces on the board regardless of color.
         const allHangingPieces = _ == null ? Chonse2Extensions.getHangingPieces(boardCopy) : _;
@@ -249,7 +249,7 @@ export default class Chonse2Extensions
 
                     //Must get the defender pieces to check each other one to ensure that it cannot move to block the check and defend the other piece.
                     const defenderColor = attackerColor == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-                    const defenderPieces = boardCopy._getAllPiecesAndCoordsByColor(defenderColor);
+                    const defenderPieces = boardCopy.getAllPiecesAndCoordsByColor(defenderColor);
                     
                     //Get the list of every defender piece that isn't the one being hit in the potential fork.
                     const filteredDefenderPieceCoords = defenderPieces.coords.filter( c => 
@@ -299,6 +299,170 @@ export default class Chonse2Extensions
 
         //And then return all the forks.
         return allForks;
+    }
+    //#endregion
+
+    //#region Pins
+    static getPinsOnBoard(board: Chonse2, excludePawns: boolean = false)
+    {
+        const pins: Array<Pin> = [];
+
+        //A piece can only be pinned by a bishop, a rook or a queen.
+        const ATTACKER_TYPES = [PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN];
+
+        //Will need to check all of the pieces to see which ones could be attackers.
+        const pieceData = [board.getAllPiecesAndCoordsByColor(PieceColor.WHITE), board.getAllPiecesAndCoordsByColor(PieceColor.BLACK)];
+        const candidateAttackers: { pieces: Array<string>, coords: Array<string> } = { pieces: [], coords: [] };
+
+        //Check through all of the pieces and get the ones that could potentially be attackers (aka bishops, rooks, and queens which can pin a piece).
+        pieceData.forEach( collection => 
+            {
+                for(let i = 0; i < collection.coords.length; i++)
+                {
+                    const coord = collection.coords[i];
+                    const piece = collection.pieces[i];
+                    const lastChar = piece[piece.length - 1];
+
+                    if (ATTACKER_TYPES.includes(lastChar))
+                    {
+                        candidateAttackers.pieces.push(piece);
+                        candidateAttackers.coords.push(coord);
+                    }
+                }
+            }
+        )
+
+        const hangingPieceCoords = Chonse2Extensions.getHangingPieces(board);
+
+        for( let i = 0; i < candidateAttackers.pieces.length; i++ )
+        {
+            //the current piece/coord data.
+            const currentPiece = candidateAttackers.pieces[i];
+            const currentCoord = candidateAttackers.coords[i];
+
+            //represents what type of piece it is.
+            const lastCharOfPiece = currentPiece[currentPiece.length - 1];
+
+            //indicates the color of the piece
+            const colorOfPiece: PieceColor = currentPiece[0];
+
+            //if the attacking piece is hanging, it can't viably pin something.
+            const attackerHangingPieces = colorOfPiece == PieceColor.WHITE ? hangingPieceCoords.white : hangingPieceCoords.black;
+            if (attackerHangingPieces.includes(currentCoord))
+            {
+                continue;
+            }
+            
+            //will need to determine how exactly that piece can move depending on what it is.
+            let vectorX: Array<number> = [];
+            let vectorY: Array<number>  = [];
+
+            //get the corresponding vector (diagonals for bishop, horizontal for rook, and a combination of both for queen).
+            switch(lastCharOfPiece)
+            {
+                case PieceType.BISHOP:
+                    vectorX = Chonse2._BISHOP_VECTOR_X;
+                    vectorY = Chonse2._BISHOP_VECTOR_Y;
+                    break;
+
+                case PieceType.ROOK:
+                    vectorX = Chonse2._ROOK_VECTOR_X;
+                    vectorY = Chonse2._ROOK_VECTOR_Y;
+                    break;
+
+                case PieceType.QUEEN:
+                    vectorX = Chonse2._QUEEN_KING_VECTOR_X;
+                    vectorY = Chonse2._QUEEN_KING_VECTOR_Y;
+            }
+
+            //This is the current index within the piece state array that the coordinate lies in. Need this for checking the squares it sees.
+            const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(currentCoord);
+
+            for(let offsetIndex = 0; offsetIndex < vectorX.length; offsetIndex++)
+            {
+                //change in x and y coordinates that will be applied as offsets.
+                let dx = vectorX[offsetIndex];
+                let dy = vectorY[offsetIndex];
+
+                //cap to ensure that it cannot run longer than the chessboard itself.
+                let runCount = 0;
+
+                //Will be the lower-value target of the pin.
+                let pinnedPieceCoordinate = "";
+                let pinnedPieceType = "";
+
+                for( 
+                    let currentXOffset = dx, currentYOffset = dy; //starts at the places of the vector components relative to the piece.
+                    runCount < Chonse2.SIZE; //ensures that it does not check outside the bounds.
+                    currentXOffset += dx, currentYOffset += dy, runCount++ //keep incrementing the offsets accordingly
+                )   
+                {
+                    const rowInQuestion = board.pieceState[rowIndex + currentXOffset];
+                    
+                    if (rowInQuestion)
+                    {
+                        //the square that is being checked.
+                        const squareInQuestionPiece = rowInQuestion[colIndex + currentYOffset];
+
+                        if (squareInQuestionPiece != undefined)
+                        {
+                            //If there's nothing in that square, then this piece can't do anything.
+                            if (squareInQuestionPiece == "")
+                            {
+                                continue;
+                            }
+                            
+                            const enemyPieceColor: PieceColor = colorOfPiece == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+                            //if the piece is a friendly piece, then it's not pinning anything.
+                            if (!squareInQuestionPiece.startsWith(enemyPieceColor.toString()))
+                            {
+                                break;
+                            }
+
+                            //if the piece is an enemy one and there is no pinned piece already, make that the pinned piece.
+                            if (!pinnedPieceCoordinate)
+                            {
+                                pinnedPieceCoordinate = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                                pinnedPieceType = squareInQuestionPiece;
+                                //after the first piece is found, continue the loop and search for a potential piece for this one to be pinned to.
+                                continue;
+                            }
+
+                            
+                            //if the pinned piece is already defined, then check if this piece is an enemy
+                            const materialOfPinnedPiece = PieceMaterial.getMaterialFromPiece(pinnedPieceType);
+                            const materialOfPotentialSecondPiece = PieceMaterial.getMaterialFromPiece(squareInQuestionPiece);
+
+                            //If the piece behind the candidate pinned piece is worth more than it, then it is indeed a pin.
+                            if (materialOfPotentialSecondPiece > materialOfPinnedPiece)
+                            {
+                                if (excludePawns)
+                                {
+                                    if (pinnedPieceType.endsWith(PieceType.PAWN))
+                                    {
+                                        continue;
+                                    }
+                                }
+
+                                const newPin = new Pin();
+
+                                newPin.attackerCoordinate = currentCoord;
+                                newPin.pinnedPieceCoordinate = pinnedPieceCoordinate;
+                                newPin.highValuePieceCoordinate = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                            
+                                pins.push(newPin);
+                            }
+                            else 
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return pins;
     }
     //#endregion
 
@@ -376,6 +540,7 @@ export default class Chonse2Extensions
 
         return board.pieceState[rowIndex][colIndex];
     }   
+    //#endregion
 }
 
 export class Fork 
@@ -388,4 +553,11 @@ export class Fork
         this.attackerCoordinate = attackerCoordinate_;
         this.coordinatesAttacked = coordinatesAttacked_;
     }
+}
+
+export class Pin 
+{
+    attackerCoordinate: string = "";
+    pinnedPieceCoordinate: string = "";
+    highValuePieceCoordinate: string = "";
 }
