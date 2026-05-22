@@ -2003,1297 +2003,1297 @@ export const openings: { name: string; fen: string, link: string }[] = [
   {
     name: "Australian Defense",
     fen: "r1bqkbnr/pppppppp/n7/8/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Australian_Defense/d4_Na6"
   },
   {
     name: "Benoni Defense: Franco-Sicilian Hybrid",
     fen: "rnbqk2r/pp2npbp/3p2p1/2pP4/4P3/2N2N2/PP3PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Franco-Sicilian_Hybrid/d4_e6_c4_c5_d5_exd5_cxd5_d6_Nc3_g6_e4_Bg7_Nf3_Ne7"
   },
   {
     name: "Borg Defense: Borg Gambit",
     fen: "rnbqkbnr/pppppp1p/8/6p1/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Borg_Defense/e4_g5"
   },
   {
     name: "Colle System: Pterodactyl Variation",
     fen: "rnb1k1nr/pp1pppbp/6p1/q1p5/3P4/3BPN2/PPP2PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Colle_System_Pterodactyl_Variation/d4_g6_Nf3_Bg7_e3_c5_Bd3_Qa5+"
   },
   {
     name: "Colle System: Siroccopteryx Variation",
     fen: "rnb1k1nr/pp1pppbp/6p1/q7/3N4/3BP3/PPP2PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Colle_System_Siroccopteryx_Variation/d4_g6_Nf3_Bg7_e3_c5_Bd3_cxd4_Nxd4_Qa5+"
   },
   {
     name: "Dutch Defense: Senechaud Gambit",
     fen: "rnbqkbnr/pppp2pp/4p3/5p2/3P1BP1/8/PPP1PP1P/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Senechaud_Gambit/d4_f5_Bf4_e6_g4"
   },
   {
     name: "Dutch Defense: Stonewall Variation, Modern Variation",
     fen: "rnbqk2r/pp4pp/2pbpn2/3p1p2/2PP4/5NP1/PP2PPBP/RNBQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Stonewall_Variation_Modern_Variation/d4_f5_c4_e6_Nf3_Nf6_g3_c6_Bg2_d5_O-O_Bd6"
   },
   {
     name: "English Defense",
     fen: "rnbqkbnr/p1pppppp/1p6/8/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/English_Defense/d4_b6"
   },
   {
     name: "English Defense",
     fen: "rnbqkbnr/p1pp1ppp/1p2p3/8/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/English_Defense/d4_b6"
   },
   {
     name: "English Defense: Eastbourne Gambit",
     fen: "rn1qkbnr/pbpp1ppp/1p6/4p3/2PP4/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/English_Defense_Eastbourne_Gambit/d4_b6_c4_Bb7_Nc3_e5"
   },
   {
     name: "English Defense: Hartlaub Gambit Accepted",
     fen: "rn1qkb1r/pbpp2pp/1p2pn2/5P2/2PP4/2N5/PP3PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/English_Defense_Hartlaub_Gambit_Accepted/c4_e6_d4_b6_Nc3_Bb7_e4_f5_exf5_Nf6"
   },
   {
     name: "English Defense: Hartlaub Gambit Declined",
     fen: "rn1qkbnr/pbpp2pp/1p2p3/3P1p2/2P1P3/2N5/PP3PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/English_Defense_Hartlaub_Gambit_Declined/c4_e6_d4_b6_Nc3_Bb7_e4_f5_d5"
   },
   {
     name: "English Defense: Perrin Variation",
     fen: "r2qkbnr/pbpp1ppp/1pn1p3/8/2PPP3/3B4/PP3PPP/RNBQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/English_Defense_Perrin_Variation/d4_e6_c4_b6_e4_Bb7_Bd3_Nc6"
   },
   {
     name: "English Defense: Poli Gambit",
     fen: "rn1qkb1r/pbpp2pp/1p2p2n/5P2/2PP4/5P2/PP4PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/English_Defense_Poli_Gambit/d4_e6_c4_b6_e4_Bb7_f3_f5_exf5_Nh6"
   },
   {
     name: "Englund Gambit",
     fen: "rnbqkbnr/pppp1ppp/8/4p3/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit/d4_e5"
   },
   {
     name: "Englund Gambit Complex Declined",
     fen: "rnbqkbnr/pppp1ppp/8/3Pp3/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit/d4_e5"
   },
   {
     name: "Englund Gambit Complex Declined: Diemer Counterattack",
     fen: "rnb1k1nr/pppp1ppp/8/2bPp3/4P2q/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit/d4_e5"
   },
   {
     name: "Englund Gambit Complex: Englund Gambit",
     fen: "r1b1kbnr/ppppqppp/2n5/4P3/8/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit/d4_e5"
   },
   {
     name: "Englund Gambit Complex: Felbecker Gambit",
     fen: "r1bqk1nr/pppp1ppp/2n5/2b1P3/8/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit/d4_e5"
   },
   {
     name: "Englund Gambit Complex: Hartlaub-Charlick Gambit",
     fen: "rnbqkbnr/ppp2ppp/3p4/4P3/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit/d4_e5"
   },
   {
     name: "Englund Gambit Complex: Mosquito Gambit",
     fen: "rnb1kbnr/pppp1ppp/8/4P3/7q/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit/d4_e5"
   },
   {
     name: "Englund Gambit Complex: Soller Gambit",
     fen: "rnbqkbnr/pppp2pp/5p2/4P3/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit/d4_e5"
   },
   {
     name: "Englund Gambit Complex: Soller Gambit Deferred",
     fen: "r1bqkbnr/pppp2pp/2n2p2/4P3/8/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit/d4_e5"
   },
   {
     name: "Englund Gambit Complex: Stockholm Variation",
     fen: "r1b1kbnr/ppppqppp/2n5/3QP3/8/5N2/PPP1PPPP/RNB1KB1R",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit/d4_e5"
   },
   {
     name: "Englund Gambit Complex: Zilbermints Gambit",
     fen: "r1bqkb1r/ppppnppp/2n5/4P3/8/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit/d4_e5"
   },
   {
     name: "Englund Gambit Declined: Reversed Alekhine",
     fen: "rnbqkbnr/pppp1ppp/8/4p3/3P4/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit_Declined_Reversed_Alekhine/d4_e5_Nf3"
   },
   {
     name: "Englund Gambit Declined: Reversed Brooklyn",
     fen: "rnbqkbnr/pppp1ppp/8/8/3Pp3/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit_Declined_Reversed_Brooklyn/d4_e5_Nf3_e4_Ng1"
   },
   {
     name: "Englund Gambit Declined: Reversed French",
     fen: "rnbqkbnr/pppp1ppp/8/4p3/3P4/4P3/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit_Declined_Reversed_French/d4_e5_e3"
   },
   {
     name: "Englund Gambit Declined: Reversed Krebs",
     fen: "rnbqkbnr/pppp1ppp/8/8/3Pp3/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit_Declined_Reversed_Krebs/d4_e5_Nf3_e4"
   },
   {
     name: "Englund Gambit Declined: Reversed Mokele Mbembe",
     fen: "rnbqkbnr/pppp1ppp/8/4N3/3Pp3/8/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Englund_Gambit_Declined_Reversed_Mokele_Mbembe/d4_e5_Nf3_e4_Ne5"
   },
   {
     name: "Horwitz Defense",
     fen: "rnbqkbnr/pppp1ppp/4p3/8/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Horwitz_Defense/d4_e6"
   },
   {
     name: "Horwitz Defense: Zilbermints Gambit",
     fen: "rnbqkbnr/pppp1ppp/8/4p3/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Horwitz_Defense_Zilbermints_Gambit/d4_e6_c4_e5"
   },
   {
     name: "Kangaroo Defense",
     fen: "rnbqk1nr/pppp1ppp/4p3/8/1bPP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Kangaroo_Defense/d4_e6_c4_Bb4+"
   },
   {
     name: "Kangaroo Defense: Keres Defense, Transpositional Variation",
     fen: "rnbqk1nr/pppp1ppp/4p3/8/1bPP4/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Kangaroo_Defense_Keres_Defense_Transpositional_Variation/d4_e6_c4_Bb4+_Nc3"
   },
   {
     name: "Mikenas Defense",
     fen: "r1bqkbnr/pppppppp/2n5/8/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Mikenas_Defense/d4_Nc6"
   },
   {
     name: "Mikenas Defense: Cannstatter Variation",
     fen: "r1bqkbnr/pppp1ppp/8/3Pp3/2Pn4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Mikenas_Defense_Cannstatter_Variation/d4_Nc6_c4_e5_d5_Nd4"
   },
   {
     name: "Mikenas Defense: Lithuanian Variation",
     fen: "r1bqkbnr/ppppnppp/8/3Pp3/2P5/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Mikenas_Defense_Lithuanian_Variation/d4_Nc6_c4_e5_d5_Nce7"
   },
   {
     name: "Mikenas Defense: Pozarek Gambit",
     fen: "r1bqkbnr/pppp1ppp/8/8/2n5/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Mikenas_Defense_Pozarek_Gambit/d4_Nc6_c4_e5_dxe5_Nxe5_Nc3_Nxc4"
   },
   {
     name: "Modern Defense: Beefeater Variation",
     fen: "rnbqk1nr/pp1pp2p/6p1/2pP1p2/2P5/2P5/P3PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Modern_Defense_Beefeater_Variation/d4_g6_c4_Bg7_Nc3_c5_d5_Bxc3+_bxc3_f5"
   },
   {
     name: "Modern Defense: Lizard Defense, Pirc-Diemer Gambit",
     fen: "rnbqkb1r/pppppp1p/5np1/7P/3P4/8/PPP1PPP1/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Modern_Defense_Lizard_Defense_Pirc-Diemer_Gambit/d4_g6_h4_Nf6_h5"
   },
   {
     name: "Montevideo Defense",
     fen: "rnbqkbnr/pppppppp/8/3P4/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Montevideo_Defense/d4_Nc6_d5_Nb8"
   },
   {
     name: "Polish Defense",
     fen: "rnbqkbnr/p1pppppp/8/1p6/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Polish_Defense/d4_b5"
   },
   {
     name: "Polish Defense: Spassky Gambit Accepted",
     fen: "rn1qkbnr/pbpppppp/8/1B6/3PP3/8/PPP2PPP/RNBQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Polish_Defense_Spassky_Gambit_Accepted/d4_b5_e4_Bb7_Bxb5"
   },
   {
     name: "Pterodactyl Defense: Central, Benoni Beefeater Pterodactyl",
     fen: "rnb1k1nr/pp2pp1p/3p2p1/q1pP4/2P1P3/2P5/P4PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Central_Benoni_Beefeater_Pterodactyl/d4_g6_c4_Bg7_Nc3_c5_d5_d6_e4_Bxc3+_bxc3_Qa5"
   },
   {
     name: "Pterodactyl Defense: Central, Benoni Pterodactyl",
     fen: "rnb1k1nr/pp1pppbp/6p1/q1pP4/2P1P3/8/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Central_Benoni_Pterodactyl/d4_g6_c4_Bg7_e4_c5_d5_Qa5+"
   },
   {
     name: "Pterodactyl Defense: Fianchetto, Queen Benoni Pterodactyl",
     fen: "rnb1k1nr/pp1pppbp/6p1/q1pP4/2P5/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Fianchetto_Queen_Benoni_Pterodactyl/d4_g6_c4_Bg7_Nc3_c5_d5_Qa5"
   },
   {
     name: "Pterodactyl Defense: Fianchetto, Queen Pteranodon",
     fen: "rnb1k1nr/pp1ppp1p/6p1/q1pP4/2P5/2P5/P3PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Fianchetto_Queen_Pteranodon/d4_g6_c4_Bg7_Nc3_c5_d5_Bxc3+_bxc3_Qa5"
   },
   {
     name: "Pterodactyl Defense: Fianchetto, Queen Pterodactyl",
     fen: "rnb1k1nr/pp1pppbp/6p1/q1p5/3P4/5NP1/PPP1PPBP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Fianchetto_Queen_Pterodactyl/d4_g6_Nf3_Bg7_g3_c5_Bg2_Qa5+"
   },
   {
     name: "Pterodactyl Defense: Queen Pterodactyl, Quiet Line",
     fen: "rnbqk1nr/pp1pppbp/6p1/2p5/2PP4/2N1P3/PP3PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Queen_Pterodactyl_Quiet_Line/d4_g6_c4_Bg7_Nc3_c5_e3"
   },
   {
     name: "Queen's Pawn Game",
     fen: "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Pawn_Game/d4"
   },
   {
     name: "Queen's Pawn Game: Anglo-Slav Opening",
     fen: "rnbqkbnr/pp2pppp/2pp4/8/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Pawn_Game_Anglo-Slav_Opening/d4_c6_c4_d6"
   },
   {
     name: "Queen's Pawn Game: Modern Defense",
     fen: "rnbqkbnr/pppppp1p/6p1/8/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Pawn_Game_Modern_Defense/d4_g6"
   },
   {
     name: "Slav Indian: Kudischewitsch Gambit",
     fen: "rnbqkb1r/p2ppppp/2p2n2/1p6/2PP4/5N2/PP2PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Slav_Indian_Kudischewitsch_Gambit/d4_c6_Nf3_Nf6_c4_b5"
   },
   {
     name: "Zaire Defense",
     fen: "rnbqkbnr/pppppppp/8/3PP3/8/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Zaire_Defense/d4_Nc6_d5_Nb8_e4_Nf6_e5_Ng8"
   },
   {
     name: "Modern Defense",
     fen: "rnbqk1nr/ppp1ppbp/3p2p1/8/2PP4/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Modern_Defense/e4_g6"
   },
   {
     name: "Modern Defense: Neo-Modern Defense",
     fen: "rnbqk1nr/pppp1pbp/6p1/4p3/2PPP3/8/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Modern_Defense_Neo-Modern_Defense/d4_g6_c4_Bg7_e4_e5"
   },
   {
     name: "Old Indian Defense",
     fen: "rnbqkbnr/ppp1pppp/3p4/8/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense/d4_d6_c4"
   },
   {
     name: "Queen's Pawn Game",
     fen: "rnbqkbnr/ppp1pppp/3p4/8/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Pawn_Game/d4"
   },
   {
     name: "Rat Defense: English Rat",
     fen: "rnbqkbnr/ppp2ppp/3p4/4p3/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Rat_Defense_English_Rat/d4_d6_c4_e5"
   },
   {
     name: "Rat Defense: English Rat, Lisbon Gambit",
     fen: "r1bqkbnr/ppp2ppp/2np4/4P3/2P5/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Rat_Defense_English_Rat_Lisbon_Gambit/d4_d6_c4_e5_dxe5_Nc6"
   },
   {
     name: "Rat Defense: English Rat, Pounds Gambit",
     fen: "rn1qkbnr/ppp2ppp/3pb3/4P3/2P5/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Rat_Defense_English_Rat_Pounds_Gambit/d4_d6_c4_e5_dxe5_Be6"
   },
   {
     name: "Robatsch Defense",
     fen: "rn1qk1nr/ppp1ppbp/3p2p1/8/2PPP1b1/5N2/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Robatsch_Defense/d4_d6_Nf3_g6_c4_Bg7_e4_Bg4"
   },
   {
     name: "Wade Defense",
     fen: "rn1qkbnr/ppp1pppp/3p4/8/3P2b1/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Wade_Defense/d4_d6_Nf3_Bg4"
   },
   {
     name: "Zukertort Opening: Wade Defense, Chigorin Plan",
     fen: "1r1qkbnr/pppnpppp/3p4/8/2PP2b1/1Q3N2/PP2PPPP/RNB1KB1R",
-    link: ""
+    link: "https://lichess.org/opening/Zukertort_Opening_Wade_Defense_Chigorin_Plan/d4_d6_Nf3_Bg4_c4_Nd7_Qb3_Rb8"
   },
   {
     name: "Modern Defense: Averbakh System",
     fen: "rnbqk1nr/ppp1ppbp/3p2p1/8/2PPP3/2N5/PP3PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Modern_Defense_Averbakh_System/d4_g6_c4_Bg7_Nc3_d6_e4"
   },
   {
     name: "Modern Defense: Averbakh Variation, Pseudo-Sämisch",
     fen: "rnbqk2r/ppp1ppbp/3p1np1/8/2PPP3/4BP2/PP4PP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Modern_Defense_Averbakh_Variation_Pseudo-Samisch/d4_g6_c4_Bg7_e4_d6_Be3_Nf6_f3"
   },
   {
     name: "Modern Defense: Kotov Variation",
     fen: "r1bqk1nr/ppp1ppbp/2np2p1/8/2PPP3/2N5/PP3PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Modern_Defense_Kotov_Variation/d4_g6_c4_Bg7_Nc3_d6_e4_Nc6"
   },
   {
     name: "Modern Defense: Randspringer Variation",
     fen: "rnbqk1nr/ppp1p1bp/3p2p1/5p2/2PPP3/2N5/PP3PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Modern_Defense_Randspringer_Variation/d4_g6_c4_Bg7_Nc3_d6_e4_f5"
   },
   {
     name: "Pterodactyl Defense",
     fen: "rnb1k1nr/pp2ppbp/3p2p1/q1p5/2PPP3/2N2N2/PP3PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense/Nf3_c5_c4_g6_d4_Bg7_e4_Qa5+_Nc3_d6"
   },
   {
     name: "Pterodactyl Defense: Central, Bogolubovia",
     fen: "rnb1k1nr/pp2ppbp/3p2p1/q1p5/2PPP3/2N5/PP2NPPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Central_Bogolubovia/d4_g6_c4_Bg7_e4_d6_Nc3_c5_Nge2_Qa5"
   },
   {
     name: "Benoni Defense: Benoni Gambit Accepted",
     fen: "rnbqkbnr/pp1ppppp/8/2P5/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Benoni_Gambit_Accepted/d4_c5_dxc5"
   },
   {
     name: "Benoni Defense: Benoni Gambit, Schlenker Defense",
     fen: "r1bqkbnr/pp1ppppp/n7/2P5/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Benoni_Gambit_Schlenker_Defense/d4_c5_dxc5_Na6"
   },
   {
     name: "Benoni Defense: Benoni-Indian Defense",
     fen: "rnbqkb1r/pp1ppppp/5n2/2pP4/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Benoni-Indian_Defense/d4_c5_d5_Nf6"
   },
   {
     name: "Benoni Defense: Benoni-Indian Defense, Kingside Move Order",
     fen: "rnbqkb1r/pp1ppppp/5n2/2pP4/8/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Benoni-Indian_Defense/d4_c5_d5_Nf6"
   },
   {
     name: "Benoni Defense: Benoni-Staunton Gambit",
     fen: "rnbqkbnr/pp1pp1pp/8/2pP1p2/4P3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Benoni-Staunton_Gambit/d4_c5_d5_f5_e4"
   },
   {
     name: "Benoni Defense: Cormorant Gambit",
     fen: "rnbqkbnr/p2ppppp/1p6/2P5/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Cormorant_Gambit/d4_c5_dxc5_b6"
   },
   {
     name: "Benoni Defense: French Benoni",
     fen: "rnbqkbnr/pp1p1ppp/4p3/2pP4/4P3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_French_Benoni/e4_e6_d4_c5_d5"
   },
   {
     name: "Benoni Defense: Hawk Variation",
     fen: "rnbqkb1r/pp1ppppp/5n2/3P4/2p5/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Hawk_Variation/d4_Nf6_Nf3_c5_d5_c4"
   },
   {
     name: "Benoni Defense: Old Benoni",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Old_Benoni/d4_c5"
   },
   {
     name: "Benoni Defense: Old Benoni",
     fen: "rnbqkbnr/pp1ppppp/8/2pP4/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Old_Benoni/d4_c5"
   },
   {
     name: "Benoni Defense: Old Benoni",
     fen: "rnbqkbnr/pp2pppp/3p4/2pP4/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Old_Benoni/d4_c5"
   },
   {
     name: "Benoni Defense: Old Benoni, Mujannah Formation",
     fen: "rnbqkbnr/pp1pp1pp/8/2pP1p2/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Old_Benoni_Mujannah_Formation/d4_c5_d5_f5"
   },
   {
     name: "Benoni Defense: Old Benoni, Schmid Variation",
     fen: "rnbqkbnr/pp2pp1p/3p2p1/2pP4/8/2N5/PPP1PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Old_Benoni_Schmid_Variation/d4_c5_d5_d6_Nc3_g6"
   },
   {
     name: "Benoni Defense: Snail Variation",
     fen: "r1bqkbnr/pp1ppppp/n7/2pP4/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Snail_Variation/d4_c5_d5_Na6"
   },
   {
     name: "Benoni Defense: Woozle",
     fen: "rnb1kb1r/pp1ppppp/5n2/q1pP4/8/2N5/PPP1PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Woozle/d4_c5_d5_Nf6_Nc3_Qa5"
   },
   {
     name: "Benoni Defense: Zilbermints-Benoni Gambit",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/1P1P4/8/P1P1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Zilbermints-Benoni_Gambit/d4_c5_b4"
   },
   {
     name: "Benoni Defense: Zilbermints-Benoni Gambit",
     fen: "rnbqkbnr/pp1ppppp/8/8/1P1p4/5N2/P1P1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Zilbermints-Benoni_Gambit/d4_c5_b4"
   },
   {
     name: "Benoni Defense: Zilbermints-Benoni Gambit, Tamarkin Countergambit",
     fen: "rnbqkbnr/pp1p1ppp/8/4p3/1P1p4/5N2/P1P1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Zilbermints-Benoni_Gambit_Tamarkin_Countergambit/d4_c5_Nf3_cxd4_b4_e5"
   },
   {
     name: "Indian Defense: Pseudo-Benko",
     fen: "rnbqkb1r/p2ppppp/5n2/1ppP4/8/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Pseudo-Benko/d4_Nf6_Nf3_c5_d5_b5"
   },
   {
     name: "Queen's Pawn Game: Liedmann Gambit",
     fen: "rnbqkbnr/pp1ppppp/8/8/2Pp4/4P3/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Pawn_Game_Liedmann_Gambit/d4_c5_c4_cxd4_e3"
   },
   {
     name: "Benoni Defense: Old Benoni",
     fen: "rnbqkbnr/pp1p1ppp/8/2pPp3/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Old_Benoni/d4_c5"
   },
   {
     name: "Benoni Defense: Semi-Benoni",
     fen: "rnbqkbnr/pp3ppp/3p4/2pPp3/4P3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Semi-Benoni/d4_c5_d5_e5_e4_d6"
   },
   {
     name: "Amazon Attack: Siberian Attack",
     fen: "rnbqkb1r/ppp1pppp/5n2/3p4/3P4/2NQ4/PPP1PPPP/R1B1KBNR",
-    link: ""
+    link: "https://lichess.org/opening/Amazon_Attack_Siberian_Attack/d4_Nf6_Nc3_d5_Qd3"
   },
   {
     name: "Canard Opening",
     fen: "rnbqkb1r/pppppppp/5n2/8/3P1P2/8/PPP1P1PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Canard_Opening/d4_Nf6_f4"
   },
   {
     name: "Indian Defense",
     fen: "rnbqkb1r/pppppppp/5n2/8/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense/d4_Nf6"
   },
   {
     name: "Indian Defense: Gedult Attack, Gedult Attack",
     fen: "rnbqkb1r/ppp1pppp/5n2/3p4/3P2P1/5P2/PPP1P2P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Gedult_Attack/d4_Nf6_f3_d5_g4"
   },
   {
     name: "Indian Defense: Gibbins-Weidenhagen Gambit",
     fen: "rnbqkb1r/pppppppp/5n2/8/3P2P1/8/PPP1PP1P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Gibbins-Weidenhagen_Gambit/d4_Nf6_g4"
   },
   {
     name: "Indian Defense: Gibbins-Weidenhagen Gambit Accepted",
     fen: "rnbqkb1r/pppppppp/8/8/3P2n1/8/PPP1PP1P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Gibbins-Weidenhagen_Gambit_Accepted/d4_Nf6_g4_Nxg4"
   },
   {
     name: "Indian Defense: Gibbins-Weidenhagen Gambit, Maltese Falcon",
     fen: "rnbqkb1r/pppppppp/5n2/8/3PP3/5P2/PPP4P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Gibbins-Weidenhagen_Gambit_Maltese_Falcon/d4_Nf6_g4_Nxg4_f3_Nf6_e4"
   },
   {
     name: "Indian Defense: Gibbins-Weidenhagen Gambit, Oshima Defense",
     fen: "rnbqkb1r/pppp1ppp/5n2/4p3/3P2P1/8/PPP1PP1P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Gibbins-Weidenhagen_Gambit_Oshima_Defense/d4_Nf6_g4_e5"
   },
   {
     name: "Indian Defense: Gibbins-Weidenhagen Gambit, Stummer Gambit",
     fen: "rnbqkb1r/ppp1pppp/3p1n2/8/3PP3/2N5/PPP1BP1P/R1BQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Gibbins-Weidenhagen_Gambit_Stummer_Gambit/d4_Nf6_g4_Nxg4_e4_d6_Be2_Nf6_Nc3"
   },
   {
     name: "Indian Defense: Lazard Gambit",
     fen: "rnbqkb1r/pppp1ppp/5n2/4p3/3P4/8/PPPNPPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Lazard_Gambit/d4_Nf6_Nd2_e5"
   },
   {
     name: "Indian Defense: Maddigan Gambit",
     fen: "rnbqkb1r/pppp1ppp/5n2/4p3/3P4/2N5/PPP1PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Maddigan_Gambit/d4_Nf6_Nc3_e5"
   },
   {
     name: "Indian Defense: Omega Gambit",
     fen: "rnbqkb1r/pppppppp/5n2/8/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Omega_Gambit/d4_Nf6_e4"
   },
   {
     name: "Indian Defense: Omega Gambit, Arafat Gambit",
     fen: "rnbqkb1r/pppppppp/5n2/6B1/3P4/3B4/PPP2PPP/RN1QK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Omega_Gambit_Arafat_Gambit/d4_Nf6_e4_Nxe4_Bd3_Nf6_Bg5"
   },
   {
     name: "Indian Defense: Paleface Attack, Blackmar-Diemer Gambit Deferred",
     fen: "rnbqkb1r/ppp1pppp/5n2/3p4/3PP3/5P2/PPP3PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Paleface_Attack_Blackmar-Diemer_Gambit_Deferred/d4_Nf6_f3_d5_e4"
   },
   {
     name: "Indian Defense: Pawn Push Variation",
     fen: "rnbqkb1r/pppppppp/5n2/3P4/8/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Pawn_Push_Variation/d4_Nf6_d5"
   },
   {
     name: "Indian Defense: Reversed Chigorin Defense",
     fen: "rnbqkb1r/pp1ppppp/5n2/2p5/3P4/2N5/PPP1PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Reversed_Chigorin_Defense/d4_Nf6_Nc3_c5"
   },
   {
     name: "Indian Defense: Tartakower Attack",
     fen: "rnbqkb1r/pppppppp/5n2/8/3P4/6P1/PPP1PP1P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Tartakower_Attack/d4_Nf6_g3"
   },
   {
     name: "Paleface Attack",
     fen: "rnbqkb1r/pppppppp/5n2/8/3P4/5P2/PPP1P1PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Paleface_Attack/d4_Nf6_f3"
   },
   {
     name: "Queen's Pawn Game: Chigorin Variation",
     fen: "rnbqkb1r/ppp1pppp/5n2/3p4/3P4/2N5/PPP1PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Pawn_Game_Chigorin_Variation/d4_d5_Nc3"
   },
   {
     name: "Queen's Pawn Game: Veresov, Richter Attack",
     fen: "rnbqkb1r/ppp1pppp/5n2/3p4/3P4/2N2P2/PPP1P1PP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Pawn_Game_Veresov_Richter_Attack/d4_Nf6_f3_d5_Nc3"
   },
   {
     name: "Trompowsky Attack",
     fen: "rnbqkb1r/pppppppp/5n2/6B1/3P4/8/PPP1PPPP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Trompowsky_Attack/d4_Nf6_Bg5"
   },
   {
     name: "Trompowsky Attack: Borg Variation",
     fen: "rnbqkb1r/pppppp1p/8/6p1/3PnB2/8/PPP1PPPP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Trompowsky_Attack_Borg_Variation/d4_Nf6_Bg5_Ne4_Bf4_g5"
   },
   {
     name: "Trompowsky Attack: Classical Defense",
     fen: "rnbqkb1r/pppp1ppp/4pn2/6B1/3P4/8/PPP1PPPP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Trompowsky_Attack_Classical_Defense/d4_Nf6_Bg5_e6"
   },
   {
     name: "Trompowsky Attack: Classical Defense, Big Center Variation",
     fen: "rnbqkb1r/pppp1ppp/4pn2/6B1/3PP3/8/PPP2PPP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Trompowsky_Attack_Classical_Defense_Big_Center_Variation/d4_Nf6_Bg5_e6_e4"
   },
   {
     name: "Trompowsky Attack: Edge Variation",
     fen: "rnbqkb1r/pppppppp/8/8/3Pn2B/8/PPP1PPPP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Trompowsky_Attack_Edge_Variation/d4_Nf6_Bg5_Ne4_Bh4"
   },
   {
     name: "Trompowsky Attack: Edge Variation, Hergert Gambit",
     fen: "rnb1kb1r/pp2pppp/2p5/q2p4/3PP2B/2P5/PP1Q1PPP/R3KBNR",
-    link: ""
+    link: "https://lichess.org/opening/Trompowsky_Attack_Edge_Variation_Hergert_Gambit/d4_Nf6_Bg5_Ne4_Bh4_d5_f3_Nf6_Nc3_Bf5_e4"
   },
   {
     name: "Trompowsky Attack: Edge Variation, Hergert Gambit",
     fen: "rn1qkb1r/ppp1pppp/5n2/3p1b2/3PP2B/2N2P2/PPP3PP/R2QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Trompowsky_Attack_Edge_Variation_Hergert_Gambit/d4_Nf6_Bg5_Ne4_Bh4_d5_f3_Nf6_Nc3_Bf5_e4"
   },
   {
     name: "Trompowsky Attack: Poisoned Pawn Variation",
     fen: "rnb1kb1r/pp1ppppp/1q3n2/2pP2B1/8/2N5/PPP1PPPP/R2QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Trompowsky_Attack_Poisoned_Pawn_Variation/d4_Nf6_Bg5_c5_d5_Qb6_Nc3"
   },
   {
     name: "Trompowsky Attack: Raptor Variation",
     fen: "rnbqkb1r/pppppppp/8/6B1/3Pn2P/8/PPP1PPP1/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Trompowsky_Attack_Raptor_Variation/d4_Nf6_Bg5_Ne4_h4"
   },
   {
     name: "Trompowsky Attack: Raptor Variation, Hergert Gambit",
     fen: "rnbqkb1r/pppp1ppp/8/4p1P1/3P4/8/PPP1PPP1/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Trompowsky_Attack_Raptor_Variation_Hergert_Gambit/d4_Nf6_Bg5_Ne4_h4_Nxg5_hxg5_e5"
   },
   {
     name: "Döry Defense",
     fen: "rnbqkb1r/pppppppp/8/8/3Pn3/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Dory_Defense/d4_Nf6_Nf3_Ne4"
   },
   {
     name: "Indian Defense: Czech-Indian",
     fen: "rnbqkb1r/pp1ppppp/2p2n2/8/3P4/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Czech-Indian/d4_Nf6_Nf3_c6"
   },
   {
     name: "Indian Defense: Knights Variation",
     fen: "rnbqkb1r/pppppppp/5n2/8/3P4/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Knights_Variation/d4_Nf6_Nf3"
   },
   {
     name: "Indian Defense: Knights Variation, Alburt-Miles Variation",
     fen: "rnbqkb1r/1ppppppp/p4n2/8/3P4/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Knights_Variation_Alburt-Miles_Variation/d4_Nf6_Nf3_a6"
   },
   {
     name: "Indian Defense: London System",
     fen: "rnbqkb1r/pppp1ppp/4pn2/8/3P1B2/5N2/PPP1PPPP/RN1QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_London_System/d4_Nf6_Nf3_e6_Bf4"
   },
   {
     name: "Indian Defense: Polish Variation",
     fen: "rnbqkb1r/p1pppppp/5n2/1p6/3P4/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Polish_Variation/d4_Nf6_Nf3_b5"
   },
   {
     name: "Indian Defense: Spielmann-Indian",
     fen: "rnbqkb1r/pp1ppppp/5n2/2p5/3P4/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Spielmann-Indian/d4_Nf6_Nf3_c5"
   },
   {
     name: "Indian Defense: Wade-Tartakower Defense",
     fen: "rnbqkb1r/ppp1pppp/3p1n2/8/3P4/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Wade-Tartakower_Defense/d4_Nf6_Nf3_d6"
   },
   {
     name: "Queen's Pawn Game: Torre Attack, Breyer Variation",
     fen: "rnb1kb1r/pp3ppp/1q2pn2/2pp2B1/3P4/2P1PN2/PP3PPP/RN1QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Pawn_Game_Torre_Attack_Breyer_Variation/d4_Nf6_Nf3_e6_Bg5_d5_e3_c5_c3_Qb6"
   },
   {
     name: "Queen's Pawn Game: Veresov Attack, Classical Defense",
     fen: "rnbqkb1r/ppp2ppp/4pn2/3p2B1/3P4/2N2N2/PPP1PPPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Pawn_Game_Veresov_Attack_Classical_Defense/d4_Nf6_Nf3_e6_Nc3_d5_Bg5"
   },
   {
     name: "Torre Attack: Classical Defense",
     fen: "rnbqkb1r/pppp1ppp/4pn2/6B1/3P4/5N2/PPP1PPPP/RN1QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Torre_Attack_Classical_Defense/d4_Nf6_Nf3_e6_Bg5"
   },
   {
     name: "Torre Attack: Classical Defense, Nimzowitsch Variation",
     fen: "rnbqkb1r/pppp1pp1/4pn1p/6B1/3P4/5N2/PPP1PPPP/RN1QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Torre_Attack_Classical_Defense_Nimzowitsch_Variation/d4_Nf6_Nf3_e6_Bg5_h6"
   },
   {
     name: "Torre Attack: Classical Defense, Petrosian Gambit",
     fen: "rnbqkb1r/p2p1ppp/1p2pn2/2pP2B1/8/4PN2/PPP2PPP/RN1QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Torre_Attack_Classical_Defense_Petrosian_Gambit/d4_Nf6_Nf3_e6_Bg5_c5_e3_b6_d5"
   },
   {
     name: "Torre Attack: Wagner Gambit",
     fen: "rnbqkb1r/pp1p1ppp/4pn2/2p3B1/3PP3/5N2/PPP2PPP/RN1QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Torre_Attack_Wagner_Gambit/d4_Nf6_Nf3_e6_Bg5_c5_e4"
   },
   {
     name: "Yusupov-Rubinstein System",
     fen: "rnbqkb1r/pppp1ppp/4pn2/8/3P4/4PN2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Yusupov-Rubinstein_System/d4_Nf6_Nf3_e6_e3"
   },
   {
     name: "Indian Defense: Schnepper Gambit",
     fen: "rnbqkb1r/p1pp1ppp/1p3n2/4p3/3P4/2P2N2/PP2PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Schnepper_Gambit/d4_Nf6_Nf3_b6_c3_e5"
   },
   {
     name: "Marienbad System",
     fen: "rn1qkb1r/pb1ppppp/1p3n2/2p5/3P4/5NP1/PPP1PPBP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Marienbad_System/d4_Nf6_Nf3_b6_g3_Bb7_Bg2_c5"
   },
   {
     name: "Marienbad System: Berg Variation",
     fen: "rn1qkb1r/pb1ppppp/1p3n2/8/2PQ4/5NP1/PP2PPBP/RNB1K2R",
-    link: ""
+    link: "https://lichess.org/opening/Marienbad_System_Berg_Variation/d4_Nf6_Nf3_b6_g3_Bb7_Bg2_c5_c4_cxd4_Qxd4"
   },
   {
     name: "Pseudo Queen's Indian Defense",
     fen: "rnbqkb1r/p1pppppp/1p3n2/8/3P4/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Pseudo_Queens_Indian_Defense/d4_Nf6_Nf3_b6"
   },
   {
     name: "East Indian Defense",
     fen: "rnbqkb1r/pppppp1p/5np1/8/3P4/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/East_Indian_Defense/d4_Nf6_Nf3_g6"
   },
   {
     name: "Indian Defense: Colle System, King's Indian Variation",
     fen: "rnbqk2r/ppp1ppbp/3p1np1/8/3P4/3BPN2/PPP2PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Colle_System_Kings_Indian_Variation/d4_Nf6_Nf3_g6_e3_Bg7_Bd3_d6"
   },
   {
     name: "London System",
     fen: "rnbqkb1r/pppppp1p/5np1/8/3P1B2/5N2/PPP1PPPP/RN1QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/London_System/d4_Nf6_Nf3_g6_Bf4"
   },
   {
     name: "Queen's Pawn Game: Barry Attack, Grünfeld Variation",
     fen: "rnbq1rk1/ppp1ppbp/5np1/3p4/3P1B2/2N1PN2/PPP1BPPP/R2QK2R",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Pawn_Game_Barry_Attack_Grunfeld_Variation/d4_Nf6_Nf3_g6_Nc3_d5_Bf4_Bg7_e3_O-O_Be2"
   },
   {
     name: "Queen's Pawn Game: Torre Attack, Grünfeld Variation, Main Line",
     fen: "rnbq1rk1/ppp1ppbp/5np1/3p2B1/3P4/4PN2/PPPN1PPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Pawn_Game_Barry_Attack_Grunfeld_Variation/d4_Nf6_Nf3_g6_Nc3_d5_Bf4_Bg7_e3_O-O_Be2"
   },
   {
     name: "Torre Attack: Fianchetto Defense",
     fen: "rnbqkb1r/pppppp1p/5np1/6B1/3P4/5N2/PPP1PPPP/RN1QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Torre_Attack_Fianchetto_Defense/d4_Nf6_Nf3_g6_Bg5"
   },
   {
     name: "Torre Attack: Fianchetto Defense, Euwe Variation",
     fen: "rnbqk2r/pp1pppbp/5np1/2p3B1/3P4/5N2/PPPNPPPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Torre_Attack_Fianchetto_Defense_Euwe_Variation/d4_Nf6_Nf3_g6_Bg5_Bg7_Nbd2_c5"
   },
   {
     name: "Indian Defense: Przepiorka Variation",
     fen: "rnbqkb1r/pppppp1p/5np1/8/3P4/5NP1/PPP1PP1P/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Przepiorka_Variation/d4_Nf6_Nf3_g6_g3"
   },
   {
     name: "Indian Defense: Medusa Gambit",
     fen: "rnbqkb1r/pppppp1p/5n2/6p1/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Medusa_Gambit/d4_Nf6_c4_g5"
   },
   {
     name: "Indian Defense: Normal Variation",
     fen: "rnbqkb1r/pppppppp/5n2/8/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Normal_Variation/d4_Nf6_c4"
   },
   {
     name: "Indian Defense: Pyrenees Gambit",
     fen: "rnbqkb1r/p1pppppp/5n2/1p6/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Pyrenees_Gambit/d4_Nf6_c4_b5"
   },
   {
     name: "Mexican Defense",
     fen: "r1bqkb1r/pppppppp/2n2n2/8/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Mexican_Defense/d4_Nf6_c4_Nc6"
   },
   {
     name: "Mexican Defense: Horsefly Gambit",
     fen: "r1bqkb1r/pppppppp/5n2/3Pn3/2P2P2/8/PP2P1PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Mexican_Defense_Horsefly_Gambit/d4_Nf6_c4_Nc6_d5_Ne5_f4"
   },
   {
     name: "Queen's Indian Accelerated",
     fen: "rnbqkb1r/p1pppppp/1p3n2/8/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Indian_Accelerated/d4_Nf6_c4_b6"
   },
   {
     name: "Slav Indian",
     fen: "rnbqkb1r/pp1ppppp/2p2n2/8/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Slav_Indian/d4_Nf6_c4_c6"
   },
   {
     name: "Indian Defense: Budapest Defense",
     fen: "rnbqkb1r/pppp1ppp/5n2/4p3/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Budapest_Defense/d4_Nf6_c4_e5"
   },
   {
     name: "Indian Defense: Budapest Defense, Fajarowicz Defense, Bonsdorf Variation",
     fen: "rnbqkb1r/p1pp1ppp/1p6/4P3/2P1n3/P7/1P2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Budapest_Defense/d4_Nf6_c4_e5"
   },
   {
     name: "Indian Defense: Budapest Defense, Fajarowicz Variation",
     fen: "rnbqkb1r/pppp1ppp/8/4P3/2P1n3/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Budapest_Defense/d4_Nf6_c4_e5"
   },
   {
     name: "Indian Defense: Budapest Defense, Fajarowicz-Steiner Variation",
     fen: "rnbqkb1r/pppp1ppp/8/4P3/2P1n3/8/PPQ1PPPP/RNB1KBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Budapest_Defense/d4_Nf6_c4_e5"
   },
   {
     name: "Indian Defense: Budapest Defense",
     fen: "rnbqkb1r/pppp1ppp/8/4P3/2P3n1/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Budapest_Defense/d4_Nf6_c4_e5"
   },
   {
     name: "Indian Defense: Budapest Defense, Adler Variation",
     fen: "rnbqkb1r/pppp1ppp/8/4P3/2P3n1/5N2/PP2PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Budapest_Defense/d4_Nf6_c4_e5"
   },
   {
     name: "Indian Defense: Budapest Defense, Alekhine Variation",
     fen: "rnbqkb1r/pppp1ppp/8/4P3/2P1P1n1/8/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Budapest_Defense/d4_Nf6_c4_e5"
   },
   {
     name: "Indian Defense: Budapest Defense, Alekhine Variation, Abonyi Variation",
     fen: "rnbqkb1r/pppp1ppp/2n5/8/2P1PP2/8/PP4PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Budapest_Defense/d4_Nf6_c4_e5"
   },
   {
     name: "Indian Defense: Budapest Defense, Alekhine Variation, Tartakower Defense",
     fen: "rnbqkb1r/ppp2ppp/3p4/4P3/2P1P1n1/8/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Budapest_Defense/d4_Nf6_c4_e5"
   },
   {
     name: "Indian Defense: Budapest Defense, Rubinstein Variation",
     fen: "rnbqkb1r/pppp1ppp/8/4P3/2P2Bn1/8/PP2PPPP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Indian_Defense_Budapest_Defense/d4_Nf6_c4_e5"
   },
   {
     name: "Old Indian Defense",
     fen: "rnbqkb1r/ppp1pppp/3p1n2/8/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense/d4_d6_c4"
   },
   {
     name: "Old Indian Defense: Aged Gibbon Gambit",
     fen: "rnbqkb1r/ppp1pppp/3p1n2/8/2PP2P1/8/PP2PP1P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense_Aged_Gibbon_Gambit/d4_Nf6_c4_d6_g4"
   },
   {
     name: "Old Indian Defense: Czech Variation, with Nc3",
     fen: "rnbqkb1r/pp2pppp/2pp1n2/8/2PP4/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense_Czech_Variation_with_Nc3/d4_Nf6_c4_d6_Nc3_c6"
   },
   {
     name: "Old Indian Defense: Czech Variation, with Nf3",
     fen: "rnbqkb1r/pp2pppp/2pp1n2/8/2PP4/5N2/PP2PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense_Czech_Variation_with_Nf3/d4_Nf6_c4_d6_Nf3_c6"
   },
   {
     name: "Old Indian Defense: Janowski Variation",
     fen: "rn1qkb1r/ppp1pppp/3p1n2/5b2/2PP4/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense_Janowski_Variation/d4_Nf6_c4_d6_Nc3_Bf5"
   },
   {
     name: "Old Indian Defense: Janowski Variation, Fianchetto Variation",
     fen: "rn1qkb1r/ppp1pppp/3p1n2/5b2/2PP4/2N3P1/PP2PP1P/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense_Janowski_Variation_Fianchetto_Variation/d4_Nf6_c4_d6_Nc3_Bf5_g3"
   },
   {
     name: "Old Indian Defense: Janowski Variation, Grinberg Gambit",
     fen: "rn1qkb1r/ppp1pppp/3p1n2/5b2/2PPP3/2N5/PP3PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense_Janowski_Variation_Grinberg_Gambit/d4_Nf6_c4_d6_Nc3_Bf5_e4"
   },
   {
     name: "Old Indian Defense: Janowski Variation, Main Line",
     fen: "rn1qkb1r/ppp1pppp/3p1n2/5b2/2PP4/2N2P2/PP2P1PP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense_Janowski_Variation_Main_Line/d4_Nf6_c4_d6_Nc3_Bf5_f3"
   },
   {
     name: "Old Indian Defense: Dus-Khotimirsky Variation",
     fen: "r1bqkb1r/pppn1ppp/3p1n2/4p3/2PP4/2NBP3/PP3PPP/R1BQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense_Duz-Khotimirsky_Variation/d4_Nf6_c4_d6_Nc3_e5_e3_Nbd7_Bd3"
   },
   {
     name: "Old Indian Defense: Tartakower-Indian",
     fen: "rn1qkb1r/ppp1pppp/3p1n2/8/2PP2b1/5N2/PP2PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense_Tartakower-Indian/d4_Nf6_c4_d6_Nf3_Bg4"
   },
   {
     name: "Old Indian Defense: Two Knights Variation",
     fen: "rnbqkb1r/ppp2ppp/3p1n2/4p3/2PP4/2N2N2/PP2PPPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense_Two_Knights_Variation/d4_Nf6_c4_d6_Nc3_e5_Nf3"
   },
   {
     name: "Old Indian Defense: Ukrainian Variation",
     fen: "rnbqkb1r/ppp2ppp/3p1n2/4p3/2PP4/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense_Ukrainian_Variation/d4_Nf6_c4_d6_Nc3_e5"
   },
   {
     name: "Old Indian Defense: Normal Variation",
     fen: "r1bqkb1r/pppn1ppp/3p1n2/4p3/2PPP3/2N2N2/PP3PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Old_Indian_Defense_Normal_Variation/d4_Nf6_c4_d6_Nc3_Nbd7_e4_e5_Nf3"
   },
   {
     name: "Benoni Defense",
     fen: "rnbqkb1r/pp1ppppp/5n2/2p5/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense/d4_Nf6_c4_c5"
   },
   {
     name: "Benoni Defense: Czech Benoni Defense",
     fen: "rnbqkb1r/pp1p1ppp/5n2/2pPp3/2P5/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Czech_Benoni_Defense/d4_Nf6_c4_c5_d5_e5"
   },
   {
     name: "Benoni Defense: Hromádka System",
     fen: "rnbqkb1r/pp2pppp/3p1n2/2pP4/2P5/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Hromadka_System/d4_Nf6_c4_c5_d5_d6"
   },
   {
     name: "Benoni Defense: King's Indian System",
     fen: "rnbqkb1r/pp3p1p/3p1np1/2pPp3/2P1P3/2N5/PP3PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Kings_Indian_System/d4_Nf6_c4_c5_d5_e5_Nc3_d6_e4_g6"
   },
   {
     name: "Benoni Defense: Weenink Variation",
     fen: "rnbqkb1r/pp1p1ppp/4pn2/2P5/2P5/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Weenink_Variation/d4_Nf6_c4_c5_dxc5_e6"
   },
   {
     name: "Grünfeld Defense: Three Knights Variation, Burille Variation, Reversed Tarrasch",
     fen: "r1bq1rk1/pp2ppbp/2n2np1/3p4/2PP4/2N2N2/PP2BPPP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Grunfeld_Defense_Three_Knights_Variation_Burille_Variation/d4_Nf6_c4_g6_Nc3_d5_Nf3_Bg7_e3"
   },
   {
     name: "Vulture Defense",
     fen: "rnbqkb1r/pp1ppppp/8/2pP4/2P1n3/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Vulture_Defense/d4_Nf6_c4_c5_d5_Ne4"
   },
   {
     name: "Benko Gambit",
     fen: "rnbqkb1r/p2ppppp/5n2/1ppP4/2P5/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit/d4_Nf6_c4_c5_d5_b5"
   },
   {
     name: "Benko Gambit Accepted",
     fen: "rnbqkb1r/3ppppp/p4n2/1PpP4/8/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Accepted/d4_Nf6_c4_c5_d5_b5_cxb5_a6"
   },
   {
     name: "Benko Gambit Accepted: Dlugy Variation",
     fen: "rnbqkb1r/3ppppp/p4n2/1PpP4/8/5P2/PP2P1PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Accepted_Dlugy_Variation/d4_Nf6_c4_c5_d5_b5_cxb5_a6_f3"
   },
   {
     name: "Benko Gambit Accepted: Modern Variation",
     fen: "rnbqkb1r/3ppppp/p4n2/1PpP4/8/4P3/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Accepted_Modern_Variation/d4_Nf6_c4_c5_d5_b5_cxb5_a6_e3"
   },
   {
     name: "Benko Gambit Accepted: Pawn Return Variation",
     fen: "rnbqkb1r/3ppppp/pP3n2/2pP4/8/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Accepted_Pawn_Return_Variation/d4_Nf6_c4_c5_d5_b5_cxb5_a6_b6"
   },
   {
     name: "Benko Gambit Declined: Bishop Attack",
     fen: "rnbqkb1r/p2ppppp/5n2/1ppP2B1/2P5/8/PP2PPPP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Declined_Bishop_Attack/d4_Nf6_c4_c5_d5_b5_Bg5"
   },
   {
     name: "Benko Gambit Declined: Hjørring Countergambit",
     fen: "rnbqkb1r/p2ppppp/5n2/1ppP4/2P1P3/8/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Declined_Hjrring_Countergambit/d4_Nf6_c4_c5_d5_b5_e4"
   },
   {
     name: "Benko Gambit Declined: Main Line",
     fen: "rnbqkb1r/p2ppppp/5n2/1ppP4/2P5/5N2/PP2PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Declined_Main_Line/d4_Nf6_c4_c5_d5_b5_Nf3"
   },
   {
     name: "Benko Gambit Declined: Pseudo-Sämisch",
     fen: "rnbqkb1r/p2ppppp/5n2/1ppP4/2P5/5P2/PP2P1PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Declined_Pseudo-Samisch/d4_Nf6_c4_c5_d5_b5_f3"
   },
   {
     name: "Benko Gambit Declined: Quiet Line",
     fen: "rnbqkb1r/p2ppppp/5n2/1ppP4/2P5/8/PP1NPPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Declined_Quiet_Line/d4_Nf6_c4_c5_d5_b5_Nd2"
   },
   {
     name: "Benko Gambit Declined: Sosonko Variation",
     fen: "rnbqkb1r/p2ppppp/5n2/1ppP4/P1P5/8/1P2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Declined_Sosonko_Variation/d4_Nf6_c4_c5_d5_b5_a4"
   },
   {
     name: "Benko Gambit: Mutkin Countergambit",
     fen: "rnbqkb1r/p2ppppp/5n2/1ppP4/2P3P1/8/PP2PP1P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Mutkin_Countergambit/d4_Nf6_c4_c5_d5_b5_g4"
   },
   {
     name: "Benko Gambit: Nescafe Frappe Attack",
     fen: "rnbqkb1r/4pppp/3p1n2/1NpP4/1pB1P3/8/PP3PPP/R1BQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Nescafe_Frappe_Attack/d4_Nf6_c4_c5_d5_b5_cxb5_a6_Nc3_axb5_e4_b4_Nb5_d6_Bc4"
   },
   {
     name: "Benko Gambit: Zaitsev System",
     fen: "rnbqkb1r/3ppppp/p4n2/1PpP4/8/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Zaitsev_System/d4_Nf6_c4_c5_d5_b5_cxb5_a6_Nc3"
   },
   {
     name: "Benko Gambit: Zaitsev Variation, Nescafe Frappe Attack",
     fen: "rnbqkb1r/3ppppp/5n2/1NpP4/1p2P3/8/PP3PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Zaitsev_Variation_Nescafe_Frappe_Attack/d4_Nf6_c4_c5_d5_b5_cxb5_a6_Nc3_axb5_e4_b4_Nb5"
   },
   {
     name: "Benko Gambit Accepted: Central Storming Variation",
     fen: "rn1qkb1r/3ppp1p/b4np1/2pP4/5P2/2N5/PP2P1PP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Accepted_Central_Storming_Variation/d4_Nf6_c4_c5_d5_b5_cxb5_a6_bxa6_g6_Nc3_Bxa6_f4"
   },
   {
     name: "Benko Gambit Accepted: Fianchetto Variation",
     fen: "rn1qk2r/4ppbp/b2p1np1/2pP4/8/2N2NP1/PP2PPBP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Accepted_Fianchetto_Variation/d4_Nf6_c4_c5_d5_b5_cxb5_a6_bxa6_g6_Nc3_Bxa6_g3_d6_Bg2_Bg7_Nf3"
   },
   {
     name: "Benko Gambit Accepted: Fully Accepted Variation",
     fen: "rnbqkb1r/3ppppp/P4n2/2pP4/8/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Accepted_Fully_Accepted_Variation/d4_Nf6_c4_c5_d5_b5_cxb5_a6_bxa6"
   },
   {
     name: "Benko Gambit: Fianchetto Variation",
     fen: "rn1qkb1r/4pp1p/b2p1np1/2pP4/8/2N2NP1/PP2PP1P/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Accepted_Fianchetto_Variation/d4_Nf6_c4_c5_d5_b5_cxb5_a6_bxa6_g6_Nc3_Bxa6_g3_d6_Bg2_Bg7_Nf3"
   },
   {
     name: "Benko Gambit: Nd2 Variation",
     fen: "rn1qkb1r/4pp1p/b2p1np1/2pP4/8/2N5/PP1NPPPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Nd2_Variation/d4_Nf6_c4_c5_d5_b5_cxb5_a6_bxa6_Bxa6_Nc3_d6_Nf3_g6_Nd2"
   },
   {
     name: "Benko Gambit",
     fen: "rn1qkb1r/4pp1p/3p1np1/2pP4/4P3/2N3P1/PP3P1P/R1BQ1KNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit/d4_Nf6_c4_c5_d5_b5"
   },
   {
     name: "Benko Gambit Accepted: King Walk Variation",
     fen: "rn1q1rk1/4ppbp/3p1np1/2pP4/4P3/2N2NP1/PP3PKP/R1BQ3R",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Accepted_King_Walk_Variation/d4_Nf6_c4_c5_d5_b5_cxb5_a6_bxa6_g6_Nc3_Bxa6_Nf3_d6_e4_Bxf1_Kxf1_Bg7_g3_O-O_Kg2"
   },
   {
     name: "Benko Gambit Accepted: Yugoslav",
     fen: "rn1qkb1r/4pppp/b2p1n2/2pP4/4P3/2N5/PP3PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Accepted_Yugoslav/d4_Nf6_c4_c5_d5_b5_cxb5_a6_bxa6_Bxa6_Nc3_d6_e4"
   },
   {
     name: "Benko Gambit Accepted: Yugoslav",
     fen: "rn1qkb1r/4pp1p/3p1np1/2pP4/4P3/2N5/PP2NPPP/R1BQ1K1R",
-    link: ""
+    link: "https://lichess.org/opening/Benko_Gambit_Accepted_Yugoslav/d4_Nf6_c4_c5_d5_b5_cxb5_a6_bxa6_Bxa6_Nc3_d6_e4"
   },
   {
     name: "Benoni Defense: Modern Variation",
     fen: "rnbqkb1r/pp1p1ppp/4pn2/2pP4/2P5/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Modern_Variation/d4_Nf6_c4_c5_d5_e6"
   },
   {
     name: "Benoni Defense: Modern Variation, Snake Variation",
     fen: "rnbqk2r/pp1p1ppp/3b1n2/2pP4/8/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Modern_Variation_Snake_Variation/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_Bd6"
   },
   {
     name: "Benoni Defense",
     fen: "rnbqkb1r/pp3p1p/3p1np1/2pP4/8/2N2N2/PP2PPPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense/d4_Nf6_c4_c5"
   },
   {
     name: "Benoni Defense: Fianchetto Variation",
     fen: "rnbqkb1r/pp3p1p/3p1np1/2pP4/8/2N2NP1/PP2PP1P/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Fianchetto_Variation/d4_Nf6_c4_e6_Nf3_c5_d5_exd5_cxd5_d6_Nc3_g6_g3"
   },
   {
     name: "Benoni Defense: Knight's Tour Variation",
     fen: "rnbqkb1r/pp3p1p/3p1np1/2pP4/8/2N5/PP1NPPPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Knights_Tour_Variation/d4_Nf6_c4_e6_Nf3_c5_d5_exd5_cxd5_d6_Nc3_g6_Nd2"
   },
   {
     name: "Benoni Defense: Uhlmann Variation",
     fen: "rnbqkb1r/pp3p1p/3p1np1/2pP2B1/8/2N2N2/PP2PPPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Uhlmann_Variation/d4_Nf6_c4_e6_Nf3_c5_d5_exd5_cxd5_d6_Nc3_g6_Bg5"
   },
   {
     name: "Benoni Defense: Fianchetto Variation",
     fen: "rnbq1rk1/pp3pbp/3p1np1/2pP4/8/2N2NP1/PP2PPBP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Fianchetto_Variation/d4_Nf6_c4_e6_Nf3_c5_d5_exd5_cxd5_d6_Nc3_g6_g3"
   },
   {
     name: "Benoni Defense: Fianchetto Variation, Hastings Defense",
     fen: "r1bq1rk1/pp1n1pbp/3p1np1/2pP4/8/2N2NP1/PP2PPBP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Fianchetto_Variation_Hastings_Defense/d4_Nf6_c4_e6_g3_c5_d5_exd5_cxd5_d6_Nc3_g6_Bg2_Bg7_Nf3_O-O_O-O_Nbd7"
   },
   {
     name: "Benoni Defense: Fianchetto Variation, Hastings Defense, Main Line",
     fen: "r1bqr1k1/1p1n1pbp/p2p1np1/2pP4/P7/2N3P1/1P1NPPBP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Fianchetto_Variation_Hastings_Defense_Main_Line/d4_Nf6_c4_e6_g3_c5_d5_exd5_cxd5_d6_Nc3_g6_Bg2_Bg7_Nf3_O-O_O-O_a6_a4_Nbd7_Nd2_Re8"
   },
   {
     name: "Benoni Defense: King's Pawn Line",
     fen: "rnbqkb1r/pp3ppp/3p1n2/2pP4/4P3/2N5/PP3PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Kings_Pawn_Line/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_d6_e4"
   },
   {
     name: "Benoni Defense: Mikenas Variation",
     fen: "rnbqk2r/pp3pbp/3p1np1/2pPP3/5P2/2N5/PP4PP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Mikenas_Variation/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_d6_e4_g6_f4_Bg7_e5"
   },
   {
     name: "Benoni Defense: Pawn Storm Variation",
     fen: "rnbqkb1r/pp3p1p/3p1np1/2pP4/4PP2/2N5/PP4PP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Pawn_Storm_Variation/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_d6_e4_g6_f4"
   },
   {
     name: "Benoni Defense: Taimanov Variation",
     fen: "rnbqk2r/pp3pbp/3p1np1/1BpP4/4PP2/2N5/PP4PP/R1BQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Taimanov_Variation/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_d6_e4_g6_f4_Bg7_Bb5+"
   },
   {
     name: "Benoni Defense: Four Pawns Attack",
     fen: "rnbq1rk1/pp3pbp/3p1np1/2pP4/4PP2/2N2N2/PP4PP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Four_Pawns_Attack/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_d6_e4_g6_f4_Bg7_Nf3_O-O"
   },
   {
     name: "Benoni Defense: Four Pawns Attack, Main Line",
     fen: "rnbqr1k1/pp3pbp/3p1np1/2pP4/4PP2/2N2N2/PP2B1PP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Four_Pawns_Attack_Main_Line/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_d6_e4_g6_f4_Bg7_Nf3_O-O_Be2_Re8"
   },
   {
     name: "Benoni Defense: Classical Variation",
     fen: "rnbqkb1r/pp3p1p/3p1np1/2pP4/4P3/2N2N2/PP3PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Classical_Variation/d4_Nf6_c4_e6_Nf3_c5_d5_exd5_cxd5_d6_Nc3_g6_e4"
   },
   {
     name: "Benoni Defense: Classical Variation, New York Variation",
     fen: "rnbqk2r/pp3pbp/3p1np1/2pP4/4P3/2N2N1P/PP3PP1/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Classical_Variation_New_York_Variation/d4_Nf6_c4_e6_Nf3_c5_d5_exd5_cxd5_d6_Nc3_g6_e4_Bg7_h3"
   },
   {
     name: "Benoni Defense: Classical Variation, Traditional Variation",
     fen: "rnbqk2r/pp3pbp/3p1np1/2pP4/4P3/2N2N2/PP2BPPP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Classical_Variation_Traditional_Variation/d4_Nf6_c4_e6_Nf3_c5_d5_exd5_cxd5_d6_Nc3_g6_e4_Bg7_Be2"
   },
   {
     name: "Benoni Defense: Classical Variation, Averbakh-Grivas Attack",
     fen: "rnbqk2r/pp3pbp/3p1np1/2pP2B1/4P3/2N2N2/PP3PPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Classical_Variation_Averbakh-Grivas_Attack/d4_Nf6_c4_e6_Nf3_c5_d5_exd5_cxd5_d6_Nc3_g6_e4_Bg7_Bg5"
   },
   {
     name: "Benoni Defense: Classical",
     fen: "rnbq1rk1/pp3pbp/3p1np1/2pP4/4P3/2N2N2/PP2BPPP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Classical_Variation/d4_Nf6_c4_e6_Nf3_c5_d5_exd5_cxd5_d6_Nc3_g6_e4"
   },
   {
     name: "Benoni Defense: Classical Variation, Main Line",
     fen: "rnbq1rk1/pp3pbp/3p1np1/2pP4/4P3/2N2N2/PP2BPPP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Classical_Variation_Main_Line/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_d6_e4_g6_Nf3_Bg7_Be2_O-O_O-O"
   },
   {
     name: "Benoni Defense: Classical Variation, Full Line",
     fen: "rnbq1rk1/1p3pbp/p2p1np1/2pP4/P3P3/2N2N2/1P2BPPP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Classical_Variation_Full_Line/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_d6_e4_g6_Nf3_Bg7_Be2_O-O_O-O_a6_a4"
   },
   {
     name: "Benoni Defense: Classical Variation, Argentine Counterattack",
     fen: "rn1q1rk1/1p3pbp/p2p1np1/2pP4/P3P1b1/2N2N2/1P2BPPP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Classical_Variation_Argentine_Counterattack/d4_Nf6_c4_e6_Nf3_c5_d5_exd5_cxd5_d6_Nc3_g6_e4_Bg7_Be2_O-O_O-O_a6_a4_Bg4"
   },
   {
     name: "Benoni Defense: Classical Variation, Czerniak Defense",
     fen: "rnbqr1k1/pp3pbp/3p1np1/2pP4/4P3/2N2N2/PP2BPPP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Classical_Variation_Czerniak_Defense/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_d6_e4_g6_Nf3_Bg7_Be2_O-O_O-O_Re8"
   },
   {
     name: "Benoni Defense: Classical Variation, Czerniak Defense, Tal Line",
     fen: "rnbqr1k1/pp3pbp/3p1np1/2pP4/4P3/2N5/PP1NBPPP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Classical_Variation_Czerniak_Defense/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_d6_e4_g6_Nf3_Bg7_Be2_O-O_O-O_Re8"
   },
   {
     name: "Benoni Defense: Classical Variation, Czerniak Defense",
     fen: "r1bqr1k1/pp3pbp/n2p1np1/2pP4/4P3/2N5/PP1NBPPP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Classical_Variation_Czerniak_Defense/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_d6_e4_g6_Nf3_Bg7_Be2_O-O_O-O_Re8"
   },
   {
     name: "Benoni Defense: Classical Variation, Czerniak Defense",
     fen: "r1bqr1k1/pp3pbp/n2p1np1/2pP4/4P3/2N2P2/PP1NB1PP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Benoni_Defense_Classical_Variation_Czerniak_Defense/d4_Nf6_c4_c5_d5_e6_Nc3_exd5_cxd5_d6_e4_g6_Nf3_Bg7_Be2_O-O_O-O_Re8"
   },
   {
     name: "Dutch Defense",
     fen: "rnbqkbnr/ppppp1pp/8/5p2/3P4/8/PPP1PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense/d4_f5"
   },
   {
     name: "Dutch Defense: Alapin Variation",
     fen: "rnbqkbnr/ppppp1pp/8/5p2/3P4/3Q4/PPP1PPPP/RNB1KBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Alapin_Variation/d4_f5_Qd3"
   },
   {
     name: "Dutch Defense: Hevendehl Gambit",
     fen: "rnbqkbnr/pppp2pp/8/4pp2/3P2P1/8/PPP1PP1P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Hevendehl_Gambit/d4_f5_g4_e5"
   },
   {
     name: "Dutch Defense: Hopton Attack",
     fen: "rnbqkbnr/ppppp1pp/8/5pB1/3P4/8/PPP1PPPP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Hopton_Attack/d4_f5_Bg5"
   },
   {
     name: "Dutch Defense: Janzen-Korchnoi Gambit",
     fen: "rnbqkb1r/ppppp1pp/5n2/5p2/3P2P1/7P/PPP1PP2/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Janzen-Korchnoi_Gambit/d4_f5_h3_Nf6_g4"
   },
   {
     name: "Dutch Defense: Kingfisher Gambit",
     fen: "rnbqkbnr/ppp1p1pp/8/3p1p2/3PP3/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Kingfisher_Gambit/d4_f5_Nc3_d5_e4"
   },
   {
     name: "Dutch Defense: Korchnoi Attack",
     fen: "rnbqkbnr/ppppp1pp/8/5p2/3P4/7P/PPP1PPP1/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Korchnoi_Attack/d4_f5_h3"
   },
   {
     name: "Dutch Defense: Krejcik Gambit",
     fen: "rnbqkbnr/ppppp1pp/8/5p2/3P2P1/8/PPP1PP1P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Krejcik_Gambit/d4_f5_g4"
   },
   {
     name: "Dutch Defense: Krejcik Gambit, Tate Gambit",
     fen: "rnbqkbnr/ppp1p1pp/8/3p4/3PP1p1/2N5/PPP2P1P/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Krejcik_Gambit_Tate_Gambit/d4_f5_g4_fxg4_e4_d5_Nc3"
   },
   {
     name: "Dutch Defense: Manhattan Gambit, Anti-Classical Line",
     fen: "rnbqkbnr/pppp2pp/4p3/5p2/3P2P1/3Q4/PPP1PP1P/RNB1KBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Manhattan_Gambit_Anti-Classical_Line/d4_f5_Qd3_e6_g4"
   },
   {
     name: "Dutch Defense: Manhattan Gambit, Anti-Leningrad",
     fen: "rnbqkbnr/ppppp2p/6p1/5p2/3P2P1/3Q4/PPP1PP1P/RNB1KBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Manhattan_Gambit_Anti-Leningrad/d4_f5_Qd3_g6_g4"
   },
   {
     name: "Dutch Defense: Manhattan Gambit, Anti-Modern",
     fen: "rnbqkbnr/ppp1p1pp/3p4/5p2/3P2P1/3Q4/PPP1PP1P/RNB1KBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Manhattan_Gambit_Anti-Modern/d4_f5_Qd3_d6_g4"
   },
   {
     name: "Dutch Defense: Manhattan Gambit, Anti-Stonewall",
     fen: "rnbqkbnr/ppp1p1pp/8/3p1p2/3P2P1/3Q4/PPP1PP1P/RNB1KBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Manhattan_Gambit_Anti-Stonewall/d4_f5_Qd3_d5_g4"
   },
   {
     name: "Dutch Defense: Omega-Isis Gambit",
     fen: "rnbqkbnr/pppp2pp/8/4pp2/3P4/5N2/PPP1PPPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Omega-Isis_Gambit/d4_f5_Nf3_e5"
   },
   {
     name: "Dutch Defense: Raphael Variation",
     fen: "rnbqkbnr/ppppp1pp/8/5p2/3P4/2N5/PPP1PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Raphael_Variation/d4_f5_Nc3"
   },
   {
     name: "Dutch Defense: Spielmann Gambit",
     fen: "rnbqkb1r/ppppp1pp/5n2/5p2/3P2P1/2N5/PPP1PP1P/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Spielmann_Gambit/d4_f5_Nc3_Nf6_g4"
   },
   {
     name: "Queen's Pawn Game: Veresov Attack, Dutch System",
     fen: "rnbqkbnr/ppp1p1pp/8/3p1p2/3P4/2N5/PPP1PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Queens_Pawn_Game_Veresov_Attack_Dutch_System/d4_f5_Nc3_d5"
   },
   {
     name: "Dutch Defense: Blackburne Variation",
     fen: "rnbqkb1r/pppp2pp/4pn2/5p2/3P4/6PN/PPP1PPBP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Blackburne_Variation/d4_f5_g3_Nf6_Bg2_e6_Nh3"
   },
   {
     name: "Dutch Defense: Fianchetto Attack",
     fen: "rnbqkbnr/ppppp1pp/8/5p2/3P4/6P1/PPP1PP1P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Fianchetto_Attack/d4_f5_g3"
   },
   {
     name: "Dutch Defense: Leningrad Variation, Karlsbad Variation",
     fen: "rnbqk1nr/ppppp1bp/6p1/5p2/3P4/6PN/PPP1PPBP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Leningrad_Variation_Carlsbad_Variation/d4_f5_g3_g6_Bg2_Bg7_Nh3"
   },
   {
     name: "Dutch Defense: Leningrad, Basman System",
     fen: "rnbqk2r/pp1pp1bp/2p3pn/5p2/3P4/5NP1/PPP1PPBP/RNBQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Leningrad_Basman_System/d4_f5_g3_c6_Bg2_g6_Nf3_Bg7_O-O_Nh6"
   },
   {
     name: "Dutch Defense: Semi-Leningrad Variation",
     fen: "rnbqkb1r/ppppp2p/5np1/5p2/3P4/6P1/PPP1PPBP/RNBQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Semi-Leningrad_Variation/d4_f5_g3_Nf6_Bg2_g6"
   },
   {
     name: "Dutch Defense: Blackmar's Second Gambit",
@@ -3303,292 +3303,292 @@ export const openings: { name: string; fen: string, link: string }[] = [
   {
     name: "Dutch Defense: Staunton Gambit",
     fen: "rnbqkbnr/ppppp1pp/8/5p2/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Staunton_Gambit/d4_f5_e4"
   },
   {
     name: "Dutch Defense: Staunton Gambit Accepted",
     fen: "rnbqkbnr/ppppp1pp/8/8/3Pp3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Staunton_Gambit_Accepted/d4_f5_e4_fxe4"
   },
   {
     name: "Dutch Defense: Staunton Gambit, American Attack",
     fen: "rnbqkbnr/ppppp1pp/8/8/3Pp3/8/PPPN1PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Staunton_Gambit_American_Attack/d4_f5_e4_fxe4_Nd2"
   },
   {
     name: "Dutch Defense: Staunton Gambit, Tartakower Variation",
     fen: "rnbqkb1r/ppppp1pp/5n2/8/3Pp1P1/2N5/PPP2P1P/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Staunton_Gambit_Tartakower_Variation/d4_f5_e4_fxe4_Nc3_Nf6_g4"
   },
   {
     name: "Rat Defense: Balogh Defense",
     fen: "rnbqkbnr/ppp1p1pp/3p4/5p2/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Rat_Defense_Balogh_Defense/e4_d6_d4_f5"
   },
   {
     name: "Dutch Defense: Staunton Gambit",
     fen: "rnbqkb1r/ppppp1pp/5n2/6B1/3Pp3/2N5/PPP2PPP/R2QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Staunton_Gambit/d4_f5_e4"
   },
   {
     name: "Dutch Defense: Staunton Gambit, Alekhine Variation",
     fen: "rnbqkb1r/ppppp2p/5np1/6B1/3Pp2P/2N5/PPP2PP1/R2QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Staunton_Gambit_Alekhine_Variation/d4_f5_e4_fxe4_Nc3_Nf6_Bg5_g6_h4"
   },
   {
     name: "Dutch Defense: Staunton Gambit, Chigorin Variation",
     fen: "rnbqkb1r/pp1pp1pp/2p2n2/6B1/3Pp3/2N5/PPP2PPP/R2QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Staunton_Gambit_Chigorin_Variation/d4_f5_e4_fxe4_Nc3_Nf6_Bg5_c6"
   },
   {
     name: "Dutch Defense: Staunton Gambit, Lasker Variation",
     fen: "rnbqkb1r/ppppp2p/5np1/6B1/3Pp3/2N2P2/PPP3PP/R2QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Staunton_Gambit_Lasker_Variation/d4_f5_e4_fxe4_Nc3_Nf6_Bg5_g6_f3"
   },
   {
     name: "Dutch Defense: Staunton Gambit, Nimzowitsch Variation",
     fen: "rnbqkb1r/p1ppp1pp/1p3n2/6B1/3Pp3/2N5/PPP2PPP/R2QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Staunton_Gambit_Nimzowitsch_Variation/d4_f5_e4_fxe4_Nc3_Nf6_Bg5_b6"
   },
   {
     name: "Dutch Defense",
     fen: "rnbqkbnr/ppppp1pp/8/5p2/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense/d4_f5"
   },
   {
     name: "Dutch Defense: Bellon Gambit",
     fen: "rnbqkbnr/pppp2pp/4p3/5p2/2PPP3/8/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Bellon_Gambit/d4_f5_c4_e6_e4"
   },
   {
     name: "Dutch Defense: Bladel Variation",
     fen: "rnbqkb1r/ppppp2p/6pn/5p2/2PP4/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Bladel_Variation/d4_f5_c4_g6_Nc3_Nh6"
   },
   {
     name: "Dutch Defense: Classical Variation",
     fen: "rnbqkbnr/pppp2pp/4p3/5p2/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Classical_Variation/d4_f5_c4_e6"
   },
   {
     name: "Dutch Defense: Krause Variation",
     fen: "r1bqkb1r/ppp1p1pp/2np1n2/5p2/2PP4/2N2N2/PP2PPPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Krause_Variation/d4_f5_c4_Nf6_Nc3_d6_Nf3_Nc6"
   },
   {
     name: "Dutch Defense: Normal Variation",
     fen: "rnbqkb1r/ppppp1pp/5n2/5p2/2PP4/8/PP2PPPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Normal_Variation/d4_f5_c4_Nf6"
   },
   {
     name: "Dutch Defense: Rubinstein Variation",
     fen: "rnbqkbnr/pppp2pp/4p3/5p2/2PP4/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Rubinstein_Variation/d4_f5_c4_e6_Nc3"
   },
   {
     name: "Dutch Defense: Queen's Knight Variation",
     fen: "rnbqkb1r/ppppp1pp/5n2/5p2/2PP4/2N5/PP2PPPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Queens_Knight_Variation/d4_f5_c4_Nf6_Nc3"
   },
   {
     name: "Dutch Defense: Fianchetto Variation",
     fen: "rnbqkb1r/ppppp1pp/5n2/5p2/2PP4/6P1/PP2PP1P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Fianchetto_Variation/d4_f5_c4_Nf6_g3"
   },
   {
     name: "Dutch Defense: Hort-Antoshin System",
     fen: "rnb1kb1r/ppq1p1pp/2pp1n2/5p2/2PP4/2N3P1/PP2PPBP/R1BQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Hort-Antoshin_System/d4_f5_c4_Nf6_g3_d6_Bg2_c6_Nc3_Qc7"
   },
   {
     name: "Dutch Defense: Leningrad Variation",
     fen: "rnbqkb1r/ppppp2p/5np1/5p2/2PP4/6P1/PP2PP1P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Leningrad_Variation/d4_f5_c4_Nf6_g3_g6"
   },
   {
     name: "Dutch Defense: Leningrad Variation",
     fen: "rnbqk2r/ppppp1bp/5np1/5p2/2PP4/5NP1/PP2PPBP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Leningrad_Variation/d4_f5_c4_Nf6_g3_g6"
   },
   {
     name: "Dutch Defense: Leningrad Variation, Warsaw Variation",
     fen: "rnbq1rk1/pp2p1bp/2pp1np1/5p2/2PP4/2N2NP1/PP2PPBP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Leningrad_Variation_Warsaw_Variation/d4_f5_g3_Nf6_Bg2_g6_Nf3_Bg7_O-O_O-O_c4_d6_Nc3_c6"
   },
   {
     name: "Dutch Defense: Leningrad Variation, Matulovic Variation",
     fen: "r1bq1rk1/ppp1p1bp/2np1np1/5p2/2PP4/2N2NP1/PP2PPBP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Leningrad_Variation_Matulovic_Variation/d4_f5_g3_Nf6_Bg2_g6_Nf3_Bg7_O-O_O-O_c4_d6_Nc3_Nc6"
   },
   {
     name: "Dutch Defense: Classical Variation",
     fen: "rnbqkb1r/pppp2pp/4pn2/5p2/2PP4/6P1/PP2PPBP/RNBQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Classical_Variation/d4_f5_c4_e6"
   },
   {
     name: "Dutch Defense: Nimzo-Dutch Variation",
     fen: "rnbqk2r/pppp2pp/4pn2/5p2/1bPP4/6P1/PP2PPBP/RNBQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Nimzo-Dutch_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Bb4+"
   },
   {
     name: "Dutch Defense: Nimzo-Dutch Variation, Alekhine Variation",
     fen: "rnbqk2r/ppppb1pp/4pn2/5p2/2PP4/6P1/PP1BPPBP/RN1QK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Nimzo-Dutch_Variation_Alekhine_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Bb4+_Bd2_Be7"
   },
   {
     name: "Dutch Defense: Classical Variation",
     fen: "rnbqk2r/ppppb1pp/4pn2/5p2/2PP4/6P1/PP2PPBP/RNBQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Classical_Variation/d4_f5_c4_e6"
   },
   {
     name: "Dutch Defense: Classical Variation, Blackburne Attack",
     fen: "rnbqk2r/ppppb1pp/4pn2/5p2/2PP4/6PN/PP2PPBP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Classical_Variation_Blackburne_Attack/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nh3"
   },
   {
     name: "Dutch Defense: Alekhine Variation",
     fen: "rnbq1rk1/ppppb1pp/4p3/5p2/2PPn3/5NP1/PP2PPBP/RNBQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Alekhine_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_Ne4"
   },
   {
     name: "Dutch Defense: Classical Variation",
     fen: "rnbq1rk1/ppppb1pp/4pn2/5p2/2PP4/5NP1/PP2PPBP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Classical_Variation/d4_f5_c4_e6"
   },
   {
     name: "Dutch Defense: Stonewall",
     fen: "rnbq1rk1/ppp1b1pp/4pn2/3p1p2/2PP4/2N2NP1/PP2PPBP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Stonewall_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_d5"
   },
   {
     name: "Dutch Defense: Stonewall Variation",
     fen: "rnbq1rk1/ppp1b1pp/4pn2/3p1p2/2PP4/5NP1/PP2PPBP/RNBQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Stonewall_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_d5"
   },
   {
     name: "Dutch Defense: Classical Variation, Stonewall Variation, Botvinnik Variation",
     fen: "rnbq1rk1/ppp1b1pp/4pn2/3p1p2/2PP4/1P3NP1/P3PPBP/RNBQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Stonewall_Variation_Botvinnik_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_d5_b3"
   },
   {
     name: "Dutch Defense: Classical Variation, Stonewall Variation",
     fen: "rnbq1rk1/pp2b1pp/2p1pn2/3p1p2/2PP4/BP3NP1/P3PPBP/RN1Q1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Stonewall_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_d5"
   },
   {
     name: "Dutch Defense: Classical Variation, Stonewall Variation",
     fen: "rnbq1rk1/pp2b1pp/2p1pn2/3p1p2/2PP4/2N2NP1/PP2PPBP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Stonewall_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_d5"
   },
   {
     name: "Dutch Defense: Stonewall, Chekhover Variation",
     fen: "rnb1qrk1/pp2b1pp/2p1pn2/3p1pB1/2PP4/2N2NP1/PPQ1PPBP/R4RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Stonewall_Variation_Chekhover_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_d5_Nc3_c6_Qc2_Qe8_Bg5"
   },
   {
     name: "Dutch Defense: Classical Variation",
     fen: "rnbq1rk1/ppp1b1pp/3ppn2/5p2/2PP4/5NP1/PP2PPBP/RNBQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Classical_Variation/d4_f5_c4_e6"
   },
   {
     name: "Dutch Defense: Classical Variation, Buenos Aires Variation",
     fen: "rnbq1rk1/1pp1b1pp/3ppn2/p4p2/2PP4/2N2NP1/PP2PPBP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Classical_Variation_Buenos_Aires_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_d6_Nc3_a5"
   },
   {
     name: "Dutch Defense: Classical Variation, Huisl Variation",
     fen: "rnbq1rk1/ppp1b1pp/3pp3/5p2/2PPn3/2N2NP1/PP2PPBP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Classical_Variation_Huisl_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_d6_Nc3_Ne4"
   },
   {
     name: "Dutch Defense: Classical Variation, Ilyin-Zhenevsky Variation",
     fen: "rnb1qrk1/ppp1b1pp/3ppn2/5p2/2PP4/2N2NP1/PP2PPBP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Classical_Variation_Ilyin-Zhenevsky_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_d6_Nc3_Qe8"
   },
   {
     name: "Dutch Defense: Classical Variation, Ilyin-Zhenevsky Variation, Winter Variation",
     fen: "rnb1qrk1/ppp1b1pp/3ppn2/5p2/2PP4/2N2NP1/PP2PPBP/R1BQR1K1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Classical_Variation_Ilyin-Zhenevsky_Variation_Winter_Variation/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_d6_Nc3_Qe8_Re1"
   },
   {
     name: "Dutch Defense: Classical Variation, Ilyin-Zhenevsky Variation, Alatortsev-Lisitsyn Line",
     fen: "rnb1qrk1/ppp1b1pp/3ppn2/5p2/2PP4/2N2NP1/PPQ1PPBP/R1B2RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Classical_Variation_Ilyin-Zhenevsky_Variation_Alatortsev-Lisitsyn_Line/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_d6_Nc3_Qe8_Qc2"
   },
   {
     name: "Dutch Defense: Classical Variation, Ilyin-Zhenevsky Variation, Modern Main Line",
     fen: "rnb1qrk1/ppp1b1pp/3ppn2/5p2/2PP4/1PN2NP1/P3PPBP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Dutch_Defense_Classical_Variation_Ilyin-Zhenevsky_Variation_Modern_Main_Line/d4_f5_c4_Nf6_g3_e6_Bg2_Be7_Nf3_O-O_O-O_d6_Nc3_Qe8_b3"
   },
   {
     name: "Barnes Defense",
     fen: "rnbqkbnr/ppppp1pp/5p2/8/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Barnes_Defense/e4_f6"
   },
   {
     name: "Borg Defense",
     fen: "rnbqkbnr/pppppp1p/8/6p1/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Borg_Defense/e4_g5"
   },
   {
     name: "Borg Defense: Borg Gambit",
     fen: "rnbqk1nr/ppppppbp/8/6p1/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Borg_Defense_Borg_Gambit/d4_g5"
   },
   {
     name: "Borg Defense: Troon Gambit",
     fen: "rnbqkbnr/pppppp2/7p/8/3PP1pP/8/PPP2PP1/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Borg_Defense_Troon_Gambit/e4_g5_d4_h6_h4_g4"
   },
   {
     name: "Borg Defense: Zilbermints Gambit",
     fen: "rnbqkbnr/pppp1p1p/8/4p1p1/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Borg_Defense_Zilbermints_Gambit/e4_g5_d4_e5"
   },
   {
     name: "Carr Defense",
     fen: "rnbqkbnr/ppppppp1/7p/8/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Carr_Defense/e4_h6"
   },
   {
     name: "Carr Defense: Zilbermints Gambit",
     fen: "rnbqkbnr/pppp1pp1/7p/4p3/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Carr_Defense_Zilbermints_Gambit/e4_h6_d4_e5"
   },
   {
     name: "Duras Gambit",
     fen: "rnbqkbnr/ppppp1pp/8/5p2/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Duras_Gambit/e4_f5"
   },
   {
     name: "Fried Fox Defense",
     fen: "rnbq1bnr/pppppkpp/5p2/8/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Fried_Fox_Defense/e4_f6_d4_Kf7"
   },
   {
     name: "Goldsmith Defense",
     fen: "rnbqkbnr/ppppppp1/8/7p/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Goldsmith_Defense/e4_h5"
   },
   {
     name: "Goldsmith Defense: Picklepuss Defense",
     fen: "rnbqkb1r/ppppppp1/5n2/7p/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Goldsmith_Defense_Picklepuss_Defense/e4_h5_d4_Nf6"
   },
   {
     name: "Guatemala Defense",
     fen: "rn1qkbnr/p1pppppp/bp6/8/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Owen_Defense_Guatemala_Defense/e4_b6_d4_Ba6"
   },
   {
     name: "Hippopotamus Defense",
     fen: "rnbqkb1r/pppppppp/7n/8/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Hippopotamus_Defense/e4_Nh6"
   },
   {
     name: "Hippopotamus Defense",
     fen: "rnbqkb1r/ppppp2p/5ppn/8/2PPP3/8/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Hippopotamus_Defense/e4_Nh6"
   },
   {
     name: "King's Pawn Game",
@@ -3598,407 +3598,407 @@ export const openings: { name: string; fen: string, link: string }[] = [
   {
     name: "Lemming Defense",
     fen: "r1bqkbnr/pppppppp/n7/8/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Lemming_Defense/e4_Na6"
   },
   {
     name: "Lion Defense: Lion's Jaw",
     fen: "rnbqkb1r/ppp1pppp/3p1n2/8/3PP3/5P2/PPP3PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Lion_Defense_Lions_Jaw/e4_d6_d4_Nf6_f3"
   },
   {
     name: "Nimzowitsch Defense",
     fen: "r1bqkbnr/pppppppp/2n5/8/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense/e4_Nc6"
   },
   {
     name: "Nimzowitsch Defense",
     fen: "r1bqkbnr/pppppppp/2n5/8/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense/e4_Nc6"
   },
   {
     name: "Nimzowitsch Defense: Breyer Variation",
     fen: "r1bqkb1r/pppp1ppp/2n2n2/4p3/3PP3/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Breyer_Variation/e4_Nc6_Nc3_Nf6_d4_e5"
   },
   {
     name: "Nimzowitsch Defense: Colorado Countergambit",
     fen: "r1bqkbnr/ppppp1pp/2n5/5p2/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Colorado_Countergambit/e4_Nc6_Nf3_f5"
   },
   {
     name: "Nimzowitsch Defense: Colorado Countergambit Accepted",
     fen: "r1bqkbnr/ppppp1pp/2n5/5P2/8/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Colorado_Countergambit_Accepted/e4_Nc6_Nf3_f5_exf5"
   },
   {
     name: "Nimzowitsch Defense: Declined Variation",
     fen: "r1bqkbnr/pppppppp/2n5/8/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Declined_Variation/e4_Nc6_Nf3"
   },
   {
     name: "Nimzowitsch Defense: El Columpio Defense",
     fen: "r1bqkb1r/pppppppp/2n5/4P3/6n1/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_El_Columpio_Defense/e4_Nc6_Nf3_Nf6_e5_Ng4"
   },
   {
     name: "Nimzowitsch Defense: El Columpio Defense, El Columpio Gambit",
     fen: "r1bqkb1r/ppp1pppp/2npP2n/8/3P4/5N1P/PPP2PP1/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_El_Columpio_Defense_El_Columpio_Gambit/e4_Nc6_Nf3_Nf6_e5_Ng4_d4_d6_h3_Nh6_e6"
   },
   {
     name: "Nimzowitsch Defense: El Columpio Defense, Exchange Variation",
     fen: "r1bqkb1r/ppp1pppp/2nP3n/8/3P4/5N1P/PPP2PP1/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_El_Columpio_Defense_Exchange_Variation/e4_Nc6_Nf3_Nf6_e5_Ng4_d4_d6_h3_Nh6_exd6"
   },
   {
     name: "Nimzowitsch Defense: El Columpio Defense, Pin Variation",
     fen: "r1bqkb1r/ppp1pppp/2np3n/1B2P3/3P4/5N1P/PPP2PP1/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_El_Columpio_Defense_Pin_Variation/e4_Nc6_Nf3_Nf6_e5_Ng4_d4_d6_h3_Nh6_Bb5"
   },
   {
     name: "Nimzowitsch Defense: Franco-Nimzowitsch Variation",
     fen: "r1bqkbnr/pppp1ppp/2n1p3/8/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Franco-Nimzowitsch_Variation/e4_Nc6_Nf3_e6"
   },
   {
     name: "Nimzowitsch Defense: French Connection",
     fen: "r1bqkbnr/pppp1ppp/2n1p3/8/4P3/2N5/PPPP1PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_French_Connection/e4_Nc6_Nc3_e6"
   },
   {
     name: "Nimzowitsch Defense: Hornung Gambit",
     fen: "r1bqkbnr/ppp1pppp/2n5/3p4/3PP3/4B3/PPP2PPP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Hornung_Gambit/e4_Nc6_d4_d5_Be3"
   },
   {
     name: "Nimzowitsch Defense: Kennedy Variation",
     fen: "r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Kennedy_Variation/e4_Nc6_d4_e5"
   },
   {
     name: "Nimzowitsch Defense: Kennedy Variation, Bielefelder Gambit",
     fen: "r1bqk1nr/pppp1ppp/2n5/2b1P3/4P3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Kennedy_Variation_Bielefelder_Gambit/e4_Nc6_d4_e5_dxe5_Bc5"
   },
   {
     name: "Nimzowitsch Defense: Kennedy Variation, Hammer Gambit",
     fen: "r1bqkbnr/pppp2pp/2n2p2/4P3/4P3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Kennedy_Variation_Hammer_Gambit/e4_Nc6_d4_e5_dxe5_f6"
   },
   {
     name: "Nimzowitsch Defense: Kennedy Variation, Herford Gambit",
     fen: "r1b1kbnr/pppp1ppp/2n5/4P3/4P2q/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Kennedy_Variation_Herford_Gambit/e4_Nc6_d4_e5_dxe5_Qh4"
   },
   {
     name: "Nimzowitsch Defense: Kennedy Variation, Keres Attack",
     fen: "r1bqkbnr/pppp1ppp/8/4n3/4P3/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Kennedy_Variation_Keres_Attack/e4_Nc6_d4_e5_dxe5_Nxe5_Nc3"
   },
   {
     name: "Nimzowitsch Defense: Kennedy Variation, Linksspringer Variation",
     fen: "r1bqkbnr/pppp1ppp/2n5/3Pp3/4P3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Kennedy_Variation_Linksspringer_Variation/e4_Nc6_d4_e5_d5"
   },
   {
     name: "Nimzowitsch Defense: Kennedy Variation, Main Line",
     fen: "r1bqkbnr/pppp1ppp/6n1/8/4PP2/8/PPP3PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Kennedy_Variation_Main_Line/e4_Nc6_d4_e5_dxe5_Nxe5_f4_Ng6"
   },
   {
     name: "Nimzowitsch Defense: Kennedy Variation, Paulsen Attack",
     fen: "r1bqkbnr/pppp1ppp/8/4n3/4P3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Kennedy_Variation_Paulsen_Attack/e4_Nc6_d4_e5_dxe5_Nxe5_Nf3"
   },
   {
     name: "Nimzowitsch Defense: Kennedy Variation, Riemann Defense",
     fen: "r1bqkbnr/pppp1ppp/2n5/8/4PP2/8/PPP3PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Kennedy_Variation_Riemann_Defense/e4_Nc6_d4_e5_dxe5_Nxe5_f4_Nc6"
   },
   {
     name: "Nimzowitsch Defense: Kennedy Variation, de Smet Gambit",
     fen: "r1bqkbnr/ppp2ppp/2np4/4P3/4P3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Kennedy_Variation_de_Smet_Gambit/e4_Nc6_d4_e5_dxe5_d6"
   },
   {
     name: "Nimzowitsch Defense: Mikenas Variation",
     fen: "r1bqkbnr/ppp1pppp/2np4/8/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Mikenas_Variation/e4_Nc6_d4_d6"
   },
   {
     name: "Nimzowitsch Defense: Neo-Mongoloid Defense",
     fen: "r1bqkbnr/ppppp1pp/2n2p2/8/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Neo-Mongoloid_Defense/e4_Nc6_d4_f6"
   },
   {
     name: "Nimzowitsch Defense: Pirc Connection",
     fen: "r1bqkbnr/pppppp1p/2n3p1/8/4P3/2N5/PPPP1PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Pirc_Connection/e4_Nc6_Nc3_g6"
   },
   {
     name: "Nimzowitsch Defense: Pseudo-Spanish Variation",
     fen: "r1bqkbnr/pppppppp/2n5/1B6/4P3/8/PPPP1PPP/RNBQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Pseudo-Spanish_Variation/e4_Nc6_Bb5"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation",
     fen: "r1bqkbnr/ppp1pppp/2n5/3p4/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation/e4_Nc6_d4_d5"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation, Aachen Gambit",
     fen: "r1bqkbnr/ppp1pppp/8/3P4/1n1P4/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation_Aachen_Gambit/e4_Nc6_d4_d5_exd5_Nb4"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation, Advance Variation",
     fen: "r1bqkbnr/ppp1pppp/2n5/3pP3/3P4/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation_Advance_Variation/e4_Nc6_d4_d5_e5"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation, Bogoljubov Variation",
     fen: "r1bqkbnr/ppp1pppp/2n5/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation_Bogoljubow_Variation/e4_Nc6_d4_d5_Nc3"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation, Bogoljubov Variation",
     fen: "r1bqkbnr/ppp1pppp/2n5/8/3Pp3/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation_Bogoljubow_Variation/e4_Nc6_d4_d5_Nc3"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation, Bogoljubov Variation, Brandics Gambit",
     fen: "r1bqkbnr/1pp1pppp/p1n5/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation_Bogoljubow_Variation/e4_Nc6_d4_d5_Nc3"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation, Bogoljubov Variation, Erben Gambit",
     fen: "r1bqkbnr/ppp1pp1p/2n3p1/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation_Bogoljubow_Variation/e4_Nc6_d4_d5_Nc3"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation, Bogoljubov Variation, Heinola-Deppe Gambit",
     fen: "r1bqkbnr/ppp2ppp/2n5/3pp3/3PP3/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation_Bogoljubow_Variation/e4_Nc6_d4_d5_Nc3"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation, Bogoljubov Variation, Nimzowitsch Gambit",
     fen: "r1bqkbnr/ppp1pppp/8/3Pn3/4p3/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation_Bogoljubow_Variation/e4_Nc6_d4_d5_Nc3"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation, Bogoljubov Variation, Richter Gambit",
     fen: "rnbqkbnr/ppp1pppp/8/3P4/4p3/2N2P2/PPP3PP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation_Bogoljubow_Variation/e4_Nc6_d4_d5_Nc3"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation, Bogoljubov Variation, Vehre Variation",
     fen: "r1bqkb1r/ppp1pppp/2n2n2/3p4/3PP3/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation_Bogoljubow_Variation/e4_Nc6_d4_d5_Nc3"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation, Exchange Variation",
     fen: "r1b1kbnr/ppp1pppp/2n5/3q4/3P4/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation_Exchange_Variation/e4_Nc6_d4_d5_exd5_Qxd5"
   },
   {
     name: "Nimzowitsch Defense: Scandinavian Variation, Exchange Variation, Marshall Gambit",
     fen: "r1b1kbnr/ppp1pppp/2n5/3q4/3P4/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Scandinavian_Variation_Exchange_Variation_Marshall_Gambit/e4_Nc6_d4_d5_exd5_Qxd5_Nc3"
   },
   {
     name: "Nimzowitsch Defense: Wheeler Gambit",
     fen: "r1bqkbnr/pppppppp/2n5/8/1P2P3/8/P1PP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Wheeler_Gambit/e4_Nc6_b4"
   },
   {
     name: "Nimzowitsch Defense: Williams Variation",
     fen: "r1bqkbnr/ppp1pppp/2np4/8/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Williams_Variation/e4_Nc6_Nf3_d6"
   },
   {
     name: "Nimzowitsch Defense: Woodchuck Variation",
     fen: "r1bqkbnr/1ppppppp/p1n5/8/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Nimzowitsch_Defense_Woodchuck_Variation/e4_Nc6_d4_a6"
   },
   {
     name: "Owen Defense",
     fen: "rnbqkbnr/p1pppppp/1p6/8/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Owen_Defense/e4_b6"
   },
   {
     name: "Owen Defense: Hekili-Loa Gambit",
     fen: "r1bqkbnr/p2ppppp/1pn5/2P5/4P3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Owen_Defense_Hekili-Loa_Gambit/e4_b6_d4_c5_dxc5_Nc6"
   },
   {
     name: "Owen Defense: Matovinsky Gambit",
     fen: "rn1qkbnr/p1ppp2p/1p4p1/5P1Q/3P4/3B4/PPP2PbP/RNB1K1NR",
-    link: ""
+    link: "https://lichess.org/opening/Owen_Defense_Matovinsky_Gambit/e4_b6_d4_Bb7_Bd3_f5_exf5_Bxg2_Qh5+_g6"
   },
   {
     name: "Owen Defense: Naselwaus Gambit",
     fen: "rn1qkbnr/pbpppppp/1p6/6B1/3PP3/8/PPP2PPP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Owen_Defense_Naselwaus_Gambit/e4_b6_d4_Bb7_Bg5"
   },
   {
     name: "Owen Defense: Smith Gambit",
     fen: "rn1qkbnr/pbpppppp/1p6/8/3PP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Owen_Defense_Smith_Gambit/e4_b6_d4_Bb7_Nf3"
   },
   {
     name: "Owen Defense: Unicorn Variation",
     fen: "rn1qkbnr/pbppp1pp/1p3p2/8/2PPP3/8/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Owen_Defense_Unicorn_Variation/e4_f6_d4_b6_c4_Bb7"
   },
   {
     name: "Owen Defense: Wind Gambit",
     fen: "rn1qkbnr/pbpp1ppp/1p6/4p3/3PP3/5P2/PPP3PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Owen_Defense_Wind_Gambit/e4_b6_d4_Bb7_f3_e5"
   },
   {
     name: "Pirc Defense",
     fen: "rnbqkbnr/ppp1pppp/3p4/8/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Pirc_Defense/e4_d6"
   },
   {
     name: "Pirc Defense",
     fen: "rnbqkbnr/ppp1pppp/3p4/8/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Pirc_Defense/e4_d6"
   },
   {
     name: "Pirc Defense",
     fen: "rnbqkb1r/ppp1pppp/3p1n2/8/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Pirc_Defense/e4_d6"
   },
   {
     name: "Pirc Defense: Roscher Gambit",
     fen: "rnbqkb1r/ppp1pppp/3p1n2/8/3PP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Pirc_Defense_Roscher_Gambit/e4_d6_d4_Nf6_Nf3"
   },
   {
     name: "Rat Defense: Antal Defense",
     fen: "r1bqkbnr/pppnpppp/3p4/8/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Rat_Defense_Antal_Defense/e4_d6_d4_Nd7"
   },
   {
     name: "Rat Defense: Fuller Gambit",
     fen: "rnbqkb1r/ppp1pppp/5n2/3P4/5P2/8/PPPP2PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Rat_Defense_Fuller_Gambit/e4_d6_f4_d5_exd5_Nf6"
   },
   {
     name: "Rat Defense: Harmonist",
     fen: "rnbqkbnr/ppp1pppp/3p4/8/4PP2/8/PPPP2PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Rat_Defense_Harmonist/e4_d6_f4"
   },
   {
     name: "Rat Defense: Petruccioli Attack",
     fen: "rnbqkbnr/ppp1pppp/3p4/8/4P2P/8/PPPP1PP1/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Rat_Defense_Petruccioli_Attack/e4_d6_h4"
   },
   {
     name: "Rat Defense: Spike Attack",
     fen: "rnbqkbnr/ppp1pppp/3p4/8/4P1P1/8/PPPP1P1P/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Rat_Defense_Spike_Attack/e4_d6_g4"
   },
   {
     name: "St. George Defense",
     fen: "rnbqkbnr/1ppppppp/p7/8/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/St_George_Defense/e4_a6"
   },
   {
     name: "St. George Defense: Polish Variation",
     fen: "rn1qkbnr/1bpp1ppp/p3p3/1p6/3PP3/3B1N2/PPP2PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/St_George_Defense_Polish_Variation/e4_a6_d4_b5_Nf3_Bb7_Bd3_e6"
   },
   {
     name: "St. George Defense: San Jorge Variation",
     fen: "rn1qk1nr/1bp1ppbp/p2p2p1/1p6/3PP3/2PB1N2/PP3PPP/RNBQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/St_George_Defense_San_Jorge_Variation/e4_a6_d4_b5_Nf3_Bb7_Bd3_d6_O-O_g6_c3_Bg7"
   },
   {
     name: "St. George Defense: Zilbermints Gambit",
     fen: "rnbqkbnr/1ppp1ppp/p7/4p3/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/St_George_Defense_Zilbermints_Gambit/e4_a6_d4_e5"
   },
   {
     name: "Van Geet Opening: Berlin Gambit",
     fen: "r1bqkbnr/ppp1pppp/2n5/3P4/4p3/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Van_Geet_Opening_Berlin_Gambit/e4_Nc6_d4_d5_Nc3_dxe4_d5"
   },
   {
     name: "Ware Defense",
     fen: "rnbqkbnr/1ppppppp/8/p7/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Ware_Defense/e4_a5"
   },
   {
     name: "Ware Defense: Snagglepuss Defense",
     fen: "r1bqkbnr/1ppppppp/2n5/p7/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Ware_Defense_Snagglepuss_Defense/e4_a5_d4_Nc6"
   },
   {
     name: "Scandinavian Defense",
     fen: "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense/e4_d5"
   },
   {
     name: "Scandinavian Defense",
     fen: "rnbqkbnr/ppp1pppp/8/3p4/4P3/1P6/P1PP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense/e4_d5"
   },
   {
     name: "Scandinavian Defense: Anderssen Counterattack",
     fen: "rnb1kbnr/ppp2ppp/8/q3p3/3P4/2N5/PPP2PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense_Anderssen_Counterattack/e4_d5_exd5_Qxd5_Nc3_Qa5_d4_e5"
   },
   {
     name: "Scandinavian Defense: Anderssen Counterattack, Collijn Variation",
     fen: "rn2kbnr/ppp2ppp/8/q3p3/3P2b1/2N2N2/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense_Anderssen_Counterattack_Collijn_Variation/e4_d5_exd5_Qxd5_Nc3_Qa5_d4_e5_Nf3_Bg4"
   },
   {
     name: "Scandinavian Defense: Anderssen Counterattack, Goteborg System",
     fen: "rnb1kbnr/ppp2ppp/8/q3p3/3P4/2N2N2/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense_Anderssen_Counterattack_Goteborg_System/e4_d5_exd5_Qxd5_Nc3_Qa5_d4_e5_Nf3"
   },
   {
     name: "Scandinavian Defense: Anderssen Counterattack, Orthodox Attack",
     fen: "r1b1k1nr/ppp2ppp/2n5/q3P3/1b6/2N2N2/PPPB1PPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense_Anderssen_Counterattack_Orthodox_Attack/e4_d5_exd5_Qxd5_Nc3_Qa5_d4_e5_dxe5_Nc6_Nf3_Bb4_Bd2"
   },
   {
     name: "Scandinavian Defense: Blackburne Gambit",
     fen: "r1bqkbnr/pp2pppp/2n5/8/8/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense_Blackburne_Gambit/e4_d5_exd5_c6_dxc6_Nxc6"
   },
   {
     name: "Scandinavian Defense: Blackburne-Kloosterboer Gambit",
     fen: "rnbqkbnr/pp2pppp/2p5/3P4/8/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense_Blackburne-Kloosterboer_Gambit/e4_d5_exd5_c6"
   },
   {
     name: "Scandinavian Defense: Boehnke Gambit",
     fen: "rn1qkbnr/ppp2ppp/4b3/8/8/8/PPPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense_Boehnke_Gambit/e4_d5_exd5_e5_dxe6_Bxe6"
   },
   {
     name: "Scandinavian Defense: Bronstein Variation",
     fen: "rnb1kb1r/1pp1pppp/p2q1n2/8/3P4/2N2N2/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense_Bronstein_Variation/e4_d5_exd5_Qxd5_Nc3_Qd6_d4_Nf6_Nf3_a6"
   },
   {
     name: "Scandinavian Defense: Classical Variation",
     fen: "rn2kb1r/ppp1pppp/5n2/q4b2/3P4/2N2N2/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense_Classical_Variation/e4_d5_exd5_Qxd5_Nc3_Qa5_d4_Nf6_Nf3_Bf5"
   },
   {
     name: "Scandinavian Defense: Grünfeld Variation",
     fen: "rn2kb1r/pp2pppp/2p2n2/q3Nb2/3P2P1/2N5/PPP2P1P/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense_Grunfeld_Variation/e4_d5_exd5_Qxd5_Nc3_Qa5_d4_Nf6_Nf3_Bf5_Ne5_c6_g4"
   },
   {
     name: "Scandinavian Defense: Gubinsky-Melts Defense",
     fen: "rnb1kbnr/ppp1pppp/3q4/8/8/2N5/PPPP1PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Scandinavian_Defense_Gubinsky-Melts_Defense/e4_d5_exd5_Qxd5_Nc3_Qd6"
   },
   {
     name: "Scandinavian Defense: Icelandic-Palme Gambit",
