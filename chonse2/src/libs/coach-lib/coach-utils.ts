@@ -283,6 +283,7 @@ export class CoachUtils
                         if (openingObj.link != "")
                         {
                             move.coachResources.set( CoachResourceFlagType.Opening, openingObj.link );
+                            move.coachComment+= openingObj.name;
                         }
                     }
                 }
