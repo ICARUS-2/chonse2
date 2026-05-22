@@ -3,7 +3,7 @@ import { EngineInformation, EngineType, MoveClassification, moveClassificationLa
 import { IconButton } from '../../ui/icon-button/icon-button';
 import BoardState from '../chessboard/board-state';
 import MoveResult from '../chessboard/move-result';
-import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType } from '../../../libs/coach-lib/coach-utils';
+import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from '../../../libs/coach-lib/coach-utils';
 import { EvalSource, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { Arrow, ArrowContext } from '../chessboard/arrow';
 import ChessboardHelper from '../helpers';
@@ -61,6 +61,7 @@ export class CoachDisplay {
     
   }
 
+  //#region follow ups
   getFollowUpButtonText(move: MoveResult, ev: PositionEval): string
   {
     let mate = undefined;
@@ -86,7 +87,9 @@ export class CoachDisplay {
 
     return "Show follow-up";
   }
+  //#endregion
 
+  //#region misses
   getMissButtonText(move: MoveResult): string
   {
     if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedCheckmate))
@@ -116,7 +119,9 @@ export class CoachDisplay {
 
     return "Show miss";
   }
+  //#endregion
 
+  //#region ideas
   getIdeaButtonText(flag: CoachIdeaFlagType)
   {
     const BASE = "Show Idea: ";
@@ -154,7 +159,31 @@ export class CoachDisplay {
     this.boardState().arrows.set(this.boardState().arrows().filter( a => a.context != ArrowContext.Coach));
     this.clearHighlights();
   }
+  //#endregion
 
+  //#region resources
+  getResourceButtonText(flag: CoachResourceFlagType)
+  {
+    if (flag == CoachResourceFlagType.Opening)
+    {
+      return "Opening: Learn More";
+    }
+
+    return "Unknown resource"
+  }
+
+  handleResourceButtonClicked(link: string | undefined)
+  {
+    if (!link)
+    {
+      return;
+    }
+    
+    window.open(link, '_blank');
+  }
+  //#endregion
+
+  //#region highlights
   //highlights or unhighlights the passed in coordinates, boolean controls highlight/unhighlight.,
   highlightOrUnhilightCoords(coords: Array<string>, val: boolean)
   {
@@ -214,4 +243,5 @@ export class CoachDisplay {
         return copy;
     });
   }
+  //#endregion
 }
