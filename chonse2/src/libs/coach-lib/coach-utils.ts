@@ -5,6 +5,7 @@ import Chonse2Extensions, { Fork, Pin } from "../chonse2-lib/extensions";
 import { PieceColor } from "../chonse2-lib/piece-color";
 import PieceMaterial from "../chonse2-lib/piece-material";
 import { PieceType } from "../chonse2-lib/piece-type";
+import { openings } from "../engine-lib/data/openings";
 import { MoveClassification } from "../engine-lib/types/enums";
 import { LineEval, PositionEval } from "../engine-lib/types/eval";
 
@@ -270,6 +271,21 @@ export class CoachUtils
 
                 const colorThatMovedText = whiteToMove ? "Black" : "White";
                 const oppositeColorText = whiteToMove ? "White" : "Black";
+
+                //=======Opening (for link)
+                if (posEval.moveClassification == MoveClassification.Opening)
+                {
+                    const posFen = state.getFEN().split(" ")[0];
+                    const openingObj = openings.find((opening) => opening.fen === posFen);
+
+                    if (openingObj)
+                    {
+                        if (openingObj.link != "")
+                        {
+                            move.coachResources.set( CoachResourceFlagType.Opening, openingObj.link );
+                        }
+                    }
+                }
             
                 //=======Bad
                 if (posEval.moveClassification == MoveClassification.Inaccuracy ||
@@ -835,4 +851,9 @@ export enum CoachIdeaFlagType
 {
     ForkIdea,
     PinIdea
+}
+
+export enum CoachResourceFlagType 
+{
+    Opening
 }

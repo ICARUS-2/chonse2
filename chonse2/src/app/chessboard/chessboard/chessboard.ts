@@ -615,7 +615,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
             const piece = currentState.pieceState[rawPieceIndex.rowIndex][rawPieceIndex.colIndex];
 
             
-            if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS))
+            if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
             {
               //First, do the animation
               this.animateMove(fromSquare, toSquare, piece);
@@ -743,7 +743,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
     const pieceToAnimate = this.getMostCurrentMainState().pieceState[fromIdx.rowIndex][fromIdx.colIndex];
     
-    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS))
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
     {
       this.animateMove(fromSquare, toSquare, pieceToAnimate);
       setTimeout( () => 
@@ -819,7 +819,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const mostRecentMove = this.boardState().getMostRecentMove();
 
-    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS))
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
     {
       this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
 
@@ -842,7 +842,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const mostRecentMove = this.boardState().getFutureMove();
 
-    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS))
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
     {
       this.animateMove(mostRecentMove.fromCoord, mostRecentMove.toCoord, mostRecentMove.piece);
       setTimeout( () =>

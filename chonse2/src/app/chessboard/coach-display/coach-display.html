@@ -90,6 +90,17 @@
                     </app-icon-button>
                   }
 
+                  @for (key of rootData.move.coachResources.keys(); track key) {
+                    <app-icon-button 
+                      extraClasses="m-1 small" 
+                      (buttonClick)="handleResourceButtonClicked(rootData.move.coachResources.get(key))" 
+                      [label]="getResourceButtonText(key)" 
+                      overridePrimaryBackgroundColor="rgb(0, 160, 160)" 
+                      overrideSecondaryBackgroundColor="rgb(0, 151, 151)" 
+                      iconClass="bi-link-45deg">
+                    </app-icon-button>
+                  }
+
                   @if (!boardState().getCurrentState().gameState.isGameOver) {
                     <app-icon-button 
                       (buttonClick)="showFollowUpClicked.emit()" 
