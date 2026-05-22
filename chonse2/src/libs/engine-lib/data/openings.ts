@@ -6003,1002 +6003,1002 @@ export const openings: { name: string; fen: string, link: string }[] = [
   {
     name: "Sicilian Defense: Mengarini Variation",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/4P3/P7/1PPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Mengarini_Variation"
   },
   {
     name: "Sicilian Defense: Myers Attack, with a4",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/P3P3/8/1PPP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Myers_Attack_with_a4"
   },
   {
     name: "Sicilian Defense: Myers Attack, with h4",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/4P2P/8/PPPP1PP1/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Myers_Attack_with_h4"
   },
   {
     name: "Sicilian Defense: Snyder Variation",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/4P3/1P6/P1PP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Snyder_Variation"
   },
   {
     name: "Sicilian Defense: Snyder Variation, Queen Fianchetto Variation",
     fen: "rnbqkbnr/p2ppppp/1p6/2p5/4P3/1P6/P1PP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Snyder_Variation_Queen_Fianchetto_Variation"
   },
   {
     name: "Sicilian Defense: Staunton-Cochrane Variation",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/2P1P3/8/PP1P1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Staunton-Cochrane_Variation"
   },
   {
     name: "Sicilian Defense: Wing Gambit",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/1P2P3/8/P1PP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Wing_Gambit"
   },
   {
     name: "Sicilian Defense: Wing Gambit, Abrahams Variation",
     fen: "rnbqkbnr/pp1ppppp/8/8/1p2P3/8/PBPP1PPP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Wing_Gambit_Abrahams_Variation"
   },
   {
     name: "Sicilian Defense: Wing Gambit, Carlsbad Variation",
     fen: "rnbqkbnr/pp1ppppp/8/8/4P3/p7/2PP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Wing_Gambit_Carlsbad_Variation"
   },
   {
     name: "Sicilian Defense: Wing Gambit, Marienbad Variation",
     fen: "rnb1kbnr/pp2pppp/8/3q4/1p6/P7/1BPP1PPP/RN1QKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Wing_Gambit_Marienbad_Variation"
   },
   {
     name: "Sicilian Defense: Wing Gambit, Marshall Variation",
     fen: "rnbqkbnr/pp1ppppp/8/8/1p2P3/P7/2PP1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Wing_Gambit_Marshall_Variation"
   },
   {
     name: "Sicilian Defense: Wing Gambit, Nanu Gambit",
     fen: "rnb1kbnr/pp3ppp/4q3/4p3/1pP5/P2B1N2/3P1PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Wing_Gambit_Nanu_Gambit"
   },
   {
     name: "Sicilian Defense: Wing Gambit, Romanian Defense",
     fen: "r1b1kbnr/pp3ppp/2n1q3/4p3/1pP5/P4N2/1B1P1PPP/RN1QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Wing_Gambit_Romanian_Defense"
   },
   {
     name: "Sicilian Defense: Wing Gambit, Santasiere Variation",
     fen: "rnbqkbnr/pp1ppppp/8/8/1pP1P3/8/P2P1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Wing_Gambit_Santasiere_Variation"
   },
   {
     name: "Bird Opening: Dutch Variation, Batavo Gambit",
     fen: "rnbqkbnr/pp2pppp/8/2p5/4pP2/5N2/PPPP2PP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Bird_Opening_Dutch_Variation_Batavo_Gambit"
   },
   {
     name: "Sicilian Defense: Coles Sicilian Gambit",
     fen: "r1bqkb1r/pp1ppppp/2n2n2/8/2B1P3/8/PPP2PPP/RNBQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Coles_Sicilian_Gambit"
   },
   {
     name: "Sicilian Defense: Halasz Gambit",
     fen: "rnbqkbnr/pp1ppppp/8/8/3pPP2/8/PPP3PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Halasz_Gambit"
   },
   {
     name: "Sicilian Defense: McDonnell Attack",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/4PP2/8/PPPP2PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_McDonnell_Attack"
   },
   {
     name: "Sicilian Defense: McDonnell Attack, Tal Gambit",
     fen: "rnbqkb1r/pp2pppp/5n2/2pP4/5P2/8/PPPP2PP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_McDonnell_Attack_Tal_Gambit"
   },
   {
     name: "Sicilian Defense: Morphy Gambit",
     fen: "rnbqkbnr/pp1ppppp/8/8/3pP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Morphy_Gambit"
   },
   {
     name: "Sicilian Defense: Morphy Gambit, Andreaschek Gambit",
     fen: "rnbqkbnr/pp1p1ppp/8/4p3/3pP3/2P2N2/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Morphy_Gambit_Andreaschek_Gambit"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/3PP3/8/PPP2PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit",
     fen: "rnbqkbnr/pp1ppppp/8/8/3pP3/2P5/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Chicago Defense",
     fen: "rnbqkb1r/1p3ppp/p2ppn2/8/2B1P3/2N2N2/PP3PPP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Chicago_Defense"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Classical Formation",
     fen: "r1bqkb1r/1p2pppp/p1np1n2/8/2B1P3/2N2N2/PP3PPP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Classical_Formation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Fianchetto Defense",
     fen: "r1bqkbnr/pp1ppp1p/2n3p1/8/4P3/2N2N2/PP3PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Fianchetto_Defense"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Finegold Defense",
     fen: "rnbqk2r/1p2bppp/p2ppn2/8/2B1P3/2N2N2/PP2QPPP/R1B2RK1",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Finegold_Defense"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Kan Formation",
     fen: "rnbqkbnr/1p1p1ppp/p3p3/8/4P3/2N2N2/PP3PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Kan_Formation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Larsen Defense",
     fen: "r1b1k1nr/1pqp1ppp/p1nbp3/8/2B1P3/2N2N2/PP2QPPP/R1B2RK1",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Larsen_Defense"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Morphy Defense",
     fen: "r1bqk1nr/pp1p1ppp/2n1p3/2b5/2B1P3/2N2N2/PP3PPP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Morphy_Defense"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Morphy Defense Deferred",
     fen: "r1bqk1nr/3p1ppp/p1n1p3/1pb5/4P3/1BN2N2/PP3PPP/R1BQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Morphy_Defense_Deferred"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Paulsen Formation",
     fen: "r1bqkbnr/1p1p1ppp/p1n1p3/8/2B1P3/2N2N2/PP3PPP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Paulsen_Formation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Pin Defense",
     fen: "r1bqk1nr/pp1p1ppp/2n1p3/8/1bB1P3/2N2N2/PP3PPP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Pin_Defense"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Scheveningen Formation",
     fen: "r1bqkbnr/pp3ppp/2npp3/8/2B1P3/2N2N2/PP3PPP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Scheveningen_Formation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Sozin Formation",
     fen: "r1bqkbnr/5ppp/p1npp3/1p6/2B1P3/2N2N2/PP2QPPP/R1B2RK1",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Sozin_Formation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Accepted, Taimanov Formation",
     fen: "rnbqkb1r/1p1pnppp/p3p3/8/2B1P3/2N2N2/PP3PPP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Accepted_Taimanov_Formation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Declined, Alapin Formation",
     fen: "rnbqkb1r/pp1ppppp/5n2/8/3pP3/2P5/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Declined_Alapin_Formation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Declined, Center Formation",
     fen: "rnbqkbnr/pp1p1ppp/8/4p3/3pP3/2P5/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Declined_Center_Formation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Declined, Dubois Variation",
     fen: "rnbqkbnr/pp1ppppp/8/8/2P1P3/3p4/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Declined_Dubois_Variation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Declined, Push Variation",
     fen: "rnbqkbnr/pp1ppppp/8/8/4P3/2Pp4/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Declined_Push_Variation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Declined, Scandinavian Formation",
     fen: "rnbqkbnr/pp2pppp/8/3p4/3pP3/2P5/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Declined_Scandinavian_Formation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Declined, Wing Formation",
     fen: "rnb1kbnr/pp1ppppp/8/q7/3pP3/2P5/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Declined_Wing_Formation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit, Chicago Defense",
     fen: "2bqkbnr/r4ppp/p1npp3/1p6/4P3/1BN2N2/PP2QPPP/R1B2RK1",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Chicago_Defense"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit, Danish Variation",
     fen: "rnbqkbnr/pp1ppppp/8/8/4P3/2p2N2/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Danish_Variation"
   },
   {
     name: "Sicilian Defense: Alapin Variation",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/4P3/2P5/PP1P1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Alapin_Variation"
   },
   {
     name: "Sicilian Defense: Alapin Variation, Barmen Defense",
     fen: "rnb1kbnr/pp2pppp/8/2pq4/8/2P5/PP1P1PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Alapin_Variation_Barmen_Defense"
   },
   {
     name: "Sicilian Defense: Alapin Variation, Barmen Defense, Central Exchange",
     fen: "r3kbnr/pp2pppp/2n5/3q4/3P2b1/5N2/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Alapin_Variation_Barmen_Defense_Central_Exchange"
   },
   {
     name: "Sicilian Defense: Alapin Variation, Barmen Defense, Endgame Variation",
     fen: "r3kbnr/pp2pppp/8/8/3n4/2N2P2/PP3P1P/R1B1KB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Alapin_Variation_Barmen_Defense_Endgame_Variation"
   },
   {
     name: "Sicilian Defense: Alapin Variation, Barmen Defense, Milner-Barry Attack",
     fen: "r1b1k1nr/pp3ppp/2n5/3qp3/1b1P4/2N2N2/PP2BPPP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Alapin_Variation_Barmen_Defense_Milner-Barry_Attack"
   },
   {
     name: "Sicilian Defense: Alapin Variation, Barmen Defense, Modern Line",
     fen: "rn2kb1r/pp2pppp/5n2/2pq4/3P2b1/2P2N2/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Alapin_Variation_Barmen_Defense_Modern_Line"
   },
   {
     name: "Sicilian Defense: Alapin Variation, Smith-Morra Declined",
     fen: "rnbqkb1r/pp1ppppp/8/3nP3/3p4/2P5/PP3PPP/RNBQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Alapin_Variation_Smith-Morra_Declined"
   },
   {
     name: "Sicilian Defense: Alapin Variation, Stoltz Attack",
     fen: "r1bqkb1r/pp1ppppp/1nn5/2p1P3/8/1BP2N2/PP1P1PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Alapin_Variation_Stoltz_Attack"
   },
   {
     name: "Sicilian Defense: Alapin Variation, Stoltz Attack, Ivanchuk Line",
     fen: "r1b1kb1r/ppqppp1p/1nn5/4P1p1/2p5/2P2N2/PPBPQPPP/RNB1K2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Alapin_Variation_Stoltz_Attack_Ivanchuk_Line"
   },
   {
     name: "Sicilian Defense: Heidenfeld Variation",
     fen: "r1bqkb1r/pp1ppppp/2n5/2pnP3/8/N1P2N2/PP1P1PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Heidenfeld_Variation"
   },
   {
     name: "Sicilian Defense: Closed",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/4P3/2N5/PPPP1PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed"
   },
   {
     name: "Sicilian Defense: Closed",
     fen: "rnbqkbnr/pp1p1ppp/4p3/2p5/4P3/2N5/PPPP1PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed"
   },
   {
     name: "Sicilian Defense: Closed",
     fen: "rnbqkbnr/pp1p1ppp/4p3/2p5/4P3/2N3P1/PPPP1P1P/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed"
   },
   {
     name: "Sicilian Defense: Closed, Chameleon Variation",
     fen: "r1bqkbnr/pp1ppppp/2n5/2p5/4P3/2N5/PPPPNPPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed_Chameleon_Variation"
   },
   {
     name: "Sicilian Defense: Closed, Grob Attack",
     fen: "r1bqkbnr/pp1ppppp/2n5/2p5/4P1P1/2N5/PPPP1P1P/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed_Grob_Attack"
   },
   {
     name: "Sicilian Defense: Closed, Korchnoi Defense",
     fen: "rnbqkbnr/pp3ppp/4p3/2pp4/4P3/2N3P1/PPPP1P1P/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed_Korchnoi_Defense"
   },
   {
     name: "Sicilian Defense: Closed, Traditional",
     fen: "r1bqkbnr/pp1ppppp/2n5/2p5/4P3/2N5/PPPP1PPP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed_Traditional"
   },
   {
     name: "Sicilian Defense: Grand Prix Attack",
     fen: "r1bqkbnr/pp1ppppp/2n5/2p5/4PP2/2N5/PPPP2PP/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Grand_Prix_Attack"
   },
   {
     name: "Sicilian Defense: Grand Prix Attack, Schofman Variation",
     fen: "r1bqk1nr/pp1p1pbp/2n1p1p1/2p2P2/2B1P3/2N2N2/PPPP2PP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Grand_Prix_Attack_Schofman_Variation"
   },
   {
     name: "Sicilian Defense: Closed",
     fen: "r1bqkbnr/pp1ppp1p/2n3p1/2p5/4P3/2N3P1/PPPP1P1P/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed"
   },
   {
     name: "Sicilian Defense: Closed",
     fen: "r1bqk1nr/pp1pppbp/2n3p1/2p5/4P3/2N3P1/PPPP1PBP/R1BQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed"
   },
   {
     name: "Sicilian Defense: Closed, Fianchetto Variation",
     fen: "r1bqkbnr/pp1ppppp/2n5/2p5/4P3/2N3P1/PPPP1P1P/R1BQKBNR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed_Fianchetto_Variation"
   },
   {
     name: "Sicilian Defense: Closed, Smyslov Variation",
     fen: "r1bqk1nr/pp1p1pbp/4p1p1/2p5/3nP3/3PB1P1/PPP1NPBP/R2QK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed_Smyslov_Variation"
   },
   {
     name: "Sicilian Defense: Closed",
     fen: "r1bqk1nr/pp2ppbp/2np2p1/2p5/4P3/2NP2P1/PPP2PBP/R1BQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed"
   },
   {
     name: "Sicilian Defense: Closed",
     fen: "r1bqk1nr/pp2ppbp/2np2p1/2p5/4PP2/2NP2P1/PPP3BP/R1BQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed"
   },
   {
     name: "Sicilian Defense: Closed, Botvinnik Defense, Edge Variation",
     fen: "r1bqk2r/pp2npbp/2np2p1/2p1p3/4PP2/2NP2PN/PPP3BP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed_Botvinnik_Defense_Edge_Variation"
   },
   {
     name: "Sicilian Defense: Closed, Botvinnik Defense, with Nge2",
     fen: "r1bqk1nr/pp3pbp/2np2p1/2p1p3/4P3/2NP2P1/PPP1NPBP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed_Botvinnik_Defense_with_Nge2"
   },
   {
     name: "Sicilian Defense: Closed, Botvinnik Defense, with f4",
     fen: "r1bqk1nr/pp3pbp/2np2p1/2p1p3/4PP2/2NP2P1/PPP3BP/R1BQK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed_Botvinnik_Defense_with_f4"
   },
   {
     name: "Sicilian Defense: Closed",
     fen: "r1bqk1nr/pp2ppbp/2np2p1/2p5/4P3/2NPB1P1/PPP2PBP/R2QK1NR",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed"
   },
   {
     name: "Modern Defense: Pterodactyl Variation",
     fen: "rnb1k1nr/pp1pppbp/6p1/q1p5/3PP3/2N2N2/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Modern_Defense_Pterodactyl_Variation"
   },
   {
     name: "Pterodactyl Defense: Sicilian, Anhanguera",
     fen: "rnb1k1nr/pp1pppbp/6p1/q1p5/3PP3/2N1BN2/PPP2PPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Sicilian_Anhanguera"
   },
   {
     name: "Pterodactyl Defense: Sicilian, Benoni Gambit",
     fen: "rnb1k1nr/pp1pppbp/6p1/q1pP4/4P3/2N2N2/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Sicilian_Benoni_Gambit"
   },
   {
     name: "Pterodactyl Defense: Sicilian, Pteranodon",
     fen: "rnb1k1nr/pp1ppp1p/6p1/q1P5/4P3/2P2N2/P1P2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Sicilian_Pteranodon"
   },
   {
     name: "Pterodactyl Defense: Sicilian, Rhamphorhynchus",
     fen: "rnb1k1nr/pp1pppbp/6p1/q1P5/4P3/2N2N2/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Sicilian_Rhamphorhynchus"
   },
   {
     name: "Pterodactyl Defense: Sicilian, Unpin",
     fen: "rnb1k1nr/pp1pppbp/6p1/q1p5/3PP3/2N2N2/PPPB1PPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Sicilian_Unpin"
   },
   {
     name: "Pterodactyl Defense: Western, Pterodactyl",
     fen: "rnb1k1nr/pp1pppbp/6p1/q1p5/3PP3/2P2N2/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Western_Pterodactyl"
   },
   {
     name: "Pterodactyl Defense: Western, Rhamphorhynchus",
     fen: "rnb1k1nr/pp1pppbp/6p1/q1P5/4P3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Pterodactyl_Defense_Western_Rhamphorhynchus"
   },
   {
     name: "Sicilian Defense",
     fen: "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense"
   },
   {
     name: "Sicilian Defense: Acton Extension",
     fen: "rnbqk1nr/pp1ppp1p/6pb/2p5/2P1P3/5N2/PP1P1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Acton_Extension"
   },
   {
     name: "Sicilian Defense: Brussels Gambit",
     fen: "rnbqkbnr/pp1pp1pp/8/2p2p2/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Brussels_Gambit"
   },
   {
     name: "Sicilian Defense: Bücker Variation",
-    fen: "rnbqkbnr/pp1pppp1/7p/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    fen: "rnbqkbnr/pp1pp17p/7p/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
+    link: "https://lichess.org/opening/Sicilian_Defense_Bucker_Variation"
   },
   {
     name: "Sicilian Defense: Double-Dutch Gambit",
     fen: "rnbqkb1r/pp1pp1pp/7n/2p2P2/8/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Double-Dutch_Gambit"
   },
   {
     name: "Sicilian Defense: Frederico Variation",
     fen: "rnbqkbnr/pp1pp2p/6p1/2p2p2/3PP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Frederico_Variation"
   },
   {
     name: "Sicilian Defense: Hyperaccelerated Dragon",
     fen: "rnbqkbnr/pp1ppp1p/6p1/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Hyperaccelerated_Dragon"
   },
   {
     name: "Sicilian Defense: Hyperaccelerated Fianchetto",
     fen: "rnbqkbnr/pp1ppp1p/6p1/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Hyperaccelerated_Fianchetto"
   },
   {
     name: "Sicilian Defense: Hyperaccelerated Pterodactyl",
     fen: "rnbqk1nr/pp1pppbp/6p1/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Hyperaccelerated_Pterodactyl"
   },
   {
     name: "Sicilian Defense: Hyperaccelerated Pterodactyl, Exchange Variation",
     fen: "rnb1k1nr/pp1ppp1p/6p1/2P5/4P3/2q2N2/P1P2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Hyperaccelerated_Pterodactyl_Exchange_Variation"
   },
   {
     name: "Sicilian Defense: Jalalabad Variation",
     fen: "rnbqkbnr/pp1p1ppp/8/2p1p3/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Jalalabad_Variation"
   },
   {
     name: "Sicilian Defense: Katalimov Variation",
     fen: "rnbqkbnr/p2ppppp/1p6/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Katalimov_Variation"
   },
   {
     name: "Sicilian Defense: Mongoose Variation",
     fen: "rnb1kbnr/pp1ppppp/8/q1p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Mongoose_Variation"
   },
   {
     name: "Sicilian Defense: Polish Gambit",
     fen: "rnbqkbnr/p2ppppp/8/1pp5/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Polish_Gambit"
   },
   {
     name: "Sicilian Defense: Quinteros Variation",
     fen: "rnb1kbnr/ppqppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Quinteros_Variation"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation",
     fen: "rnbqkbnr/1p1ppppp/p7/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Aronin System",
     fen: "rnbqkbnr/1p1ppppp/p7/2p5/4P3/5N2/PPPPBPPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Aronin_System"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Kieseritzky System",
     fen: "rnbqkbnr/1p1ppppp/p7/2p5/4P3/1P3N2/P1PP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Kieseritzky_System"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Maróczy Bind",
     fen: "rnbqkbnr/1p1ppppp/p7/2p5/2P1P3/5N2/PP1P1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Maroczy_Bind"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Maróczy Bind, Paulsen Line",
     fen: "rnbqkbnr/1p1p1ppp/p3p3/2p5/2P1P3/5N2/PP1P1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Maroczy_Bind_Paulsen_Line"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Maróczy Bind, Robatsch Line",
     fen: "rnbqkbnr/1p2pppp/p2p4/2p5/2P1P3/5N2/PP1P1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Maroczy_Bind_Robatsch_Line"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Normal System",
     fen: "rnbqkbnr/1p1ppppp/p7/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Normal_System"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Normal System, Cortlever Gambit",
     fen: "rnbqkbnr/1p1ppppp/p7/8/2BpP3/5N2/PPP2PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Normal_System_Cortlever_Gambit"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Normal System, Smith-Morra Line",
     fen: "rnbqkbnr/1p1ppppp/p7/8/3pP3/2P2N2/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Normal_System_Smith-Morra_Line"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Normal System, Taimanov Line",
     fen: "rnbqkbnr/1p1p1ppp/p7/4p3/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Normal_System_Taimanov_Line"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Normal System, Zagorovsky Line",
     fen: "rnbqkbnr/1p1ppppp/p7/8/3QP3/5N2/PPP2PPP/RNB1KB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Normal_System_Zagorovsky_Line"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Quiet System",
     fen: "rnbqkbnr/1p1ppppp/p7/2p5/4P3/3P1N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Quiet_System"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Réti System",
     fen: "rnbqkbnr/1p1ppppp/p7/2p5/4P3/5NP1/PPPP1P1P/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Reti_System"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Venice System",
     fen: "rnbqkbnr/1p1ppppp/p7/2p5/4P3/2P2N2/PP1P1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Venice_System"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Venice System, Barcza Line",
     fen: "rnbqkb1r/1p1ppppp/p4n2/2p5/4P3/2P2N2/PP1P1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Venice_System_Barcza_Line"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Venice System, Gambit Line",
     fen: "rnbqkb1r/1p2pppp/p4n2/2pP4/8/2P2N2/PP1P1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Venice_System_Gambit_Line"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Venice System, Ljubojevic Line",
     fen: "rnbqkbnr/3ppppp/p7/1pp5/4P3/2P2N2/PP1P1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Venice_System_Ljubojevic_Line"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Venice System, Steiner Line",
     fen: "rnbqkbnr/1p2pppp/p2p4/2p5/4P3/2P2N2/PP1P1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Venice_System_Steiner_Line"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Wing Gambit",
     fen: "rnbqkbnr/1p1ppppp/p7/2p5/1P2P3/5N2/P1PP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Wing_Gambit"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Yerevan System",
     fen: "rnbqkbnr/1p1ppppp/p7/2p5/4P3/2N2N2/PPPP1PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Yerevan_System"
   },
   {
     name: "Sicilian Defense: Nimzowitsch Variation",
     fen: "rnbqkb1r/pp1ppppp/5n2/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nimzowitsch_Variation"
   },
   {
     name: "Sicilian Defense: Nimzowitsch Variation, Advance Variation",
     fen: "rnbqkb1r/pp1ppppp/5n2/2p1P3/8/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nimzowitsch_Variation_Advance_Variation"
   },
   {
     name: "Sicilian Defense: Nimzowitsch Variation, Closed Variation",
     fen: "rnbqkb1r/pp1ppppp/5n2/2p5/4P3/2N2N2/PPPP1PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nimzowitsch_Variation_Closed_Variation"
   },
   {
     name: "Sicilian Defense: Nimzowitsch Variation, Exchange Variation",
     fen: "rnbqkb1r/pp1ppppp/8/2p1P3/8/2n2N2/PPPP1PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nimzowitsch_Variation_Exchange_Variation"
   },
   {
     name: "Sicilian Defense: Nimzowitsch Variation, Main Line",
     fen: "r1bqkb1r/pp1p1ppp/2n5/2ppP3/3P4/5N2/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nimzowitsch_Variation_Main_Line"
   },
   {
     name: "Sicilian Defense: Closed, Anti-Sveshnikov Variation, Kharlov-Kramnik Line",
     fen: "r1bqk1nr/pp3ppp/2np4/2p1p1b1/2B1P3/2NP4/PPPN1PPP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Closed_Anti-Sveshnikov_Variation_Kharlov-Kramnik_Line"
   },
   {
     name: "Sicilian Defense: Nyezhmetdinov-Rossolimo Attack",
     fen: "r1bqkbnr/pp1ppppp/2n5/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nyezhmetdinov-Rossolimo_Attack"
   },
   {
     name: "Sicilian Defense: Nyezhmetdinov-Rossolimo Attack, San Francisco Gambit",
     fen: "r1bqkbnr/pp1ppppp/8/nBp5/1P2P3/5N2/P1PP1PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nyezhmetdinov-Rossolimo_Attack_San_Francisco_Gambit"
   },
   {
     name: "Sicilian Defense: Old Sicilian",
     fen: "r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Old_Sicilian"
   },
   {
     name: "Sicilian Defense: Portsmouth Gambit",
     fen: "r1bqkbnr/pp1ppppp/2n5/2p5/1P2P3/5N2/P1PP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Portsmouth_Gambit"
   },
   {
     name: "Sicilian Defense: Rossolimo Variation, Brooklyn Retreat Defense",
     fen: "rnbqkbnr/pp1ppppp/8/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Rossolimo_Variation_Brooklyn_Retreat_Defense"
   },
   {
     name: "Sicilian Defense: Nyezhmetdinov-Rossolimo Attack, Fianchetto Variation",
     fen: "r1bqkbnr/pp1ppp1p/2n3p1/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nyezhmetdinov-Rossolimo_Attack_Fianchetto_Variation"
   },
   {
     name: "Sicilian Defense: Nyezhmetdinov-Rossolimo Attack, Fianchetto Variation, Gufeld Gambit",
     fen: "r1bqk1nr/pp1p1pbp/2n3p1/1Bp1p3/3PP3/2P2N2/PP3PPP/RNBQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nyezhmetdinov-Rossolimo_Attack_Fianchetto_Variation_Gufeld_Gambit"
   },
   {
     name: "Sicilian Defense: Nyezhmetdinov-Rossolimo Attack, Fianchetto Variation, Lutikov Gambit",
     fen: "r1bqk2r/pp1pppbp/2n2np1/1Bp5/3PP3/2P2N2/PP3PPP/RNBQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nyezhmetdinov-Rossolimo_Attack_Fianchetto_Variation_Lutikov_Gambit"
   },
   {
     name: "Sicilian Defense: Nyezhmetdinov-Rossolimo Attack, Fianchetto Variation, Totsky Attack",
     fen: "r1bqk2r/pp1pppbp/2n2np1/1Bp5/Q3P3/2P2N2/PP1P1PPP/RNB2RK1",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nyezhmetdinov-Rossolimo_Attack_Fianchetto_Variation_Totsky_Attack"
   },
   {
     name: "Sicilian Defense: Nyezhmetdinov-Rossolimo Attack, Gurgenidze Variation",
     fen: "r1bqk1nr/pp1p1pbp/2n3p1/1Bp1p3/1P2P3/5N2/P1PP1PPP/RNBQR1K1",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nyezhmetdinov-Rossolimo_Attack_Gurgenidze_Variation"
   },
   {
     name: "Sicilian Defense: Accelerated Dragon",
     fen: "r1bqkbnr/pp1ppp1p/2n3p1/8/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Accelerated_Dragon"
   },
   {
     name: "Sicilian Defense: Flohr Variation",
     fen: "r1b1kbnr/ppqppppp/2n5/8/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Flohr_Variation"
   },
   {
     name: "Sicilian Defense: Franco-Sicilian Variation",
     fen: "r1bqkbnr/pp1p1ppp/2n1p3/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Franco-Sicilian_Variation"
   },
   {
     name: "Sicilian Defense: Godiva Variation",
     fen: "r1b1kbnr/pp1ppppp/1qn5/8/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Godiva_Variation"
   },
   {
     name: "Sicilian Defense: Kalashnikov Variation",
     fen: "r1bqkbnr/pp3ppp/2np4/1N2p3/4P3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kalashnikov_Variation"
   },
   {
     name: "Sicilian Defense: Löwenthal Variation",
     fen: "r1bqkbnr/pp1p1ppp/2n5/4p3/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Lowenthal_Variation"
   },
   {
     name: "Sicilian Defense: Nimzo-American Variation",
     fen: "r1bqkbnr/pp2pppp/2n5/3p4/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Nimzo-American_Variation"
   },
   {
     name: "Sicilian Defense: O'Kelly Variation, Maróczy Bind, Geller Line",
     fen: "r1bqkbnr/1p1p1ppp/p1n5/4p3/2PNP3/8/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_O'Kelly_Variation_Maroczy_Bind_Geller_Line"
   },
   {
     name: "Sicilian Defense: Open",
     fen: "r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Open"
   },
   {
     name: "Sicilian Defense: Open",
     fen: "r1bqkbnr/pp1ppppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Open"
   },
   {
     name: "Sicilian Defense: Open",
     fen: "r1bqkbnr/pp1ppppp/2n5/8/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Open"
   },
   {
     name: "Sicilian Defense: Four Knights Variation, Cobra Variation",
     fen: "r1bqk2r/pp1p1ppp/2n1pn2/1Nb5/4P3/2N5/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Four_Knights_Variation_Cobra_Variation"
   },
   {
     name: "Sicilian Defense: Lasker-Pelikan Variation",
     fen: "r1bqkb1r/pp1p1ppp/2n2n2/4p3/3NP3/2N5/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Lasker-Pelikan_Variation"
   },
   {
     name: "Sicilian Defense: Lasker-Pelikan Variation, Bird Variation",
     fen: "r2qkb1r/1p3ppp/p1npbn2/4p1B1/4P3/N1N5/PPP2PPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Lasker-Pelikan_Variation_Bird_Variation"
   },
   {
     name: "Sicilian Defense: Lasker-Pelikan Variation, Exchange Variation",
     fen: "r1bqkb1r/pp1p1ppp/2N2n2/4p3/4P3/2N5/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Lasker-Pelikan_Variation_Exchange_Variation"
   },
   {
     name: "Sicilian Defense: Lasker-Pelikan Variation, Retreat Variation",
     fen: "r1bqkb1r/pp1p1ppp/2n2n2/4p3/4P3/2N2N2/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Lasker-Pelikan_Variation_Retreat_Variation"
   },
   {
     name: "Sicilian Defense: Lasker-Pelikan Variation, Schlechter Variation",
     fen: "r1bqkb1r/pp1p1ppp/2n2n2/4p3/4P3/1NN5/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Lasker-Pelikan_Variation_Schlechter_Variation"
   },
   {
     name: "Sicilian Defense: Lasker-Pelikan Variation, Sveshnikov Variation",
     fen: "r1bqkb1r/5ppp/p1np1n2/1p2p1B1/4P3/N1N5/PPP2PPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Lasker-Pelikan_Variation_Sveshnikov_Variation"
   },
   {
     name: "Sicilian Defense: Lasker-Pelikan Variation, Sveshnikov Variation",
     fen: "r1bqkb1r/5p1p/p1np4/1p1Npp2/4P3/N7/PPP2PPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Lasker-Pelikan_Variation_Sveshnikov_Variation"
   },
   {
     name: "Sicilian Defense: Lasker-Pelikan Variation, Sveshnikov Variation, Chelyabinsk Variation",
     fen: "r1bqkb1r/5ppp/p1np1n2/1p1Np1B1/4P3/N7/PPP2PPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Lasker-Pelikan_Variation_Sveshnikov_Variation_Chelyabinsk_Variation"
   },
   {
     name: "Sicilian Defense: Lasker-Pelikan Variation, Sveshnikov Variation, Novosibirsk Variation",
     fen: "r1bqk2r/5pbp/p1np1p2/1p1Np3/4P3/N7/PPP2PPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Lasker-Pelikan_Variation_Sveshnikov_Variation_Novosibirsk_Variation"
   },
   {
     name: "Sicilian Defense: Lasker-Pelikan Variation, Sveshnikov Variation, Peresypkin's Sacrifice",
     fen: "r1bqkb1r/5p1p/p1np4/1B1Npp2/4P3/N7/PPP2PPP/R2QK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Lasker-Pelikan_Variation_Sveshnikov_Variation_Peresypkins_Sacrifice"
   },
   {
     name: "Sicilian Defense: Open",
     fen: "r1bqkb1r/pp1ppppp/2n2n2/8/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Open"
   },
   {
     name: "Sicilian Defense: Accelerated Dragon, Exchange Variation",
     fen: "r1bqkbnr/pp1ppp1p/2N3p1/8/4P3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Accelerated_Dragon_Exchange_Variation"
   },
   {
     name: "Sicilian Defense: Accelerated Dragon, Modern Variation",
     fen: "r1bqkbnr/pp1ppp1p/2n3p1/8/3NP3/2N5/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Accelerated_Dragon_Modern_Variation"
   },
   {
     name: "Sicilian Defense: Accelerated Dragon, Modern Bc4 Variation",
     fen: "r1bqk2r/pp1pppbp/2n2np1/8/2BNP3/2N1B3/PPP2PPP/R2QK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Accelerated_Dragon_Modern_Bc4_Variation"
   },
   {
     name: "Sicilian Defense: Dragon Variation, Modern Bc4 Variation",
     fen: "r1bqk2r/pp2ppbp/2np1np1/8/2BNP3/2N1B3/PPP2PPP/R2QK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Dragon_Variation_Modern_Bc4_Variation"
   },
   {
     name: "Sicilian Defense: Accelerated Dragon, Maróczy Bind",
     fen: "r1bqkbnr/pp1ppp1p/2n3p1/8/2PNP3/8/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Accelerated_Dragon_Maroczy_Bind"
   },
   {
     name: "Sicilian Defense: Accelerated Dragon, Maróczy Bind, Gurgenidze Variation",
     fen: "r1bqkb1r/pp2pp1p/3p1np1/8/2PQP3/2N5/PP3PPP/R1B1KB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Accelerated_Dragon_Maroczy_Bind_Gurgenidze_Variation"
   },
   {
     name: "Sicilian Defense: Accelerated Dragon, Maróczy Bind",
     fen: "r1bqk1nr/pp1pppbp/2n3p1/8/2PNP3/8/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Accelerated_Dragon_Maroczy_Bind"
   },
   {
     name: "Sicilian Defense: Accelerated Dragon, Simagin Variation",
     fen: "r1bqk2r/pp2ppbp/2np2pn/8/2P1P3/8/PPN1BPPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Accelerated_Dragon_Simagin_Variation"
   },
   {
     name: "Sicilian Defense: Accelerated Dragon, Maróczy Bind",
     fen: "r1bqk1nr/pp1pppbp/2n3p1/8/2PNP3/4B3/PP3PPP/RN1QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Accelerated_Dragon_Maroczy_Bind"
   },
   {
     name: "Sicilian Defense: Accelerated Dragon, Maróczy Bind, Breyer Variation",
     fen: "r1bqk2r/pp1pppbp/2n3p1/8/2PNP1n1/2N1B3/PP3PPP/R2QKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Accelerated_Dragon_Maroczy_Bind_Breyer_Variation"
   },
   {
     name: "Sicilian Defense: Alapin Variation, Sherzer Variation",
     fen: "r1bqkb1r/pp1p1ppp/2n1p3/2pnP3/3P4/2P2N2/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Alapin_Variation_Sherzer_Variation"
   },
   {
     name: "Sicilian Defense: Delayed Alapin Variation",
     fen: "rnbqkbnr/pp1p1ppp/4p3/2p5/4P3/2P2N2/PP1P1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Delayed_Alapin_Variation"
   },
   {
     name: "Sicilian Defense: Drazic Variation",
     fen: "rnbqkbnr/1p1p1ppp/p3p3/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Drazic_Variation"
   },
   {
     name: "Sicilian Defense: Four Knights Variation",
     fen: "r1bqkb1r/pp1p1ppp/2n1pn2/8/3NP3/2N5/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Four_Knights_Variation"
   },
   {
     name: "Sicilian Defense: Four Knights Variation, Exchange Variation",
     fen: "r1bqkb1r/pp1p1ppp/2N1pn2/8/4P3/2N5/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Four_Knights_Variation_Exchange_Variation"
   },
   {
     name: "Sicilian Defense: French Variation",
     fen: "rnbqkbnr/pp1p1ppp/4p3/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_French_Variation"
   },
   {
     name: "Sicilian Defense: French Variation, Normal",
     fen: "rnbqkb1r/pp1p1ppp/4pn2/8/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_French_Variation_Normal"
   },
   {
     name: "Sicilian Defense: French Variation, Open",
     fen: "rnbqkbnr/pp1p1ppp/4p3/8/3pP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_French_Variation_Open"
   },
   {
     name: "Sicilian Defense: French Variation, Westerinen Attack",
     fen: "rnbqkbnr/pp1p1ppp/4p3/2p5/4P3/1P3N2/P1PP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_French_Variation_Westerinen_Attack"
   },
   {
     name: "Sicilian Defense: Gaw-Paw Variation",
     fen: "rnb1kb1r/pp1p1ppp/1q2pn2/8/3NP3/2N5/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Gaw-Paw_Variation"
   },
   {
     name: "Sicilian Defense: Kan Variation, Wing Attack, Fianchetto Variation",
     fen: "rnbqkbnr/3p1ppp/p3p3/1p6/3NP3/2N3P1/PPP2P1P/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Wing_Attack_Fianchetto_Variation"
   },
   {
     name: "Sicilian Defense: Kramnik Variation",
     fen: "rnbqkbnr/pp1p1ppp/4p3/2p5/2P1P3/5N2/PP1P1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kramnik_Variation"
   },
   {
     name: "Sicilian Defense: Kveinis Variation",
     fen: "rnb1kbnr/pp1p1ppp/1q2p3/8/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kveinis_Variation"
   },
   {
     name: "Sicilian Defense: Marshall Counterattack",
     fen: "rnbqkbnr/pp3ppp/4p3/2pp4/3PP3/5N2/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Marshall_Counterattack"
   },
   {
     name: "Sicilian Defense: Paulsen-Basman Defense",
     fen: "rnbqk1nr/pp1p1ppp/4p3/2b5/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Paulsen-Basman_Defense"
   },
   {
     name: "Sicilian Defense: Pin Variation",
     fen: "rnbqk2r/pp1p1ppp/4pn2/8/1b1NP3/2N5/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Pin_Variation"
   },
   {
     name: "Sicilian Defense: Pin Variation, Jaffe Variation",
-    fen: "rnbqk2r/pp1p1ppp/5n2/4p3/1b1NP3/2NB4/PPP2PPP/R1BQK2R",
-    link: ""
+    fen: "rnbqk2r/pp1p1ppp/5n2/4p3/1b1NP3/2NB3/PPP2PPP/R1BQK2R",
+    link: "https://lichess.org/opening/Sicilian_Defense_Pin_Variation_Jaffe_Variation"
   },
   {
     name: "Sicilian Defense: Pin Variation, Koch Variation",
     fen: "rnbqk2r/pp1p1ppp/4pn2/4P3/1b1N4/2N5/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Pin_Variation_Koch_Variation"
   },
   {
     name: "Sicilian Defense: Smith-Morra Gambit Deferred",
     fen: "rnbqkbnr/pp1p1ppp/4p3/8/3pP3/2P2N2/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Smith-Morra_Gambit_Deferred"
   },
   {
     name: "Sicilian Defense: Wing Gambit Deferred",
     fen: "rnbqkbnr/pp1p1ppp/4p3/2p5/1P2P3/5N2/P1PP1PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Wing_Gambit_Deferred"
   },
   {
     name: "Sicilian Defense: Kan Variation",
     fen: "rnbqkbnr/1p1p1ppp/p3p3/8/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation"
   },
   {
     name: "Sicilian Defense: Kan Variation, Maróczy Bind, Bronstein Variation",
-    fen: "r1bqk2r/1p1p1ppp/p1n1pn2/8/1bPNP3/2NB4/PP3PPP/R1BQK2R",
-    link: ""
+    fen: "r1bqk2r/1p1p1ppp/p1n1pn2/8/1bPNP3/2NB3/PP3PPP/R1BQK2R",
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Maroczy_Bind_Bronstein_Variation"
   },
   {
     name: "Sicilian Defense: Kan Variation, Maróczy Bind, Bronstein Variation",
     fen: "r1bqk2r/1p1p1ppp/p1n1pn2/8/1bPNP3/2N5/PPB2PPP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Maroczy_Bind_Bronstein_Variation"
   },
   {
     name: "Sicilian Defense: Kan Variation, Maróczy Bind, Hedgehog Variation",
     fen: "rnbqkbnr/1p1p1p1p/p3p1p1/8/2PNP3/8/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Maroczy_Bind_Hedgehog_Variation"
   },
   {
     name: "Sicilian Defense: Kan Variation, Maróczy Bind, Réti Variation",
     fen: "rnbqkbnr/1p1p1ppp/p3p3/8/2PNP3/8/PP3PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Maroczy_Bind_Reti_Variation"
   },
   {
     name: "Sicilian Defense: Kan Variation, Gipslis Variation",
     fen: "rnbqkb1r/1p3p1p/p2ppnp1/8/2PNP3/3B4/PP3PPP/RNBQ1RK1",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Gipslis_Variation"
   },
   {
     name: "Sicilian Defense: Kan Variation, Modern Variation",
     fen: "rnbqkbnr/1p1p1ppp/p3p3/8/3NP3/3B4/PPP2PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Modern_Variation"
   },
   {
     name: "Sicilian Defense: Kan Variation, Polugaevsky Variation",
     fen: "rnbqk1nr/1p1p1ppp/p3p3/2b5/3NP3/3B4/PPP2PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Polugaevsky_Variation"
   },
   {
     name: "Sicilian Defense: Kan Variation, Swiss Cheese Variation",
     fen: "rnbqkbnr/1p1p1p1p/p3p1p1/8/3NP3/3B4/PPP2PPP/RNBQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Swiss_Cheese_Variation"
   },
   {
     name: "Sicilian Defense: Kan Variation, Knight Variation",
     fen: "rnbqkbnr/1p1p1ppp/p3p3/8/3NP3/2N5/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Knight_Variation"
   },
   {
     name: "Sicilian Defense: Kan Variation, Wing Attack",
     fen: "rnbqkbnr/3p1ppp/p3p3/1p6/3NP3/2N5/PPP2PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Wing_Attack"
   },
   {
     name: "Sicilian Defense: Kan Variation, Wing Attack, Christiansen's Dream",
     fen: "rnb1k1nr/3p1ppp/pq2p3/1pb5/3NP1Q1/2NBB3/PPP2PPP/R3K2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Wing_Attack_Christiansens_Dream"
   },
   {
     name: "Sicilian Defense: Kan Variation, Wing Attack, Spraggett Attack",
     fen: "rnb1kbnr/3p1ppp/pq2p3/1p6/4P3/2NB1N2/PPP2PPP/R1BQK2R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Kan_Variation_Wing_Attack_Spraggett_Attack"
   },
   {
     name: "Sicilian Defense: Taimanov Variation",
     fen: "r1bqkbnr/pp1p1ppp/2n1p3/8/3NP3/8/PPP2PPP/RNBQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Taimanov_Variation"
   },
   {
     name: "Sicilian Defense: Taimanov Variation, Gary Gambit",
     fen: "r1bqkb1r/1p3ppp/p1n1pn2/3p4/2P1P3/N1N5/PP3PPP/R1BQKB1R",
-    link: ""
+    link: "https://lichess.org/opening/Sicilian_Defense_Taimanov_Variation_Gary_Gambit"
   },
   {
     name: "Sicilian Defense: Taimanov Variation, Modern Line",
