@@ -52,6 +52,7 @@ export const EngineInformation: Map<EngineName, EngineInfo> = new Map<EngineName
       EngineName.Stockfish18,
       {
         displayName: "Stockfish 18",
+        displayNameSmall: "SF18",
         type: EngineType.NNUE,
         sizeMb: 108,
         additionalText: "Strongest",
@@ -62,6 +63,7 @@ export const EngineInformation: Map<EngineName, EngineInfo> = new Map<EngineName
     [EngineName.Stockfish18Lite, 
       {
         displayName: "Stockfish 18 Lite", 
+        displayNameSmall: "SF18L",
         type: EngineType.NNUE, 
         sizeMb: 7,
         additionalText: "Default",
@@ -72,6 +74,7 @@ export const EngineInformation: Map<EngineName, EngineInfo> = new Map<EngineName
     [EngineName.Stockfish17_1, 
       {
         displayName: "Stockfish 17.1", 
+        displayNameSmall: "SF17.1",
         type: EngineType.NNUE, 
         sizeMb: 77
       }
@@ -81,6 +84,7 @@ export const EngineInformation: Map<EngineName, EngineInfo> = new Map<EngineName
     [EngineName.Stockfish17_1Lite, 
       {
         displayName: "Stockfish 17.1 Lite", 
+        displayNameSmall: "SF17.1L",
         type: EngineType.NNUE, 
         sizeMb: 7,
       }
@@ -90,6 +94,7 @@ export const EngineInformation: Map<EngineName, EngineInfo> = new Map<EngineName
     [EngineName.Stockfish11, 
       {
         displayName: "Stockfish 11", 
+        displayNameSmall: "SF11",
         type: EngineType.HCE, 
         sizeMb: 1.3,
         additionalText: "Legacy"
@@ -102,6 +107,7 @@ export interface EngineInfo
 {
   type: EngineType,
   displayName: string,
+  displayNameSmall: string
   sizeMb: number
   additionalText?: string
 }
