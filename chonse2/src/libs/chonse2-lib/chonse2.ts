@@ -35,10 +35,14 @@ export default class Chonse2
 
   //CONSTANTS
   static readonly SIZE: number = 8;
+
+  //ranks
   static readonly WHITE_PAWN_RANK = 2;
   static readonly BLACK_PAWN_RANK = 7;
   static readonly WHITE_PAWN_PROMOTE_RANK = 8;
   static readonly BLACK_PAWN_PROMOTE_RANK = 1;
+
+  //squares (pieces)
   static readonly WHITE_QUEENSIDE_KNIGHT_SQUARE = "b1";
   static readonly WHITE_QUEENSIDE_BISHOP_SQUARE = "c1";
   static readonly WHITE_QUEENSIDE_ROOK_SQUARE = "a1";
@@ -55,6 +59,29 @@ export default class Chonse2
   static readonly BLACK_KINGSIDE_ROOK_SQUARE = "h8"
   static readonly BLACK_QUEEN_SQUARE = "d8";
   static readonly BLACK_KING_SQUARE = "e8";
+
+  //squares (pawns)
+  static readonly WHITE_QUEENSIDE_ROOK_PAWN_SQUARE = "a2";
+  static readonly WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE = "b2";
+  static readonly WHITE_QUEENSIDE_BISHOP_PAWN_SQUARE = "c2";
+  static readonly WHITE_QUEEN_PAWN_SQUARE = "d2";
+  static readonly WHITE_KING_PAWN_SQUARE = "e2";
+  static readonly WHITE_KINGSIDE_BISHOP_PAWN_SQUARE = "f2";
+  static readonly WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE = "g2";
+  static readonly WHITE_KINGSIDE_ROOK_PAWN_SQUARE = "h2";
+
+  static readonly BLACK_QUEENSIDE_ROOK_PAWN_SQUARE = "a7";
+  static readonly BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE = "b7";
+  static readonly BLACK_QUEENSIDE_BISHOP_PAWN_SQUARE = "c7";
+  static readonly BLACK_QUEEN_PAWN_SQUARE = "d7";
+  static readonly BLACK_KING_PAWN_SQUARE = "e7";
+  static readonly BLACK_KINGSIDE_BISHOP_PAWN_SQUARE = "f7";
+  static readonly BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE = "g7";
+  static readonly BLACK_KINGSIDE_ROOK_PAWN_SQUARE = "h7";
+
+  //squares (center)
+  static readonly CENTER_SQUARES = ["d4", "e4", "d5", "e5"];
+
   static readonly DRAW_BY_REPETITION_THRESHOLD: number = 3;
   static readonly DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD = 100; //50 full moves * 2
 

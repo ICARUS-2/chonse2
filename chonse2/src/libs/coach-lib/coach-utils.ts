@@ -124,7 +124,7 @@ export class CoachUtils
         ]
     )
 
-    //Bad=============
+    //#region Bad=============
     //If the player just hung a piece.
     private static readonly PIECE_HANG_SENTENCES: Array<string> = 
     [
@@ -189,8 +189,9 @@ export class CoachUtils
         `${CoachUtils.TURN_PLACEHOLDER} completely ignored the pin of their ${CoachUtils.PIECE_PLACEHOLDER}, and now their ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER} is lost. `,
         `${CoachUtils.TURN_PLACEHOLDER} didn't notice their ${CoachUtils.PIECE_PLACEHOLDER} was pinned, exposing the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER} behind it. `
     ]
+    //#endregion
 
-    //Good============
+    //#region Good============
     //Player accurately found a mating sequence.
     private static readonly FOUND_MATE_SENTENCES: Array<string> = 
     [
@@ -218,6 +219,26 @@ export class CoachUtils
         `The opponent will have to watch the pin on their ${CoachUtils.PIECE_PLACEHOLDER}. `,
         `${CoachUtils.TURN_PLACEHOLDER} just pinned the ${CoachUtils.PIECE_PLACEHOLDER} to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}, restricting its mobility. `
     ]
+    //#endregion
+    
+    //#region Good (development)
+    private static readonly PREPARES_BISHOP_FOR_DEVELOPMENT_SENTENCES: Array<string> = 
+    [
+        "This move prepares a bishop for development. ",
+        "This move prepares the bishop to become active. "
+    ]
+
+    private static readonly KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES: Array<string> = 
+    [
+        "This brings the knight into play and increases influence in the center. ",
+        "This move develops the knight and pressures key squares in the center. ",
+        "The knight is brought into play, eyeing the central squares.",
+        "This aims to control central space with the knight. ",
+        "The knight is moved to an active square, strengthening control over the center. ",
+        "Develops the knight and attacks the center. "
+    ]
+    //#endregion 
+
     //#endregion
 
 
@@ -283,7 +304,12 @@ export class CoachUtils
                         if (openingObj.link != "")
                         {
                             move.coachResources.set( CoachResourceFlagType.Opening, openingObj.link );
-                            move.coachComment+= openingObj.name;
+                            move.coachComment+= openingObj.name + ". ";
+                        }
+
+                        if (openingObj.name.includes("Wayward Queen Attack"))
+                        {
+                            move.coachComment += "Developing the queen this early is potentially dangerous, as the queen can easily become a target by other minor pieces. "
                         }
                     }
                 }
@@ -718,6 +744,59 @@ export class CoachUtils
                     }
                 }
             
+                //=======Good - Development
+                if (posEval.moveClassification == MoveClassification.Excellent ||
+                    posEval.moveClassification == MoveClassification.Best || 
+                    posEval.moveClassification == MoveClassification.Perfect ||
+                    posEval.moveClassification == MoveClassification.Okay ||
+                    posEval.moveClassification == MoveClassification.Opening
+                )
+                {
+                    //Case: Player developed a knight towards the center
+                    if (
+                        (move.fromCoord == Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE && (move.toCoord == "f3" || move.toCoord == "e2")) ||
+                        (move.fromCoord == Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "c3" || move.toCoord == "d2")) || 
+                        (move.fromCoord == Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE && (move.toCoord == "f6") || (move.toCoord == "e7")) || 
+                        (move.fromCoord == Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "d7" || move.toCoord == "c6"))
+                    )
+                    {
+                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES, "");
+
+                        const potentiallyLegalKnightMoves = state._getPotentiallyLegalMoves(move.toCoord);
+                        const controlledCentralSquares: Array<string> = [];
+
+                        Chonse2.CENTER_SQUARES.forEach( centralSquare => 
+                            {
+                                potentiallyLegalKnightMoves.forEach( moveSquare => 
+                                    {
+                                        if (centralSquare == moveSquare)
+                                        {
+                                            controlledCentralSquares.push(centralSquare);
+                                        }
+                                    }
+                                )
+                            }
+                        )
+
+                        if (controlledCentralSquares.length > 0)
+                        {
+                            const idea = new CoachIdea();
+                            
+                            controlledCentralSquares.forEach( sq =>
+                                {
+                                    const arrow = createArrow(move.toCoord, sq, ArrowColors.IDEA, ArrowContext.Coach);
+                                    if (arrow)
+                                    {
+                                        idea.arrows.push(arrow);
+                                    }
+                                }
+                            )
+                            
+                            move.coachIdeas.set(CoachIdeaFlagType.CentralControlIdea, idea);
+                        }
+                    }
+                }
+
                 if (move.coachComment == "")
                 {
                     move.coachComment = this.getBaseSentence(posEval.moveClassification ?? MoveClassification.None).replace(this.TURN_PLACEHOLDER, colorThatMovedText);
@@ -798,7 +877,7 @@ export class CoachUtils
         return "piece";
     }
 
-    private static formatCoachStringWithPlaceholders(sentence: string, playerColor: string, piece: string, secondaryPiece: string): string
+    private static _formatCoachStringWithPlaceholders(sentence: string, playerColor: string, piece: string, secondaryPiece: string): string
     {
         return sentence
             .replace(CoachUtils.TURN_PLACEHOLDER, playerColor)
@@ -809,7 +888,7 @@ export class CoachUtils
     private static selectAndFormatSentence(arr: Array<string>, playerColor: string, piece: string = "", secondaryPiece: string = "")
     {
         let newSentence = arr[CoachUtils.getRandomIndex(arr.length)];
-        newSentence = this.formatCoachStringWithPlaceholders(newSentence, playerColor, CoachUtils.convertPieceToText(piece), CoachUtils.convertPieceToText(secondaryPiece));
+        newSentence = this._formatCoachStringWithPlaceholders(newSentence, playerColor, CoachUtils.convertPieceToText(piece), CoachUtils.convertPieceToText(secondaryPiece));
 
         return newSentence;
     }
@@ -851,7 +930,8 @@ export enum CoachMoveFlagType
 export enum CoachIdeaFlagType
 {
     ForkIdea,
-    PinIdea
+    PinIdea,
+    CentralControlIdea
 }
 
 export enum CoachResourceFlagType 

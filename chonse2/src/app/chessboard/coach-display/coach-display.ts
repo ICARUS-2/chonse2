@@ -136,6 +136,11 @@ export class CoachDisplay {
       return BASE + "Pinned Piece";
     }
 
+    if (flag == CoachIdeaFlagType.CentralControlIdea)
+    {
+      return BASE + "Center Pressure"
+    }
+
     return BASE;
   }
 
