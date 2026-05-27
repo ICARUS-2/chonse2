@@ -145,7 +145,11 @@ export class CoachDisplay {
     {
       return BASE + "Development"
     }
-    
+
+    if (flag == CoachIdeaFlagType.FianchettoIdea)
+    {
+      return BASE + "Fianchetto"
+    }
     return BASE;
   }
 

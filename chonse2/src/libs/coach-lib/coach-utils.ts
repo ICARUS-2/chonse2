@@ -229,6 +229,12 @@ export class CoachUtils
         "Moving the pawn allowing the bishop to step into the action. "
     ]
 
+    private static readonly PREPARES_BISHOP_FOR_FIANCHETTO_DEVELOPMENT_SENTENCES: Array<string> = 
+    [
+        "This prepares the bishop for a fianchetto to control the main diagonal. ",
+        "Opens their bishop up for a fianchetto move to exert pressure on the long diagonal. "
+    ]
+
     private static readonly KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES: Array<string> = 
     [
         "This brings the knight into play and increases influence in the center. ",
@@ -799,8 +805,9 @@ export class CoachUtils
                         }
                     }
 
-                    //Case: Player moved a pawn allowing the bishop to step into the game.
-                    if (
+                    //Case: Player moved a pawn allowing the bishop to step into the game (normal development).
+                    if 
+                    (
                         (
                             move.notation.startsWith(Chonse2.WHITE_KING_PAWN_SQUARE) 
                             && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
@@ -905,6 +912,76 @@ export class CoachUtils
                         idea.highlightedSquares.push(...movesThatDontHangTheBishop);
                         move.coachIdeas.set(CoachIdeaFlagType.DevelopmentIdea, idea);
                     }
+                }
+
+                //Case: Player moved a pawn allowing the bishop to be developed (fianchetto)
+                if 
+                (
+                    (
+                        move.notation.startsWith(Chonse2.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE) 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                    )
+                    ||
+                    (
+                        move.notation.startsWith(Chonse2.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                    )
+                    ||
+                    (
+                        move.notation.startsWith(Chonse2.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE) 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                    )
+                    ||
+                    (
+                        move.notation.startsWith(Chonse2.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                    )
+                )
+                {
+                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PREPARES_BISHOP_FOR_FIANCHETTO_DEVELOPMENT_SENTENCES, "")
+
+                    //Determine where the fianchetto square & bishop coord is
+                    let fianchettoSquare = "";
+                    let bishopSquare = "";
+                    if (move.notation.startsWith(Chonse2.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE))
+                    {
+                        fianchettoSquare = "g2";
+                        bishopSquare = Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE;
+                    }
+
+                    if (move.notation.startsWith(Chonse2.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE))
+                    {
+                        fianchettoSquare = "b2"
+                        bishopSquare = Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE;
+                    }
+
+                    if (move.notation.startsWith(Chonse2.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE))
+                    {
+                        fianchettoSquare = "g7"
+                        bishopSquare = Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE;
+                    }
+
+                    if (move.notation.startsWith(Chonse2.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE))
+                    {
+                        fianchettoSquare = "b7"
+                        bishopSquare = Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE;
+                    }
+
+                    //then add the idea to the move.
+                    const idea = new CoachIdea();
+                    const arrow = createArrow(bishopSquare, fianchettoSquare, ArrowColors.IDEA, ArrowContext.Coach);
+
+                    if (arrow)
+                    {
+                        idea.arrows = [arrow];
+                    }
+
+                    idea.highlightedSquares = [fianchettoSquare];
+                    move.coachIdeas.set(CoachIdeaFlagType.FianchettoIdea, idea);
                 }
 
                 if (move.coachComment == "")
@@ -1076,7 +1153,8 @@ export enum CoachIdeaFlagType
     ForkIdea,
     PinIdea,
     CentralControlIdea,
-    DevelopmentIdea
+    DevelopmentIdea,
+    FianchettoIdea
 }
 
 export enum CoachResourceFlagType 
