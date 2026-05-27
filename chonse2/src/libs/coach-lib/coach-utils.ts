@@ -782,7 +782,6 @@ export class CoachUtils
                         (move.fromCoord == Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "d7" || move.toCoord == "c6"))
                     )
                     {
-                        console.log(move);
                         move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES, "");
 
                         //To evaluate central squares hit by the knight, check if the knight can move to one of them.
@@ -928,94 +927,94 @@ export class CoachUtils
                         idea.highlightedSquares.push(...movesThatDontHangTheBishop);
                         move.coachIdeas.set(CoachIdeaFlagType.DevelopmentIdea, idea);
                     }
-                }
 
-                //Case: Player moved a pawn allowing the bishop to be developed (fianchetto)
-                if 
-                (
+                    //Case: Player moved a pawn allowing the bishop to be developed (fianchetto)
+                    if 
                     (
-                        move.notation.startsWith(Chonse2.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE) 
-                        && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
-                        && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                        (
+                            move.notation.startsWith(Chonse2.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE) 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                        )
+                        ||
+                        (
+                            move.notation.startsWith(Chonse2.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                        )
+                        ||
+                        (
+                            move.notation.startsWith(Chonse2.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE) 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                        )
+                        ||
+                        (
+                            move.notation.startsWith(Chonse2.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                        )
                     )
-                    ||
+                    {
+                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PREPARES_BISHOP_FOR_FIANCHETTO_DEVELOPMENT_SENTENCES, "")
+
+                        //Determine where the fianchetto square & bishop coord is
+                        let fianchettoSquare = "";
+                        let bishopSquare = "";
+                        if (move.notation.startsWith(Chonse2.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE))
+                        {
+                            fianchettoSquare = "g2";
+                            bishopSquare = Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE;
+                        }
+
+                        if (move.notation.startsWith(Chonse2.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE))
+                        {
+                            fianchettoSquare = "b2"
+                            bishopSquare = Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE;
+                        }
+
+                        if (move.notation.startsWith(Chonse2.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE))
+                        {
+                            fianchettoSquare = "g7"
+                            bishopSquare = Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE;
+                        }
+
+                        if (move.notation.startsWith(Chonse2.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE))
+                        {
+                            fianchettoSquare = "b7"
+                            bishopSquare = Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE;
+                        }
+
+                        //then add the idea to the move.
+                        const idea = new CoachIdea();
+                        const arrow = createArrow(bishopSquare, fianchettoSquare, ArrowColors.IDEA, ArrowContext.Coach);
+
+                        if (arrow)
+                        {
+                            idea.arrows = [arrow];
+                        }
+
+                        idea.highlightedSquares = [fianchettoSquare];
+                        move.coachIdeas.set(CoachIdeaFlagType.FianchettoIdea, idea);
+                    }
+
+                    //Case: Player moved a bishop off its starting square
+                    if 
                     (
-                        move.notation.startsWith(Chonse2.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
-                        && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
-                        && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                        (move.fromCoord == Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_BISHOP) ||
+                        (move.fromCoord == Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_BISHOP ) ||
+                        (move.fromCoord == Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_BISHOP) ||
+                        (move.fromCoord == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_BISHOP)
                     )
-                    ||
-                    (
-                        move.notation.startsWith(Chonse2.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE) 
-                        && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
-                        && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
-                    )
-                    ||
-                    (
-                        move.notation.startsWith(Chonse2.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
-                        && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
-                        && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
-                    )
-                )
-                {
-                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PREPARES_BISHOP_FOR_FIANCHETTO_DEVELOPMENT_SENTENCES, "")
-
-                    //Determine where the fianchetto square & bishop coord is
-                    let fianchettoSquare = "";
-                    let bishopSquare = "";
-                    if (move.notation.startsWith(Chonse2.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE))
                     {
-                        fianchettoSquare = "g2";
-                        bishopSquare = Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE;
-                    }
-
-                    if (move.notation.startsWith(Chonse2.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE))
-                    {
-                        fianchettoSquare = "b2"
-                        bishopSquare = Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE;
-                    }
-
-                    if (move.notation.startsWith(Chonse2.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE))
-                    {
-                        fianchettoSquare = "g7"
-                        bishopSquare = Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE;
-                    }
-
-                    if (move.notation.startsWith(Chonse2.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE))
-                    {
-                        fianchettoSquare = "b7"
-                        bishopSquare = Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE;
-                    }
-
-                    //then add the idea to the move.
-                    const idea = new CoachIdea();
-                    const arrow = createArrow(bishopSquare, fianchettoSquare, ArrowColors.IDEA, ArrowContext.Coach);
-
-                    if (arrow)
-                    {
-                        idea.arrows = [arrow];
-                    }
-
-                    idea.highlightedSquares = [fianchettoSquare];
-                    move.coachIdeas.set(CoachIdeaFlagType.FianchettoIdea, idea);
-                }
-
-                //Case: Player moved a bishop off its starting square
-                if 
-                (
-                    (move.fromCoord == Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_BISHOP) ||
-                    (move.fromCoord == Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_BISHOP ) ||
-                    (move.fromCoord == Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_BISHOP) ||
-                    (move.fromCoord == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_BISHOP)
-                )
-                {
-                    if (FIANCHETTOS.includes(move.toCoord))
-                    {
-                        move.coachComment += CoachUtils.selectAndFormatSentence(this.BISHOP_FIANCHETTOED_SENTENCES, colorThatMovedText);
-                    }
-                    else 
-                    {
-                        move.coachComment += CoachUtils.selectAndFormatSentence(this.BISHOP_DEVELOPED_SENTENCES, colorThatMovedText);
+                        if (FIANCHETTOS.includes(move.toCoord))
+                        {
+                            move.coachComment += CoachUtils.selectAndFormatSentence(this.BISHOP_FIANCHETTOED_SENTENCES, colorThatMovedText);
+                        }
+                        else 
+                        {
+                            move.coachComment += CoachUtils.selectAndFormatSentence(this.BISHOP_DEVELOPED_SENTENCES, colorThatMovedText);
+                        }
                     }
                 }
 
