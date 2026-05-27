@@ -124,7 +124,7 @@ export class CoachUtils
         ]
     )
 
-    //Bad=============
+    //#region Bad=============
     //If the player just hung a piece.
     private static readonly PIECE_HANG_SENTENCES: Array<string> = 
     [
@@ -189,8 +189,9 @@ export class CoachUtils
         `${CoachUtils.TURN_PLACEHOLDER} completely ignored the pin of their ${CoachUtils.PIECE_PLACEHOLDER}, and now their ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER} is lost. `,
         `${CoachUtils.TURN_PLACEHOLDER} didn't notice their ${CoachUtils.PIECE_PLACEHOLDER} was pinned, exposing the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER} behind it. `
     ]
+    //#endregion
 
-    //Good============
+    //#region Good============
     //Player accurately found a mating sequence.
     private static readonly FOUND_MATE_SENTENCES: Array<string> = 
     [
@@ -218,6 +219,48 @@ export class CoachUtils
         `The opponent will have to watch the pin on their ${CoachUtils.PIECE_PLACEHOLDER}. `,
         `${CoachUtils.TURN_PLACEHOLDER} just pinned the ${CoachUtils.PIECE_PLACEHOLDER} to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}, restricting its mobility. `
     ]
+    //#endregion
+    
+    //#region Good (development)
+    private static readonly PREPARES_BISHOP_FOR_DEVELOPMENT_SENTENCES: Array<string> = 
+    [
+        "This move prepares a bishop for development. ",
+        "This move prepares the bishop to become active. ",
+        "Moving the pawn allowing the bishop to step into the action. "
+    ]
+
+    private static readonly PREPARES_BISHOP_FOR_FIANCHETTO_DEVELOPMENT_SENTENCES: Array<string> = 
+    [
+        "This prepares the bishop for a fianchetto to control the main diagonal. ",
+        "Opens their bishop up for a fianchetto move to exert pressure on the long diagonal. "
+    ]
+
+    private static readonly BISHOP_DEVELOPED_SENTENCES: Array<string> = 
+    [
+        `${this.TURN_PLACEHOLDER} develops their bishop off its starting square. `,
+        `Their bishop comes into play, joining the action. `,
+        `${this.TURN_PLACEHOLDER} activates their bishop to control surrounding squares. `,
+        `The bishop comes into play to control the diagonals. `
+    ]
+
+    private static readonly BISHOP_FIANCHETTOED_SENTENCES: Array<string> = 
+    [
+        `${this.TURN_PLACEHOLDER} fianchettoed their bishop in order to snipe enemy pieces from a distance. `,
+        `This fianchettos the bishop on the long diagonal, prioritizing long-range effectiveness. `,
+        `Fianchettoing their bishop, putting pressure on the main diagonal. `
+    ]
+
+    private static readonly KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES: Array<string> = 
+    [
+        "This brings the knight into play and increases influence in the center. ",
+        "This move develops the knight and pressures key squares in the center. ",
+        "The knight is brought into play, eyeing the central squares.",
+        "This aims to control central space with the knight. ",
+        "The knight is moved to an active square, strengthening control over the center. ",
+        "Develops the knight and attacks the center. "
+    ]
+    //#endregion 
+
     //#endregion
 
 
@@ -272,7 +315,7 @@ export class CoachUtils
                 const colorThatMovedText = whiteToMove ? "Black" : "White";
                 const oppositeColorText = whiteToMove ? "White" : "Black";
 
-                //=======Opening (for link)
+                //=======Exclusively opening
                 if (posEval.moveClassification == MoveClassification.Opening)
                 {
                     const posFen = state.getFEN().split(" ")[0];
@@ -283,7 +326,12 @@ export class CoachUtils
                         if (openingObj.link != "")
                         {
                             move.coachResources.set( CoachResourceFlagType.Opening, openingObj.link );
-                            move.coachComment+= openingObj.name;
+                            move.coachComment+= openingObj.name + ". ";
+                        }
+
+                        if (openingObj.name.includes("Wayward Queen Attack"))
+                        {
+                            move.coachComment += "Developing the queen this early is potentially dangerous, as the queen can easily become a target by other minor pieces. "
                         }
                     }
                 }
@@ -718,6 +766,258 @@ export class CoachUtils
                     }
                 }
             
+                //=======Good - Development
+                if (posEval.moveClassification == MoveClassification.Excellent ||
+                    posEval.moveClassification == MoveClassification.Best || 
+                    posEval.moveClassification == MoveClassification.Perfect ||
+                    posEval.moveClassification == MoveClassification.Okay ||
+                    posEval.moveClassification == MoveClassification.Opening
+                )
+                {
+                    //Case: Player developed a knight towards the center
+                    if (
+                        (move.fromCoord == Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE && (move.toCoord == "f3" || move.toCoord == "e2")) ||
+                        (move.fromCoord == Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "c3" || move.toCoord == "d2")) || 
+                        (move.fromCoord == Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE && (move.toCoord == "f6") || (move.toCoord == "e7")) || 
+                        (move.fromCoord == Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "d7" || move.toCoord == "c6"))
+                    )
+                    {
+                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES, "");
+
+                        //To evaluate central squares hit by the knight, check if the knight can move to one of them.
+                        const potentiallyLegalKnightMoves = getKnightSquareHits(state, move.toCoord);
+                        const controlledCentralSquares: Array<string> = [];
+
+                        Chonse2.CENTER_SQUARES.forEach( centralSquare => 
+                            {
+                                potentiallyLegalKnightMoves.forEach( moveSquare => 
+                                    {
+                                        if (centralSquare == moveSquare)
+                                        {
+                                            controlledCentralSquares.push(centralSquare);
+                                        }
+                                    }
+                                )
+                            }
+                        )
+
+                        //If the knight can potentially move to one of the center squares, add arrows.
+                        if (controlledCentralSquares.length > 0)
+                        {
+                            const idea = new CoachIdea();
+                            
+                            controlledCentralSquares.forEach( sq =>
+                                {
+                                    const arrow = createArrow(move.toCoord, sq, ArrowColors.IDEA, ArrowContext.Coach);
+                                    if (arrow)
+                                    {
+                                        idea.arrows.push(arrow);
+                                    }
+                                }
+                            )
+                            
+                            move.coachIdeas.set(CoachIdeaFlagType.CentralControlIdea, idea);
+                        }
+                    }
+
+                    //Case: Player moved a pawn allowing the bishop to step into the game (normal development).
+                    if 
+                    (
+                        (
+                            move.notation.startsWith(Chonse2.WHITE_KING_PAWN_SQUARE) 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                        )
+                        ||
+                        (
+                            move.notation.startsWith(Chonse2.WHITE_QUEEN_PAWN_SQUARE) 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                        )
+                        ||
+                        (
+                            move.notation.startsWith(Chonse2.BLACK_KING_PAWN_SQUARE) 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                        )
+                        ||
+                        (
+                            move.notation.startsWith(Chonse2.BLACK_QUEEN_PAWN_SQUARE) 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
+                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                        )
+                    )
+                    {
+                        //Add the comment saying they can develop the bishop.
+                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PREPARES_BISHOP_FOR_DEVELOPMENT_SENTENCES, colorThatMovedText);
+
+                        //Clones the board to check the legal moves.
+                        const boardCopy = state.getFullDeepCopy();
+                        boardCopy.turn = !boardCopy.turn;
+
+                        //Get the legal moves for the bishop that just got into the game.
+                        let allLegalMovesForBishop: Array<string> = [];
+                        let bishopSquare = "";
+                        if (boardCopy.turn)
+                        {
+                            if (move.notation.startsWith(Chonse2.WHITE_KING_PAWN_SQUARE))
+                            {
+                                bishopSquare = Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE;
+                                allLegalMovesForBishop.push(...["e2", "d3", "c4", "b5", "a6"]);
+                            }
+
+                            if (move.notation.startsWith(Chonse2.WHITE_QUEEN_PAWN_SQUARE))
+                            {
+                                bishopSquare = Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE;
+                                allLegalMovesForBishop.push(...["d2", "e3", "f4", "g5", "h6"]);
+                            }
+                        }
+                        else 
+                        {
+                            if (move.notation.startsWith(Chonse2.BLACK_KING_PAWN_SQUARE))
+                            {
+                                bishopSquare = Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE;
+                                allLegalMovesForBishop.push(...["e7", "d6", "c5", "b4", "a3"]);
+                            }
+
+                            if (move.notation.startsWith(Chonse2.BLACK_QUEEN_PAWN_SQUARE))
+                            {
+                                bishopSquare = Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE;
+                                allLegalMovesForBishop.push(...["d7", "e6", "f5", "g4", "h3"]);
+                            }
+                        }
+
+                        const idea = new CoachIdea();
+
+                        //Need to check that the move it is suggesting doesn't just straight up hang a bishop
+                        const movesThatDontHangTheBishop = allLegalMovesForBishop.filter( moveCoord => 
+                            {
+                                //completes the move temporarily
+                                const moveResult = boardCopy.completeMove(bishopSquare, moveCoord);
+                                
+                                if (moveResult.result)
+                                {
+                                    //gets which hanging pieces it should check
+                                    const hangingPieces = Chonse2Extensions.getHangingPieces(boardCopy);
+                                    const hangingPiecesToCheck = boardCopy.turn ? hangingPieces.black : hangingPieces.white;
+
+                                    //undo the move so that we don't have to deep copy the whole ass object again.
+                                    boardCopy.undoMostRecentMove();
+
+                                    //if this move hangs the bishop, don't suggest it.
+                                    return !hangingPiecesToCheck.includes(moveCoord);
+                                }
+
+                                return false;
+                            }
+                        )
+
+                        if (movesThatDontHangTheBishop.length > 0)
+                        {
+                            const arrowToCoord = movesThatDontHangTheBishop[movesThatDontHangTheBishop.length - 1];
+                            const arrow = createArrow(bishopSquare, arrowToCoord, ArrowColors.IDEA, ArrowContext.Coach);
+
+                            if (arrow)
+                            {
+                                idea.arrows.push(arrow);
+                            }
+                        }
+
+                        //set coach idea data.
+                        idea.highlightedSquares.push(...movesThatDontHangTheBishop);
+                        move.coachIdeas.set(CoachIdeaFlagType.DevelopmentIdea, idea);
+                    }
+                }
+
+                //Case: Player moved a pawn allowing the bishop to be developed (fianchetto)
+                if 
+                (
+                    (
+                        move.notation.startsWith(Chonse2.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE) 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                    )
+                    ||
+                    (
+                        move.notation.startsWith(Chonse2.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                    )
+                    ||
+                    (
+                        move.notation.startsWith(Chonse2.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE) 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                    )
+                    ||
+                    (
+                        move.notation.startsWith(Chonse2.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
+                        && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                    )
+                )
+                {
+                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PREPARES_BISHOP_FOR_FIANCHETTO_DEVELOPMENT_SENTENCES, "")
+
+                    //Determine where the fianchetto square & bishop coord is
+                    let fianchettoSquare = "";
+                    let bishopSquare = "";
+                    if (move.notation.startsWith(Chonse2.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE))
+                    {
+                        fianchettoSquare = "g2";
+                        bishopSquare = Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE;
+                    }
+
+                    if (move.notation.startsWith(Chonse2.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE))
+                    {
+                        fianchettoSquare = "b2"
+                        bishopSquare = Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE;
+                    }
+
+                    if (move.notation.startsWith(Chonse2.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE))
+                    {
+                        fianchettoSquare = "g7"
+                        bishopSquare = Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE;
+                    }
+
+                    if (move.notation.startsWith(Chonse2.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE))
+                    {
+                        fianchettoSquare = "b7"
+                        bishopSquare = Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE;
+                    }
+
+                    //then add the idea to the move.
+                    const idea = new CoachIdea();
+                    const arrow = createArrow(bishopSquare, fianchettoSquare, ArrowColors.IDEA, ArrowContext.Coach);
+
+                    if (arrow)
+                    {
+                        idea.arrows = [arrow];
+                    }
+
+                    idea.highlightedSquares = [fianchettoSquare];
+                    move.coachIdeas.set(CoachIdeaFlagType.FianchettoIdea, idea);
+                }
+
+                //Case: Player moved a bishop off its starting square
+                if 
+                (
+                    (move.fromCoord == Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_BISHOP) ||
+                    (move.fromCoord == Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_BISHOP ) ||
+                    (move.fromCoord == Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_BISHOP) ||
+                    (move.fromCoord == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_BISHOP)
+                )
+                {
+                    if (FIANCHETTOS.includes(move.toCoord))
+                    {
+                        move.coachComment += CoachUtils.selectAndFormatSentence(this.BISHOP_FIANCHETTOED_SENTENCES, colorThatMovedText);
+                    }
+                    else 
+                    {
+                        move.coachComment += CoachUtils.selectAndFormatSentence(this.BISHOP_DEVELOPED_SENTENCES, colorThatMovedText);
+                    }
+                }
+
                 if (move.coachComment == "")
                 {
                     move.coachComment = this.getBaseSentence(posEval.moveClassification ?? MoveClassification.None).replace(this.TURN_PLACEHOLDER, colorThatMovedText);
@@ -798,7 +1098,7 @@ export class CoachUtils
         return "piece";
     }
 
-    private static formatCoachStringWithPlaceholders(sentence: string, playerColor: string, piece: string, secondaryPiece: string): string
+    private static _formatCoachStringWithPlaceholders(sentence: string, playerColor: string, piece: string, secondaryPiece: string): string
     {
         return sentence
             .replace(CoachUtils.TURN_PLACEHOLDER, playerColor)
@@ -809,11 +1109,47 @@ export class CoachUtils
     private static selectAndFormatSentence(arr: Array<string>, playerColor: string, piece: string = "", secondaryPiece: string = "")
     {
         let newSentence = arr[CoachUtils.getRandomIndex(arr.length)];
-        newSentence = this.formatCoachStringWithPlaceholders(newSentence, playerColor, CoachUtils.convertPieceToText(piece), CoachUtils.convertPieceToText(secondaryPiece));
+        newSentence = this._formatCoachStringWithPlaceholders(newSentence, playerColor, CoachUtils.convertPieceToText(piece), CoachUtils.convertPieceToText(secondaryPiece));
 
         return newSentence;
     }
 }
+
+//#region Misc. helpers
+    function getKnightSquareHits(board: Chonse2, coordinate: string): Array<string>
+    {
+        const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
+        const legalMoves: Array<string> = [];
+
+        //A knight can only move two ahead and one to the side. These are the offsets for the eight possible squares a knight can go to relative to its current position
+        const dRow: Array<number> = [2, 1, 2, 1, -1, -2, -1, -2];
+        const dCol: Array<number> = [-1, -2, +1, +2, -2, -1, +2, +1];
+
+        //Loop over each of the potential differences.
+        for(let i = 0; i < dRow.length; i++)
+        {
+        //The rank that the knight will move to.
+        const rankInQuestion = board.pieceState[rowIndex + dRow[i]];      
+
+        //If the rank does in fact exist, find its square.
+            if (rankInQuestion)
+            {
+                //The square that might be able to be moved to.
+                const potentialMoveSquare = rankInQuestion[colIndex + dCol[i]];
+
+                //It can also be undefined if the offset exists outside the board, check for this.
+                if (potentialMoveSquare != undefined)
+                {
+                    //Legal move in either case is the current square with the 2 straight/1 side offset applied.
+                    legalMoves.push(Chonse2.COORDS[rowIndex + dRow[i]][colIndex + dCol[i]]);
+                }
+            }
+        }
+        return legalMoves
+    }
+
+    const FIANCHETTOS = ["g2", "b2", "g7", "b7"];
+//#endregion
 
 export class CoachIdea 
 {
@@ -851,7 +1187,10 @@ export enum CoachMoveFlagType
 export enum CoachIdeaFlagType
 {
     ForkIdea,
-    PinIdea
+    PinIdea,
+    CentralControlIdea,
+    DevelopmentIdea,
+    FianchettoIdea
 }
 
 export enum CoachResourceFlagType 

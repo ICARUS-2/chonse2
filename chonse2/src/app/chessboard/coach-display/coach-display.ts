@@ -5,11 +5,10 @@ import BoardState from '../chessboard/board-state';
 import MoveResult from '../chessboard/move-result';
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from '../../../libs/coach-lib/coach-utils';
 import { EvalSource, PositionEval } from '../../../libs/engine-lib/types/eval';
-import { Arrow, ArrowContext } from '../chessboard/arrow';
+import { ArrowContext } from '../chessboard/arrow';
 import ChessboardHelper from '../helpers';
 import { CommonModule } from '@angular/common';
 import ThemeService from '../../themes/theme-service';
-import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
 import Chonse2 from '../../../libs/chonse2-lib/chonse2';
 
 @Component({
@@ -136,6 +135,20 @@ export class CoachDisplay {
       return BASE + "Pinned Piece";
     }
 
+    if (flag == CoachIdeaFlagType.CentralControlIdea)
+    {
+      return BASE + "Center Pressure"
+    }
+
+    if (flag == CoachIdeaFlagType.DevelopmentIdea)
+    {
+      return BASE + "Development"
+    }
+
+    if (flag == CoachIdeaFlagType.FianchettoIdea)
+    {
+      return BASE + "Fianchetto"
+    }
     return BASE;
   }
 

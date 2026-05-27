@@ -39,8 +39,8 @@ export class Square {
 
   lightColor: string = "white";
   darkColor: string = "rgb(85,150,242)";
-  lightPressedColor: string = "pink";
-  darkPressedColor: string = "hotpink";
+  lightPressedColor: string = "HotPink";
+  darkPressedColor: string = "DeepPink";
 
   static readonly lightMoveClassificationColors = new Map<string,string>([
     [MoveClassification.Opening, "LightGray"],
