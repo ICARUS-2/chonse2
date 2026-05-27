@@ -778,10 +778,11 @@ export class CoachUtils
                     if (
                         (move.fromCoord == Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE && (move.toCoord == "f3" || move.toCoord == "e2")) ||
                         (move.fromCoord == Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "c3" || move.toCoord == "d2")) || 
-                        (move.fromCoord == Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE && (move.toCoord == "f6") || (move.toCoord == "e7")) || 
+                        (move.fromCoord == Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE && (move.toCoord == "f6" || move.toCoord == "e7")) || 
                         (move.fromCoord == Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "d7" || move.toCoord == "c6"))
                     )
                     {
+                        console.log(move);
                         move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES, "");
 
                         //To evaluate central squares hit by the knight, check if the knight can move to one of them.
