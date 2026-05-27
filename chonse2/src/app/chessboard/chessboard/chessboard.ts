@@ -94,7 +94,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   activeTab = signal<'moves' | 'overview'>('moves');
 
   //Coach stuff
-  static readonly COACH_FOLLOW_UP_LENGTH = 10;
+  //static readonly COACH_FOLLOW_UP_LENGTH = 10;
 
   //MOVE PROPERTIES
   currentLegalMoves = signal<string[]>([]);
@@ -595,7 +595,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
         //Sees how long it should actually iterate through.
 
-        const iterationLength = topEngineLine.mate ? topEngineLine.pv.length : this.Math.min(Chessboard.COACH_FOLLOW_UP_LENGTH, topEngineLine.pv.length);
+        const iterationLength = topEngineLine.pv.length;
 
         for(let i = 0; i < iterationLength; i++)
         {

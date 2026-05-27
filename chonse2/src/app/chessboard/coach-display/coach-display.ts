@@ -141,6 +141,11 @@ export class CoachDisplay {
       return BASE + "Center Pressure"
     }
 
+    if (flag == CoachIdeaFlagType.DevelopmentIdea)
+    {
+      return BASE + "Development"
+    }
+    
     return BASE;
   }
 
