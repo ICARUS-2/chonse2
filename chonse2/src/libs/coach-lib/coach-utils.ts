@@ -235,6 +235,21 @@ export class CoachUtils
         "Opens their bishop up for a fianchetto move to exert pressure on the long diagonal. "
     ]
 
+    private static readonly BISHOP_DEVELOPED_SENTENCES: Array<string> = 
+    [
+        `${this.TURN_PLACEHOLDER} develops their bishop off its starting square. `,
+        `Their bishop comes into play, joining the action. `,
+        `${this.TURN_PLACEHOLDER} activates their bishop to control surrounding squares. `,
+        `The bishop comes into play to control the diagonals. `
+    ]
+
+    private static readonly BISHOP_FIANCHETTOED_SENTENCES: Array<string> = 
+    [
+        `${this.TURN_PLACEHOLDER} fianchettoed their bishop in order to snipe enemy pieces from a distance. `,
+        `This fianchettos the bishop on the long diagonal, prioritizing long-range effectiveness. `,
+        `Fianchettoing their bishop, putting pressure on the main diagonal. `
+    ]
+
     private static readonly KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES: Array<string> = 
     [
         "This brings the knight into play and increases influence in the center. ",
@@ -300,7 +315,7 @@ export class CoachUtils
                 const colorThatMovedText = whiteToMove ? "Black" : "White";
                 const oppositeColorText = whiteToMove ? "White" : "Black";
 
-                //=======Opening (for link)
+                //=======Exclusively opening
                 if (posEval.moveClassification == MoveClassification.Opening)
                 {
                     const posFen = state.getFEN().split(" ")[0];
@@ -984,6 +999,25 @@ export class CoachUtils
                     move.coachIdeas.set(CoachIdeaFlagType.FianchettoIdea, idea);
                 }
 
+                //Case: Player moved a bishop off its starting square
+                if 
+                (
+                    (move.fromCoord == Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_BISHOP) ||
+                    (move.fromCoord == Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_BISHOP ) ||
+                    (move.fromCoord == Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_BISHOP) ||
+                    (move.fromCoord == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_BISHOP)
+                )
+                {
+                    if (FIANCHETTOS.includes(move.toCoord))
+                    {
+                        move.coachComment += CoachUtils.selectAndFormatSentence(this.BISHOP_FIANCHETTOED_SENTENCES, colorThatMovedText);
+                    }
+                    else 
+                    {
+                        move.coachComment += CoachUtils.selectAndFormatSentence(this.BISHOP_DEVELOPED_SENTENCES, colorThatMovedText);
+                    }
+                }
+
                 if (move.coachComment == "")
                 {
                     move.coachComment = this.getBaseSentence(posEval.moveClassification ?? MoveClassification.None).replace(this.TURN_PLACEHOLDER, colorThatMovedText);
@@ -1113,6 +1147,8 @@ export class CoachUtils
         }
         return legalMoves
     }
+
+    const FIANCHETTOS = ["g2", "b2", "g7", "b7"];
 //#endregion
 
 export class CoachIdea 
