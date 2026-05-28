@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal, WritableSignal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, input, output, signal, WritableSignal } from '@angular/core';
 import { EngineInformation, EngineType, MoveClassification, moveClassificationLabels } from '../../../libs/engine-lib/types/enums';
 import { IconButton } from '../../ui/icon-button/icon-button';
 import BoardState from '../chessboard/board-state';
@@ -102,12 +102,27 @@ export class CoachDisplay {
 
   continueButtonClicked()
   {
+    //Changes every single one of the coach moves to remove the delimiter (and thus they become regular moves)
+    this.boardState().divergenceMoveStack.update(stack =>
+      stack.map(mv => ({
+        ...mv,
+        coachComment:
+          mv.coachComment === CoachUtils.COACH_MOVE_DELIMITER
+            ? "Top move!"
+            : mv.coachComment
+      }))
+    );
 
+    this.boardState().isLocked.set(false);
+    this.boardState().isCoachMoveShowing.set(false);
+    this.boardState().isCoachMoveFinished.set(false);
+    this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.None);
   }
 
   async doCoachMoveSequence()
   {
     this.boardState().isLocked.set(true);
+    this.boardState().isCoachMoveFinished.set(false);
 
     //Ensures that people can't click the buttons like crazy and mess up the states.
     this.boardState().disableCoachButtonsTemporarily();
@@ -189,6 +204,7 @@ export class CoachDisplay {
 
   hideSequence()
   {
+    this.boardState().isCoachMoveFinished.set(false);
     this.boardState().disableCoachButtonsTemporarily();
 
     //Stops someone from moving a piece manually.
