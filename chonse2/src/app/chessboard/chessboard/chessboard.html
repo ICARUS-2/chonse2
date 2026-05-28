@@ -38,7 +38,7 @@
                                 translate(' + animatedPieceX() + 'px,' + animatedPieceY() + 'px)' 
                                 + (boardState().isFlipped() ? ' rotate(180deg)' : '')"
 
-                            [style.transition]="'all ' + animationDuration + 'ms ease-in-out'"
+                            [style.transition]="'all ' + Chessboard.animationDuration + 'ms ease-in-out'"
                             (transitionend)="onAnimationEnd()"/>
                     }
                     <!-- ARROW OVERLAY -->
@@ -202,10 +202,7 @@
             <app-coach-display 
                 class="coachDisplay"
                 [boardState]="this.boardState()" 
-                (showMissedOpportunityClicked)="showMissedOpportunityClicked()"
-                (showFollowUpClicked)="showFollowUpClicked()"
-                (hideSequence)="hideSequence()"
-                [coachButtonsDisabled]="coachButtonsDisabled()"
+                (animateMove)="this.animateMove($event.from, $event.to, $event.piece)"
                 >
             </app-coach-display>
 

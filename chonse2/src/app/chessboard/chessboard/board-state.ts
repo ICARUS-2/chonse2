@@ -40,7 +40,9 @@ export default class BoardState
     evaluationSessionId: number = 0; //Designed to prevent in-progress evals from causing desyncrhonization when going back.
 
     //Coach stuff
+    coachButtonsDisabled: WritableSignal<boolean> = signal(false);
     isCoachMoveShowing: WritableSignal<boolean> = signal(false);
+    isCoachMoveFinished: WritableSignal<boolean> = signal(false);
     isCoachIdeaShowing: WritableSignal<boolean> = signal(false);
     coachMoveSequenceType: WritableSignal<CoachMoveSequenceType> = signal(CoachMoveSequenceType.None)
 
@@ -56,7 +58,9 @@ export default class BoardState
     displayedQuote: WritableSignal<Quote | undefined> = signal(undefined);
 
     //Behavior
+    //Read-only means the main stack cannot be modified (all new moves pushed to divergence stack).
     isReadOnly: WritableSignal<boolean> = signal(false);
+    //Locked means no moves can take place.
     isLocked: WritableSignal<boolean> = signal(false);
 
     constructor(startingStates: Array<Chonse2> = [new Chonse2()], headers: PgnHeaders = new PgnHeaders())
@@ -213,6 +217,16 @@ export default class BoardState
         }
 
         return {move: returnMove, eval: returnEval}
+    }
+
+
+    disableCoachButtonsTemporarily(duration = 1500) 
+    {
+        this.coachButtonsDisabled.set(true);
+
+        setTimeout(() => {
+        this.coachButtonsDisabled.set(false);
+        }, duration);
     }
     //#endregion
 

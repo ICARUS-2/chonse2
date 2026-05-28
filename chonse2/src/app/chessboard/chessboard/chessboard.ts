@@ -90,7 +90,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   boardState = signal<BoardState>(null!);
   
   //Controls
-  coachButtonsDisabled: WritableSignal<boolean> = signal(false);
   activeTab = signal<'moves' | 'overview'>('moves');
 
   //MOVE PROPERTIES
@@ -112,7 +111,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   animatedPiece = signal('');
   animatedPieceX = signal(0);
   animatedPieceY = signal(0);
-  animationDuration = 100; // ms
+  static animationDuration = 100; // ms
   animatedPieceCoord = signal('');
 
   static readonly moveClassificationColors: Map<string, string> = new Map<string, string>( 
@@ -533,168 +532,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }) 
 
   //#endregion
-
-  //#region Coach
-  showFollowUpClicked()
-  {
-    //Ensures that people can't click the buttons like crazy and mess up the states.
-    this.disableCoachButtonsTemporarily();
-
-    this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.FollowUp);
-    this.doCoachMoveSequence();  
-  }
-
-  async showMissedOpportunityClicked()
-  {
-    //Ensures that people can't click the buttons like crazy and mess up the states.
-    this.disableCoachButtonsTemporarily();
-
-    this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.MissedOpportunity);
-
-    //Gets previous state and eval
-    const previousState = this.boardState().getPreviousMostRecentState().getFullDeepCopy();
-    const previousEval = structuredClone(this.boardState().getPreviousMostRecentEval());
-    const dummyResult = new MoveResult();
-    dummyResult.notation = "-"
-    dummyResult.coachComment = CoachUtils.COACH_MOVE_DELIMITER;
-
-    //If they exist, push to divergence stack temporarily (creating a fake rollback)
-    if (previousEval && previousState)
-    {
-      this.boardState().divergenceStateStack.update( s => [...s, previousState] );
-      this.boardState().divergenceMoveStack.update( s=> [...s, dummyResult] );
-      this.boardState().divergenceEvalStack.update( s => [...s, previousEval] )
-
-      this.doCoachMoveSequence();
-    }
-  }
-
-  async doCoachMoveSequence()
-  {
-    this.boardState().isLocked.set(true);
-
-    //Ensures that people can't click the buttons like crazy and mess up the states.
-    this.disableCoachButtonsTemporarily();
-
-    this.boardState().isCoachMoveShowing.set(true);
-
-    //Checks what the most recent eval was.
-    const mostRecentEval: PositionEval | undefined = this.boardState().getMostRecentEval();
-
-    //If we have it, we can show follow up.
-    if (mostRecentEval)
-    {
-      //If the line actually exists, it can be followed.
-      if (mostRecentEval.lines.length > 0)
-      {
-        //We only want the top engine line.
-        const topEngineLine: LineEval = mostRecentEval.lines[0];
-
-        //Sees how long it should actually iterate through.
-
-        const iterationLength = topEngineLine.pv.length;
-
-        for(let i = 0; i < iterationLength; i++)
-        {
-          if (this.boardState().isCoachMoveShowing())
-          {
-            //Retrieves the top engine move.
-            const engineMove = topEngineLine.pv[i];
-
-            //Clones the board so that the move can be played.
-            const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
-
-            //Converts the move.
-            const {fromSquare, toSquare, promotion } = CoachUtils.convertUciToChonse2Move(engineMove);
-
-            const currentState = this.boardState().getCurrentState();
-            const rawPieceIndex = Chonse2.findIndexFromCoordinate(fromSquare);
-            const piece = currentState.pieceState[rawPieceIndex.rowIndex][rawPieceIndex.colIndex];
-
-            
-            if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
-            {
-              //First, do the animation
-              this.animateMove(fromSquare, toSquare, piece);
-              await this.delay(this.animationDuration);
-            }
-
-            //Then play the move.
-            const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
-            moveResult.coachComment = CoachUtils.COACH_MOVE_DELIMITER;
-            Sound.playSoundForMove(moveResult.notation);
-
-            //Then add it.
-            this.boardState().pushState(stateCopy, moveResult, true);
-            
-            //Then wait one second for the next move.
-            await this.delay(1000);
-          }
-          else 
-          {
-            break;
-          }
-        }
-      }
-    }
-  }
-
-
-  delay(ms: number): Promise<void> 
-  {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  hideSequence()
-  {
-    this.disableCoachButtonsTemporarily();
-
-    //Stops someone from moving a piece manually.
-    this.boardState().isLocked.set(false);
-
-    //Gets the most recent move and stores it.
-    let mostRecentMove = this.boardState().getMostRecentMove();
-    
-    //Pops every single thing that is a coach-played move.
-    while(mostRecentMove.coachComment == CoachUtils.COACH_MOVE_DELIMITER)
-    {
-      this.boardState().goBack();
-      mostRecentMove = this.boardState().getMostRecentMove();
-    }
-
-    //Sets flag so that the board can be used again.
-    this.boardState().evaluationSessionId++;
-    this.boardState().isCoachMoveShowing.set(false);
-    this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.None);
-  }
-
-  disableCoachButtonsTemporarily(duration = 1500) 
-  {
-    this.coachButtonsDisabled.set(true);
-
-    setTimeout(() => {
-      this.coachButtonsDisabled.set(false);
-    }, duration);
-  }
-
-  showIdeaButtonClicked(arrows: Array<Arrow> | undefined)
-  {
-    if (!arrows)
-    {
-      return;
-    }
-
-    this.boardState().isLocked.set(true);
-    this.boardState().isCoachIdeaShowing.set(true);
-    this.boardState().arrows.set([...this.boardState().arrows(), ...arrows] )
-  }
-
-  hideIdeaButtonClicked()
-  {
-    this.boardState().isCoachIdeaShowing.set(false);
-    this.boardState().isLocked.set(false);
-    this.boardState().arrows.set(this.boardState().arrows().filter( a => a.context != ArrowContext.Coach));
-  }
   //#endregion
 
   //#region Vs AI
@@ -748,7 +585,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
         this.forcePushState(stateCopy, moveResult);
         Sound.playSoundForMove(moveResult.notation);
-      }, this.animationDuration);
+      }, Chessboard.animationDuration);
     }
     else 
     {
@@ -825,7 +662,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         this.boardState().goBack();
         Sound.playSound(Sound.MOVE);
 
-      }, this.animationDuration )
+      }, Chessboard.animationDuration )
     }    
     else 
     {
@@ -847,7 +684,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         this.boardState().goForward();
         Sound.playSoundForMove(mostRecentMove.notation);
 
-      }, this.animationDuration )
+      }, Chessboard.animationDuration )
     }
     else 
     {

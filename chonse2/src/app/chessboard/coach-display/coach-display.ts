@@ -1,15 +1,18 @@
-import { Component, computed, input, output } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, input, output, signal, WritableSignal } from '@angular/core';
 import { EngineInformation, EngineType, MoveClassification, moveClassificationLabels } from '../../../libs/engine-lib/types/enums';
 import { IconButton } from '../../ui/icon-button/icon-button';
 import BoardState from '../chessboard/board-state';
 import MoveResult from '../chessboard/move-result';
-import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from '../../../libs/coach-lib/coach-utils';
-import { EvalSource, PositionEval } from '../../../libs/engine-lib/types/eval';
+import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachMoveSequenceType, CoachResourceFlagType, CoachUtils } from '../../../libs/coach-lib/coach-utils';
+import { EvalSource, LineEval, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { ArrowContext } from '../chessboard/arrow';
 import ChessboardHelper from '../helpers';
 import { CommonModule } from '@angular/common';
 import ThemeService from '../../themes/theme-service';
 import Chonse2 from '../../../libs/chonse2-lib/chonse2';
+import LocalStorageHelper from '../chessboard/local-storage-helper';
+import Sound from '../chessboard/sound';
+import { Chessboard } from '../chessboard/chessboard';
 
 @Component({
   selector: 'app-coach-display',
@@ -24,12 +27,13 @@ export class CoachDisplay {
 
   // --- Required Signal Inputs ---
   boardState = input.required<BoardState>();
-  coachButtonsDisabled = input.required<boolean>();
 
   // --- Action Inputs (Callbacks) ---
-  showFollowUpClicked = output<void>();
-  showMissedOpportunityClicked = output<void>();
-  hideSequence = output<void>();
+  animateMove = output<{
+  from: string;
+  to: string;
+  piece: string;
+}>();
 
   //coach
   protected root = computed(() => this.boardState().getRootForFollowUp());
@@ -86,6 +90,142 @@ export class CoachDisplay {
 
     return "Show follow-up";
   }
+
+  showFollowUpClicked()
+  {
+    //Ensures that people can't click the buttons like crazy and mess up the states.
+    this.boardState().disableCoachButtonsTemporarily();
+
+    this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.FollowUp);
+    this.doCoachMoveSequence();  
+  }
+
+  continueButtonClicked()
+  {
+    //Changes every single one of the coach moves to remove the delimiter (and thus they become regular moves)
+    this.boardState().divergenceMoveStack.update(stack =>
+      stack.map(mv => ({
+        ...mv,
+        coachComment:
+          mv.coachComment === CoachUtils.COACH_MOVE_DELIMITER
+            ? "Top move!"
+            : mv.coachComment
+      }))
+    );
+
+    this.boardState().isLocked.set(false);
+    this.boardState().isCoachMoveShowing.set(false);
+    this.boardState().isCoachMoveFinished.set(false);
+    this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.None);
+  }
+
+  async doCoachMoveSequence()
+  {
+    this.boardState().isLocked.set(true);
+    this.boardState().isCoachMoveFinished.set(false);
+
+    //Ensures that people can't click the buttons like crazy and mess up the states.
+    this.boardState().disableCoachButtonsTemporarily();
+
+    this.boardState().isCoachMoveShowing.set(true);
+
+    //Checks what the most recent eval was.
+    const mostRecentEval: PositionEval | undefined = this.boardState().getMostRecentEval();
+
+    //If we have it, we can show follow up.
+    if (mostRecentEval)
+    {
+      //If the line actually exists, it can be followed.
+      if (mostRecentEval.lines.length > 0)
+      {
+        //We only want the top engine line.
+        const topEngineLine: LineEval = mostRecentEval.lines[0];
+
+        //Sees how long it should actually iterate through.
+
+        const iterationLength = topEngineLine.pv.length;
+
+        for(let i = 0; i < iterationLength; i++)
+        {
+          if (this.boardState().isCoachMoveShowing())
+          {
+            //Retrieves the top engine move.
+            const engineMove = topEngineLine.pv[i];
+
+            //Clones the board so that the move can be played.
+            const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
+
+            //Converts the move.
+            const {fromSquare, toSquare, promotion } = CoachUtils.convertUciToChonse2Move(engineMove);
+
+            const currentState = this.boardState().getCurrentState();
+            const rawPieceIndex = Chonse2.findIndexFromCoordinate(fromSquare);
+            const piece = currentState.pieceState[rawPieceIndex.rowIndex][rawPieceIndex.colIndex];
+
+            
+            if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
+            {
+              //First, do the animation
+              this.animateMove.emit({
+                from: fromSquare,
+                to: toSquare,
+                piece
+              });
+              await this.delay(Chessboard.animationDuration);
+            }
+
+            //Then play the move.
+            const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
+            moveResult.coachComment = CoachUtils.COACH_MOVE_DELIMITER;
+            Sound.playSoundForMove(moveResult.notation);
+
+            //Then add it.
+            this.boardState().pushState(stateCopy, moveResult, true);
+            
+            //Then wait one second for the next move.
+            await this.delay(1000);
+          }
+          else 
+          {
+            break;
+          }
+        }
+      }
+    }
+
+    this.boardState().isCoachMoveFinished.set(true);
+  }
+  
+  delay(ms: number): Promise<void> 
+  {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+
+  hideSequence()
+  {
+    this.boardState().isCoachMoveFinished.set(false);
+    this.boardState().disableCoachButtonsTemporarily();
+
+    //Stops someone from moving a piece manually.
+    this.boardState().isLocked.set(false);
+
+    //Gets the most recent move and stores it.
+    let mostRecentMove = this.boardState().getMostRecentMove();
+    
+    //Pops every single thing that is a coach-played move.
+    while(mostRecentMove.coachComment == CoachUtils.COACH_MOVE_DELIMITER)
+    {
+      this.boardState().goBack();
+      mostRecentMove = this.boardState().getMostRecentMove();
+    }
+
+    //Sets flag so that the board can be used again.
+    this.boardState().evaluationSessionId++;
+    this.boardState().isCoachMoveShowing.set(false);
+    this.boardState().isCoachMoveFinished.set(false);
+    this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.None);
+  }
   //#endregion
 
   //#region misses
@@ -118,6 +258,32 @@ export class CoachDisplay {
 
     return "Show miss";
   }
+
+  async showMissedOpportunityClicked()
+  {
+    //Ensures that people can't click the buttons like crazy and mess up the states.
+    this.boardState().disableCoachButtonsTemporarily();
+
+    this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.MissedOpportunity);
+
+    //Gets previous state and eval
+    const previousState = this.boardState().getPreviousMostRecentState().getFullDeepCopy();
+    const previousEval = structuredClone(this.boardState().getPreviousMostRecentEval());
+    const dummyResult = new MoveResult();
+    dummyResult.notation = "-"
+    dummyResult.coachComment = CoachUtils.COACH_MOVE_DELIMITER;
+
+    //If they exist, push to divergence stack temporarily (creating a fake rollback)
+    if (previousEval && previousState)
+    {
+      this.boardState().divergenceStateStack.update( s => [...s, previousState] );
+      this.boardState().divergenceMoveStack.update( s=> [...s, dummyResult] );
+      this.boardState().divergenceEvalStack.update( s => [...s, previousEval] )
+
+      this.doCoachMoveSequence();
+    }
+  }
+
   //#endregion
 
   //#region ideas
@@ -172,6 +338,7 @@ export class CoachDisplay {
     this.boardState().arrows.set(this.boardState().arrows().filter( a => a.context != ArrowContext.Coach));
     this.clearHighlights();
   }
+  
   //#endregion
 
   //#region resources
