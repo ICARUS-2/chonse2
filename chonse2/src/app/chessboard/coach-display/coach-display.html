@@ -111,8 +111,8 @@
 
                   @if (!boardState().getCurrentState().gameState.isGameOver) {
                     <app-icon-button 
-                      (buttonClick)="showFollowUpClicked.emit()" 
-                      [disabled]="coachButtonsDisabled()" 
+                      (buttonClick)="showFollowUpClicked()" 
+                      [disabled]="boardState().coachButtonsDisabled()" 
                       extraClasses="m-1 small" 
                       [label]="getFollowUpButtonText(rootData.move, rootData.eval)" 
                       iconClass="bi-arrow-right">
@@ -125,8 +125,8 @@
                       classification === MoveClassification.Miss
                       ) {
                     <app-icon-button 
-                      (buttonClick)="showMissedOpportunityClicked.emit()" 
-                      [disabled]="coachButtonsDisabled()" 
+                      (buttonClick)="showMissedOpportunityClicked()" 
+                      [disabled]="boardState().coachButtonsDisabled()" 
                       extraClasses="m-1 small" 
                       [label]="getMissButtonText(rootData.move)" 
                       iconClass="bi-arrow-90deg-left">
@@ -136,11 +136,21 @@
 
                 @if (boardState().isCoachMoveShowing()) {
                   <app-icon-button 
-                    (buttonClick)="hideSequence.emit()" 
-                    [disabled]="coachButtonsDisabled()" 
+                    (buttonClick)="hideSequence()" 
+                    [disabled]="boardState().coachButtonsDisabled()" 
                     extraClasses="m-1 small" 
                     label="Hide Sequence" 
                     iconClass="bi-backspace">
+                  </app-icon-button>
+                }
+
+                @if (boardState().isCoachMoveShowing() && boardState().isCoachMoveFinished()) {
+                  <app-icon-button 
+                    (buttonClick)="continueButtonClicked()" 
+                    [disabled]="boardState().coachButtonsDisabled()" 
+                    extraClasses="m-1 small" 
+                    label="Continue" 
+                    iconClass="bi-continue">
                   </app-icon-button>
                 }
 
