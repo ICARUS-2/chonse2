@@ -14,10 +14,15 @@ import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { Arrow, ArrowContext } from '../../chessboard/chessboard/arrow';
 import { InputPositionService } from '../input-position-service';
 import InputPositionState from '../input-position-state';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
+import { FenImportModal } from '../fen-import-modal/fen-import-modal';
+import { ToastrService } from 'ngx-toastr';
+import { IconButton } from "../../ui/icon-button/icon-button";
+import GameLinkHelper from '../../chessboard/chessboard/game-link-helper';
 
 @Component({
   selector: 'app-input-position-board',
-  imports: [Square, PieceSelector, FormsModule, CommonModule, BootstrapButton],
+  imports: [Square, PieceSelector, FormsModule, CommonModule, BootstrapButton, IconButton],
   templateUrl: './input-position-board.html',
   styleUrl: './input-position-board.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -65,7 +70,12 @@ export class InputPositionBoard {
   private static readonly X_VECTOR = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
   private static readonly Y_VECTOR = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
 
-  constructor(private router: Router , private ips: InputPositionService, public themeService: ThemeService)
+  constructor(
+    private router: Router, 
+    private ips: InputPositionService, 
+    public themeService: ThemeService,
+    private ngbModalService: NgbModal,
+    private toastrService: ToastrService)
   {
     //Board state stored in service to persist across routerlink changes.
     const boardState: InputPositionState = this.ips.getGame(this.stateId());
@@ -164,6 +174,60 @@ export class InputPositionBoard {
   flipButtonClicked()
   {
     this.model().isFlipped.update( v => !v );
+  }
+  //#endregion
+
+  //#region Import/Export
+  handleImportClicked()
+  {
+    //open the import modal.
+    const modalRef = this.ngbModalService.open(FenImportModal, {size: "lg"});
+
+    modalRef.result.then( result =>
+      {
+        if (result == null)
+        {
+          this.toastrService.error("Import cancelled because the FEN was invalid.");
+          return;
+        }
+
+        const newState = new InputPositionState();
+        newState.game.set(result);
+
+        this.ips.deleteGame(this.stateId());
+        this.ips.addGame(this.stateId() ,newState);
+        this.model.set(newState);
+
+        this.toastrService.success("Successfully imported FEN");
+      }
+    )
+    .catch(() => { /*modal was dismissed, no error*/ })
+  }
+  
+  copyFenClicked()
+  {
+    try 
+    {
+      navigator.clipboard.writeText(this.model().game().getFEN());
+      this.toastrService.info("Successfully copied FEN");
+    }
+    catch(ex)
+    {
+      this.toastrService.error("Error occurred when copying FEN");
+    }
+  }
+
+  copyFenLinkClicked()
+  {
+    try 
+    {
+      navigator.clipboard.writeText(GameLinkHelper.generateFenLink(this.model().game().getFEN()));
+      this.toastrService.info("Successfully copied link");
+    }
+    catch(ex)
+    {
+      this.toastrService.error("Error occurred when copying link");
+    }
   }
   //#endregion
 

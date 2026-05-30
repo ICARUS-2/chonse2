@@ -1,7 +1,7 @@
 import { Component, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouteConstants } from '../app.routes';
-import { decompresssPgn } from '../chessboard/chessboard/pgn-misc';
+import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 
 @Component({
   selector: 'app-load-pgn',
@@ -19,7 +19,7 @@ export class LoadPgn {
     this.route.paramMap.subscribe(params => 
     {
       this.compressedPgn.set(params.get(RouteConstants.ROUTE_PGN)!);
-      this.decompressedPgn.set(decompresssPgn(this.compressedPgn()));
+      this.decompressedPgn.set(GameLinkHelper.decompressStringForUrl(this.compressedPgn()));
     });
   }
 

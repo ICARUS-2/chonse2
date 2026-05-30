@@ -114,4 +114,9 @@
     width: 80vmin;
     word-wrap: break-word;
   }
+
+  .ioControls
+  {
+    flex-direction: column;
+  }
 }

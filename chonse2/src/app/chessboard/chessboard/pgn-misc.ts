@@ -62,13 +62,3 @@ export enum PgnSources
     Lichess = "Lichess",
     Manual = "Manual PGN",
 }
-
-export function compressPgn(pgn: string) : string
-{
-    return compressToEncodedURIComponent(pgn);    
-}
-
-export function decompresssPgn(lzstr: string) : string 
-{
-    return decompressFromEncodedURIComponent(lzstr);
-}

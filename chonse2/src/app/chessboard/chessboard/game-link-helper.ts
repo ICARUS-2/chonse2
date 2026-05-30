@@ -1,5 +1,5 @@
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 import { BASE_PATH } from "../../../globals/globals";
-import { compressPgn } from "./pgn-misc";
 
 export default class GameLinkHelper
 {
@@ -16,8 +16,25 @@ export default class GameLinkHelper
     static generatePgnGameLink(pgn: string)
     {
         const ORIG: string = window.location.origin;
-        const compressionResult = compressPgn(pgn.trim());
+        const compressionResult = GameLinkHelper.compressStringForUrl(pgn.trim());
 
         return `${ORIG}${BASE_PATH}/pgn/${compressionResult}`;
+    }
+
+    static generateFenLink(fen: string)
+    {
+        const ORIG: string = window.location.origin;
+        const compressionResult = GameLinkHelper.compressStringForUrl(fen.trim());
+        return `${ORIG}${BASE_PATH}/fen/${compressionResult}`;
+    }
+
+    static compressStringForUrl(str: string) : string
+    {
+        return compressToEncodedURIComponent(str);    
+    }
+
+    static decompressStringForUrl(lzstr: string) : string 
+    {
+        return decompressFromEncodedURIComponent(lzstr);
     }
 }
