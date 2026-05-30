@@ -742,6 +742,82 @@ export default class Chonse2
     return fen;
   }
 
+  static instantiateFromFen(fen: string)
+  {
+    const obj = new Chonse2();
+    try 
+    {
+      const splitFen = fen.split(" ");
+      const board = splitFen[0];
+      const turn = splitFen[1];
+      const castlingRights = splitFen[2];
+      const enPassantSquare = splitFen[3];
+      const halfMoveClock = Number(splitFen[4]);
+      const fullMoveClock = Number(splitFen[5]);
+
+      const boardRows = board.split("/");
+
+      for(let row = 0; row < Chonse2.SIZE; row++)
+      {
+        //instantiate board here
+        obj.pieceState[row] = [];
+
+        let col = 0;
+
+        for (const char of boardRows[row])
+        {
+            //if there are empty squares (represented by a number)
+            if (!isNaN(Number(char)))
+            {
+                const emptyCount = Number(char);
+
+                for (let j = 0; j < emptyCount; j++)
+                {
+                  obj.pieceState[row][col] = PieceType.NONE;
+                  col++;
+                }
+            }
+            //if there is a piece on the board.
+            else
+            {
+              obj.pieceState[row][col] =
+                  FenHelper.getPieceFromFenPiece(char);
+
+              col++;
+            }
+        }
+      }
+
+      //active color
+      obj.turn = turn === PieceColor.WHITE ? true : false;
+
+      //castling
+      const castling = FenHelper.getCastlingRightsFromFen(castlingRights);
+      obj.whiteCastlingRights = castling.white;
+      obj.blackCastlingRights = castling.black;
+
+      //en passant
+      if (enPassantSquare != "-")
+      {
+        obj.enPassantSquare = enPassantSquare;
+      }
+
+      //half move
+      obj.halfMovesWithoutPawnMovementsOrCaptures = halfMoveClock;
+
+      //full move
+      obj.fullMoveCounter = fullMoveClock;
+    }
+    catch(ex)
+    {
+      console.error("FEN could not be instantiated - returning default.");
+      console.error(ex);
+      throw ex;
+    }
+
+    return obj;
+  }
+
   //Checks if a pawn can capture en passant (not just that there is an en passant square)
   isEnPassantCaptureActuallyPossible() : boolean
   {

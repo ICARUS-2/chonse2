@@ -1,0 +1,20 @@
+<div class="componentContainer d-flex flex-column p-3" [class]="themeService.getThemeInstance().getGlassPanelTheme()" [style.background-image]="`url(${themeService.getThemeInstance().getBackgroundImgUrl()})`" [style.color]="themeService.getThemeInstance().getTextColor()">
+    
+    <div [class]="themeService.getThemeInstance().getGlassPanelTheme()" class="p-4">
+        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Import FEN</h2>
+
+        <hr>
+
+        <div [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
+            <label>FEN</label>
+            <div></div>
+            <input [formField]="form.fen" type="text">
+        </div>
+    
+        <div class="m-3"></div>
+
+        <hr>
+
+        <app-bootstrap-button (buttonClick)="submitClicked()" label="Confirm"></app-bootstrap-button>
+    </div>
+</div>
