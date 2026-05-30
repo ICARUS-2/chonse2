@@ -5,10 +5,8 @@
 
         <hr>
 
-        <div [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
-            <label>FEN</label>
-            <div></div>
-            <input [formField]="form.fen" type="text">
+        <div>
+            <textarea spellcheck="false" class="w-100 fenInput" [style.color]="themeService.getThemeInstance().getTextColor()" [class]="themeService.getThemeInstance().getGlassPanelTheme()" [formField]="form.fen" type="text"></textarea>
         </div>
     
         <div class="m-3"></div>

@@ -18,6 +18,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
 import { FenImportModal } from '../fen-import-modal/fen-import-modal';
 import { ToastrService } from 'ngx-toastr';
 import { IconButton } from "../../ui/icon-button/icon-button";
+import GameLinkHelper from '../../chessboard/chessboard/game-link-helper';
 
 @Component({
   selector: 'app-input-position-board',
@@ -179,29 +180,55 @@ export class InputPositionBoard {
   //#region Import/Export
   handleImportClicked()
   {
+    //open the import modal.
     const modalRef = this.ngbModalService.open(FenImportModal, {size: "lg"});
 
+    modalRef.result.then( result =>
+      {
+        if (result == null)
+        {
+          this.toastrService.error("Import cancelled because the FEN was invalid.");
+          return;
+        }
+
+        const newState = new InputPositionState();
+        newState.game.set(result);
+
+        this.ips.deleteGame(this.stateId());
+        this.ips.addGame(this.stateId() ,newState);
+        this.model.set(newState);
+
+        this.toastrService.success("Successfully imported FEN");
+      }
+    )
+    .catch(() => { /*modal was dismissed, no error*/ })
+  }
+  
+  copyFenClicked()
+  {
     try 
     {
-        modalRef.result.then( result =>
-        {
-          const newState = new InputPositionState();
-          newState.game.set(result);
-
-          this.ips.deleteGame(this.stateId());
-          this.ips.addGame(this.stateId() ,newState);
-          this.model.set(newState);
-
-          this.toastrService.success("Successfully imported FEN");
-        }
-      )
+      navigator.clipboard.writeText(this.model().game().getFEN());
+      this.toastrService.info("Successfully copied FEN");
     }
     catch(ex)
     {
-      this.toastrService.error("Import cancelled because the FEN was invalid.");
+      this.toastrService.error("Error occurred when copying FEN");
     }
   }
-  
+
+  copyFenLinkClicked()
+  {
+    try 
+    {
+      navigator.clipboard.writeText(GameLinkHelper.generateFenLink(this.model().game().getFEN()));
+      this.toastrService.info("Successfully copied link");
+    }
+    catch(ex)
+    {
+      this.toastrService.error("Error occurred when copying link");
+    }
+  }
   //#endregion
 
   //#region Left click/pointer

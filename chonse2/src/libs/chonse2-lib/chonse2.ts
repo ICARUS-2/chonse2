@@ -810,8 +810,7 @@ export default class Chonse2
     }
     catch(ex)
     {
-      console.error("FEN could not be instantiated - returning default.");
-      console.error(ex);
+      console.error("Cannot instantiate, FEN was invalid.");
       throw ex;
     }
 

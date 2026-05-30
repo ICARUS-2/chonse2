@@ -174,13 +174,14 @@
         <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">FEN</h4>
         <div>
             {{this.model().game().getFEN()}}
+            <app-bootstrap-button label="📋" (buttonClick)="copyFenClicked()"></app-bootstrap-button>
         </div>
 
         <hr>
         <!--Import/Export controls-->
         <div class="d-flex justify-content-between ioControls">
             <app-icon-button (buttonClick)="handleImportClicked()" label="Import FEN" iconClass="bi-box-arrow-in-down-left"></app-icon-button>
-            <app-icon-button label="Copy Link" iconClass="bi-link-45deg"></app-icon-button>
+            <app-icon-button (buttonClick)="copyFenLinkClicked()" label="Copy Link" iconClass="bi-link-45deg"></app-icon-button>
         </div>
     </div>
     @if(currentlyHeldPiece() != "")

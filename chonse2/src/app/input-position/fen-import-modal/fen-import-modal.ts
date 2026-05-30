@@ -13,11 +13,9 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
 })
 export class FenImportModal 
 {
-  static readonly DEFAULT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-
   formModel = signal<FormModel>( 
   {
-    fen: FenImportModal.DEFAULT_FEN,
+    fen: "",
   })
 
   form = form(this.formModel);
@@ -29,7 +27,15 @@ export class FenImportModal
 
   submitClicked()
   {
-    this.activeModal.close(Chonse2.instantiateFromFen(this.form.fen().value()));
+    try 
+    {
+      this.activeModal.close(Chonse2.instantiateFromFen(this.form.fen().value()));
+    }
+    catch(ex)
+    {
+      console.log(ex);
+      this.activeModal.close(null);
+    }
   }
 }
 
