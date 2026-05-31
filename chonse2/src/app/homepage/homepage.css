@@ -15,8 +15,14 @@
 
 .middleContainer 
 {
-    width: 50%;
+    width: 70%;
 }
+
+:host {
+    --board-width: 30vmin;
+    --btn-height: 8vmin;
+}
+
 
 @media screen and (max-width: 1200px)
 {
@@ -24,5 +30,20 @@
     {
         width: unset;
         flex-direction: column;
+    }
+
+    .mostRecentBoard 
+    {
+        margin-bottom: 20px;
+    }
+
+    .analysisDemoBoard
+    {
+        margin-bottom: 20px;
+    }
+
+    :host {
+        --board-width: 80vmin;
+        --btn-height: 15vmin;
     }
 }

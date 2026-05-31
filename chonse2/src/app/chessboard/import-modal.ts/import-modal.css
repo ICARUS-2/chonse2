@@ -22,6 +22,11 @@
     z-index: 10;
 }
 
+.card:hover 
+{
+    background-color: lightgray;
+}
+
 @media screen and (max-width: 800px) 
 {
     .componentContainer

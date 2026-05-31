@@ -1,5 +1,6 @@
 export default class LocalStorageHelper
 {
+    //Settings
     static readonly CLICK_TO_MOVE = "Chonse2_ClickToMove";
     static readonly PIECE_ANIMATIONS = "Chonse2_PieceAnimations";
     static readonly SAVED_USERNAMES = "Chonse2_SavedUsernames";
@@ -9,6 +10,9 @@ export default class LocalStorageHelper
     static readonly CLOUD_HYBRID_MODE = "Chonse2_CloudHybridMode";
     static readonly ENGINE_THREAD_COUNT = "Chonse2_ThreadCount";
     static readonly SELECTED_THEME = "Chonse2_SelectedTheme";
+
+    //Other
+    static readonly LAST_PGN = "Chonse2_LastPgn"
 
     //bool
     static getBoolean(key: string, defaultVal = false): boolean
