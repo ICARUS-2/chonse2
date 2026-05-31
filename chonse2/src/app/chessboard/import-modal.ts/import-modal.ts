@@ -12,10 +12,11 @@ import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from "../../ui/bootstrap-button/bootstrap-button";
 import { form, FormField } from '@angular/forms/signals';
 import { GameScore } from '../../../libs/chonse2-lib/game-state';
+import { IconButton } from "../../ui/icon-button/icon-button";
 
 @Component({
   selector: 'app-import-modal',
-  imports: [FormsModule, CommonModule, BootstrapButton, FormField],
+  imports: [FormsModule, CommonModule, BootstrapButton, FormField, IconButton],
   templateUrl: './import-modal.html',
   styleUrl: './import-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush

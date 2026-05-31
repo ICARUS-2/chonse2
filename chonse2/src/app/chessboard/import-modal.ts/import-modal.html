@@ -109,9 +109,7 @@
                         </div>
                         <div class="m-1"></div>
 
-                        <div class="btn btn-info text-light" (click)="handleChessComGameLinkClicked($event, game)">
-                            Copy Link
-                        </div> 
+                        <app-icon-button (buttonClick)="handleChessComGameLinkClicked($event, game)" iconClass="bi-link-45deg" label="Copy Link"></app-icon-button>
                     </div>
                 </button>
             }
@@ -147,9 +145,7 @@
                         </div>
                         <div class="m-1"></div>
 
-                        <div class="btn btn-info text-light" (click)="handleLichessGameLinkClicked($event, game)">
-                            Copy Link
-                        </div> 
+                        <app-icon-button (buttonClick)="handleLichessGameLinkClicked($event, game)" iconClass="bi-link-45deg" label="Copy Link"></app-icon-button>
                     </div>
                 </button>
             }
