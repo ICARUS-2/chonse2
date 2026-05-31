@@ -40,6 +40,7 @@ import { CoachDisplay } from "../coach-display/coach-display";
 import ChessboardHelper from '../helpers';
 import { CompactBoardPlayerInfo } from '../compact-board-player-info/compact-board-player-info';
 import { ProgressToast } from '../progress-toast/progress-toast';
+import GameLinkHelper from './game-link-helper';
 
 @Component({
   selector: 'app-chessboard',
@@ -343,6 +344,9 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
           this.boardState().divergenceStateStack.set([]);
           this.boardState().divergenceMoveStack.set([]);
+
+          //save as the most recent pgn analyzed
+          LocalStorageHelper.setString(LocalStorageHelper.LAST_PGN, GameLinkHelper.compressStringForUrl(result.pgn));
         }
         catch(ex)
         {

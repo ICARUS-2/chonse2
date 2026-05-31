@@ -13,6 +13,8 @@ import ThemeService from '../themes/theme-service';
 import Chonse2, { PreviousStateCache } from '../../libs/chonse2-lib/chonse2';
 import { GameState } from '../../libs/chonse2-lib/game-state';
 import MoveResult from '../chessboard/chessboard/move-result';
+import LocalStorageHelper from '../chessboard/chessboard/local-storage-helper';
+import { compress } from 'lz-string';
 
 @Component({
   selector: 'app-analysis-page',
@@ -74,6 +76,7 @@ export class AnalysisPage implements OnInit{
 
     if (this.site && this.username && this.gameId)
     {
+      //if game was imported from chess.com source
       if (this.site == GameLinkHelper.CHESSCOM_SOURCE)
       {
         const game = await ChessComAPI.getUserGameById(this.username, this.gameId);
@@ -94,6 +97,9 @@ export class AnalysisPage implements OnInit{
 
             this.cdr.markForCheck();
             this.toastrService.success("Game import successful.");
+
+            //save as the most recent pgn analyzed
+            LocalStorageHelper.setString(LocalStorageHelper.LAST_PGN, GameLinkHelper.compressStringForUrl(game.pgn));
           }
           catch(ex) //If PGN parse failed.
           {
@@ -107,7 +113,7 @@ export class AnalysisPage implements OnInit{
           this.setDefaultBoard();
         }
       }
-      else if (this.site == GameLinkHelper.LICHESS_SOURCE)
+      else if (this.site == GameLinkHelper.LICHESS_SOURCE) //if game was imported from lichess
       {
         const game = await LichessAPI.getUserGameById(this.username, this.gameId);
 
@@ -128,6 +134,9 @@ export class AnalysisPage implements OnInit{
 
             this.cdr.markForCheck();
             this.toastrService.success("Game import successful.");
+
+            //save as the most recent pgn analyzed
+            LocalStorageHelper.setString(LocalStorageHelper.LAST_PGN, GameLinkHelper.compressStringForUrl(game.pgn));
           }
           catch(ex) //If PGN parse failed.
           {
@@ -163,7 +172,7 @@ export class AnalysisPage implements OnInit{
       this.gameService.addGame(BoardNames.Analysis, boardState);
       boardState.doEvaluateGame.set(true);
     }
-    else if (this.vsAiMoves && this.vsAiStates && this.vsAiGameStates && this.vsAiPgnHeaders)
+    else if (this.vsAiMoves && this.vsAiStates && this.vsAiGameStates && this.vsAiPgnHeaders) //if it was imported from vs ai
     {
       //Set up board state.
       const bs = new BoardState();
@@ -196,7 +205,7 @@ export class AnalysisPage implements OnInit{
       this.gameService.deleteGame(BoardNames.Analysis);
       this.gameService.addGame(BoardNames.Analysis, bs);
     }
-    else if (this.pgnFromLink)
+    else if (this.pgnFromLink) //if it was imported via PGN Link
     {
       try 
       {
@@ -206,6 +215,9 @@ export class AnalysisPage implements OnInit{
         this.gameService.addGame(BoardNames.Analysis, boardState);
         this.cdr.markForCheck();
         this.toastrService.success("Game import successful.");
+
+        //save as the most recent pgn analyzed
+        LocalStorageHelper.setString(LocalStorageHelper.LAST_PGN, GameLinkHelper.compressStringForUrl(this.pgnFromLink));
       }
       catch(ex) //If PGN parse failed.
       {
