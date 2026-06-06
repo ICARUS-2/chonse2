@@ -1,4 +1,4 @@
-import { Component, HostListener, input, output } from '@angular/core';
+import { Component, HostListener, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
 import { CommonModule } from '@angular/common';
@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-board-arrow-buttons',
   imports: [BootstrapButton, CommonModule],
   templateUrl: './board-arrow-buttons.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './board-arrow-buttons.css',
 })
 export class BoardArrowButtons {

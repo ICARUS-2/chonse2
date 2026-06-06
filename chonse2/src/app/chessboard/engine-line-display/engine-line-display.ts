@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import { CommonModule } from '@angular/common';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
@@ -8,6 +8,7 @@ import ThemeService from '../../themes/theme-service';
   selector: 'app-engine-line-display',
   imports: [CommonModule],
   templateUrl: './engine-line-display.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './engine-line-display.css',
 })
 export class EngineLineDisplay {

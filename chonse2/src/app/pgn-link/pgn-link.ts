@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import ThemeService from '../themes/theme-service';
 import { form, FormField } from '@angular/forms/signals';
 import { BootstrapButton } from "../ui/bootstrap-button/bootstrap-button";
@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'app-pgn-link',
   imports: [BootstrapButton, FormField],
   templateUrl: './pgn-link.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './pgn-link.css',
 })
 export class PgnLink {

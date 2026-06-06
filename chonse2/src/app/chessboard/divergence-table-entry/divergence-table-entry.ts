@@ -1,4 +1,4 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { PositionEval } from '../../../libs/engine-lib/types/eval';
@@ -8,6 +8,7 @@ import MoveResult from '../chessboard/move-result';
   selector: 'tr[app-divergence-table-entry]',
   imports: [],
   templateUrl: './divergence-table-entry.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './divergence-table-entry.css',
 })
 export class DivergenceTableEntry {

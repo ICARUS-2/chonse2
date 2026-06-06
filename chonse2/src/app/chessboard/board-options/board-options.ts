@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import { IconButton } from '../../ui/icon-button/icon-button';
 import ThemeService from '../../themes/theme-service';
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-board-options',
   imports: [IconButton, CommonModule],
   templateUrl: './board-options.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './board-options.css',
 })
 export class BoardOptions {

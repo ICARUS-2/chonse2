@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import Chonse2 from '../../../libs/chonse2-lib/chonse2';
@@ -9,6 +9,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
   selector: 'app-fen-import-modal',
   imports: [BootstrapButton, FormField],
   templateUrl: './fen-import-modal.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './fen-import-modal.css',
 })
 export class FenImportModal 

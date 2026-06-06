@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { StaticChessboard } from '../static-chessboard/static-chessboard';
 import ThemeService from '../themes/theme-service';
@@ -13,6 +13,7 @@ import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
   selector: 'app-homepage',
   imports: [StaticChessboard, IconButton],
   templateUrl: './homepage.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './homepage.css',
 })
 export class Homepage {
