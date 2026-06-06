@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouteConstants } from '../../app.routes';
 import GameLinkHelper from '../../chessboard/chessboard/game-link-helper';
@@ -7,6 +7,7 @@ import GameLinkHelper from '../../chessboard/chessboard/game-link-helper';
   selector: 'app-load-fen',
   imports: [],
   templateUrl: './load-fen.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './load-fen.css',
 })
 export class LoadFen {

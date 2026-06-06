@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 import GameLinkHelper from '../chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
@@ -8,6 +8,7 @@ import { BootstrapButton } from "../../ui/bootstrap-button/bootstrap-button";
   selector: 'app-copy-pgn-modal',
   imports: [BootstrapButton],
   templateUrl: './copy-pgn-modal.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './copy-pgn-modal.css',
 })
 export class CopyPgnModal {

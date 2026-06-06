@@ -1,4 +1,4 @@
-import { Component, ElementRef, input, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, input, ViewChild, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { NgbProgressbar } from '@ng-bootstrap/ng-bootstrap';
 import BoardState from '../chessboard/board-state';
 
@@ -6,6 +6,7 @@ import BoardState from '../chessboard/board-state';
   selector: 'app-progress-toast',
   imports: [NgbProgressbar],
   templateUrl: './progress-toast.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './progress-toast.css',
 })
 export class ProgressToast {

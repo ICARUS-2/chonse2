@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, computed, input, output, signal, WritableSignal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, input, output, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
 import { EngineInformation, EngineType, MoveClassification, moveClassificationLabels } from '../../../libs/engine-lib/types/enums';
 import { IconButton } from '../../ui/icon-button/icon-button';
 import BoardState from '../chessboard/board-state';
@@ -18,6 +18,7 @@ import { Chessboard } from '../chessboard/chessboard';
   selector: 'app-coach-display',
   imports: [IconButton, CommonModule],
   templateUrl: './coach-display.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './coach-display.css',
 })
 export class CoachDisplay {

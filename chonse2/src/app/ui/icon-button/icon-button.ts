@@ -1,10 +1,11 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 
 @Component({
   selector: 'app-icon-button',
   imports: [],
   templateUrl: './icon-button.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './icon-button.css',
 })
 export class IconButton {

@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { CommonModule } from '@angular/common';
@@ -10,6 +10,7 @@ import ThemeService from '../../themes/theme-service';
   selector: 'app-moves-table',
   imports: [DivergenceTableEntry, CommonModule],
   templateUrl: './moves-table.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './moves-table.css',
 })
 export class MovesTable {

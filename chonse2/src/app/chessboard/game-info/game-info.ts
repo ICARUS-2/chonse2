@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import ThemeService from '../../themes/theme-service';
 import { PositionEval } from '../../../libs/engine-lib/types/eval';
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-game-info',
   imports: [CommonModule],
   templateUrl: './game-info.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './game-info.css',
 })
 export class GameInfo {

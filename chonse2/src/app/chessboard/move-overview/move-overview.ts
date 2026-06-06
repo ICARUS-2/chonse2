@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, input, output, ChangeDetectionStrategy } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
@@ -10,6 +10,7 @@ import ChessboardHelper from '../helpers';
   selector: 'app-move-overview',
   imports: [CommonModule],
   templateUrl: './move-overview.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './move-overview.css',
 })
 export class MoveOverview {

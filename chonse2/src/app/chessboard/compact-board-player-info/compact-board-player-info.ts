@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import ThemeService from '../../themes/theme-service';
 import { CommonModule } from '@angular/common';
@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-compact-board-player-info',
   imports: [CommonModule],
   templateUrl: './compact-board-player-info.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './compact-board-player-info.css',
 })
 export class CompactBoardPlayerInfo {

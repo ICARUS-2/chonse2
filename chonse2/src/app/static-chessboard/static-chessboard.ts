@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import Chonse2 from '../../libs/chonse2-lib/chonse2';
 import { Square } from '../chessboard/square/square';
 
@@ -6,6 +6,7 @@ import { Square } from '../chessboard/square/square';
   selector: 'app-static-chessboard',
   imports: [Square],
   templateUrl: './static-chessboard.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './static-chessboard.css',
 })
 export class StaticChessboard {
