@@ -138,9 +138,9 @@ export class CoachUtils
     private static readonly PIECE_LOSS_SENTENCES: Array<string> = 
     [
         `They've made a mistake, and their ${CoachUtils.PIECE_PLACEHOLDER} is now lost. `,
-        `${CoachUtils.TURN_PLACEHOLDER} messed up, which will cost them a ${CoachUtils.PIECE_PLACEHOLDER}. `,
+        `${CoachUtils.TURN_PLACEHOLDER} slipped up, which will cost them a ${CoachUtils.PIECE_PLACEHOLDER}. `,
         `They've made an error, allowing the opponent to win ${CoachUtils.TURN_PLACEHOLDER}'s ${CoachUtils.PIECE_PLACEHOLDER} with correct play. `,
-        `This move is losing material. `
+        `${CoachUtils.TURN_PLACEHOLDER} is losing a ${CoachUtils.PIECE_PLACEHOLDER} this way :( `
     ]
 
     //If the player missed the opportunity to capture a vulnerable piece
@@ -396,16 +396,25 @@ export class CoachUtils
 
                     //Case: Player allowed material loss but not necessarily hanging something 
                     {
-                        /*if (!move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging))*/
+                        if (!move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging))
                         {
+                            //play out the engine line
                             const followUp = getEngineLineStates(state, posEval.lines[0]);
 
+                            //what white already had before the engine line
                             const whiteCapturedBefore = followUp[0].piecesWhiteCaptured;
+
+                            //what white had after all follow up moves were completed.
                             const whiteCapturedAfter = followUp.at(-1)?.piecesWhiteCaptured;
 
+                            //what black already had before the engine line
                             const blackCapturedBefore = followUp[0].piecesBlackCaptured;
+
+                            //what black had after all follow up moves were completed.
                             const blackCapturedAfter = followUp.at(-1)?.piecesBlackCaptured;
 
+
+                            //Only the NEW pieces gained after this engine line.
                             const whiteNewCaptures = whiteCapturedAfter?.slice(whiteCapturedBefore.length);
                             const blackNewCaptures = blackCapturedAfter?.slice(blackCapturedBefore.length);
 
@@ -428,22 +437,27 @@ export class CoachUtils
                                     }
                                 )
 
+                                //If positive: white gained. If negative: black gained.
                                 const materialDifference = whiteMaterialGained - blackMaterialGained;
-
+                                
                                 //If the material difference is nonzero, then one had to have lost material during this line.
                                 if (materialDifference != 0)
                                 {
-                                    //This will have items left at the end.
+                                    //who gained material - capture list
                                     let gainingArray: Array<string> = [];
 
-                                    //This should not
+                                    //who lost material - capture list
                                     let losingArray: Array<string> = [];
+
+                                    //It can't be relevant if the person moving slipped up but will still win material.
+                                    let isRelevantMaterialLoss = false;
 
                                     //possible case 1: black just moved and white gained material.
                                     if (materialDifference > 0 && whiteToMove)
                                     {
                                         gainingArray = whiteNewCaptures;
                                         losingArray = blackNewCaptures;
+                                        isRelevantMaterialLoss = true;
                                     }
 
                                     //possible case 2: white just moved and black gained material.
@@ -451,30 +465,46 @@ export class CoachUtils
                                     {
                                         gainingArray = blackNewCaptures;
                                         losingArray = whiteNewCaptures;
+                                        isRelevantMaterialLoss = true;
                                     }
 
-                                    console.log("Gaining: ")
-                                    console.log(gainingArray);
-
-                                    console.log("Losing")
-                                    console.log(losingArray);
-
-                                    for( let i = gainingArray.length - 1; i >=0; i-- )
+                                    //If the person who moved is the one who both messed up and will be losing material, check what material they'll lose.
+                                    if (isRelevantMaterialLoss)
                                     {
-                                        const pieceToCheckCompensationFor = gainingArray[i];
-                                        const checkedPieceMaterialValue = PieceMaterial.getMaterialFromPiece(pieceToCheckCompensationFor);
-
-                                        const losingCompensationIdx = losingArray.findIndex( potentialCompensationPiece => PieceMaterial.getMaterialFromPiece(potentialCompensationPiece) == checkedPieceMaterialValue);
-
-                                        if (losingCompensationIdx != -1)
+                                        //Now, check what material swaps are not equal
+                                        for( let i = gainingArray.length - 1; i >=0; i-- )
                                         {
-                                            gainingArray.splice(i, 1);
-                                            losingArray.splice(losingCompensationIdx, 1);
-                                        }
-                                    }
+                                            const pieceToCheckCompensationFor = gainingArray[i];
+                                            const checkedPieceMaterialValue = PieceMaterial.getMaterialFromPiece(pieceToCheckCompensationFor);
 
-                                    console.log("GAINER PIECES: ")
-                                    console.log(gainingArray);
+                                            const losingCompensationIdx = losingArray.findIndex( potentialCompensationPiece => PieceMaterial.getMaterialFromPiece(potentialCompensationPiece) == checkedPieceMaterialValue);
+
+                                            if (losingCompensationIdx != -1)
+                                            {
+                                                gainingArray.splice(i, 1);
+                                                losingArray.splice(losingCompensationIdx, 1);
+                                            }
+                                        }
+
+                                        //What remains is the uncompensated material gain.
+                                        let highestMaterial = 0;
+                                        let highestValueUncompensatedPiece = "";
+
+                                        for(let i = 0; i < gainingArray.length; i++)
+                                        {
+                                            const piece = gainingArray[i];
+                                            const material = PieceMaterial.getMaterialFromPiece(piece);
+
+                                            if (material > highestMaterial)
+                                            {
+                                                highestMaterial = material;
+                                                highestValueUncompensatedPiece = piece;
+                                            }
+                                        }
+
+                                        move.coachComment += CoachUtils.selectAndFormatSentence(this.PIECE_LOSS_SENTENCES, colorThatMovedText, highestValueUncompensatedPiece);
+                                        move.coachMoveFlags.push(CoachMoveFlagType.CausedMaterialLoss);
+                                    }
                                 } 
                             }
                         }
@@ -1299,6 +1329,7 @@ export enum CoachMoveFlagType
     MissedFork,
     MissedPin,
     IgnoredPin,
+    CausedMaterialLoss,
 
     //Good (show follow up)
     OpportunityToCheckmate,
