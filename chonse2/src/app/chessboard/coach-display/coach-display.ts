@@ -89,6 +89,11 @@ export class CoachDisplay {
       return "Show fork";
     }
 
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.CausedMaterialLoss))
+    {
+      return "Show material loss";
+    }
+
     return "Show follow-up";
   }
 

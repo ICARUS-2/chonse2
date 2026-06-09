@@ -111,7 +111,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   animatedPiece = signal('');
   animatedPieceX = signal(0);
   animatedPieceY = signal(0);
-  static animationDuration = 100; // ms
+  static animationDuration = 125; // ms
   animatedPieceCoord = signal('');
 
   static readonly moveClassificationColors: Map<string, string> = new Map<string, string>( 
