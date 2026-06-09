@@ -3,7 +3,7 @@
   <h1 align="center"><a href="https://icarus-2.github.io/chonse2" target="blank">CHONSE2</a></h1>  
   <p>The Most Luminous Chess App</p>
   <hr>
-  <img src="https://icarus-2.github.io/chonse2/img/preview.png">
+  <img src="https://raw.githubusercontent.com/ICARUS-2/chonse2/refs/heads/main/screenshot.png">
 </div>
 
 <p align="center">CHONSE2 is an open-source chess web app to play, edit boards, and analyze/share games on any device.</p>
@@ -15,6 +15,7 @@
 - Display move classifications (Luminous, perfect, blunder, etc), engine hierarchy, accuracies, elo estimations, graphs and evaluation bar.
 - Perform moves with real-time analysis.
 - Cloud Hybrid analysis mode, allowing for deeper, faster evaluations using a fraction of the CPU power.
+- Multithreading analysis support, allowing for analysis up to 12x faster on capable devices.
 
 ## Editor
 - Input any position onto a board via dragging and dropping.
