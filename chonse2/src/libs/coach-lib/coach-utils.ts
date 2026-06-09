@@ -1,3 +1,4 @@
+import { findIndex } from "rxjs";
 import { Arrow, ArrowColors, ArrowContext, createArrow } from "../../app/chessboard/chessboard/arrow";
 import MoveResult from "../../app/chessboard/chessboard/move-result";
 import Chonse2 from "../chonse2-lib/chonse2";
@@ -132,6 +133,15 @@ export class CoachUtils
         `Whoopsie, ${CoachUtils.TURN_PLACEHOLDER} gave up a ${CoachUtils.PIECE_PLACEHOLDER}! `,
         `This move loses a ${CoachUtils.PIECE_PLACEHOLDER}. `
     ];
+
+    //If the player made a move that will lose material in the line but not outright hanging a piece 
+    private static readonly PIECE_LOSS_SENTENCES: Array<string> = 
+    [
+        `They've made a mistake, and their ${CoachUtils.PIECE_PLACEHOLDER} is now lost. `,
+        `${CoachUtils.TURN_PLACEHOLDER} messed up, which will cost them a ${CoachUtils.PIECE_PLACEHOLDER}. `,
+        `They've made an error, allowing the opponent to win ${CoachUtils.TURN_PLACEHOLDER}'s ${CoachUtils.PIECE_PLACEHOLDER} with correct play. `,
+        `This move is losing material. `
+    ]
 
     //If the player missed the opportunity to capture a vulnerable piece
     private static readonly MISSED_HANGING_PIECE_SENTENCES: Array<string> =
@@ -380,6 +390,92 @@ export class CoachUtils
 
                                     break;
                                 }
+                            }
+                        }
+                    }
+
+                    //Case: Player allowed material loss but not necessarily hanging something 
+                    {
+                        /*if (!move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging))*/
+                        {
+                            const followUp = getEngineLineStates(state, posEval.lines[0]);
+
+                            const whiteCapturedBefore = followUp[0].piecesWhiteCaptured;
+                            const whiteCapturedAfter = followUp.at(-1)?.piecesWhiteCaptured;
+
+                            const blackCapturedBefore = followUp[0].piecesBlackCaptured;
+                            const blackCapturedAfter = followUp.at(-1)?.piecesBlackCaptured;
+
+                            const whiteNewCaptures = whiteCapturedAfter?.slice(whiteCapturedBefore.length);
+                            const blackNewCaptures = blackCapturedAfter?.slice(blackCapturedBefore.length);
+
+                            if (whiteNewCaptures && blackNewCaptures)
+                            {
+                                let whiteMaterialGained = 0;
+                                let blackMaterialGained = 0;
+
+                                whiteNewCaptures.forEach( capturedPiece => 
+                                    {
+                                        const materialValueOfCapture = PieceMaterial.getMaterialFromPiece(capturedPiece);
+                                        whiteMaterialGained += materialValueOfCapture;
+                                    }
+                                )
+
+                                blackNewCaptures.forEach( capturedPiece => 
+                                    {
+                                        const materialValueOfCapture = PieceMaterial.getMaterialFromPiece(capturedPiece);
+                                        blackMaterialGained += materialValueOfCapture;
+                                    }
+                                )
+
+                                const materialDifference = whiteMaterialGained - blackMaterialGained;
+
+                                //If the material difference is nonzero, then one had to have lost material during this line.
+                                if (materialDifference != 0)
+                                {
+                                    //This will have items left at the end.
+                                    let gainingArray: Array<string> = [];
+
+                                    //This should not
+                                    let losingArray: Array<string> = [];
+
+                                    //possible case 1: black just moved and white gained material.
+                                    if (materialDifference > 0 && whiteToMove)
+                                    {
+                                        gainingArray = whiteNewCaptures;
+                                        losingArray = blackNewCaptures;
+                                    }
+
+                                    //possible case 2: white just moved and black gained material.
+                                    if (materialDifference < 0 && !whiteToMove)
+                                    {
+                                        gainingArray = blackNewCaptures;
+                                        losingArray = whiteNewCaptures;
+                                    }
+
+                                    console.log("Gaining: ")
+                                    console.log(gainingArray);
+
+                                    console.log("Losing")
+                                    console.log(losingArray);
+
+                                    for( let i = gainingArray.length - 1; i >=0; i-- )
+                                    {
+                                        const pieceToCheckCompensationFor = gainingArray[i];
+                                        const checkedPieceMaterialValue = PieceMaterial.getMaterialFromPiece(pieceToCheckCompensationFor);
+
+                                        const losingCompensationIdx = losingArray.findIndex( potentialCompensationPiece => PieceMaterial.getMaterialFromPiece(potentialCompensationPiece) == checkedPieceMaterialValue);
+
+                                        if (losingCompensationIdx != -1)
+                                        {
+                                            gainingArray.splice(i, 1);
+                                            losingArray.splice(losingCompensationIdx, 1);
+                                        }
+                                    }
+
+                                    console.log("GAINER PIECES: ")
+                                    console.log(gainingArray);
+                                } 
                             }
                         }
                     }
@@ -1146,6 +1242,32 @@ export class CoachUtils
             }
         }
         return legalMoves
+    }
+
+    //gets all of the follow up states in an engine line.
+    function getEngineLineStates(board: Chonse2, line: LineEval): Array<Chonse2>
+    {
+        const followUp: Array<Chonse2> = [board];
+
+        line.pv.forEach( engineLineMove => 
+            {
+                const stateCopy = followUp.at(-1)?.getFullDeepCopy();
+
+                const {fromSquare, toSquare, promotion } = CoachUtils.convertUciToChonse2Move(engineLineMove);
+
+                if (stateCopy)
+                {
+                    stateCopy.completeMove(fromSquare, toSquare, promotion);
+                    followUp.push(stateCopy);
+                }   
+                else 
+                {
+                    throw "Error getting engine line followup.";
+                }
+            }
+        )
+
+        return followUp;
     }
 
     const FIANCHETTOS = ["g2", "b2", "g7", "b7"];
