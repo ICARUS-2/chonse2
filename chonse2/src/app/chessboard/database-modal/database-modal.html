@@ -1,1 +1,18 @@
-<p>database-modal works!</p>
+<div class="componentContainer d-flex flex-column p-3" [class]="themeService.getThemeInstance().getGlassPanelTheme()" [style.background-image]="`url(${themeService.getThemeInstance().getBackgroundImgUrl()})`" [style.color]="themeService.getThemeInstance().getTextColor()">
+    
+    <div [class]="themeService.getThemeInstance().getGlassPanelTheme()" class="p-4">
+        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Save Game to Database</h2>
+
+        <hr>
+
+        <div [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
+            <label [classList]="themeService.getThemeInstance().getTextColor()">Comment</label>
+            <br>
+            <br>
+            <input [class]="themeService.getThemeInstance().getGlassPanelTheme()" class="w-100" [formField]="form.comment" type="text">
+        </div>
+        <hr>
+
+        <app-bootstrap-button (buttonClick)="submitClicked()" label="Save"></app-bootstrap-button>
+    </div>
+</div>

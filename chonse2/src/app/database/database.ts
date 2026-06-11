@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, WritableSignal } from '@angular/core';
 import ThemeService from '../themes/theme-service';
 import { CommonModule } from '@angular/common';
 import { DatabaseItem, DatabaseService } from './database-service';
@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr';
   imports: [CommonModule],
   templateUrl: './database.html',
   styleUrl: './database.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Database {
 
@@ -18,8 +19,10 @@ export class Database {
   {
     try 
     {
-      this.dbItems.set( databaseService.getGamesFromDatabase());
-      toastrService.success(`Successfully loaded ${this.dbItems.length} records.`)
+      const itemsFromLocal = databaseService.getGamesFromDatabase();
+      console.log(itemsFromLocal);
+      this.dbItems.set(itemsFromLocal);
+      toastrService.success(`Successfully loaded ${this.dbItems().length} records.`)
     }
     catch(ex)
     {
