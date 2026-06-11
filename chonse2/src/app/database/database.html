@@ -1,7 +1,64 @@
-<div class="container p-4" [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()">
-    <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Database</h1>
+<div class="container p-4" 
+     [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()">
 
-    <table>
-        
-    </table>
+    <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()">
+        Database
+    </h1>
+
+    <hr>
+
+    <div class="tableOuter">
+        <div class="tableInner">
+
+            <!-- Header row -->
+            <div class="row fw-bold">
+                <div class="col-2">White</div>
+                <div class="col-2">Black</div>
+                <div class="col-2">Result</div>
+                <div class="col-2">Accuracy</div>
+                <div class="col-2">Comment</div>
+                <div class="col-2">Action</div>
+            </div>
+
+            <hr>
+
+            @for(item of dbItems(); track $index)
+            {
+                <div class="row align-items-center">
+
+                    <div class="col-2 tableData">{{ item.white }}</div>
+                    <div class="col-2 tableData">{{ item.black }}</div>
+                    <div class="col-2 tableData">{{ item.result }}</div>
+
+                    <div class="col-2 tableData">
+                        {{ item.whiteAccuracy }}
+                        <br>
+                        {{ item.blackAccuracy }}
+                    </div>
+
+                    <div class="col-2 tableData">
+                        {{ item.comment }}
+                    </div>
+
+                    <div class="col-2">
+                        <div class="d-flex flex-column gap-2">
+                            <app-icon-button label="Analyze" iconClass="bi-cpu" (buttonClick)="handleAnalyzeClicked(item.pgn)">
+                            </app-icon-button>
+
+                            <app-icon-button
+                                overridePrimaryBackgroundColor="gray"
+                                label="Delete"
+                                iconClass="bi-trash"
+                                (buttonClick)="handleDeleteClicked(item.id)">
+                            </app-icon-button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr>
+            }
+
+        </div>
+    </div>
 </div>

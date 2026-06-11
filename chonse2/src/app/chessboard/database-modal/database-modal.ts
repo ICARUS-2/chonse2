@@ -5,6 +5,7 @@ import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import { DatabaseService } from '../../database/database-service';
 import { ToastrService } from 'ngx-toastr';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-database-modal',
@@ -24,7 +25,11 @@ export class DatabaseModal {
 
   form = form(this.formModel);
 
-  constructor(public themeService: ThemeService, private databaseService: DatabaseService, private toastrService: ToastrService)
+  constructor(
+    public themeService: ThemeService, 
+    private databaseService: DatabaseService, 
+    private toastrService: ToastrService,
+    private activeModal: NgbActiveModal)
   {
 
   }
@@ -48,6 +53,8 @@ export class DatabaseModal {
     {
       this.toastrService.error("Game save failed: " + ex)
     }
+
+    this.activeModal.close();
   }
 }
 
