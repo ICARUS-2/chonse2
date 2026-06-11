@@ -1,5 +1,3 @@
-import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
-
 export enum PgnFields
 {
     //necessary
@@ -46,7 +44,6 @@ export enum PgnComments
     CLOCK = "%clk"
 }
 
-
 export interface SanMove {
     piece: string;              // "P", "N", "B", "R", "Q", "K"
     toCoordinate: string;       // "e4"
@@ -61,4 +58,15 @@ export enum PgnSources
     Chesscom = "Chess.com",
     Lichess = "Lichess",
     Manual = "Manual PGN",
+}
+
+export function FormatTermination(headers: PgnHeaders): string
+{
+    const res = headers.termination
+      ? headers.termination !== 'Normal'
+        ? headers.termination
+        : headers.result
+      : '- ';
+
+    return res;
 }

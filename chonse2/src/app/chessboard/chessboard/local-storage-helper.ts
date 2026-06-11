@@ -11,8 +11,11 @@ export default class LocalStorageHelper
     static readonly ENGINE_THREAD_COUNT = "Chonse2_ThreadCount";
     static readonly SELECTED_THEME = "Chonse2_SelectedTheme";
 
-    //Other
+    //homepage
     static readonly LAST_PGN = "Chonse2_LastPgn"
+
+    //database
+    static readonly DATABASE = "Chonse2_Database";
 
     //bool
     static getBoolean(key: string, defaultVal = false): boolean

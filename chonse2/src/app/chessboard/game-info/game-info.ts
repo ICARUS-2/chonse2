@@ -3,6 +3,7 @@ import BoardState from '../chessboard/board-state';
 import ThemeService from '../../themes/theme-service';
 import { PositionEval } from '../../../libs/engine-lib/types/eval';
 import { CommonModule } from '@angular/common';
+import { FormatTermination } from '../chessboard/pgn-misc';
 
 @Component({
   selector: 'app-game-info',
@@ -19,12 +20,7 @@ export class GameInfo {
   get statusText(): string {
     const headers = this.boardState().pgnHeaders();
 
-    const prefix = headers.termination
-      ? headers.termination !== 'Normal'
-        ? headers.termination
-        : headers.result
-      : '- ';
-
+    const prefix = FormatTermination(headers);
     return prefix;
   }
 

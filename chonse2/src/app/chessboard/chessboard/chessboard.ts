@@ -41,6 +41,7 @@ import ChessboardHelper from '../helpers';
 import { CompactBoardPlayerInfo } from '../compact-board-player-info/compact-board-player-info';
 import { ProgressToast } from '../progress-toast/progress-toast';
 import GameLinkHelper from './game-link-helper';
+import { DatabaseModal } from '../database-modal/database-modal';
 
 @Component({
   selector: 'app-chessboard',
@@ -824,6 +825,12 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const modalRef = this.modalService.open(CopyPgnModal);
     modalRef.componentInstance.pgn = this.boardState().exportPGN();
+  }
+
+  async saveToDbClicked(): Promise<void>
+  {
+    const modalRef = this.modalService.open(DatabaseModal);
+    modalRef.componentInstance.game.set(this.boardState());
   }
   //#endregion
 
