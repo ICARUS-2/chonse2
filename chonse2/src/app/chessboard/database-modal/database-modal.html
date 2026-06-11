@@ -6,10 +6,10 @@
         <hr>
 
         <div [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
-            <label [classList]="themeService.getThemeInstance().getTextColor()">Comment</label>
+            <label [style.color]="themeService.getThemeInstance().getTextColor()">Comment</label>
             <br>
             <br>
-            <input [class]="themeService.getThemeInstance().getGlassPanelTheme()" class="w-100" [formField]="form.comment" type="text">
+            <input [style.color]="themeService.getThemeInstance().getTextColor()" [class]="themeService.getThemeInstance().getGlassPanelTheme()" class="w-100" [formField]="form.comment" type="text">
         </div>
         <hr>
 
