@@ -225,7 +225,7 @@
 
   .nav-links {
     justify-content: center;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none; /* Firefox */

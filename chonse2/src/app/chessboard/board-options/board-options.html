@@ -32,6 +32,13 @@
         iconClass="bi-share"
         (buttonClick)="exportGameClicked.emit()">
       </app-icon-button>
+
+      <app-icon-button
+        label="Save to Database"
+        extraClasses="m-1 small"
+        iconClass="bi-database"
+        (buttonClick)="saveToDbClicked.emit()">
+      </app-icon-button>
     }
 
   </div>

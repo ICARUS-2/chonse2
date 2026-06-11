@@ -8,6 +8,7 @@ import { PgnLink } from './pgn-link/pgn-link';
 import { LoadPgn } from './load-pgn/load-pgn';
 import { Homepage } from './homepage/homepage';
 import { LoadFen } from './input-position/load-fen/load-fen';
+import { Database } from './database/database';
 
 export enum RouteConstants {
     ROUTE_SITE = "site",
@@ -34,6 +35,7 @@ export const routes: Routes = [
     {path: "editor", component: InputPosition},
     {path: `vs-ai`, component: VsAi},
     {path: "pgn-link", component: PgnLink},
+    {path: "database", component: Database},
 
     //redirects
     {path: `game/:${RouteConstants.ROUTE_SITE}/:${RouteConstants.ROUTE_USERNAME}/:${RouteConstants.ROUTE_GAMEID}`, component: LoadGame},

@@ -28,6 +28,8 @@ export class BoardOptions {
   resignVsAiClicked = output<void>();
   beginGameVsAiClicked = output<void>();
   analyzeAiGameClicked = output<void>();
+  saveToDbClicked = output<void>();
+  
  
   get mostCurrentMainState() {
     const stack = this.boardState().mainStateStack();
