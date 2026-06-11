@@ -1,6 +1,6 @@
 @if(boardState().eval())
 {
-  <div class="d-flex flex-column justify-content-between overflow-x-scroll coachDisplay p-4"
+  <div class="d-flex flex-column justify-content-between overflow-x-auto coachDisplay p-4"
   [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()"
   [style.color]="themeService.getThemeInstance().getTextColor()">
     @if (shouldShowEngineInfo()) {

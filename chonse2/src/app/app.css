@@ -56,14 +56,14 @@
 }
 
 .app-shell {
-  width: 98%;
+  width: 99%;
 
   min-height: calc(100vh - 20px);
   max-height: 90vmin;
 
   border-radius: 32px;
 
-  overflow: scroll;
+  overflow: auto;
 }
 
 .app-shell > * {

@@ -1,5 +1,5 @@
 <div 
-  class="d-flex justify-content-between p-2"
+  class="d-flex justify-content-between p-2 user-select-none btnContainer"
   [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()">
   <app-bootstrap-button
     (buttonClick)="flipClicked.emit()"
