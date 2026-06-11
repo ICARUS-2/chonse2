@@ -120,7 +120,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       [MoveClassification.Opening, "Gray"],
       [MoveClassification.Forced, "Gray"],
       [MoveClassification.Luminous, "MediumTurquoise"],
-      [MoveClassification.Perfect, "Indigo"],
+      [MoveClassification.Perfect, "fuchsia"],
       [MoveClassification.Best, "LimeGreen"],
       [MoveClassification.Excellent, "LimeGreen"],
       [MoveClassification.Okay, "OliveDrab"],

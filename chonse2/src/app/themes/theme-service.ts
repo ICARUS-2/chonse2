@@ -4,6 +4,7 @@ import { Themes } from "./themes";
 import LocalStorageHelper from "../chessboard/chessboard/local-storage-helper";
 import WhiteBlueTheme from "./app-themes/white-blue-theme";
 import BlackRedTheme from "./app-themes/black-red-theme";
+import GalacticTheme from "./app-themes/galactic-theme";
 
 @Injectable({ providedIn: 'root' })
 export default class ThemeService 
@@ -27,6 +28,8 @@ export default class ThemeService
                 return new WhiteBlueTheme();
             case Themes.BlackAndRed: 
                 return new BlackRedTheme();
+            case Themes.Galactic:
+                return new GalacticTheme();
         }
 
         return new WhiteBlueTheme();
