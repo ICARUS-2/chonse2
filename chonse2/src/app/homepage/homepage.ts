@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { StaticChessboard } from '../static-chessboard/static-chessboard';
 import ThemeService from '../themes/theme-service';
@@ -6,12 +6,12 @@ import { IconButton } from "../ui/icon-button/icon-button";
 import Chonse2 from '../../libs/chonse2-lib/chonse2';
 import BoardState from '../chessboard/chessboard/board-state';
 import LocalStorageHelper from '../chessboard/chessboard/local-storage-helper';
-import { decompress } from 'lz-string';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-homepage',
-  imports: [StaticChessboard, IconButton],
+  imports: [StaticChessboard, IconButton, NgbTooltip],
   templateUrl: './homepage.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './homepage.css',
@@ -92,6 +92,11 @@ export class Homepage {
   }
 
   //right btns
+  settingsBtnClicked()
+  {
+    this.router.navigate(['settings']);
+  }
+
   sourceCodeBtnClicked()
   {
     window.open("https://github.com/ICARUS-2/chonse2/", '_blank');

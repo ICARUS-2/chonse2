@@ -1,5 +1,5 @@
 <div class="homepageContainer">
-    <div class="topHeader" [style.color]="themeService.getThemeInstance().getPrimaryColor()">CHONSE2</div>
+    <div class="topHeader" [style.color]="themeService.getThemeInstance().getPrimaryColor()" ngbTooltip="Cloud Hybrid Open-source Neural network Stockfish Environment">CHONSE2</div>
     <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Luminous chess analytics.</h1>
     <h4 [style.color]="themeService.getThemeInstance().getTextColor()">Open-source. Unlimited. No account required.</h4>
 
@@ -14,7 +14,7 @@
             [
                 {'label': 'Board Editor', 'iconClass': 'bi-border-all', 'click': boardEditorButtonClicked},
                 {'label': 'Play vs Stockfish', 'iconClass': 'bi-code-slash', 'click': vsStockfishButtonClicked},
-                {'label': 'PGN Link', 'iconClass': 'bi-link-45deg', 'click': pgnLinkButtonClicked}
+                {'label': 'PGN Link', 'iconClass': 'bi-link-45deg', 'click': pgnLinkButtonClicked},
             ];
 
             <app-icon-button (buttonClick)="analysisButtonClicked()" [extraStyle]="btnStyle" extraClasses="" label="Analysis" iconClass="bi-cpu" overridePrimaryBackgroundColor="rgb(52, 175, 0)" overrideSecondaryBackgroundColor="green"></app-icon-button>
@@ -49,6 +49,7 @@
         <div class="stackedButtons">
             @let rightBtns = 
             [
+                {'label': "Settings", 'iconClass': 'bi-gear', 'click': settingsBtnClicked},
                 {'label': 'Source Code', 'iconClass': 'bi-github', 'click': sourceCodeBtnClicked},
                 {'label': 'Developer Site', 'iconClass': 'bi-code-slash', 'click': developerSiteBtnClicked},
             ];
@@ -57,7 +58,7 @@
             {
                 <app-icon-button (buttonClick)="btn.click.call(this)" extraClasses="" [label]="btn.label" [iconClass]="btn.iconClass"></app-icon-button>
             
-                <div class="m-2"></div>
+                <div class="m-3"></div>
             }
         </div>
     </div>
