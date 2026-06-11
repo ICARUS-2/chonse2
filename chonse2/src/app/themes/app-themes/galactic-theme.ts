@@ -1,17 +1,15 @@
 import { GlassPanelTheme, IAppTheme } from "./i-app-theme";
 
-export default class WhiteBlueTheme implements IAppTheme
+export default class GalacticTheme implements IAppTheme
 {
     getPrimaryColor(): string 
     {
-        return "rgb(13,110,253)"
-        //return "rgb(13, 140, 255)"
+        return "fuchsia"
     }
 
     getHoverColor(): string 
     {
-        //return "rgb(11,94,215)"
-        return "rgb(13, 110, 255);"
+        return "darkpurple;"
     }
 
     getBackgroundColor(): string 
@@ -26,7 +24,7 @@ export default class WhiteBlueTheme implements IAppTheme
 
     getTextColor(): string 
     {
-        return "black";
+        return "white";
     }
 
     getChessboardLightColor(): string 
@@ -36,16 +34,16 @@ export default class WhiteBlueTheme implements IAppTheme
 
     getChessboardDarkColor(): string 
     {
-        return "rgb(85,150,242)";
+        return "rgb(128, 0, 255)";
     }
     
     getBackgroundImgUrl(): string 
     {
-        return "img/backgrounds/sky-bg.webp"
+        return "img/backgrounds/galactic-bg.webp"
     }
 
     getGlassPanelTheme(): string 
     {
-        return GlassPanelTheme.Light;   
+        return GlassPanelTheme.Dark;   
     }
 }

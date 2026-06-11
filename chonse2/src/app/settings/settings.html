@@ -10,10 +10,10 @@
             <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Board</h2>
 
             <!--Click to move and piece animation-->
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between boardSection">
                 <!--Click to move-->
                 <div>
-                    <h4 class="text-secondary">Click to move</h4>
+                    <h4 class="">Click to move</h4>
 
                     <div
                     class="form-check form-switch"
@@ -30,7 +30,7 @@
 
                 <!--Piece Animation-->
                 <div>
-                    <h4 class="text-secondary">Piece Animation</h4>
+                    <h4 class="">Piece Animation</h4>
 
                     <div
                     class="form-check form-switch"
@@ -50,7 +50,7 @@
         <!--Appearance Settings-->
         <div class="p-4 w-50 ms-2" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
             <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Appearance</h2>
-                <h4 class="text-secondary">Select Theme</h4>
+                <h4 class="">Select Theme</h4>
                 <select [formField]="form.selectedTheme" class="form-select" (change)="handleThemeDropdownSelectionChanged()">
                     @for(theme of Object.values(Themes); track $index)
                     {
@@ -73,7 +73,7 @@
 
             <!--Select engine-->
             <div class="w-50 me-4">
-                <h4 class="text-secondary">Select Engine</h4>
+                <h4 class="">Select Engine</h4>
                 <select [formField]="form.selectedEngine" class="form-select" (change)="handleEngineDropdownSelectionChanged()">
                     @for(engine of Object.values(EngineName); track $index)
                     {
@@ -94,7 +94,7 @@
 
             <!--Cloud Hybrid-->
             <div class="w-50 ms-4">
-                <h4 class="text-secondary">Cloud Hybrid Mode (Single-thread only) <span class="bi bi-patch-question text-info" ngbTooltip="Delegate evaluations to Lichess cloud eval wherever possible. Can yield increased depth, faster evaluations and less CPU usage. Intended for devices that cannot take advantage of multithreading."></span> </h4>
+                <h4 class="">Cloud Hybrid Mode (Single-thread only) <span class="bi bi-patch-question text-info" ngbTooltip="Delegate evaluations to Lichess cloud eval wherever possible. Can yield increased depth, faster evaluations and less CPU usage. Intended for devices that cannot take advantage of multithreading."></span> </h4>
                 <div
                 class="form-check form-switch"
                 [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
@@ -115,7 +115,7 @@
         <div class="d-flex justify-content-between">
             <!--Engine depth-->
             <div class="w-50 me-4">
-                <h4 class="text-secondary">Engine Depth</h4>
+                <h4 class="">Engine Depth</h4>
                 <div class="d-flex" [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
                     <input (change)="handleEngineDepthChanged()" [formField]="form.engineDepth" type="range" class="form-range custom-range" id="range2">
                     <p>{{form.engineDepth().value()}}</p>
@@ -124,7 +124,7 @@
 
             <!--Thread count-->
             <div class="w-50 ms-4">
-                <h4 class="text-secondary">Thread Count</h4>
+                <h4 class="">Thread Count</h4>
                 <div class="d-flex" [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
                     <input (change)="handleThreadCountChanged()" [formField]="form.engineThreadCount" type="range" class="form-range custom-range" id="range3">
                     <p>{{form.engineThreadCount().value()}}</p>

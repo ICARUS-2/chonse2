@@ -14,3 +14,11 @@
 .custom-range::-moz-range-thumb {
   background-color: var(--slider-color);
 }
+
+@media screen and (max-width: 1200px)
+{
+  .boardSection
+  {
+    flex-direction: column;
+  }
+}

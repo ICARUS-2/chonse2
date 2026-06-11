@@ -1,5 +1,6 @@
 export enum Themes 
 {
-    WhiteAndBlue = "White and blue",
-    BlackAndRed = "Black and red"
+    WhiteAndBlue = "Sky",
+    BlackAndRed = "RedDragon",
+    Galactic = "Galactic"
 }
