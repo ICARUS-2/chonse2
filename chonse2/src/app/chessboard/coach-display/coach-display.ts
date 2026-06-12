@@ -125,10 +125,16 @@ export class CoachDisplay {
     this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.None);
   }
 
-  async doCoachMoveSequence()
+  async doCoachMoveSequence(isMissedOpportunity: boolean = false)
   {
     this.boardState().isLocked.set(true);
     this.boardState().isCoachMoveFinished.set(false);
+
+    //Lets the person see that this is a rollback without it confusing them
+    if (isMissedOpportunity)
+    {
+      await this.delay(1000);
+    }
 
     //Ensures that people can't click the buttons like crazy and mess up the states.
     this.boardState().disableCoachButtonsTemporarily();
@@ -154,7 +160,13 @@ export class CoachDisplay {
         for(let i = 0; i < iterationLength; i++)
         {
           if (this.boardState().isCoachMoveShowing())
-          {
+          { 
+            //Addresses possibility of a game ending by repetition or insufficient material but the engine not detecting it.
+            if (this.boardState().getCurrentState().gameState.isGameOver)
+            {
+              break;
+            }
+
             //Retrieves the top engine move.
             const engineMove = topEngineLine.pv[i];
 
@@ -183,13 +195,24 @@ export class CoachDisplay {
             //Then play the move.
             const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
             moveResult.coachComment = CoachUtils.COACH_MOVE_DELIMITER;
-            Sound.playSoundForMove(moveResult.notation);
 
             //Then add it.
             this.boardState().pushState(stateCopy, moveResult, true);
+
+            //If it's the first move in a missed opportunity, play the blip sound.
+            if (isMissedOpportunity && i == 0)
+            {
+              Sound.playSound(Sound.BLIP);
+              await this.delay(1000);
+            }
+            else 
+            {
+              Sound.playSoundForMove(moveResult.notation);
+            }
+
             
             //Then wait one second for the next move.
-            await this.delay(1000);
+            await this.delay(1200);
           }
           else 
           {
@@ -286,7 +309,7 @@ export class CoachDisplay {
       this.boardState().divergenceMoveStack.update( s=> [...s, dummyResult] );
       this.boardState().divergenceEvalStack.update( s => [...s, previousEval] )
 
-      this.doCoachMoveSequence();
+      this.doCoachMoveSequence(true);
     }
   }
 

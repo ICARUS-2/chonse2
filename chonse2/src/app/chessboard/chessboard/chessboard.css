@@ -140,15 +140,15 @@
 
 .corner-text
 {
-    position: absolute;
-    width: 14vmin;
-    font-size: 2vmin;
-    transform: translate(50%, -50%);
-    padding: 10px;
-    z-index: 2;
-    text-align: center;
-    color: white;
-    border-radius: 10px;
+  position: absolute;
+  width: 16vmin;
+  font-size: 2.1vmin;
+  transform: translate(50%, -50%);
+  padding: 10px;
+  z-index: 2;
+  text-align: center;
+  color: white;
+  border-radius: 10px;
 }
 
 .arrowOverlay {
