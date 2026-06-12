@@ -154,7 +154,13 @@ export class CoachDisplay {
         for(let i = 0; i < iterationLength; i++)
         {
           if (this.boardState().isCoachMoveShowing())
-          {
+          { 
+            //Addresses possibility of a game ending by repetition or insufficient material but the engine not detecting it.
+            if (this.boardState().getCurrentState().gameState.isGameOver)
+            {
+              break;
+            }
+
             //Retrieves the top engine move.
             const engineMove = topEngineLine.pv[i];
 
