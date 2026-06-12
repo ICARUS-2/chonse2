@@ -8,6 +8,7 @@ export default class Sound
     static readonly CHECKMATE = this.BASE_PATH + "checkmate.mp3"; //https://freesound.org/people/Timbre/sounds/232210/
     static readonly MOVE = this.BASE_PATH + "move.mp3";
     static readonly START = this.BASE_PATH + "start.mp3";
+    static readonly BLIP = this.BASE_PATH + "blip.mp3";
 
     static playSound(audioFilePath: string): void 
     {
