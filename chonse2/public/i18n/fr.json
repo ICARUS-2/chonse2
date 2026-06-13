@@ -38,6 +38,17 @@
 
     "chessboard":
     {
+        "squareText": 
+        {
+            "checkmate": "Checkmate",
+            "winner": "Gagnant",
+            "draw": "Nulle",
+            "luminous": "LUM1NEUX !",
+            "perfect": "Parfait !",
+            "null": "Nul",
+            "empty": ""
+        },
+
         "boardOptions":
         {
             "importGame": "Importer la partie",
@@ -58,9 +69,61 @@
             "cloud": "NUAGE",
             "is": "est",
             "checkmateAlwaysBest": "Checkmate est toujours le meilleur coup!",
-            "hideSequence": "Masquer la séquence",
+            "hideSequence": "Cacher la séquence",
             "continue": "Continuer",
-            "hideIdea": "Cacher l'idée"
+            "hideIdea": "Cacher l'idée",
+
+
+            "followUpButton": 
+            {
+                "showCheckmate": "Montrer le mat",
+                "showHangingPiece": "Montrer la pièce en prise",
+                "showFork": "Montrer la fourchette",
+                "showMaterialLoss": "Montrer la perte matérielle",
+                "showFollowUp": "Montrer la suite"
+            },
+            "missButton": 
+            {
+                "showMissedCheckmate": "Montrer le mat manqué",
+                "showMissedFork": "Montrer la fourchette manquée",
+                "showMissedCapture": "Montrer la capture manquée",
+                "showAlternative": "Montrer l'alternative",
+                "showMissedPin": "Montrer le clouage manqué",
+                "showMiss": "Montrer le coup manqué"
+            },
+            "ideaButton": 
+            {
+                "fork": "Montrer l'idée : Fourchette",
+                "pinnedPiece": "Montrer l'idée : Pièce clouée",
+                "centerPressure": "Montrer l'idée : Pression au centre",
+                "development": "Montrer l'idée : Développement",
+                "fianchetto": "Montrer l'idée : Fianchetto",
+                "base": "Montrer l'idée : "
+            },
+            "resourceButton": 
+            {
+                "openingLearnMore": "Ouverture : En savoir plus",
+                "unknownResource": "Ressource inconnue"
+            },
+            "moveClassifications": 
+            {
+                "none": "null",
+                "opening": "un coup de théorie",
+                "forced": "forcé",
+                "luminous": "LUMINEUX 🌕!!!",
+                "perfect": "le seul bon coup",
+                "best": "le meilleur coup",
+                "excellent": "excellent",
+                "okay": "acceptable",
+                "inaccuracy": "une imprécision",
+                "mistake": "une erreur",
+                "miss": "un coup manqué",
+                "blunder": "une gaffe"
+            },
+            "comments": 
+            {
+                "topMove": "Excellent coup!"
+            }
         }
     }
 }

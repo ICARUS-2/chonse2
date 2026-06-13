@@ -38,6 +38,17 @@
 
     "chessboard":
     {
+        "squareText": 
+        {
+            "checkmate": "Checkmate",
+            "winner": "Winner",
+            "draw": "Draw",
+            "luminous": "LUM1NOUS!",
+            "perfect": "Perfect!",
+            "null": "Null",
+            "empty": ""
+        },
+
         "boardOptions":
         {
             "importGame": "Import Game",
@@ -60,7 +71,58 @@
             "checkmateAlwaysBest": "Checkmate is always the best move!",
             "hideSequence": "Hide Sequence",
             "continue": "Continue",
-            "hideIdea": "Hide Idea"
+            "hideIdea": "Hide Idea",
+
+            "followUpButton": 
+            {
+                "showCheckmate": "Show checkmate",
+                "showHangingPiece": "Show hanging piece",
+                "showFork": "Show fork",
+                "showMaterialLoss": "Show material loss",
+                "showFollowUp": "Show follow-up"
+            },
+            "missButton": 
+            {
+                "showMissedCheckmate": "Show missed checkmate",
+                "showMissedFork": "Show missed fork",
+                "showMissedCapture": "Show missed capture",
+                "showAlternative": "Show alternative",
+                "showMissedPin": "Show missed pin",
+                "showMiss": "Show miss"
+            },
+            "ideaButton": 
+            {
+                "fork": "Show Idea: Fork",
+                "pinnedPiece": "Show Idea: Pinned Piece",
+                "centerPressure": "Show Idea: Center Pressure",
+                "development": "Show Idea: Development",
+                "fianchetto": "Show Idea: Fianchetto",
+                "base": "Show Idea: "
+            },
+            "resourceButton": 
+            {
+                "openingLearnMore": "Opening: Learn More",
+                "unknownResource": "Unknown resource"
+            },
+            "moveClassifications": 
+            {
+                "none": "null",
+                "opening": "a book move",
+                "forced": "forced",
+                "luminous": "LUMINOUS 🌕!!!",
+                "perfect": "the only good move",
+                "best": "the best move",
+                "excellent": "excellent",
+                "okay": "okay",
+                "inaccuracy": "an inaccuracy",
+                "mistake": "a mistake",
+                "miss": "a miss",
+                "blunder": "a blunder"
+            },
+            "comments": 
+            {
+                "topMove": "Top move!"
+            }
         }
     }
 }

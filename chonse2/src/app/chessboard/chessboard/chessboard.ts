@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, input, Input, OnDestroy, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, inject, input, Input, OnDestroy, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
 import { Square } from '../square/square';
 import { BoardPlayerInfo } from "../board-player-info/board-player-info";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -25,7 +25,7 @@ import { GameOverReason, GameScore } from '../../../libs/chonse2-lib/game-state'
 import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
 import { PieceType } from '../../../libs/chonse2-lib/piece-type';
 import { getEvaluationBarValue2 } from '../../../libs/engine-lib/helpers/chessHelper';
-import { EngineName, EngineInformation, EngineType, MoveClassification, moveClassificationLabels } from '../../../libs/engine-lib/types/enums';
+import { EngineName, EngineInformation, EngineType, MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { EvalSource } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
@@ -42,6 +42,7 @@ import { CompactBoardPlayerInfo } from '../compact-board-player-info/compact-boa
 import { ProgressToast } from '../progress-toast/progress-toast';
 import GameLinkHelper from './game-link-helper';
 import { DatabaseModal } from '../database-modal/database-modal';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-chessboard',
@@ -78,7 +79,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   Chonse2Extensions = Chonse2Extensions;
   Object = Object;
   MoveClassification = MoveClassification;
-  moveClassificationLabels = moveClassificationLabels;
   Chessboard = Chessboard;
   Math = Math;
 
@@ -89,9 +89,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   //State
   boardState = signal<BoardState>(null!);
-  
-  //Controls
-  activeTab = signal<'moves' | 'overview'>('moves');
 
   //MOVE PROPERTIES
   currentLegalMoves = signal<string[]>([]);
@@ -131,6 +128,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       [MoveClassification.None, "None"]
     ]
   )
+
+  private translate = inject(TranslateService);
 
   constructor(
     private modalService: NgbModal, 
@@ -1129,41 +1128,41 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   _getEndgameSquareText = (rankIndex: number, fileIndex: number) => computed( (): string =>
   {
-    if (this._isSquareCheckmatedKing(rankIndex, fileIndex)())
-    {
-      return "Checkmate";
-    }
+      if (this._isSquareCheckmatedKing(rankIndex, fileIndex)())
+      {
+          return this.translate.instant("chessboard.squareText.checkmate");
+      }
 
-    if (this._isSquareWinningKing(rankIndex, fileIndex)())
-    {
-      return "Winner";
-    }
+      if (this._isSquareWinningKing(rankIndex, fileIndex)())
+      {
+          return this.translate.instant("chessboard.squareText.winner");
+      }
 
-    if (this._isSquareKingInDraw(rankIndex, fileIndex)())
-    {
-      return "Draw";
-    }
+      if (this._isSquareKingInDraw(rankIndex, fileIndex)())
+      {
+          return this.translate.instant("chessboard.squareText.draw");
+      }
 
-    return "";
+      return this.translate.instant("chessboard.squareText.empty");
   })
-  //#endregion
+    //#endregion
   
   //#region Animation for luminous/perfect squares
   _getLuminousOrPerfectSquareText = (classification: MoveClassification) => computed( (): string =>
   {
-    if (classification == MoveClassification.Luminous)
-    {
-      return "LUM1NOUS!";
-    }
+      if (classification == MoveClassification.Luminous)
+      {
+          return this.translate.instant("chessboard.squareText.luminous");
+      }
 
-    if (classification == MoveClassification.Perfect)
-    {
-      return "Perfect!";
-    }
+      if (classification == MoveClassification.Perfect)
+      {
+          return this.translate.instant("chessboard.squareText.perfect");
+      }
 
-    return "Null";
+      return this.translate.instant("chessboard.squareText.null");
   });
-
+  
   _getLuminousOrPerfectBackgroundColor = (classification: MoveClassification) => computed( (): string =>
   {
     if (classification == MoveClassification.Luminous)
