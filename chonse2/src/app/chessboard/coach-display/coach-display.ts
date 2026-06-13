@@ -13,10 +13,11 @@ import Chonse2 from '../../../libs/chonse2-lib/chonse2';
 import LocalStorageHelper from '../../../libs/local-storage-helper';
 import Sound from '../chessboard/sound';
 import { Chessboard } from '../chessboard/chessboard';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-coach-display',
-  imports: [IconButton, CommonModule],
+  imports: [IconButton, CommonModule, TranslatePipe],
   templateUrl: './coach-display.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './coach-display.css',

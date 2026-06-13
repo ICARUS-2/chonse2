@@ -48,6 +48,19 @@
             "resign": "Abandonner",
             "newGame": "Nouvelle partie",
             "analyzeGame": "Analyser la partie"
+        },
+
+        "coachDisplay": 
+        {
+            "luminousInsights": "Perspectives Lumineuses",
+            "cloudHybrid": "Nuage hybride",
+            "depth": "Profondeur",
+            "cloud": "NUAGE",
+            "is": "est",
+            "checkmateAlwaysBest": "Checkmate est toujours le meilleur coup!",
+            "hideSequence": "Masquer la séquence",
+            "continue": "Continuer",
+            "hideIdea": "Cacher l'idée"
         }
     }
 }

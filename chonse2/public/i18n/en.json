@@ -48,6 +48,19 @@
             "resign": "Resign",
             "newGame": "New game",
             "analyzeGame": "Analyze Game"
+        },
+
+        "coachDisplay": 
+        {
+            "luminousInsights": "Luminous Insights",
+            "cloudHybrid": "Cloud Hybrid",
+            "depth": "Depth",
+            "cloud": "CLOUD",
+            "is": "is",
+            "checkmateAlwaysBest": "Checkmate is always the best move!",
+            "hideSequence": "Hide Sequence",
+            "continue": "Continue",
+            "hideIdea": "Hide Idea"
         }
     }
 }
