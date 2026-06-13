@@ -1,6 +1,6 @@
 import { signal, WritableSignal } from "@angular/core";
 import { Arrow } from "./arrow";
-import LocalStorageHelper from "./local-storage-helper";
+import LocalStorageHelper from "../../../libs/local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
 import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
 import { Quote, Quotes } from "./quotes";

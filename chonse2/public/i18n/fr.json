@@ -1,0 +1,29 @@
+{
+    "home":
+    {
+        "heading": "Analyse de chess lumineuse.",
+        "subtitle": "Code ouvert. Illimité. Aucun compte requis.",
+        
+        "leftBtns": 
+        {
+            "analysis": "Analyse",
+            "editor": "Éditeur d'échiquier",
+            "vsAi": "Jouer contre Stockfish",
+            "pgnLink": "Lien PGN"
+        },
+
+        "middleBtns":
+        {
+            "reviewGame": "Revoir la partie",
+            "analysisDemo": "Démo de l'analyse"
+        },
+
+        "rightBtns":
+        {
+            "settings": "Paramètres",
+            "database": "Base de données",
+            "sourceCode": "Code source",
+            "developerSite": "Site du développeur"
+        }
+    }
+}

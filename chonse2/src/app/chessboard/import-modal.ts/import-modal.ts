@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, signal, WritableSignal } fr
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PgnSources } from '../chessboard/pgn-misc';
-import LocalStorageHelper from '../chessboard/local-storage-helper';
+import LocalStorageHelper from '../../../libs/local-storage-helper';
 import {ChessComAPI, ChessComGame} from '../../../libs/server-api-lib/chesscom-api';;
 import { CommonModule } from '@angular/common';
 import GameLinkHelper from '../chessboard/game-link-helper';

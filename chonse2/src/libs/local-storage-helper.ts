@@ -17,6 +17,9 @@ export default class LocalStorageHelper
     //database
     static readonly DATABASE = "Chonse2_Database";
 
+    //lang
+    static readonly LANGUAGE = "Chonse2_Language";
+
     //bool
     static getBoolean(key: string, defaultVal = false): boolean
     {

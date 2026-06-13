@@ -10,7 +10,7 @@ import ChessboardHelper from '../helpers';
 import { CommonModule } from '@angular/common';
 import ThemeService from '../../themes/theme-service';
 import Chonse2 from '../../../libs/chonse2-lib/chonse2';
-import LocalStorageHelper from '../chessboard/local-storage-helper';
+import LocalStorageHelper from '../../../libs/local-storage-helper';
 import Sound from '../chessboard/sound';
 import { Chessboard } from '../chessboard/chessboard';
 

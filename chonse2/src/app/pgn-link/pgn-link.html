@@ -4,6 +4,8 @@
     <h2 [style.color]="themeService.getThemeInstance().getTextColor()"></h2>
 
     <textarea class="pgnTextArea d-block"
+    spellcheck="false"
+    [style.color]="themeService.getThemeInstance().getTextColor()"
     [class]="themeService.getThemeInstance().getGlassPanelTheme()" 
     [style.border]="'1px solid ' + themeService.getThemeInstance().getBorderColor()"
     placeholder="Input PGN here"

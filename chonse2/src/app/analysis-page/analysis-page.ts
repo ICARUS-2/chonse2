@@ -13,7 +13,7 @@ import ThemeService from '../themes/theme-service';
 import Chonse2, { PreviousStateCache } from '../../libs/chonse2-lib/chonse2';
 import { GameState } from '../../libs/chonse2-lib/game-state';
 import MoveResult from '../chessboard/chessboard/move-result';
-import LocalStorageHelper from '../chessboard/chessboard/local-storage-helper';
+import LocalStorageHelper from '../../libs/local-storage-helper';
 import { compress } from 'lz-string';
 
 @Component({

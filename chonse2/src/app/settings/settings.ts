@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import LocalStorageHelper from '../chessboard/chessboard/local-storage-helper';
+import LocalStorageHelper from '../../libs/local-storage-helper';
 import { Themes } from '../themes/themes';
 import ThemeService from '../themes/theme-service';
 import { CommonModule } from '@angular/common';
@@ -8,6 +8,8 @@ import { disabled, form, FormField, max, min } from '@angular/forms/signals';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { EngineName, EngineInformation } from '../../libs/engine-lib/types/enums';
 import { UciEngine } from '../../libs/engine-lib/uciEngine';
+import { DEFAULT_LANG, Languages } from '../../globals/globals';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-settings',
@@ -22,6 +24,7 @@ export class Settings {
   EngineInformation = EngineInformation;
   Object = Object;
   Themes = Themes;
+  Languages = Languages;
 
   formModel = signal<FormModel>(
   {
@@ -31,7 +34,8 @@ export class Settings {
     engineDepth:  LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
     cloudHybridMode: LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, false),
     engineThreadCount: LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1),
-    selectedTheme: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_THEME, ThemeService.DEFAULT_THEME) as Themes
+    selectedTheme: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_THEME, ThemeService.DEFAULT_THEME) as Themes,
+    language: LocalStorageHelper.getString(LocalStorageHelper.LANGUAGE, DEFAULT_LANG) as Languages
   })
 
   form = form(this.formModel, (schema) => 
@@ -44,6 +48,8 @@ export class Settings {
     min(schema.engineThreadCount, 1),
     max(schema.engineThreadCount, 12)
   })
+
+  private translate = inject(TranslateService);
 
   constructor(public themeService: ThemeService)
   {
@@ -105,6 +111,13 @@ export class Settings {
     LocalStorageHelper.setString(LocalStorageHelper.SELECTED_THEME, this.form.selectedTheme().value());
     this.themeService.setTheme(this.form.selectedTheme().value());
   }
+
+  //Language select
+  handleLanguageDropdownChanged()
+  {
+    this.translate.use(this.form.language().value());
+    LocalStorageHelper.setString(LocalStorageHelper.LANGUAGE, this.form.language().value());
+  }
 }
 
 
@@ -117,4 +130,5 @@ interface FormModel
   cloudHybridMode: boolean;
   engineThreadCount: number;
   selectedTheme: Themes;
+  language: Languages;
 }

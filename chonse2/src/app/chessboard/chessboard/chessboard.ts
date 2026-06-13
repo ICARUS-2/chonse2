@@ -4,7 +4,7 @@ import { BoardPlayerInfo } from "../board-player-info/board-player-info";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PromotionModal } from '../promotion-modal/promotion-modal';
 import { CommonModule } from '@angular/common';
-import LocalStorageHelper from './local-storage-helper';
+import LocalStorageHelper from '../../../libs/local-storage-helper';
 import { FormsModule } from '@angular/forms';
 import { ChessBoardService as ChessBoardService } from './chess-board-service';
 import {Arrow, ArrowColors, ArrowContext, createArrow } from './arrow';

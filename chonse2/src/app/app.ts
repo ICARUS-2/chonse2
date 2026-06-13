@@ -4,6 +4,8 @@ import { Navbar } from "./navbar/navbar";
 import ThemeService from './themes/theme-service';
 import { GlassPanelTheme } from './themes/app-themes/i-app-theme';
 import { CommonModule } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
+import { Languages } from '../globals/globals';
 
 @Component({
   selector: 'app-root',
@@ -16,13 +18,13 @@ export class App implements OnInit{
   protected readonly title = signal('CHONSE2');
   GlassPanelTheme = GlassPanelTheme;
 
-  constructor(public themeService: ThemeService)
+  constructor(public themeService: ThemeService, private translate: TranslateService)
   {
     
   }
 
   ngOnInit()
   {
-
+    this.translate.addLangs(Object.values(Languages));
   }
 }
