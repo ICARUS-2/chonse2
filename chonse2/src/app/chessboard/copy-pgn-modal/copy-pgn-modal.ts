@@ -1,12 +1,13 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 import GameLinkHelper from '../chessboard/game-link-helper';
 import { ToastrService } from 'ngx-toastr';
 import { BootstrapButton } from "../../ui/bootstrap-button/bootstrap-button";
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-copy-pgn-modal',
-  imports: [BootstrapButton],
+  imports: [BootstrapButton, TranslatePipe],
   templateUrl: './copy-pgn-modal.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './copy-pgn-modal.css',
@@ -14,6 +15,8 @@ import { BootstrapButton } from "../../ui/bootstrap-button/bootstrap-button";
 export class CopyPgnModal {
 
   pgn = "";
+
+  private translate = inject(TranslateService);
 
   constructor(public themeService: ThemeService, public toastr: ToastrService)
   {
@@ -26,11 +29,11 @@ export class CopyPgnModal {
     {
      navigator.clipboard.writeText(this.pgn);
 
-      this.toastr.info("Successfully copied PGN");
+      this.toastr.info(this.translate.instant("chessboard.copyPgnModal.toastr.copyRawSuccess"));
     }
     catch(ex)
     {
-      this.toastr.error("PGN copy failed: " + ex);
+      this.toastr.error(this.translate.instant("chessboard.copyPgnModal.toastr.copyError") + " " + ex);
     }
   }
 
@@ -42,11 +45,11 @@ export class CopyPgnModal {
 
       navigator.clipboard.writeText(pgnGameLink);
 
-      this.toastr.info("Successfully copied PGN link");
+      this.toastr.info(this.translate.instant("chessboard.copyPgnModal.toastr.copyLinkSuccess"));
     }
     catch(ex)
     {
-      this.toastr.error("PGN link copy failed: " + ex);
+     this.toastr.error(this.translate.instant("chessboard.copyPgnModal.toastr.copyError") + " " + ex);
     }
 
   }

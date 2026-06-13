@@ -123,6 +123,19 @@
             {
                 "topMove": "Top move!"
             }
+        },
+
+        "copyPgnModal": 
+        {
+            "title": "Export Game",
+            "copyRawPgnButton": "Copy raw PGN",
+            "getPgnLinkButton": "Get PGN link",
+            "toastr": 
+            {
+                "copyRawSuccess": "PGN copied to clipboard successfully!",
+                "copyLinkSuccess": "PGN link copied to clipboard successfully!",
+                "copyError": "Failed to copy to clipboard. Please try again."
+            }
         }
     }
 }
