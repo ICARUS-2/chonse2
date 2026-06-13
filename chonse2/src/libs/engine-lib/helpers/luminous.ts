@@ -1,6 +1,7 @@
 import Chonse2 from "../../chonse2-lib/chonse2";
 import Chonse2Extensions from "../../chonse2-lib/extensions";
 import PieceMaterial from "../../chonse2-lib/piece-material";
+import { PieceType } from "../../chonse2-lib/piece-type";
 import { LineEval } from "../types/eval";
 import { Square } from "./chess";
 import { ALTERNATIVES_COLLAPSE_SIGNIFICATLY_WIN_PERCENTAGE_CHANGE, concatenateUciParams } from "./moveClassification";
@@ -41,6 +42,12 @@ export default class LuminousDetector
         const beforeState = Chonse2.instantiateFromFen(beforeFen);
         const afterState = Chonse2.instantiateFromFen(afterFen);
 
+        //Don't count a pawn hang as brilliant.
+        const pieceMoved = afterState.findPieceAtCoordinate(uciPlayedMove.to)
+        if (pieceMoved == PieceType.WHITE_PAWN || pieceMoved == PieceType.BLACK_PAWN)
+        {
+            return false;
+        }
 
         //check if played move was not just a simple recapture by verifying that the moved piece did 
         //not just take a piece with the same value or greater.
