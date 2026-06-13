@@ -24,9 +24,9 @@ export class CoachUtils
             //Luminous moves.
             [MoveClassification.Luminous, 
                 [
-                    `Well done, a luminous sacrifice of the ${this.PIECE_PLACEHOLDER}!`,
+                    `Well done, a luminous sacrifice of the ${this.PIECE_PLACEHOLDER}! `,
                     `A luminous sacrifice. Leaving that ${this.PIECE_PLACEHOLDER} hanging will improve the position. I see what ${this.TURN_PLACEHOLDER} is trying to do here. `,
-                    `And ${this.TURN_PLACEHOLDER} sacrifices........ the ${this.PIECE_PLACEHOLDER}!!!!!`
+                    `And ${this.TURN_PLACEHOLDER} sacrifices........ the ${this.PIECE_PLACEHOLDER}!!!!! `
                 ]
             ],
 
@@ -134,6 +134,13 @@ export class CoachUtils
         `Whoopsie, ${CoachUtils.TURN_PLACEHOLDER} gave up a ${CoachUtils.PIECE_PLACEHOLDER}! `,
         `This move loses a ${CoachUtils.PIECE_PLACEHOLDER}. `
     ];
+
+    private static readonly QUEEN_BLUNDER_SENTENCES: Array<string> = 
+    [
+        `${CoachUtils.TURN_PLACEHOLDER}... your QUEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEN!!! `,
+        `${CoachUtils.TURN_PLACEHOLDER} just blundered their queen. `,
+        `BLUNDERING THE QUEEN FOR NO REASON WHATSOEVER! `
+    ]
 
     //If the player made a move that will lose material in the line but not outright hanging a piece 
     private static readonly PIECE_LOSS_SENTENCES: Array<string> = 
@@ -402,7 +409,16 @@ export class CoachUtils
                                 {
                                     pieceToTake = hangingPiece;
 
-                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PIECE_HANG_SENTENCES, colorThatMovedText, pieceToTake);
+                                    //if player REALLY screwed up and blundered their queen.
+                                    if (pieceToTake == PieceType.WHITE_QUEEN || pieceToTake == PieceType.BLACK_QUEEN)
+                                    {
+                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.QUEEN_BLUNDER_SENTENCES, colorThatMovedText, pieceToTake);
+                                    }
+                                    else 
+                                    {
+                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PIECE_HANG_SENTENCES, colorThatMovedText, pieceToTake);
+                                    }
+
                                     move.coachMoveFlags.push(CoachMoveFlagType.LeftPieceHanging);
 
                                     break;
