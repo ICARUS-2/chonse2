@@ -817,6 +817,14 @@ export default class Chonse2
     return obj;
   }
 
+  //Gets a piece based off the coordinates.
+  public findPieceAtCoordinate(coord: string): string
+  {
+      const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
+
+      return this.pieceState[rowIndex][colIndex];
+  }   
+
   //Checks if a pawn can capture en passant (not just that there is an en passant square)
   isEnPassantCaptureActuallyPossible() : boolean
   {

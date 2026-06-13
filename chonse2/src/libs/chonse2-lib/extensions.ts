@@ -138,7 +138,7 @@ export default class Chonse2Extensions
             for(let i = 0; i < legalMoveCoordinatesForPiece.length; i++)
             {
                 const currentLegalMove = legalMoveCoordinatesForPiece[i];
-                const pieceInThatCoordinate = Chonse2Extensions.findPieceAtCoordinate(boardCopy,currentLegalMove);
+                const pieceInThatCoordinate = boardCopy.findPieceAtCoordinate(currentLegalMove);
 
                 //If there is a piece that can be captured, add it to the candidate list.
                 if (pieceInThatCoordinate.startsWith(oppositeColor))
@@ -152,7 +152,7 @@ export default class Chonse2Extensions
             const filteredCandidatesForCheckAndCapturePotential = candidatePieceCoordinatesToFork.filter( coord =>
                 {
                     //If the piece is the king (aka the most important piece) and can't be "defended" by anything, it's a filtered candidate.
-                    const pieceInCoord = Chonse2Extensions.findPieceAtCoordinate(boardCopy, coord);
+                    const pieceInCoord = boardCopy.findPieceAtCoordinate(coord);
                     const pieceInCoordMaterialValue = PieceMaterial.getMaterialFromPiece(pieceInCoord);
 
                     if (pieceInCoord.endsWith(PieceType.KING))
@@ -174,7 +174,7 @@ export default class Chonse2Extensions
                         for (const move of legalMoves)
                         {
                             //Also, if the piece can capture something greater than or equal to in value, it isn't a fork.
-                            const pieceInLegalMoveSpot = Chonse2Extensions.findPieceAtCoordinate(boardCopy, move);
+                            const pieceInLegalMoveSpot = boardCopy.findPieceAtCoordinate(move);
                             if (pieceInLegalMoveSpot)
                             {
                                 const materialValueOfPieceInLegalMoveSpot = PieceMaterial.getMaterialFromPiece(pieceInLegalMoveSpot);
@@ -222,7 +222,7 @@ export default class Chonse2Extensions
                 let containsKing: boolean = false;
                 filteredCandidatesForCheckAndCapturePotential.forEach( c => 
                 {
-                    const p = Chonse2Extensions.findPieceAtCoordinate(boardCopy, c);
+                    const p = boardCopy.findPieceAtCoordinate(c);
 
                     if (p.endsWith(PieceType.KING))
                     {
@@ -241,7 +241,7 @@ export default class Chonse2Extensions
                     //Get the coordinate of the non-king piece.
                     const nonKingPieceCoordinate = filteredCandidatesForCheckAndCapturePotential.filter( c =>
                     {
-                        const p = Chonse2Extensions.findPieceAtCoordinate(boardCopy, c);
+                        const p = boardCopy.findPieceAtCoordinate(c);
 
                         return (!p.endsWith(PieceType.KING));
                     }
@@ -532,14 +532,6 @@ export default class Chonse2Extensions
         }
         return o;
     }
-
-    //Gets a piece based off the coordinates.
-    public static findPieceAtCoordinate(board: Chonse2, coord: string): string
-    {
-        const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
-
-        return board.pieceState[rowIndex][colIndex];
-    }   
     //#endregion
 }
 
