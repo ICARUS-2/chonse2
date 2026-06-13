@@ -136,6 +136,19 @@
                 "copyLinkSuccess": "PGN link copied to clipboard successfully!",
                 "copyError": "Failed to copy to clipboard. Please try again."
             }
+        },
+
+        "databaseModal": 
+        {
+            "title": "Save Game to Database",
+            "commentLabel": "Comment",
+            "saveButton": "Save",
+            "toastr": 
+            {
+                "success": "Successfully saved game.",
+                "gameNotFound": "Game not found.",
+                "saveFailed": "Game save failed: "
+            }
         }
     }
 }
