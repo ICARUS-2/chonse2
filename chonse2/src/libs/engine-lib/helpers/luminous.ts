@@ -1,4 +1,6 @@
 import Chonse2 from "../../chonse2-lib/chonse2";
+import Chonse2Extensions from "../../chonse2-lib/extensions";
+import PieceMaterial from "../../chonse2-lib/piece-material";
 import { LineEval } from "../types/eval";
 import { Square } from "./chess";
 import { ALTERNATIVES_COLLAPSE_SIGNIFICATLY_WIN_PERCENTAGE_CHANGE, concatenateUciParams } from "./moveClassification";
@@ -26,27 +28,45 @@ export default class LuminousHelper
             return false;
         }
 
-        //The state of the board before the move was made.
-        const beforeState = Chonse2.instantiateFromFen(beforeFen);
-        
-        //The state after the candidate move was made.
-        const afterState = Chonse2.instantiateFromFen(afterFen);
-
         const playedMove = concatenateUciParams(uciPlayedMove);
 
-        //Check if (this was the best move || playedMove in previousLines and !alternativesCollapseSignificantly)
+        //If move was either the best move or amonst the alternate lines that did not collapse eval significantly.
         const wasMoveGood = LuminousHelper._wasMoveGood(playedMove, beforeFen, previousLines, lastWinPct, currentWinPct)
+        if (!wasMoveGood)
+        {
+             return false;
+        }
 
-        console.log(wasMoveGood)
+        //Board state before and after the candidate move.
+        const beforeState = Chonse2.instantiateFromFen(beforeFen);
+        const afterState = Chonse2.instantiateFromFen(afterFen);
+
+
         //check if played move was not just a simple recapture by verifying that the moved piece did 
         //not just take a piece with the same value.
+        const isSimplePieceCapture = LuminousHelper._wasSimplePieceCapture(beforeState, uciPlayedMove);
+        if (isSimplePieceCapture)
+        {
+            return false;
+        }
 
-        
         //Check if the player did indeed leave the moved piece hanging.
+        const didMoveLeavePieceVulnerable = LuminousHelper._didMoveLeavePieceVulnerable(afterState, uciPlayedMove);
+        if (!didMoveLeavePieceVulnerable)
+        {
+            return false;
+        }
+
+        //Check if the opponent should recapture after player hung the piece.
+        const opponentShouldRecapture = LuminousHelper.shouldOpponentRecapture(uciPlayedMove, currentLines);
+        if (opponentShouldRecapture)
+        {
+            return false;
+        }
 
         //Check that none of the lines in currentLines involve actually capturing that piece.
 
-        return false;
+        return true;
     }
 
     private static _wasMoveGood(playedMove: string, previousFen: string, previousLines: Array<LineEval>, lastWinPct: number, currentWinPct: number): boolean 
@@ -85,18 +105,40 @@ export default class LuminousHelper
         return false;
     }
 
-    private static _isSimplePieceRecapture(): boolean
+    private static _wasSimplePieceCapture(beforeState: Chonse2, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;} ): boolean
     {
+        //Check the piece that moved and potentially the piece it captured.
+        const pieceMoved: string = Chonse2Extensions.findPieceAtCoordinate(beforeState, uciPlayedMove.from);
+        const pieceInToSquare: string = Chonse2Extensions.findPieceAtCoordinate(beforeState, uciPlayedMove.to);
+
+        if (!pieceInToSquare)
+        {
+            return false;
+        }
+
+        //Check material value of the piece that was captured - maybe the "sacrifice" is just a trade.
+        const movedPieceMaterial = PieceMaterial.getMaterialFromPiece(pieceMoved);
+        const capturedPieceMaterial = PieceMaterial.getMaterialFromPiece(pieceInToSquare);
+
+        //If the person captured a higher value or equal piece, then this isn't really a sacrifice, and can't be considered luminous.
+        if (capturedPieceMaterial >= movedPieceMaterial)
+        {
+            return true;
+        }
         return false;
     }
 
-    private static _didMoveLeavePieceVulnerable(): boolean 
+    private static _didMoveLeavePieceVulnerable(afterState: Chonse2, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;} ): boolean 
     {
-        return false;
+        const isHangingPiece = Chonse2Extensions.doesSquareHaveHangingPiece(afterState, uciPlayedMove.to);
+
+        return isHangingPiece;
     }
 
-    private static _opponentShouldntRecapture()
+    private static shouldOpponentRecapture(uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;}, currentLines: Array<LineEval>)
     {
-        return false;
+        const opponentShouldRecapture = currentLines.some( line => line.pv[0]?.includes(uciPlayedMove.to) );
+
+        return opponentShouldRecapture;
     }
 }
