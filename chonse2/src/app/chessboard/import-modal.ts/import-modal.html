@@ -1,7 +1,7 @@
 <div class="container componentContainer p-3" [class]="themeService.getThemeInstance().getGlassPanelTheme()" [style.background-image]="`url(${themeService.getThemeInstance().getBackgroundImgUrl()})`">
 
     <div [class]="themeService.getThemeInstance().getGlassPanelTheme()" class="p-4">
-        <h1 class="" [style.color]="`${themeService.getThemeInstance().getPrimaryColor()}`">Import Game</h1>
+        <h1 class="" [style.color]="`${themeService.getThemeInstance().getPrimaryColor()}`">{{"chessboard.importModal.title" | translate}}</h1>
 
         <div class="m-4"></div>
 
@@ -22,7 +22,7 @@
                         type="text" 
                         (keydown.enter)="handleChessComGoPressed()" 
                         class="form-control usernameInput" 
-                        placeholder="Search username" 
+                        [placeholder]="'chessboard.importModal.searchPlaceholder' | translate"  
                         [formField]="form.siteUsername"
                         (focus)="isUsernameInputFocused.set(true);"
                         (blur)="isUsernameInputFocused.set(false)">
@@ -56,7 +56,7 @@
                         type="text" 
                         (keydown.enter)="handleLichessGoPressed()" 
                         class="form-control usernameInput" 
-                        placeholder="Search username" 
+                        [placeholder]="'chessboard.importModal.searchPlaceholder' | translate" 
                         [formField]="form.siteUsername"
                         (focus)="isUsernameInputFocused.set(true);"
                         (blur)="isUsernameInputFocused.set(false)">
@@ -109,7 +109,7 @@
                         </div>
                         <div class="m-1"></div>
 
-                        <app-icon-button (buttonClick)="handleChessComGameLinkClicked($event, game)" iconClass="bi-link-45deg" label="Copy Link"></app-icon-button>
+                        <app-icon-button (buttonClick)="handleChessComGameLinkClicked($event, game)" iconClass="bi-link-45deg" [label]="'chessboard.importModal.copyLinkBtn' | translate" ></app-icon-button>
                     </div>
                 </button>
             }
@@ -145,7 +145,7 @@
                         </div>
                         <div class="m-1"></div>
 
-                        <app-icon-button (buttonClick)="handleLichessGameLinkClicked($event, game)" iconClass="bi-link-45deg" label="Copy Link"></app-icon-button>
+                        <app-icon-button (buttonClick)="handleLichessGameLinkClicked($event, game)" iconClass="bi-link-45deg" [label]="'chessboard.importModal.copyLinkBtn' | translate"></app-icon-button>
                     </div>
                 </button>
             }

@@ -155,6 +155,19 @@
         {
             "whiteToMove": "White to move",
             "blackToMove": "Black to move"
+        },
+
+        "importModal":
+        {
+            "title": "Import Game",
+            "searchPlaceholder": "Search username",
+            "copyLinkBtn": "Copy Link",
+            "submitBtn": "Submit",
+            "toastr": 
+            {
+                "successfullyCopied": "Successfully copied game for ",
+                "failed": "Game link copy failed"
+            }
         }
     }
 }

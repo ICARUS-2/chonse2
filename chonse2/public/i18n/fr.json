@@ -156,6 +156,19 @@
         {
             "whiteToMove": "Au blanc de jouer",
             "blackToMove": "Au noir de jouer"
+        },
+
+        "importModal":
+        {
+            "title": "Importer une partie",
+            "searchPlaceholder": "Rechercher un nom d'utilisateur",
+            "copyLinkBtn": "Copier le lien",
+            "submitBtn": "Soumettre",
+            "toastr": 
+            {
+                "successfullyCopied": "Lien de la partie copié avec succès pour ",
+                "failed": "Échec de la copie du lien de la partie"
+            }
         }
     }
 }
