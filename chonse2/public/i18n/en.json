@@ -1,4 +1,13 @@
 {
+    "navbar": 
+    {
+        "analysis": "Analysis",
+        "boardEditor": "Board Editor",
+        "playVsAi": "Play vs AI",
+        "pgnLink": "PGN Link",
+        "database": "Database"
+    },
+
     "home":
     {
         "heading": "Luminous chess analytics.",
@@ -24,6 +33,21 @@
             "database": "Database",
             "sourceCode": "Source Code",
             "developerSite": "Developer Site"
+        }
+    },
+
+    "chessboard":
+    {
+        "boardOptions":
+        {
+            "importGame": "Import Game",
+            "reset": "Reset",
+            "analyze": "Analyze",
+            "exportGame": "Export Game",
+            "saveToDatabase": "Save to Database",
+            "resign": "Resign",
+            "newGame": "New game",
+            "analyzeGame": "Analyze Game"
         }
     }
 }

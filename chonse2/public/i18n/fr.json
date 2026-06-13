@@ -1,4 +1,13 @@
 {
+    "navbar": 
+    {
+        "analysis": "Analyse",
+        "boardEditor": "Éditeur d'échiquier",
+        "playVsAi": "Jouer contre l'IA",
+        "pgnLink": "Lien PGN",
+        "database": "Base de données"
+    },
+    
     "home":
     {
         "heading": "Analyse de chess lumineuse.",
@@ -24,6 +33,21 @@
             "database": "Base de données",
             "sourceCode": "Code source",
             "developerSite": "Site du développeur"
+        }
+    },
+
+    "chessboard":
+    {
+        "boardOptions":
+        {
+            "importGame": "Importer la partie",
+            "reset": "Réinitialiser",
+            "analyze": "Analyser",
+            "exportGame": "Exporter la partie",
+            "saveToDatabase": "Sauvegarder dans la base de données",
+            "resign": "Abandonner",
+            "newGame": "Nouvelle partie",
+            "analyzeGame": "Analyser la partie"
         }
     }
 }

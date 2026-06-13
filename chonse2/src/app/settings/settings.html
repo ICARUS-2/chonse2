@@ -50,8 +50,10 @@
         <!--Appearance Settings-->
         <div class="p-4 w-50 ms-2" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
             <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Appearance</h2>
-            <div class="appearanceSection d-flex justify-content-between">
-                <div class="">
+
+            <!--Theme and Language-->
+            <div class="appearanceSection d-flex gap-4 justify-content-between">
+                <div class="themeSection">
                     <h4 class="">Select Theme</h4>
                     <select [formField]="form.selectedTheme" class="form-select" (change)="handleThemeDropdownSelectionChanged()">
                         @for(theme of Object.values(Themes); track $index)
@@ -61,7 +63,7 @@
                     </select>
                 </div>
 
-                <div>
+                <div class="languageSection">
                     <h4 class="">Language</h4>
                     <select [formField]="form.language" class="form-select" (change)="handleLanguageDropdownChanged()">
                         @for(lang of Object.values(Languages); track $index)
@@ -69,6 +71,7 @@
                             <option [value]="lang">{{lang}}</option>
                         }
                     </select>
+                    <p class="small">(Please note that part of the Luminous Insights feature only works in English for now)</p>
                 </div>
             </div>
         </div>
