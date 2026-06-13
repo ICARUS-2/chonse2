@@ -150,6 +150,12 @@
                 "gameNotFound": "Partie introuvable.",
                 "saveFailed": "Échec de la sauvegarde de la partie : "
             }
+        },
+        
+        "gameInfo": 
+        {
+            "whiteToMove": "Au blanc de jouer",
+            "blackToMove": "Au noir de jouer"
         }
     }
 }

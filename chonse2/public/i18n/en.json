@@ -149,6 +149,12 @@
                 "gameNotFound": "Game not found.",
                 "saveFailed": "Game save failed: "
             }
+        },
+
+        "gameInfo": 
+        {
+            "whiteToMove": "White to move",
+            "blackToMove": "Black to move"
         }
     }
 }
