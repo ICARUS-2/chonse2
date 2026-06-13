@@ -381,6 +381,22 @@ export class CoachUtils
                                 const hangingPieceCoord = hangingPiecesArrToCheck[i];
                                 const hangingPiece = state.findPieceAtCoordinate(hangingPieceCoord);
 
+                                //Stops false positive where a piece was hanging after capturing a piece equal to or greater than it in value (ex: Knight captures a bishop inaccurately, even tho it's equal in material).
+                                if (hangingPieceCoord == move.toCoord)
+                                {
+                                    const pieceInSpotBefore = previousState.findPieceAtCoordinate(move.toCoord);
+                                    if (pieceInSpotBefore)
+                                    {
+                                        const hangingPieceMaterial = PieceMaterial.getMaterialFromPiece(hangingPiece);
+                                        const capturedPieceMaterial = PieceMaterial.getMaterialFromPiece(pieceInSpotBefore);
+
+                                        if (capturedPieceMaterial >= hangingPieceMaterial)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                }
+
                                 //If the best move in this position is to capture the vulnerable piece, have the coach say this.
                                 if (bestMove.toSquare == hangingPieceCoord)
                                 {
