@@ -3,13 +3,16 @@
 import { openings } from "../data/openings";
 import { MoveClassification } from "../types/enums";
 import { PositionEval } from "../types/eval";
-import { getIsPieceSacrifice, isHangingPieceCapture, uciMoveParams2 } from "./chessHelper";
+import { Square } from "./chess";
+import { getIsPieceSacrifice, isHangingPieceCapture, uciMoveParams, uciMoveParams2 } from "./chessHelper";
+import LuminousHelper from "./luminous";
 import { getLineWinPercentage, getPositionWinPercentage } from "./winPercentage";
 
-const BLUNDER_THRESHOLD = -20;
-const MISTAKE_THRESHOLD = -10;
-const INACCURACY_THRESHOLD = -5;
-const EXCELLENT_THRESHOLD = -2;
+export const BLUNDER_THRESHOLD = -20;
+export const MISTAKE_THRESHOLD = -10;
+export const INACCURACY_THRESHOLD = -5;
+export const EXCELLENT_THRESHOLD = -2;
+export const ALTERNATIVES_COLLAPSE_SIGNIFICATLY_WIN_PERCENTAGE_CHANGE = 10;
 
 export const getMovesClassification = (
   rawPositions: PositionEval[],
@@ -38,7 +41,7 @@ export const getMovesClassification = (
     const sideToMove = fens[index - 1].split(" ")[1];
     const isWhiteMove = sideToMove === "w";
     const uciParamsMove = uciMoveParams2(uciMoves[index - 1], isWhiteMove ? "w" : "b");
-    const playedMove = uciParamsMove.from + uciParamsMove.to + (uciParamsMove.promotion == undefined ? "" : uciParamsMove.promotion);
+    const playedMove = concatenateUciParams(uciParamsMove);
     const prevPosition = rawPositions[index - 1];
     const alternativeLine = prevPosition.lines.find((line) => line.pv[0] !== playedMove);
     
@@ -60,7 +63,7 @@ export const getMovesClassification = (
     const alternativeWinPct = getLineWinPercentage(alternativeLine);
     const alternativeWinPctChange = (alternativeWinPct - lastWinPct) * (isWhiteMove ? 1 : -1);
 
-    // Miss (for now only): You could have picked up a hanging piece but failed to do so
+    // Miss: You could have picked up a hanging piece but failed to do so
     if (isHangingPieceCapture(fens[index - 1], alternativeLine.pv[0]) && winPctChange < MISTAKE_THRESHOLD) {
       return {
         ...rawPosition,
@@ -69,9 +72,20 @@ export const getMovesClassification = (
       };
     }
 
+    //Luminous: If move was a good sacrifice.
+    if (LuminousHelper.isMoveLuminousSacrifice(fens[index - 1], fens[index], prevPosition.lines, rawPosition.lines, lastWinPct, currentWinPct, uciParamsMove))
+    {
+      return {
+      ...rawPosition,
+      opening: currentOpening,
+      moveClassification: MoveClassification.Luminous,
+      };
+    }
+
     if (playedMove === prevPosition.bestMove) {
-      const alternativesCollapseSignificantly = alternativeWinPctChange < winPctChange - 10;
+      const alternativesCollapseSignificantly = alternativeWinPctChange < winPctChange - ALTERNATIVES_COLLAPSE_SIGNIFICATLY_WIN_PERCENTAGE_CHANGE;
       const hangingPieceCapture = isHangingPieceCapture(fens[index - 1], playedMove);
+
       // Sometimes close to checkmate winPctChange becomes a bad metric, so we also use:
       const alternativeIsUselessSacrifice =
         getIsPieceSacrifice(fens[index - 1], alternativeLine.pv[0], alternativeLine.pv.slice(1)) &&
@@ -87,13 +101,13 @@ export const getMovesClassification = (
       }
 
       //Luminous: The move played involves a piece sacrifice and is the only good move (alternatives collapse significantly)
-      if (getIsPieceSacrifice(fens[index - 1], playedMove, rawPosition.lines[0].pv)) {
-        return {
-          ...rawPosition,
-          opening: currentOpening,
-          moveClassification: MoveClassification.Luminous,
-        };
-      }
+      // if (getIsPieceSacrifice(fens[index - 1], playedMove, rawPosition.lines[0].pv)) {
+      //   return {
+      //     ...rawPosition,
+      //     opening: currentOpening,
+      //     moveClassification: MoveClassification.Luminous,
+      //   };
+      // }
 
       //Perfect: The move played is the only good move (alternatives collapse significantly)
       return {
@@ -121,3 +135,8 @@ const classifyByWinPctChange = (winPctChange: number): MoveClassification => {
   if (winPctChange < EXCELLENT_THRESHOLD) return MoveClassification.Okay;
   return MoveClassification.Excellent;
 };
+
+export function concatenateUciParams(uciParamsMove: {from: Square; to: Square; promotion?: string | undefined;})
+{
+  return uciParamsMove.from + uciParamsMove.to + (uciParamsMove.promotion == undefined ? "" : uciParamsMove.promotion);
+}
