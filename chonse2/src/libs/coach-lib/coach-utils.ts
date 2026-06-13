@@ -24,8 +24,9 @@ export class CoachUtils
             //Luminous moves.
             [MoveClassification.Luminous, 
                 [
-                    `Well done, a luminous sacrifice!`,
-                    `A luminous sacrifice. Leaving that piece hanging will improve the position. I see what ${this.TURN_PLACEHOLDER} is trying to do here. `
+                    `Well done, a luminous sacrifice of the ${this.PIECE_PLACEHOLDER}!`,
+                    `A luminous sacrifice. Leaving that ${this.PIECE_PLACEHOLDER} hanging will improve the position. I see what ${this.TURN_PLACEHOLDER} is trying to do here. `,
+                    `And ${this.TURN_PLACEHOLDER} sacrifices........ the ${this.PIECE_PLACEHOLDER}!!!!!`
                 ]
             ],
 
@@ -1141,6 +1142,26 @@ export class CoachUtils
                         {
                             move.coachComment += CoachUtils.selectAndFormatSentence(this.BISHOP_DEVELOPED_SENTENCES, colorThatMovedText);
                         }
+                    }
+                }
+
+
+                //=======Luminous
+                if (posEval.moveClassification == MoveClassification.Luminous)
+                {
+                    const hungPiece = state.findPieceAtCoordinate(move.toCoord);
+                    const luminousSentences = CoachUtils.BASE_SENTENCES.get(MoveClassification.Luminous);
+
+                    if (luminousSentences)
+                    {
+                        let sentence = CoachUtils.selectAndFormatSentence(luminousSentences, colorThatMovedText, hungPiece);
+
+                        if (sentence.includes("And"))
+                        {
+                            sentence = sentence.replace("rook", "ROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK");
+                        }
+
+                        move.coachComment += sentence;
                     }
                 }
 
