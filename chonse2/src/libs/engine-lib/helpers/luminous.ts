@@ -34,7 +34,7 @@ export default class LuminousDetector
         const wasMoveGood = LuminousDetector._wasMoveGood(playedMove, beforeFen, previousLines, lastWinPct, currentWinPct)
         if (!wasMoveGood)
         {
-             return false;
+            return false;
         }
 
         //Board state before and after the candidate move.
@@ -43,7 +43,7 @@ export default class LuminousDetector
 
 
         //check if played move was not just a simple recapture by verifying that the moved piece did 
-        //not just take a piece with the same value.
+        //not just take a piece with the same value or greater.
         const isSimplePieceCapture = LuminousDetector._wasSimplePieceCapture(beforeState, uciPlayedMove);
         if (isSimplePieceCapture)
         {
@@ -106,8 +106,8 @@ export default class LuminousDetector
     private static _wasSimplePieceCapture(beforeState: Chonse2, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;} ): boolean
     {
         //Check the piece that moved and potentially the piece it captured.
-        const pieceMoved: string = Chonse2Extensions.findPieceAtCoordinate(beforeState, uciPlayedMove.from);
-        const pieceInToSquare: string = Chonse2Extensions.findPieceAtCoordinate(beforeState, uciPlayedMove.to);
+        const pieceMoved: string = beforeState.findPieceAtCoordinate(uciPlayedMove.from);
+        const pieceInToSquare: string = beforeState.findPieceAtCoordinate(uciPlayedMove.to);
 
         if (!pieceInToSquare)
         {

@@ -378,7 +378,7 @@ export class CoachUtils
                             for(let i = 0; i < hangingPiecesArrToCheck.length; i++)
                             {
                                 const hangingPieceCoord = hangingPiecesArrToCheck[i];
-                                const hangingPiece = Chonse2Extensions.findPieceAtCoordinate(state, hangingPieceCoord);
+                                const hangingPiece = state.findPieceAtCoordinate(hangingPieceCoord);
 
                                 //If the best move in this position is to capture the vulnerable piece, have the coach say this.
                                 if (bestMove.toSquare == hangingPieceCoord)
@@ -525,7 +525,7 @@ export class CoachUtils
                                 for (let i = 0; i < previousHangingPiecesArrToCheck.length; i++)
                                 {
                                     const coord = previousHangingPiecesArrToCheck[i];
-                                    const pieceToCapture = Chonse2Extensions.findPieceAtCoordinate(previousState, previousBestMove.toSquare);
+                                    const pieceToCapture = previousState.findPieceAtCoordinate(previousBestMove.toSquare);
                                     
                                     if (coord === previousBestMove.toSquare)
                                     {                  
@@ -706,8 +706,8 @@ export class CoachUtils
 
                             if (bestMoveWasToPinPiece && correspondingPin != null)
                             {
-                                const pinnedPiece = Chonse2Extensions.findPieceAtCoordinate(missedState, correspondingPin.pinnedPieceCoordinate);
-                                const highValuePiece = Chonse2Extensions.findPieceAtCoordinate(missedState, correspondingPin.highValuePieceCoordinate);
+                                const pinnedPiece = missedState.findPieceAtCoordinate(correspondingPin.pinnedPieceCoordinate);
+                                const highValuePiece = missedState.findPieceAtCoordinate(correspondingPin.highValuePieceCoordinate);
 
                                 move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
                                 move.coachMoveFlags.push(CoachMoveFlagType.MissedPin);
@@ -743,8 +743,8 @@ export class CoachUtils
                                 //If the piece is hanging, then it's considered an inaccurately ignored pin.
                                 if (hangingPiecesToCheck.includes(ignoredPin.highValuePieceCoordinate))
                                 {
-                                    const pinnedPiece = Chonse2Extensions.findPieceAtCoordinate(previousState, ignoredPin.pinnedPieceCoordinate);
-                                    const highValuePiece = Chonse2Extensions.findPieceAtCoordinate(previousState, ignoredPin.highValuePieceCoordinate);
+                                    const pinnedPiece = previousState.findPieceAtCoordinate(ignoredPin.pinnedPieceCoordinate);
+                                    const highValuePiece = previousState.findPieceAtCoordinate(ignoredPin.highValuePieceCoordinate);
 
 
                                     move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.IGNORED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece)
@@ -812,7 +812,7 @@ export class CoachUtils
                         {
                             for(const fk of currentForks)
                             {
-                                const forkedPieces = fk.coordinatesAttacked.map( c => Chonse2Extensions.findPieceAtCoordinate(state, c) );
+                                const forkedPieces = fk.coordinatesAttacked.map( c => state.findPieceAtCoordinate(c) );
                                 forkedPieces.sort( (a, b) => 
                                 {
                                     const materialValA = PieceMaterial.getMaterialFromPiece(a);
@@ -873,8 +873,8 @@ export class CoachUtils
                         //If this is the pin the player initiated it, add it.
                         if (initiatedPin)
                         {
-                            const pinnedPiece = Chonse2Extensions.findPieceAtCoordinate(previousState, initiatedPin.pinnedPieceCoordinate);
-                            const highValuePiece = Chonse2Extensions.findPieceAtCoordinate(previousState, initiatedPin.highValuePieceCoordinate);
+                            const pinnedPiece = previousState.findPieceAtCoordinate(initiatedPin.pinnedPieceCoordinate);
+                            const highValuePiece = previousState.findPieceAtCoordinate(initiatedPin.highValuePieceCoordinate);
 
                             move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
 
@@ -951,26 +951,26 @@ export class CoachUtils
                     (
                         (
                             move.notation.startsWith(Chonse2.WHITE_KING_PAWN_SQUARE) 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                            && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_PAWN 
+                            && state.findPieceAtCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
                         )
                         ||
                         (
                             move.notation.startsWith(Chonse2.WHITE_QUEEN_PAWN_SQUARE) 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                            && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_PAWN 
+                            && state.findPieceAtCoordinate(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
                         )
                         ||
                         (
                             move.notation.startsWith(Chonse2.BLACK_KING_PAWN_SQUARE) 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                            && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_PAWN 
+                            && state.findPieceAtCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
                         )
                         ||
                         (
                             move.notation.startsWith(Chonse2.BLACK_QUEEN_PAWN_SQUARE) 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                            && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_PAWN 
+                            && state.findPieceAtCoordinate(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
                         )
                     )
                     {
@@ -1059,26 +1059,26 @@ export class CoachUtils
                     (
                         (
                             move.notation.startsWith(Chonse2.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE) 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                            && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_PAWN 
+                            && state.findPieceAtCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
                         )
                         ||
                         (
                             move.notation.startsWith(Chonse2.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_PAWN 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                            && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_PAWN 
+                            && state.findPieceAtCoordinate(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
                         )
                         ||
                         (
                             move.notation.startsWith(Chonse2.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE) 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                            && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_PAWN 
+                            && state.findPieceAtCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
                         )
                         ||
                         (
                             move.notation.startsWith(Chonse2.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_PAWN 
-                            && Chonse2Extensions.findPieceAtCoordinate(state, Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                            && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_PAWN 
+                            && state.findPieceAtCoordinate(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
                         )
                     )
                     {
@@ -1127,10 +1127,10 @@ export class CoachUtils
                     //Case: Player moved a bishop off its starting square
                     if 
                     (
-                        (move.fromCoord == Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_BISHOP) ||
-                        (move.fromCoord == Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.WHITE_BISHOP ) ||
-                        (move.fromCoord == Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_BISHOP) ||
-                        (move.fromCoord == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE && Chonse2Extensions.findPieceAtCoordinate(state, move.toCoord) == PieceType.BLACK_BISHOP)
+                        (move.fromCoord == Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_BISHOP) ||
+                        (move.fromCoord == Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_BISHOP ) ||
+                        (move.fromCoord == Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_BISHOP) ||
+                        (move.fromCoord == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_BISHOP)
                     )
                     {
                         if (FIANCHETTOS.includes(move.toCoord))
