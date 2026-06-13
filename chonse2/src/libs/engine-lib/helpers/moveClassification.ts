@@ -5,7 +5,7 @@ import { MoveClassification } from "../types/enums";
 import { PositionEval } from "../types/eval";
 import { Square } from "./chess";
 import { getIsPieceSacrifice, isHangingPieceCapture, uciMoveParams, uciMoveParams2 } from "./chessHelper";
-import LuminousHelper from "./luminous";
+import LuminousDetector from "./luminous";
 import { getLineWinPercentage, getPositionWinPercentage } from "./winPercentage";
 
 export const BLUNDER_THRESHOLD = -20;
@@ -73,7 +73,7 @@ export const getMovesClassification = (
     }
 
     //Luminous: If move was a good sacrifice.
-    if (LuminousHelper.isMoveLuminousSacrifice(fens[index - 1], fens[index], prevPosition.lines, rawPosition.lines, lastWinPct, currentWinPct, uciParamsMove))
+    if (LuminousDetector.isMoveLuminousSacrifice(fens[index - 1], fens[index], prevPosition.lines, rawPosition.lines, lastWinPct, currentWinPct, uciParamsMove))
     {
       return {
       ...rawPosition,
@@ -99,15 +99,6 @@ export const getMovesClassification = (
           moveClassification: MoveClassification.Best,
         };
       }
-
-      //Luminous: The move played involves a piece sacrifice and is the only good move (alternatives collapse significantly)
-      // if (getIsPieceSacrifice(fens[index - 1], playedMove, rawPosition.lines[0].pv)) {
-      //   return {
-      //     ...rawPosition,
-      //     opening: currentOpening,
-      //     moveClassification: MoveClassification.Luminous,
-      //   };
-      // }
 
       //Perfect: The move played is the only good move (alternatives collapse significantly)
       return {

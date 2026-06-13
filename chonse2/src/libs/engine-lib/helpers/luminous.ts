@@ -6,7 +6,7 @@ import { Square } from "./chess";
 import { ALTERNATIVES_COLLAPSE_SIGNIFICATLY_WIN_PERCENTAGE_CHANGE, concatenateUciParams } from "./moveClassification";
 import { getLineWinPercentage } from "./winPercentage";
 
-export default class LuminousHelper
+export default class LuminousDetector
 {
     public static isMoveLuminousSacrifice
     (
@@ -31,7 +31,7 @@ export default class LuminousHelper
         const playedMove = concatenateUciParams(uciPlayedMove);
 
         //If move was either the best move or amonst the alternate lines that did not collapse eval significantly.
-        const wasMoveGood = LuminousHelper._wasMoveGood(playedMove, beforeFen, previousLines, lastWinPct, currentWinPct)
+        const wasMoveGood = LuminousDetector._wasMoveGood(playedMove, beforeFen, previousLines, lastWinPct, currentWinPct)
         if (!wasMoveGood)
         {
              return false;
@@ -44,27 +44,25 @@ export default class LuminousHelper
 
         //check if played move was not just a simple recapture by verifying that the moved piece did 
         //not just take a piece with the same value.
-        const isSimplePieceCapture = LuminousHelper._wasSimplePieceCapture(beforeState, uciPlayedMove);
+        const isSimplePieceCapture = LuminousDetector._wasSimplePieceCapture(beforeState, uciPlayedMove);
         if (isSimplePieceCapture)
         {
             return false;
         }
 
         //Check if the player did indeed leave the moved piece hanging.
-        const didMoveLeavePieceVulnerable = LuminousHelper._didMoveLeavePieceVulnerable(afterState, uciPlayedMove);
+        const didMoveLeavePieceVulnerable = LuminousDetector._didMoveLeavePieceVulnerable(afterState, uciPlayedMove);
         if (!didMoveLeavePieceVulnerable)
         {
             return false;
         }
 
-        //Check if the opponent should recapture after player hung the piece.
-        const opponentShouldRecapture = LuminousHelper.shouldOpponentRecapture(uciPlayedMove, currentLines);
+        //Check if the opponent should recapture after player hung the piece (unless capturing the sacked piece simply prolongs mate)
+        const opponentShouldRecapture = LuminousDetector._shouldOpponentRecaptureIfMateNotForced(uciPlayedMove, currentLines);
         if (opponentShouldRecapture)
         {
             return false;
         }
-
-        //Check that none of the lines in currentLines involve actually capturing that piece.
 
         return true;
     }
@@ -135,10 +133,33 @@ export default class LuminousHelper
         return isHangingPiece;
     }
 
-    private static shouldOpponentRecapture(uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;}, currentLines: Array<LineEval>)
+    private static _shouldOpponentRecaptureIfMateNotForced(uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;}, currentLines: Array<LineEval>)
     {
-        const opponentShouldRecapture = currentLines.some( line => line.pv[0]?.includes(uciPlayedMove.to) );
+        let recaptureIndex = -1;
 
-        return opponentShouldRecapture;
+        //Check: Does the engine want to recapture?
+        for(let i = 0; i < currentLines.length; i++)
+        {
+            const line = currentLines[i];
+
+            if (line.pv[0]?.includes(uciPlayedMove.to))
+            {
+                recaptureIndex = i;
+                break;
+            }
+        }
+
+        //If the engine line doesn't want this hanging piece captured, then it's certainly luminous.
+        const doesLineContainRecapture = recaptureIndex !== -1;
+        if (!doesLineContainRecapture)
+        {
+            return false;
+        }
+
+        //Get the line that involves the recapture of the sacrificed piece.
+        const recaptureLine = currentLines[recaptureIndex];
+
+        //If this top or near-top line involved recapturing the hanging piece but mate is still on the board, it's luminous.
+        return !recaptureLine.mate;
     }
 }
