@@ -169,6 +169,26 @@
                 "successfullyCopied": "Lien de la partie copié avec succès pour ",
                 "failed": "Échec de la copie du lien de la partie"
             }
+        },
+
+        "moveOverview": 
+        {
+            "startingPosition": "Position de départ",
+            "moveClassificationDisplay": 
+            {
+                "luminous": "Lumineux",
+                "perfect": "Parfait",
+                "best": "Meilleur",
+                "excellent": "Excellent",
+                "okay": "Acceptable",
+                "inaccuracy": "Imprécision",
+                "mistake": "Erreur",
+                "blunder": "Gaffe",
+                "miss": "Manque",
+                "opening": "Ouverture",
+                "forced": "Forcé",
+                "none": "Aucun"
+            }
         }
     }
 }

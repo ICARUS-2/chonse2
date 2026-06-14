@@ -168,6 +168,26 @@
                 "successfullyCopied": "Successfully copied game for ",
                 "failed": "Game link copy failed"
             }
+        },
+
+        "moveOverview": 
+        {
+            "startingPosition": "Starting position",
+            "moveClassificationDisplay": 
+            {
+                "luminous": "Luminous",
+                "perfect": "Perfect",
+                "best": "Best",
+                "excellent": "Excellent",
+                "okay": "Okay",
+                "inaccuracy": "Inaccuracy",
+                "mistake": "Mistake",
+                "blunder": "Blunder",
+                "miss": "Miss",
+                "opening": "Opening",
+                "forced": "Forced",
+                "none": "None"
+            }
         }
     }
 }
