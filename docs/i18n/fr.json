@@ -256,8 +256,8 @@
             "black": "Noir",
             "kingside": "Roi",
             "queenside": "Reine",
-            "whiteToMove": "Aux Blanc de jouer",
-            "blackToMove": "Aux Noir de jouer",
+            "whiteToMove": "Au Blanc de jouer",
+            "blackToMove": "Au Noir de jouer",
             "select": "Sélectionner",
             "notAvailable": "N/A",
             "buttons": 
