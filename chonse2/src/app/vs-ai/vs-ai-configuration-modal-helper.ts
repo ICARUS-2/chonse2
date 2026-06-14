@@ -7,10 +7,17 @@ import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { ToastrService } from "ngx-toastr";
 import Chonse2 from "../../libs/chonse2-lib/chonse2";
 import { EngineInformation, EngineName } from "../../libs/engine-lib/types/enums";
+import { TranslateService } from "@ngx-translate/core";
 
 export default class VsAiConfigurationModalHelper
 {
-    static doModal = async (modalService: NgbModal, chessBoardService: ChessBoardService, toastr: ToastrService, componentInstance: Chessboard,startingState: Chonse2 | undefined = undefined) =>
+    static doModal = async (
+        modalService: NgbModal, 
+        chessBoardService: ChessBoardService, 
+        toastr: ToastrService, 
+        translate: TranslateService,
+        componentInstance: Chessboard,
+        startingState: Chonse2 | undefined = undefined) =>
     {
         const modalRef = modalService.open(VsAiConfigurationModal, {size: 'lg'})
 
@@ -48,13 +55,13 @@ export default class VsAiConfigurationModalHelper
 
                     isHumanWhite ? (bs.pgnHeaders().black = engineDisplayName) : (bs.pgnHeaders().white = engineDisplayName)
                     isHumanWhite ? (bs.pgnHeaders().blackElo = engineElo) : (bs.pgnHeaders().whiteElo = engineElo);
-                    isHumanWhite ? (bs.pgnHeaders().white = "You") : (bs.pgnHeaders().black = "You");
+                    isHumanWhite ? (bs.pgnHeaders().white = translate.instant("vsAiModal.you")) : (bs.pgnHeaders().black = translate.instant("vsAiModal.you"));
 
                     chessBoardService.deleteGame(BoardNames.VsAi);
                     chessBoardService.addGame(BoardNames.VsAi, bs);
                     componentInstance.boardState.set(chessBoardService.getGame(BoardNames.VsAi));
 
-                    toastr.success(`Starting game vs Stockfish ${engineElo}`);
+                    toastr.success(translate.instant("vsAiModal.toastr.startingGame"));
 
                     //If stockfish is white (or if the board says it's stockfish's color to move), play the first move.
                     if (startingState)
@@ -82,7 +89,7 @@ export default class VsAiConfigurationModalHelper
             }
             catch(ex)
             {
-                toastr.error("Error starting game: " + ex)
+                toastr.error(translate.instant("vsAiModal.toastr.error") + ex)
             }
         }
         )

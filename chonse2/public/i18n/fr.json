@@ -329,7 +329,8 @@
         "setElo": "Définir le classement Elo de l'IA",
         "iPlayAsWhite": "Je joue avec les blancs.",
         "beginGameBtn": "Commencer la partie",
-        
+        "you": "Toi",
+
         "toastr": 
         {
             "startingGame": "Lancement de la partie contre Stockfish",

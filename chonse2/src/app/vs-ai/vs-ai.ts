@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import { BoardNames } from '../boards';
 import { Chessboard } from '../chessboard/chessboard/chessboard';
@@ -9,6 +9,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import Chonse2, { PreviousStateCache } from '../../libs/chonse2-lib/chonse2';
 import { GameState } from '../../libs/chonse2-lib/game-state';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-vs-ai',
@@ -44,6 +45,7 @@ export class VsAi implements OnInit, AfterViewInit{
         this.ngbModal,
         this.gameService,
         this.toastr,
+        this.translate,
         board,
         restoredPosition
       );
@@ -52,6 +54,8 @@ export class VsAi implements OnInit, AfterViewInit{
 
   inputtedPosition: Chonse2 | undefined;
   
+  private translate = inject(TranslateService);
+
   constructor(public gameService: ChessBoardService, private ngbModal: NgbModal, private toastr: ToastrService)
   {
 

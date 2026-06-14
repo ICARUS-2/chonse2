@@ -612,7 +612,12 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   beginGameVsAiClicked()
   {
-    VsAiConfigurationModalHelper.doModal(this.modalService, this.chessBoardService, this.toastr, this);
+    VsAiConfigurationModalHelper.doModal(
+      this.modalService, 
+      this.chessBoardService, 
+      this.toastr, 
+      this.translate, 
+      this);
   }
 
   analyzeAiGameClicked()

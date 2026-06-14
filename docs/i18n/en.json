@@ -326,10 +326,11 @@
         "setElo": "Set AI Elo",
         "iPlayAsWhite": "I play as white.",
         "beginGameBtn": "Begin Game",
+        "you": "You",
         
         "toastr": 
         {
-            "startingGame": "Starting games vs Stockfish",
+            "startingGame": "Starting game vs Stockfish",
             "error": "Error starting game"
         }
     },
