@@ -1,12 +1,12 @@
 <div class="componentContainer d-flex flex-column p-3" [class]="themeService.getThemeInstance().getGlassPanelTheme()" [style.background-image]="`url(${themeService.getThemeInstance().getBackgroundImgUrl()})`" [style.color]="themeService.getThemeInstance().getTextColor()">
     
     <div [class]="themeService.getThemeInstance().getGlassPanelTheme()" class="p-4">
-        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Configure game vs AI</h2>
+        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{"vsAiModal.title" | translate}}</h2>
 
         <hr>
 
         <div [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
-            <label>Set AI Elo</label>
+            <label>{{"vsAiModal.setElo" | translate}}</label>
             <input [formField]="form.elo" type="range" class="form-range custom-range"  id="range2">
             <p>{{form.elo().value()}}</p>
         </div>
@@ -14,7 +14,7 @@
         <div class="m-3"></div>
 
         <div class="">
-            <label>I play as white.</label>
+            <label>{{"vsAiModal.iPlayAsWhite" | translate}}</label>
             <div class="form-check form-switch"
             [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
                 <input
@@ -27,6 +27,6 @@
 
         <hr>
 
-        <app-bootstrap-button (buttonClick)="submitClicked()" label="Begin Game"></app-bootstrap-button>
+        <app-bootstrap-button (buttonClick)="submitClicked()" [label]="'vsAiModal.beginGameBtn' | translate"></app-bootstrap-button>
     </div>
 </div>

@@ -607,7 +607,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     gameState.reason = GameOverReason.Resignation;
     gameState.gameScore = this.boardState().humanPlayerIsWhite() ? GameScore.BLACK_WON : GameScore.WHITE_WON;
 
-    this.toastr.warning("You resigned.");
+    this.toastr.warning(this.translate.instant("chessboard.toastr.resign"));
   }
 
   beginGameVsAiClicked()
