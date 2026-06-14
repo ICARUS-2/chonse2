@@ -9,11 +9,11 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { EngineName, EngineInformation } from '../../libs/engine-lib/types/enums';
 import { UciEngine } from '../../libs/engine-lib/uciEngine';
 import { DEFAULT_LANG, Languages } from '../../globals/globals';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-settings',
-  imports: [FormsModule, FormsModule, CommonModule, FormField, NgbTooltip],
+  imports: [FormsModule, FormsModule, CommonModule, FormField, NgbTooltip, TranslatePipe],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -280,5 +280,45 @@
             }
         }
 
+    },
+
+    "settings": 
+    {
+        "title": "Paramètres",
+        "board": 
+        {
+            "heading": "Échiquier",
+            "clickToMove": "Cliquer pour déplacer",
+            "pieceAnimation": "Animation des pièces"
+        },
+        "appearance": 
+        {
+            "heading": "Apparence",
+            "selectTheme": "Sélectionner le thème",
+            "language": "Langue",
+            "luminousInsightsNote": "(Veuillez noter qu'une partie de la fonction « Luminous Insights » ne fonctionne qu'en anglais pour le moment)"
+        },
+        "engine": 
+        {
+            "heading": "Moteur",
+            "selectEngine": "Sélectionner le moteur",
+            "cloudHybrid": 
+            {
+                "label": "Mode hybride cloud (Monothread uniquement)",
+                "tooltip": "Déléguez les évaluations au cloud Lichess dès que possible. Cela peut permettre d'augmenter la profondeur, d'accélérer les évaluations et de réduire l'utilisation du processeur. Conçu pour les appareils qui ne peuvent pas tirer parti du multithreading."
+            },
+            "engineDepth": "Profondeur du moteur",
+            "threadCount": "Nombre de threads"
+        },
+        "credits": 
+        {
+            "heading": "Crédits",
+            "createdBy": "Créé par",
+            "testedBy": "Testé par",
+            "libraryAdaptedFrom": "Bibliothèque UCI adaptée de",
+            "jsImplementation": "Implémentation JS de Stockfish de",
+            "codedIn": "Codé avec",
+            "madeByHumans": "Ce site est fait par des humains."
+        }
     }
 }

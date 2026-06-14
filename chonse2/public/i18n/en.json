@@ -277,5 +277,45 @@
                 "copyLinkError": "Error occurred when copying link"
             }
         }
+    },
+
+    "settings": 
+    {
+        "title": "Settings",
+        "board": 
+        {
+            "heading": "Board",
+            "clickToMove": "Click to move",
+            "pieceAnimation": "Piece Animation"
+        },
+        "appearance": 
+        {
+            "heading": "Appearance",
+            "selectTheme": "Select Theme",
+            "language": "Language",
+            "luminousInsightsNote": "(Please note that part of the Luminous Insights feature only works in English for now)"
+        },
+        "engine": 
+        {
+            "heading": "Engine",
+            "selectEngine": "Select Engine",
+            "cloudHybrid": 
+            {
+                "label": "Cloud Hybrid Mode (Single-thread only)",
+                "tooltip": "Delegate evaluations to Lichess cloud eval wherever possible. Can yield increased depth, faster evaluations and less CPU usage. Intended for devices that cannot take advantage of multithreading."
+            },
+            "engineDepth": "Engine Depth",
+            "threadCount": "Thread Count"
+        },
+        "credits": 
+        {
+            "heading": "Credits",
+            "createdBy": "Created by",
+            "testedBy": "Tested by",
+            "libraryAdaptedFrom": "UCI library adapted from",
+            "jsImplementation": "JS Stockfish implementation from",
+            "codedIn": "Coded in",
+            "madeByHumans": "This site is made by humans."
+        }
     }
 }
