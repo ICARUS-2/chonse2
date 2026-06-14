@@ -338,7 +338,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
           this.boardState.set(this.chessBoardService.getGame(this.gameId()));
 
           //User feedback
-          this.toastr.success("Successfully imported PGN.");
+          this.toastr.success(this.translate.instant("chessboard.toastr.success"));
 
           await this.boardState().evaluateGame();
 
@@ -351,7 +351,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         catch(ex)
         {
           console.log(ex)
-          this.toastr.error("Invalid PGN data.");
+          this.toastr.error(this.translate.instant("chessboard.toastr.success"));
         }
       }
     )

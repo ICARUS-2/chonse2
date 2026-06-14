@@ -38,6 +38,12 @@
 
     "chessboard":
     {
+        "toastr":
+        {
+            "success": "PGN importé avec succès",
+            "error": "Données PGN invalides"
+        },
+
         "squareText": 
         {
             "checkmate": "Checkmate",
@@ -228,5 +234,51 @@
             "loadError": "Erreur lors de la récupération de la base de données: ",
             "deleteSuccess": "Partie supprimée avec succès"
         }
-  }
+    },
+
+    "inputPosition":
+    {
+        "importModal":
+        {
+            "title": "Importer FEN",
+            "confirmBtn": "Confirmer"
+        },
+
+        "board": 
+        {
+            "editorTitle": "Éditeur d'échiquier",
+            "turn": "Trait",
+            "castlingRights": "Droits au roque",
+            "enPassant": "En passant",
+            "fen": "FEN",
+            "white": "Blanc",
+            "black": "Noir",
+            "kingside": "Roi",
+            "queenside": "Reine",
+            "whiteToMove": "Aux Blanc de jouer",
+            "blackToMove": "Aux Noir de jouer",
+            "select": "Sélectionner",
+            "notAvailable": "N/A",
+            "buttons": 
+            {
+                "reset": "Réinitialiser",
+                "clear": "Effacer",
+                "analyze": "Analyser",
+                "playVsAi": "Jouer contre l'IA",
+                "importFen": "Importer un FEN",
+                "copyLink": "Copier le lien"
+            },
+
+            "toastr": 
+            {
+                "importCancelled": "Importation annulée car le FEN est invalide.",
+                "importSuccess": "FEN importé avec succès",
+                "copyFenSuccess": "FEN copié avec succès",
+                "copyFenError": "Une erreur est survenue lors de la copie du FEN",
+                "copyLinkSuccess": "Lien copié avec succès",
+                "copyLinkError": "Une erreur est survenue lors de la copie du lien"
+            }
+        }
+
+    }
 }

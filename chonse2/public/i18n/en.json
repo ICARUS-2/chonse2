@@ -38,6 +38,12 @@
 
     "chessboard":
     {
+        "toastr": 
+        {
+            "success": "Successfully imported PGN",
+            "error": "Invalid PGN data"
+        },
+
         "squareText": 
         {
             "checkmate": "Checkmate",
@@ -225,6 +231,51 @@
             "loadSuccess": "Successfully loaded database",
             "loadError": "Error retrieving database: ",
             "deleteSuccess": "Successfully deleted game"
+        }
+    },
+
+    "inputPosition":
+    {
+        "importModal":
+        {
+            "title": "Import FEN",
+            "confirmBtn": "Confirm"
+        },
+
+        "board": 
+        {
+            "editorTitle": "Board Editor",
+            "turn": "Turn",
+            "castlingRights": "Castling Rights",
+            "enPassant": "En Passant",
+            "fen": "FEN",
+            "white": "White",
+            "black": "Black",
+            "kingside": "Kingside",
+            "queenside": "Queenside",
+            "whiteToMove": "White to move",
+            "blackToMove": "Black to move",
+            "select": "Select",
+            "notAvailable": "N/A",
+            "buttons": 
+            {
+                "reset": "Reset",
+                "clear": "Clear",
+                "analyze": "Analyze",
+                "playVsAi": "Play vs AI",
+                "importFen": "Import FEN",
+                "copyLink": "Copy Link"
+            },
+
+            "toastr": 
+            {
+                "importCancelled": "Import cancelled because the FEN was invalid.",
+                "importSuccess": "Successfully imported FEN",
+                "copyFenSuccess": "Successfully copied FEN",
+                "copyFenError": "Error occurred when copying FEN",
+                "copyLinkSuccess": "Successfully copied link",
+                "copyLinkError": "Error occurred when copying link"
+            }
         }
     }
 }

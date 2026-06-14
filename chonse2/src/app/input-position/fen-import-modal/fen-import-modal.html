@@ -1,7 +1,7 @@
 <div class="componentContainer d-flex flex-column p-3" [class]="themeService.getThemeInstance().getGlassPanelTheme()" [style.background-image]="`url(${themeService.getThemeInstance().getBackgroundImgUrl()})`" [style.color]="themeService.getThemeInstance().getTextColor()">
     
     <div [class]="themeService.getThemeInstance().getGlassPanelTheme()" class="p-4">
-        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Import FEN</h2>
+        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{"inputPosition.importModal.title" | translate}}</h2>
 
         <hr>
 
@@ -13,6 +13,6 @@
 
         <hr>
 
-        <app-bootstrap-button (buttonClick)="submitClicked()" label="Confirm"></app-bootstrap-button>
+        <app-bootstrap-button (buttonClick)="submitClicked()" [label]="'inputPosition.importModal.title' | translate"></app-bootstrap-button>
     </div>
 </div>

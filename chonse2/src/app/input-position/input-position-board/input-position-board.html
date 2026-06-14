@@ -74,37 +74,37 @@
     <div class="boardControls" [class]="themeService.getThemeInstance().getGlassPanelTheme()" 
         [style.color]="themeService.getThemeInstance().getTextColor()"
         >
-        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Board Editor</h2>
+        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'inputPosition.board.editorTitle' | translate }}</h2>
         <div class="d-flex justify-content-between flex-wrap">
-            <app-bootstrap-button (buttonClick)="handleResetClicked()" label="Reset"></app-bootstrap-button>
-            <app-bootstrap-button (buttonClick)="handleClearClicked()" label="Clear"></app-bootstrap-button>
-            <app-bootstrap-button (buttonClick)="submitButtonClicked()" label="Analyze" [disabled]="!doesValidationPass()"></app-bootstrap-button>
-            <app-bootstrap-button (buttonClick)="playVsAiButtonClicked()" label="Play vs AI" [disabled]="!doesValidationPass()"></app-bootstrap-button>
+            <app-bootstrap-button (buttonClick)="handleResetClicked()" [label]="'inputPosition.board.buttons.reset' | translate"></app-bootstrap-button>
+            <app-bootstrap-button (buttonClick)="handleClearClicked()" [label]="'inputPosition.board.buttons.clear' | translate"></app-bootstrap-button>
+            <app-bootstrap-button (buttonClick)="submitButtonClicked()" [label]="'inputPosition.board.buttons.analyze' | translate" [disabled]="!doesValidationPass()"></app-bootstrap-button>
+            <app-bootstrap-button (buttonClick)="playVsAiButtonClicked()" [label]="'inputPosition.board.buttons.playVsAi' | translate" [disabled]="!doesValidationPass()"></app-bootstrap-button>
             <app-bootstrap-button (buttonClick)="flipButtonClicked()" label="↑↓"></app-bootstrap-button>
         </div>
 
         <hr>
 
-        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Turn</h4>
+        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'inputPosition.board.turn' | translate }}</h4>
         <select [(ngModel)]="this.model().game().turn" (ngModelChange)="onTurnChanged($event)">
-            <option [ngValue]="true">White to move</option>
-            <option [ngValue]="false">Black to move</option>
+            <option [ngValue]="true">{{ 'inputPosition.board.whiteToMove' | translate }}</option>
+            <option [ngValue]="false">{{ 'inputPosition.board.blackToMove' | translate }}</option>
         </select>
         
         <hr>
 
-        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Castling Rights</h4>
+        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'inputPosition.board.castlingRights' | translate }}</h4>
         <div class="d-flex justify-content-between user-select-none">
             <!--White castling rights-->
             <div>
-                <p>White</p>
+                <p>{{ 'inputPosition.board.white' | translate }}</p>
                 @if(getPotentialForCastlingRights(true, true))
                 {
                     <div 
                         class="form-check form-switch" 
                         [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
                         >
-                        <label>Kingside</label>
+                        <label>{{ 'inputPosition.board.kingside' | translate }}</label>
                         <input class="form-check-input custom-switch" type="checkbox" [(ngModel)]="this.model().game().whiteCastlingRights.kingSide">
                     </div>
                 }
@@ -114,7 +114,7 @@
                     <div 
                         class="form-check form-switch"
                         [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
-                        <label>Queenside</label>
+                        <label>{{ 'inputPosition.board.queenside' | translate }}</label>
                         <input class="form-check-input custom-switch" type="checkbox" [(ngModel)]="this.model().game().whiteCastlingRights.queenSide">
                     </div>
                 }
@@ -122,13 +122,13 @@
 
             <!--Black castling rights-->
             <div>
-                <p>Black</p>
+                <p>{{ 'inputPosition.board.black' | translate }}</p>
                 @if(getPotentialForCastlingRights(false, true))
                 {
                     <div 
                         class="form-check form-switch"
                         [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
-                        <label>Kingside</label>
+                        <label>{{ 'inputPosition.board.kingside' | translate }}</label>
                         <input class="form-check-input custom-switch" type="checkbox" [(ngModel)]="this.model().game().blackCastlingRights.kingSide">
                     </div>
                 }
@@ -138,7 +138,7 @@
                     <div 
                         class="form-check form-switch"
                         [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
-                        <label>Queenside</label>
+                        <label>{{ 'inputPosition.board.queenside' | translate }}</label>
                         <input class="form-check-input custom-switch" type="checkbox" [(ngModel)]="this.model().game().blackCastlingRights.queenSide">
                     </div>
                 }
@@ -147,13 +147,13 @@
 
         <hr>
 
-        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">En Passant</h4>
+        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'inputPosition.board.enPassant' | translate }}</h4>
         <div>
             @if(getPotentialEnPassantSquares(); as potentialEpSquares)
             {
                 @if (potentialEpSquares.length > 0)
                 {
-                    <div>Select</div>
+                    <div>{{ 'inputPosition.board.select' | translate }}</div>
                     <select [(ngModel)]="this.model().game().enPassantSquare">
                         @for(square of potentialEpSquares; track $index)
                         {
@@ -163,7 +163,7 @@
                 }
                 @else
                 {
-                    N/A
+                    {{ 'inputPosition.board.notAvailable' | translate }}
                 }
             }
         </div>
@@ -171,7 +171,7 @@
         <hr>
 
         <!--FEN display-->
-        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">FEN</h4>
+        <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'inputPosition.board.fen' | translate }}</h4>
         <div>
             {{this.model().game().getFEN()}}
             <app-bootstrap-button label="📋" (buttonClick)="copyFenClicked()"></app-bootstrap-button>
@@ -180,8 +180,8 @@
         <hr>
         <!--Import/Export controls-->
         <div class="d-flex justify-content-between ioControls">
-            <app-icon-button (buttonClick)="handleImportClicked()" label="Import FEN" iconClass="bi-box-arrow-in-down-left"></app-icon-button>
-            <app-icon-button (buttonClick)="copyFenLinkClicked()" label="Copy Link" iconClass="bi-link-45deg"></app-icon-button>
+            <app-icon-button (buttonClick)="handleImportClicked()" [label]="'inputPosition.board.buttons.importFen' | translate" iconClass="bi-box-arrow-in-down-left"></app-icon-button>
+            <app-icon-button (buttonClick)="copyFenLinkClicked()" [label]="'inputPosition.board.buttons.copyLink' | translate" iconClass="bi-link-45deg"></app-icon-button>
         </div>
     </div>
     @if(currentlyHeldPiece() != "")

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, Input, NgZone, signal, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, Input, NgZone, signal, WritableSignal } from '@angular/core';
 import { Square } from '../../chessboard/square/square';
 import { PieceSelector } from "../piece-selector/piece-selector";
 import { FormsModule } from '@angular/forms';
@@ -19,10 +19,11 @@ import { FenImportModal } from '../fen-import-modal/fen-import-modal';
 import { ToastrService } from 'ngx-toastr';
 import { IconButton } from "../../ui/icon-button/icon-button";
 import GameLinkHelper from '../../chessboard/chessboard/game-link-helper';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-input-position-board',
-  imports: [Square, PieceSelector, FormsModule, CommonModule, BootstrapButton, IconButton],
+  imports: [Square, PieceSelector, FormsModule, CommonModule, BootstrapButton, IconButton, TranslatePipe],
   templateUrl: './input-position-board.html',
   styleUrl: './input-position-board.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -69,6 +70,8 @@ export class InputPositionBoard {
   
   private static readonly X_VECTOR = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
   private static readonly Y_VECTOR = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
+
+  private translate = inject(TranslateService);
 
   constructor(
     private router: Router, 
@@ -187,7 +190,7 @@ export class InputPositionBoard {
       {
         if (result == null)
         {
-          this.toastrService.error("Import cancelled because the FEN was invalid.");
+          this.toastrService.error(this.translate.instant("inputPosition.board.toastr.importCancelled"));
           return;
         }
 
@@ -198,7 +201,7 @@ export class InputPositionBoard {
         this.ips.addGame(this.stateId() ,newState);
         this.model.set(newState);
 
-        this.toastrService.success("Successfully imported FEN");
+        this.toastrService.success(this.translate.instant("inputPosition.board.toastr.importSuccess"));
       }
     )
     .catch(() => { /*modal was dismissed, no error*/ })
@@ -209,11 +212,11 @@ export class InputPositionBoard {
     try 
     {
       navigator.clipboard.writeText(this.model().game().getFEN());
-      this.toastrService.info("Successfully copied FEN");
+      this.toastrService.info(this.translate.instant("inputPosition.board.toastr.copyFenSuccess"));
     }
     catch(ex)
     {
-      this.toastrService.error("Error occurred when copying FEN");
+      this.toastrService.error(this.translate.instant("inputPosition.board.toastr.copyFenError"));
     }
   }
 
@@ -222,11 +225,11 @@ export class InputPositionBoard {
     try 
     {
       navigator.clipboard.writeText(GameLinkHelper.generateFenLink(this.model().game().getFEN()));
-      this.toastrService.info("Successfully copied link");
+      this.toastrService.info(this.translate.instant("inputPosition.board.toastr.copyLinkSuccess"));
     }
     catch(ex)
     {
-      this.toastrService.error("Error occurred when copying link");
+      this.toastrService.error(this.translate.instant("inputPosition.board.toastr.copyLinkError"));
     }
   }
   //#endregion
