@@ -199,5 +199,32 @@
         {
             "title": "Promotion - Select Piece"
         }
+    },
+
+    "database": 
+    {
+        "title": "Database",
+
+        "headers": 
+        {
+            "white": "White",
+            "black": "Black",
+            "result": "Result",
+            "accuracy": "Accuracy",
+            "comment": "Comment",
+            "action": "Action"
+        },
+
+        "actions": 
+        {
+            "analyze": "Analyze",
+            "delete": "Delete"
+        },
+        "messages": 
+        {
+            "loadSuccess": "Successfully loaded database",
+            "loadError": "Error retrieving database: ",
+            "deleteSuccess": "Successfully deleted game"
+        }
     }
 }

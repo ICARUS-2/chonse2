@@ -200,5 +200,33 @@
         {
             "title": "Promotion - Sélectionner une pièce"
         }
-    }
+    },
+
+    "database": 
+    {
+        "title": "Base de données",
+
+        "headers": 
+        {
+            "white": "Blanc",
+            "black": "Noir",
+            "result": "Résultat",
+            "accuracy": "Précision",
+            "comment": "Commentaire",
+            "action": "Action"
+        },
+
+        "actions": 
+        {
+            "analyze": "Analyser",
+            "delete": "Supprimer"
+        },
+
+        "messages": 
+        {
+            "loadSuccess": "Enregistrements chargés avec succès.",
+            "loadError": "Erreur lors de la récupération de la base de données: ",
+            "deleteSuccess": "Partie supprimée avec succès"
+        }
+  }
 }
