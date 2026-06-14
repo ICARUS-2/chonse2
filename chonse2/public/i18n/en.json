@@ -188,6 +188,16 @@
                 "forced": "Forced",
                 "none": "None"
             }
+        },
+
+        "progressToast":
+        {
+            "analyzing": "Analyzing"
+        },
+
+        "promotionModal":
+        {
+            "title": "Promotion - Select Piece"
         }
     }
 }

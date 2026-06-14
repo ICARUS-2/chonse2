@@ -189,6 +189,16 @@
                 "forced": "Forcé",
                 "none": "Aucun"
             }
+        },
+
+        "progressToast":
+        {
+            "analyzing": "Analyse en cours"
+        },
+
+        "promotionModal":
+        {
+            "title": "Promotion - Sélectionner une pièce"
         }
     }
 }
