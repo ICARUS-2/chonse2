@@ -1,7 +1,7 @@
 <div class="homepageContainer">
     <div class="topHeader" [style.color]="themeService.getThemeInstance().getPrimaryColor()" ngbTooltip="Cloud Hybrid Open-source Neural network Stockfish Environment">CHONSE2</div>
-    <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()">Luminous chess analytics.</h1>
-    <h4 [style.color]="themeService.getThemeInstance().getTextColor()">Open-source. Unlimited. No account required.</h4>
+    <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'home.heading' | translate }}</h1>
+    <h4 [style.color]="themeService.getThemeInstance().getTextColor()">{{ 'home.subtitle' | translate }}</h4>
 
     <div class="m-5"></div>
 
@@ -12,12 +12,12 @@
 
             @let leftBtns = 
             [
-                {'label': 'Board Editor', 'iconClass': 'bi-border-all', 'click': boardEditorButtonClicked},
-                {'label': 'Play vs Stockfish', 'iconClass': 'bi-code-slash', 'click': vsStockfishButtonClicked},
-                {'label': 'PGN Link', 'iconClass': 'bi-link-45deg', 'click': pgnLinkButtonClicked},
+                {'label': ('home.leftBtns.editor' | translate), 'iconClass': 'bi-border-all', 'click': boardEditorButtonClicked},
+                {'label': ('home.leftBtns.vsAi' | translate), 'iconClass': 'bi-code-slash', 'click': vsStockfishButtonClicked},
+                {'label': ('home.leftBtns.pgnLink' | translate), 'iconClass': 'bi-link-45deg', 'click': pgnLinkButtonClicked},
             ];
 
-            <app-icon-button (buttonClick)="analysisButtonClicked()" [extraStyle]="btnStyle" extraClasses="" label="Analysis" iconClass="bi-cpu" overridePrimaryBackgroundColor="rgb(52, 175, 0)" overrideSecondaryBackgroundColor="green"></app-icon-button>
+            <app-icon-button (buttonClick)="analysisButtonClicked()" [extraStyle]="btnStyle" extraClasses="" [label]="'home.leftBtns.analysis' | translate" iconClass="bi-cpu" overridePrimaryBackgroundColor="rgb(52, 175, 0)" overrideSecondaryBackgroundColor="green"></app-icon-button>
             
             <div class="m-2"></div>
             
@@ -36,22 +36,23 @@
             {
                 <div class="d-flex flex-column mostRecentBoard">
                     <app-static-chessboard [size]="'var(--board-width)'" [state]="mostRecentState"></app-static-chessboard>
-                    <app-icon-button (buttonClick)="mostRecentBtnClicked()" [label]="`Review game: ${lastPgnBoardState.pgnHeaders().white} vs ${lastPgnBoardState.pgnHeaders().black}`" [extraStyle]="{'width': 'var(--board-width)', 'height': 'var(--btn-height)'}" iconClass="bi-arrow-up-right"></app-icon-button>
+                    <app-icon-button (buttonClick)="mostRecentBtnClicked()" [label]="('home.middleBtns.reviewGame' | translate) + ': ' + lastPgnBoardState.pgnHeaders().white + ' vs ' + lastPgnBoardState.pgnHeaders().black" [extraStyle]="{'width': 'var(--board-width)', 'height': 'var(--btn-height)'}" iconClass="bi-arrow-up-right"></app-icon-button>
                 </div>
             }
         }
 
         <div class="d-flex flex-column analysisDemoBoard">
             <app-static-chessboard [size]="'var(--board-width)'" [state]="DEMO_STATE" ></app-static-chessboard>
-            <app-icon-button label="Analysis Demo" extraClasses="text-sm" [extraStyle]="{'width': 'var(--board-width)', 'height': 'var(--btn-height)', 'font-size' : '25px'}" iconClass="bi-arrow-up-right" (buttonClick)="demoButtonClicked()"></app-icon-button>
+            <app-icon-button [label]="'home.middleBtns.analysisDemo' | translate" extraClasses="text-sm" [extraStyle]="{'width': 'var(--board-width)', 'height': 'var(--btn-height)', 'font-size' : '25px'}" iconClass="bi-arrow-up-right" (buttonClick)="demoButtonClicked()"></app-icon-button>
         </div>
 
         <div class="stackedButtons">
             @let rightBtns = 
             [
-                {'label': "Settings", 'iconClass': 'bi-gear', 'click': settingsBtnClicked},
-                {'label': 'Source Code', 'iconClass': 'bi-github', 'click': sourceCodeBtnClicked},
-                {'label': 'Developer Site', 'iconClass': 'bi-code-slash', 'click': developerSiteBtnClicked},
+                {'label': ("home.rightBtns.settings" | translate), 'iconClass': 'bi-gear', 'click': settingsBtnClicked},
+                {'label': ("home.rightBtns.database" | translate), 'iconClass': 'bi-database', 'click': databaseBtnClicked},
+                {'label': ('home.rightBtns.sourceCode' | translate), 'iconClass': 'bi-github', 'click': sourceCodeBtnClicked},
+                {'label': ('home.rightBtns.developerSite' | translate), 'iconClass': 'bi-code-slash', 'click': developerSiteBtnClicked},
             ];
 
             @for(btn of rightBtns; track $index)

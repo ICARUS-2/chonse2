@@ -3,10 +3,11 @@ import BoardState from '../chessboard/board-state';
 import { IconButton } from '../../ui/icon-button/icon-button';
 import ThemeService from '../../themes/theme-service';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-board-options',
-  imports: [IconButton, CommonModule],
+  imports: [IconButton, CommonModule, TranslatePipe],
   templateUrl: './board-options.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './board-options.css',

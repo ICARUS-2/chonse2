@@ -6,10 +6,11 @@ import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from "../../ui/bootstrap-button/bootstrap-button";
 import { form, FormField, max, min } from '@angular/forms/signals';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-vs-ai-configuration-modal',
-  imports: [FormsModule, BootstrapButton, FormField],
+  imports: [FormsModule, BootstrapButton, FormField, TranslatePipe],
   templateUrl: './vs-ai-configuration-modal.html',
   styleUrl: './vs-ai-configuration-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush

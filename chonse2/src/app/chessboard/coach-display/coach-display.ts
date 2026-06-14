@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, computed, input, output, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
-import { EngineInformation, EngineType, MoveClassification, moveClassificationLabels } from '../../../libs/engine-lib/types/enums';
+import { ChangeDetectorRef, Component, computed, input, output, signal, WritableSignal, ChangeDetectionStrategy, inject } from '@angular/core';
+import { EngineInformation, EngineType, MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { IconButton } from '../../ui/icon-button/icon-button';
 import BoardState from '../chessboard/board-state';
 import MoveResult from '../chessboard/move-result';
@@ -10,21 +10,22 @@ import ChessboardHelper from '../helpers';
 import { CommonModule } from '@angular/common';
 import ThemeService from '../../themes/theme-service';
 import Chonse2 from '../../../libs/chonse2-lib/chonse2';
-import LocalStorageHelper from '../chessboard/local-storage-helper';
+import LocalStorageHelper from '../../../libs/local-storage-helper';
 import Sound from '../chessboard/sound';
 import { Chessboard } from '../chessboard/chessboard';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-coach-display',
-  imports: [IconButton, CommonModule],
+  imports: [IconButton, CommonModule, TranslatePipe],
   templateUrl: './coach-display.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './coach-display.css',
 })
 export class CoachDisplay {
   protected readonly MoveClassification = MoveClassification;
-  moveClassificationLabels = moveClassificationLabels;
   ChessboardHelper = ChessboardHelper;
+  moveClassificationLabels = moveClassificationLabels;
 
   // --- Required Signal Inputs ---
   boardState = input.required<BoardState>();
@@ -60,6 +61,8 @@ export class CoachDisplay {
     return engine ? EngineInformation.get(engine.name) : null;
   });
 
+  private translate = inject(TranslateService);
+
   constructor(public themeService: ThemeService)
   {
     
@@ -76,25 +79,25 @@ export class CoachDisplay {
 
     if (move.coachMoveFlags.includes(CoachMoveFlagType.AllowedCheckmate) || mate)
     {
-      return "Show checkmate";
+      return this.translate.instant('chessboard.coachDisplay.followUpButton.showCheckmate');
     }
 
     if (move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging))
     {
-      return "Show hanging piece";
+      return this.translate.instant('chessboard.coachDisplay.followUpButton.showHangingPiece');
     }
 
     if (move.coachMoveFlags.includes(CoachMoveFlagType.OpportunityToFork))
     {
-      return "Show fork";
+      return this.translate.instant('chessboard.coachDisplay.followUpButton.showFork');
     }
 
     if (move.coachMoveFlags.includes(CoachMoveFlagType.CausedMaterialLoss))
     {
-      return "Show material loss";
+      return this.translate.instant('chessboard.coachDisplay.followUpButton.showMaterialLoss');
     }
 
-    return "Show follow-up";
+    return this.translate.instant('chessboard.coachDisplay.followUpButton.showFollowUp');
   }
 
   showFollowUpClicked()
@@ -114,7 +117,7 @@ export class CoachDisplay {
         ...mv,
         coachComment:
           mv.coachComment === CoachUtils.COACH_MOVE_DELIMITER
-            ? "Top move!"
+            ? this.translate.instant('chessboard.coachDisplay.comments.topMove')
             : mv.coachComment
       }))
     );
@@ -262,31 +265,31 @@ export class CoachDisplay {
   {
     if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedCheckmate))
     {
-      return "Show missed checkmate";
+      return this.translate.instant('chessboard.coachDisplay.missButton.showMissedCheckmate');
     }
 
     if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedFork))
     {
-      return "Show missed fork";
+      return this.translate.instant('chessboard.coachDisplay.missButton.showMissedFork');
     }
 
     if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedHangingPiece))
     {
-      return "Show missed capture";
+      return this.translate.instant('chessboard.coachDisplay.missButton.showMissedCapture');
     }
 
     if (move.coachMoveFlags.includes(CoachMoveFlagType.CapturedPieceWithWrongAttacker))
     {
-      return "Show alternative";
+      return this.translate.instant('chessboard.coachDisplay.missButton.showAlternative');
     }
 
     if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedPin))
     {
-      return "Show missed pin";
+      return this.translate.instant('chessboard.coachDisplay.missButton.showMissedPin');
     }
 
-    return "Show miss";
-  }
+    return this.translate.instant('chessboard.coachDisplay.missButton.showMiss');
+}
 
   async showMissedOpportunityClicked()
   {
@@ -318,33 +321,31 @@ export class CoachDisplay {
   //#region ideas
   getIdeaButtonText(flag: CoachIdeaFlagType)
   {
-    const BASE = "Show Idea: ";
-
     if (flag == CoachIdeaFlagType.ForkIdea)
     {
-      return BASE + "Fork";
+      return this.translate.instant('chessboard.coachDisplay.ideaButton.fork');
     }
 
     if (flag == CoachIdeaFlagType.PinIdea)
     {
-      return BASE + "Pinned Piece";
+      return this.translate.instant('chessboard.coachDisplay.ideaButton.pinnedPiece');
     }
 
     if (flag == CoachIdeaFlagType.CentralControlIdea)
     {
-      return BASE + "Center Pressure"
+      return this.translate.instant('chessboard.coachDisplay.ideaButton.centerPressure');
     }
 
     if (flag == CoachIdeaFlagType.DevelopmentIdea)
     {
-      return BASE + "Development"
+      return this.translate.instant('chessboard.coachDisplay.ideaButton.development');
     }
 
     if (flag == CoachIdeaFlagType.FianchettoIdea)
     {
-      return BASE + "Fianchetto"
+      return this.translate.instant('chessboard.coachDisplay.ideaButton.fianchetto');
     }
-    return BASE;
+    return this.translate.instant('chessboard.coachDisplay.ideaButton.base');
   }
 
   showIdeaButtonClicked(idea: CoachIdea | undefined)
@@ -375,10 +376,10 @@ export class CoachDisplay {
   {
     if (flag == CoachResourceFlagType.Opening)
     {
-      return "Opening: Learn More";
+      return this.translate.instant('chessboard.coachDisplay.resourceButton.openingLearnMore');
     }
 
-    return "Unknown resource"
+    return this.translate.instant('chessboard.coachDisplay.resourceButton.unknownResource');
   }
 
   handleResourceButtonClicked(link: string | undefined)
@@ -454,3 +455,18 @@ export class CoachDisplay {
   }
   //#endregion
 }
+
+export const moveClassificationLabels: Record<MoveClassification, string> = {
+  [MoveClassification.None] : "chessboard.coachDisplay.moveClassifications.none",
+  [MoveClassification.Opening]: "chessboard.coachDisplay.moveClassifications.opening",
+  [MoveClassification.Forced]: "chessboard.coachDisplay.moveClassifications.forced",
+  [MoveClassification.Luminous]: "chessboard.coachDisplay.moveClassifications.luminous",
+  [MoveClassification.Perfect]: "chessboard.coachDisplay.moveClassifications.perfect",
+  [MoveClassification.Best]: "chessboard.coachDisplay.moveClassifications.best",
+  [MoveClassification.Excellent]: "chessboard.coachDisplay.moveClassifications.excellent",
+  [MoveClassification.Okay]: "chessboard.coachDisplay.moveClassifications.okay",
+  [MoveClassification.Inaccuracy]: "chessboard.coachDisplay.moveClassifications.inaccuracy",
+  [MoveClassification.Mistake]: "chessboard.coachDisplay.moveClassifications.mistake",
+  [MoveClassification.Miss]: "chessboard.coachDisplay.moveClassifications.miss",
+  [MoveClassification.Blunder]: "chessboard.coachDisplay.moveClassifications.blunder",
+};

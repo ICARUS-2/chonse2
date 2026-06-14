@@ -1,7 +1,7 @@
 import { Injectable, signal } from "@angular/core";
 import { IAppTheme } from "./app-themes/i-app-theme";
 import { Themes } from "./themes";
-import LocalStorageHelper from "../chessboard/chessboard/local-storage-helper";
+import LocalStorageHelper from "../../libs/local-storage-helper";
 import WhiteBlueTheme from "./app-themes/white-blue-theme";
 import BlackRedTheme from "./app-themes/black-red-theme";
 import GalacticTheme from "./app-themes/galactic-theme";

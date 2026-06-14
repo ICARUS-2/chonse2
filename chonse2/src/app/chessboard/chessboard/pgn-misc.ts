@@ -57,7 +57,7 @@ export enum PgnSources
 {
     Chesscom = "Chess.com",
     Lichess = "Lichess",
-    Manual = "Manual PGN",
+    Manual = "PGN",
 }
 
 export function FormatTermination(headers: PgnHeaders): string

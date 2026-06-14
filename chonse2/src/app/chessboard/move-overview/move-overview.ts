@@ -5,10 +5,11 @@ import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { Chessboard } from '../chessboard/chessboard';
 import { CommonModule } from '@angular/common';
 import ChessboardHelper from '../helpers';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-move-overview',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './move-overview.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './move-overview.css',
@@ -16,7 +17,7 @@ import ChessboardHelper from '../helpers';
 export class MoveOverview {
   
   ChessboardHelper = ChessboardHelper
-  protected themeService = inject(ThemeService);
+  MoveClassificationDisplayName = MoveClassificationDisplayName;
 
   // Inputs (Signals)
   boardState = input.required<any>(); // Replace 'any' with your BoardState type
@@ -33,4 +34,23 @@ export class MoveOverview {
   protected onClassificationClick(color: PieceColor, classification: MoveClassification): void {
     this.moveClassificationClicked.emit({ color, classification });
   }
+
+  protected themeService = inject(ThemeService);
 }
+
+export const MoveClassificationDisplayName: Record<MoveClassification, string> = 
+{
+  [MoveClassification.Luminous]: "chessboard.moveOverview.moveClassificationDisplay.luminous",
+  [MoveClassification.Perfect]: "chessboard.moveOverview.moveClassificationDisplay.perfect",
+  [MoveClassification.Best]: "chessboard.moveOverview.moveClassificationDisplay.best",
+  [MoveClassification.Excellent]: "chessboard.moveOverview.moveClassificationDisplay.excellent",
+  [MoveClassification.Okay]: "chessboard.moveOverview.moveClassificationDisplay.okay",
+  [MoveClassification.Inaccuracy]: "chessboard.moveOverview.moveClassificationDisplay.inaccuracy",
+  [MoveClassification.Mistake]: "chessboard.moveOverview.moveClassificationDisplay.mistake",
+  [MoveClassification.Blunder]: "chessboard.moveOverview.moveClassificationDisplay.blunder",
+  [MoveClassification.Miss]: "chessboard.moveOverview.moveClassificationDisplay.miss",
+  [MoveClassification.Opening]: "chessboard.moveOverview.moveClassificationDisplay.opening",
+  [MoveClassification.Forced]: "chessboard.moveOverview.moveClassificationDisplay.forced",
+  [MoveClassification.None]: "chessboard.moveOverview.moveClassificationDisplay.none"
+};
+

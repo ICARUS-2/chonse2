@@ -1,7 +1,5 @@
- <!-- NAVBAR -->
-  <nav class="top-navbar glass-navbar">
+<nav class="top-navbar glass-navbar">
 
-    <!-- LEFT -->
     <div class="nav-left">
 
       <div class="brand">
@@ -15,31 +13,31 @@
         <a routerLink="/analysis"
            routerLinkActive="active-link"
            class="nav-link">
-          Analysis
+          {{ 'navbar.analysis' | translate }}
         </a>
 
         <a routerLink="/editor"
            routerLinkActive="active-link"
            class="nav-link">
-          Board Editor
+          {{ 'navbar.boardEditor' | translate }}
         </a>
 
         <a routerLink="/vs-ai"
            routerLinkActive="active-link"
            class="nav-link">
-          Play vs AI
+          {{ 'navbar.playVsAi' | translate }}
         </a>
 
         <a routerLink="/pgn-link"
            routerLinkActive="active-link"
            class="nav-link">
-          PGN Link
+          {{ 'navbar.pgnLink' | translate }}
         </a>
 
         <a routerLink="/database"
            routerLinkActive="active-link"
            class="nav-link">
-          Database
+          {{ 'navbar.database' | translate }}
         </a>
 
 
@@ -47,7 +45,6 @@
     </div>
 
 
-    <!-- RIGHT -->
     <div class="nav-right">
 
       <a class="icon-btn"

@@ -1,0 +1,352 @@
+{
+    "navbar": 
+    {
+        "analysis": "Analyse",
+        "boardEditor": "Éditeur d'échiquier",
+        "playVsAi": "Jouer contre l'IA",
+        "pgnLink": "Lien PGN",
+        "database": "Base de données"
+    },
+    
+    "home":
+    {
+        "heading": "Analyse de chess lumineuse.",
+        "subtitle": "Code ouvert. Illimité. Aucun compte requis.",
+        
+        "leftBtns": 
+        {
+            "analysis": "Analyse",
+            "editor": "Éditeur d'échiquier",
+            "vsAi": "Jouer contre Stockfish",
+            "pgnLink": "Lien PGN"
+        },
+
+        "middleBtns":
+        {
+            "reviewGame": "Revoir la partie",
+            "analysisDemo": "Démo de l'analyse"
+        },
+
+        "rightBtns":
+        {
+            "settings": "Paramètres",
+            "database": "Base de données",
+            "sourceCode": "Code source",
+            "developerSite": "Site du développeur"
+        }
+    },
+
+    "chessboard":
+    {
+        "toastr":
+        {
+            "success": "PGN importé avec succès",
+            "error": "Données PGN invalides",
+            "resign": "Tu as abandonné."
+        },
+
+        "squareText": 
+        {
+            "checkmate": "Checkmate",
+            "winner": "Gagnant",
+            "draw": "Nulle",
+            "luminous": "LUM1NEUX !",
+            "perfect": "Parfait !",
+            "null": "Nul",
+            "empty": ""
+        },
+
+        "boardOptions":
+        {
+            "importGame": "Importer la partie",
+            "reset": "Réinitialiser",
+            "analyze": "Analyser",
+            "exportGame": "Exporter la partie",
+            "saveToDatabase": "Sauvegarder dans la base de données",
+            "resign": "Abandonner",
+            "newGame": "Nouvelle partie",
+            "analyzeGame": "Analyser la partie"
+        },
+
+        "coachDisplay": 
+        {
+            "luminousInsights": "Perspectives Lumineuses",
+            "cloudHybrid": "Nuage hybride",
+            "depth": "Profondeur",
+            "cloud": "NUAGE",
+            "is": "est",
+            "checkmateAlwaysBest": "Checkmate est toujours le meilleur coup!",
+            "hideSequence": "Cacher la séquence",
+            "continue": "Continuer",
+            "hideIdea": "Cacher l'idée",
+
+
+            "followUpButton": 
+            {
+                "showCheckmate": "Montrer le mat",
+                "showHangingPiece": "Montrer la pièce en prise",
+                "showFork": "Montrer la fourchette",
+                "showMaterialLoss": "Montrer la perte matérielle",
+                "showFollowUp": "Montrer la suite"
+            },
+            "missButton": 
+            {
+                "showMissedCheckmate": "Montrer le mat manqué",
+                "showMissedFork": "Montrer la fourchette manquée",
+                "showMissedCapture": "Montrer la capture manquée",
+                "showAlternative": "Montrer l'alternative",
+                "showMissedPin": "Montrer le clouage manqué",
+                "showMiss": "Montrer le coup manqué"
+            },
+            "ideaButton": 
+            {
+                "fork": "Montrer l'idée : Fourchette",
+                "pinnedPiece": "Montrer l'idée : Pièce clouée",
+                "centerPressure": "Montrer l'idée : Pression au centre",
+                "development": "Montrer l'idée : Développement",
+                "fianchetto": "Montrer l'idée : Fianchetto",
+                "base": "Montrer l'idée : "
+            },
+            "resourceButton": 
+            {
+                "openingLearnMore": "Ouverture : En savoir plus",
+                "unknownResource": "Ressource inconnue"
+            },
+            "moveClassifications": 
+            {
+                "none": "null",
+                "opening": "un coup de théorie",
+                "forced": "forcé",
+                "luminous": "LUMINEUX 🌕!!!",
+                "perfect": "le seul bon coup",
+                "best": "le meilleur coup",
+                "excellent": "excellent",
+                "okay": "acceptable",
+                "inaccuracy": "une imprécision",
+                "mistake": "une erreur",
+                "miss": "un coup manqué",
+                "blunder": "une gaffe"
+            },
+            "comments": 
+            {
+                "topMove": "Excellent coup!"
+            }
+        },
+
+        "copyPgnModal": 
+        {
+            "title": "Exporter la partie",
+            "copyRawPgnButton": "Copier le PGN brut",
+            "getPgnLinkButton": "Obtenir le lien du PGN",
+            "toastr": 
+            {
+                "copyRawSuccess": "Le PGN a été copié dans le presse-papiers avec succès!",
+                "copyLinkSuccess": "Le lien du PGN a été copié dans le presse-papiers avec succès!",
+                "copyError": "Échec du découpage ou de la copie. Veuillez réessayer."
+            }
+        },
+
+        "databaseModal": 
+        {
+            "title": "Sauvegarder la partie dans la base de données",
+            "commentLabel": "Commentaire",
+            "saveButton": "Sauvegarder",
+            "toastr": 
+            {
+                "success": "La partie a été sauvegardée avec succès.",
+                "gameNotFound": "Partie introuvable.",
+                "saveFailed": "Échec de la sauvegarde de la partie : "
+            }
+        },
+        
+        "gameInfo": 
+        {
+            "whiteToMove": "Au blanc de jouer",
+            "blackToMove": "Au noir de jouer"
+        },
+
+        "importModal":
+        {
+            "title": "Importer une partie",
+            "searchPlaceholder": "Rechercher un nom d'utilisateur",
+            "copyLinkBtn": "Copier le lien",
+            "submitBtn": "Soumettre",
+            "toastr": 
+            {
+                "successfullyCopied": "Lien de la partie copié avec succès pour ",
+                "failed": "Échec de la copie du lien de la partie"
+            }
+        },
+
+        "moveOverview": 
+        {
+            "startingPosition": "Position de départ",
+            "moveClassificationDisplay": 
+            {
+                "luminous": "Lumineux",
+                "perfect": "Parfait",
+                "best": "Meilleur",
+                "excellent": "Excellent",
+                "okay": "Acceptable",
+                "inaccuracy": "Imprécision",
+                "mistake": "Erreur",
+                "blunder": "Gaffe",
+                "miss": "Manque",
+                "opening": "Ouverture",
+                "forced": "Forcé",
+                "none": "Aucun"
+            }
+        },
+
+        "progressToast":
+        {
+            "analyzing": "Analyse en cours"
+        },
+
+        "promotionModal":
+        {
+            "title": "Promotion - Sélectionner une pièce"
+        }
+    },
+
+    "database": 
+    {
+        "title": "Base de données",
+
+        "headers": 
+        {
+            "white": "Blanc",
+            "black": "Noir",
+            "result": "Résultat",
+            "accuracy": "Précision",
+            "comment": "Commentaire",
+            "action": "Action"
+        },
+
+        "actions": 
+        {
+            "analyze": "Analyser",
+            "delete": "Supprimer"
+        },
+
+        "messages": 
+        {
+            "loadSuccess": "Enregistrements chargés avec succès.",
+            "loadError": "Erreur lors de la récupération de la base de données: ",
+            "deleteSuccess": "Partie supprimée avec succès"
+        }
+    },
+
+    "inputPosition":
+    {
+        "importModal":
+        {
+            "title": "Importer FEN",
+            "confirmBtn": "Confirmer"
+        },
+
+        "board": 
+        {
+            "editorTitle": "Éditeur d'échiquier",
+            "turn": "Trait",
+            "castlingRights": "Droits au roque",
+            "enPassant": "En passant",
+            "fen": "FEN",
+            "white": "Blanc",
+            "black": "Noir",
+            "kingside": "Roi",
+            "queenside": "Reine",
+            "whiteToMove": "Aux Blanc de jouer",
+            "blackToMove": "Aux Noir de jouer",
+            "select": "Sélectionner",
+            "notAvailable": "N/A",
+            "buttons": 
+            {
+                "reset": "Réinitialiser",
+                "clear": "Effacer",
+                "analyze": "Analyser",
+                "playVsAi": "Jouer contre l'IA",
+                "importFen": "Importer un FEN",
+                "copyLink": "Copier le lien"
+            },
+
+            "toastr": 
+            {
+                "importCancelled": "Importation annulée car le FEN est invalide.",
+                "importSuccess": "FEN importé avec succès",
+                "copyFenSuccess": "FEN copié avec succès",
+                "copyFenError": "Une erreur est survenue lors de la copie du FEN",
+                "copyLinkSuccess": "Lien copié avec succès",
+                "copyLinkError": "Une erreur est survenue lors de la copie du lien"
+            }
+        }
+
+    },
+
+    "settings": 
+    {
+        "title": "Paramètres",
+        "board": 
+        {
+            "heading": "Échiquier",
+            "clickToMove": "Cliquer pour déplacer",
+            "pieceAnimation": "Animation des pièces"
+        },
+        "appearance": 
+        {
+            "heading": "Apparence",
+            "selectTheme": "Sélectionner le thème",
+            "language": "Langue",
+            "luminousInsightsNote": "(Veuillez noter qu'une partie de la fonction « Luminous Insights » ne fonctionne qu'en anglais pour le moment)"
+        },
+        "engine": 
+        {
+            "heading": "Moteur",
+            "selectEngine": "Sélectionner le moteur",
+            "cloudHybrid": 
+            {
+                "label": "Mode hybride cloud (Monothread uniquement)",
+                "tooltip": "Déléguez les évaluations au cloud Lichess dès que possible. Cela peut permettre d'augmenter la profondeur, d'accélérer les évaluations et de réduire l'utilisation du processeur. Conçu pour les appareils qui ne peuvent pas tirer parti du multithreading."
+            },
+            "engineDepth": "Profondeur du moteur",
+            "threadCount": "Nombre de threads"
+        },
+        "credits": 
+        {
+            "heading": "Crédits",
+            "createdBy": "Créé par",
+            "testedBy": "Testé par",
+            "libraryAdaptedFrom": "Bibliothèque UCI adaptée de",
+            "jsImplementation": "Implémentation JS de Stockfish de",
+            "codedIn": "Codé avec",
+            "madeByHumans": "Ce site est fait par des humains."
+        }
+    },
+
+    "vsAiModal": 
+    {
+        "title": "Configurer la partie contre l'IA",
+        "setElo": "Définir le classement Elo de l'IA",
+        "iPlayAsWhite": "Je joue avec les blancs.",
+        "beginGameBtn": "Commencer la partie",
+        
+        "toastr": 
+        {
+            "startingGame": "Lancement de la partie contre Stockfish",
+            "error": "Erreur lors du lancement de la partie"
+        }
+    },
+
+    "pgnLink":
+    {
+        "title": "Lien PGN",
+        "placeholder": "Saisissez le PGN ici",
+        "generateBtnText": "Générer le lien",
+        
+        "toastr":
+        {
+            "success": "Lien copié avec succès",
+            "error": "Échec de la génération du lien : "
+        }
+    }
+}

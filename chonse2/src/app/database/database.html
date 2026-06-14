@@ -13,12 +13,12 @@
 
             <!-- Header row -->
             <div class="row fw-bold">
-                <div class="col-2">White</div>
-                <div class="col-2">Black</div>
-                <div class="col-2">Result</div>
-                <div class="col-2">Accuracy</div>
-                <div class="col-2">Comment</div>
-                <div class="col-2">Action</div>
+                <div class="col-2">{{ 'database.headers.white' | translate }}</div>
+                <div class="col-2">{{ 'database.headers.black' | translate }}</div>
+                <div class="col-2">{{ 'database.headers.result' | translate }}</div>
+                <div class="col-2">{{ 'database.headers.accuracy' | translate }}</div>
+                <div class="col-2">{{ 'database.headers.comment' | translate }}</div>
+                <div class="col-2">{{ 'database.headers.action' | translate }}</div>
             </div>
 
             <hr>
@@ -43,13 +43,13 @@
 
                     <div class="col-2">
                         <div class="d-flex flex-column gap-2">
-                            <app-icon-button label="Analyze" iconClass="bi-cpu" (buttonClick)="handleAnalyzeClicked(item.pgn)">
+                            <app-icon-button [label]="'database.actions.analyze' | translate" iconClass="bi-cpu" (buttonClick)="handleAnalyzeClicked(item.pgn)">
                             </app-icon-button>
 
                             <app-icon-button
                                 overridePrimaryBackgroundColor="gray"
                                 overrideSecondaryBackgroundColor="gray"
-                                label="Delete"
+                                [label]="'database.actions.delete' | translate"
                                 iconClass="bi-trash"
                                 (buttonClick)="handleDeleteClicked(item.id)">
                             </app-icon-button>

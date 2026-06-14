@@ -4,6 +4,7 @@ import ThemeService from '../../themes/theme-service';
 import { PositionEval } from '../../../libs/engine-lib/types/eval';
 import { CommonModule } from '@angular/common';
 import { FormatTermination } from '../chessboard/pgn-misc';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-game-info',
@@ -14,8 +15,13 @@ import { FormatTermination } from '../chessboard/pgn-misc';
 })
 export class GameInfo {
   boardState = input.required<BoardState>();
-
   themeService = inject(ThemeService);
+  private translate = inject(TranslateService);
+
+  constructor()
+  {
+
+  }
 
   get statusText(): string {
     const headers = this.boardState().pgnHeaders();
@@ -28,13 +34,13 @@ export class GameInfo {
   {
       const state = this.boardState().getCurrentState().gameState;
 
-      const turn = state.isGameOver
+      const translationKey = state.isGameOver
       ? `${state.reason} ${state.gameScore}`
       : this.boardState().getCurrentState().turn
-        ? 'White to move'
-        : 'Black to move';
+        ? 'chessboard.gameInfo.whiteToMove'
+        : 'chessboard.gameInfo.blackToMove';
 
-      return turn;
+      return this.translate.instant(translationKey);
   }
 
   getOpeningDisplay = computed( () : string => 

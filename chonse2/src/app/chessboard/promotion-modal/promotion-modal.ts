@@ -3,10 +3,11 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import ThemeService from '../../themes/theme-service';
 import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
 import { PieceType } from '../../../libs/chonse2-lib/piece-type';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-promotion-modal',
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './promotion-modal.html',
   styleUrl: './promotion-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush

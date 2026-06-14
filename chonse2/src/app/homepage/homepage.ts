@@ -5,13 +5,14 @@ import ThemeService from '../themes/theme-service';
 import { IconButton } from "../ui/icon-button/icon-button";
 import Chonse2 from '../../libs/chonse2-lib/chonse2';
 import BoardState from '../chessboard/chessboard/board-state';
-import LocalStorageHelper from '../chessboard/chessboard/local-storage-helper';
+import LocalStorageHelper from '../../libs/local-storage-helper';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-homepage',
-  imports: [StaticChessboard, IconButton, NgbTooltip],
+  imports: [StaticChessboard, IconButton, NgbTooltip, TranslatePipe],
   templateUrl: './homepage.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './homepage.css',
@@ -92,6 +93,11 @@ export class Homepage {
   }
 
   //right btns
+  databaseBtnClicked()
+  {
+    this.router.navigate(["database"]);
+  }
+
   settingsBtnClicked()
   {
     this.router.navigate(['settings']);

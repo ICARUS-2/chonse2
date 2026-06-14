@@ -1,14 +1,15 @@
-import { ChangeDetectionStrategy, Component, signal, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, WritableSignal } from '@angular/core';
 import ThemeService from '../themes/theme-service';
 import { CommonModule } from '@angular/common';
 import { DatabaseItem, DatabaseService } from './database-service';
 import { ToastrService } from 'ngx-toastr';
 import { IconButton } from "../ui/icon-button/icon-button";
 import { Router } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-database',
-  imports: [CommonModule, IconButton],
+  imports: [CommonModule, IconButton, TranslatePipe],
   templateUrl: './database.html',
   styleUrl: './database.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -16,6 +17,8 @@ import { Router } from '@angular/router';
 export class Database {
 
   dbItems: WritableSignal<Array<DatabaseItem>> = signal([]);
+
+  private translate = inject(TranslateService)
 
   constructor(
     public themeService: ThemeService, 
@@ -26,11 +29,10 @@ export class Database {
     try 
     {
       this.loadDb();
-      toastrService.success(`Successfully loaded ${this.dbItems().length} records.`)
     }
     catch(ex)
     {
-      toastrService.error("Error retrieving database: " + ex)
+      toastrService.error(this.translate.instant("database.messages.loadError") + ex)
     }
   }
 
@@ -52,7 +54,7 @@ export class Database {
 
     if (deleteSuccessful)
     {
-      this.toastrService.success("Successfully deleted game");
+      this.toastrService.success(this.translate.instant("database.messages.deleteSuccess"));
       this.loadDb();
     }
   }

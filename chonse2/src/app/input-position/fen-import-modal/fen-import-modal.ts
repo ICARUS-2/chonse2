@@ -4,10 +4,11 @@ import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import Chonse2 from '../../../libs/chonse2-lib/chonse2';
 import { form, FormField } from '@angular/forms/signals';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-fen-import-modal',
-  imports: [BootstrapButton, FormField],
+  imports: [BootstrapButton, FormField, TranslatePipe],
   templateUrl: './fen-import-modal.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './fen-import-modal.css',

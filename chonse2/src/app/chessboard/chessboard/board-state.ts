@@ -1,6 +1,6 @@
 import { signal, WritableSignal } from "@angular/core";
 import { Arrow } from "./arrow";
-import LocalStorageHelper from "./local-storage-helper";
+import LocalStorageHelper from "../../../libs/local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
 import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
 import { Quote, Quotes } from "./quotes";
@@ -8,7 +8,7 @@ import Chonse2 from "../../../libs/chonse2-lib/chonse2";
 import { GameScore } from "../../../libs/chonse2-lib/game-state";
 import { PieceColor } from "../../../libs/chonse2-lib/piece-color";
 import { PieceType } from "../../../libs/chonse2-lib/piece-type";
-import { MoveClassification, EngineName, moveClassificationLabels } from "../../../libs/engine-lib/types/enums";
+import { MoveClassification, EngineName } from "../../../libs/engine-lib/types/enums";
 import { PositionEval, GameEval, EvaluateGameParams } from "../../../libs/engine-lib/types/eval";
 import { UciEngine } from "../../../libs/engine-lib/uciEngine";
 import MoveResult from "./move-result";

@@ -15,21 +15,6 @@ export enum MoveClassification
   None = "none"
 }
 
-export const moveClassificationLabels: Record<MoveClassification, string> = {
-  [MoveClassification.None] : "null",
-  [MoveClassification.Opening]: "a book move",
-  [MoveClassification.Forced]: "forced",
-  [MoveClassification.Luminous]: "LUMINOUS 🌕!!!",
-  [MoveClassification.Perfect]: "the only good move",
-  [MoveClassification.Best]: "the best move",
-  [MoveClassification.Excellent]: "excellent",
-  [MoveClassification.Okay]: "okay",
-  [MoveClassification.Inaccuracy]: "an inaccuracy",
-  [MoveClassification.Mistake]: "a mistake",
-  [MoveClassification.Miss]: "a miss",
-  [MoveClassification.Blunder]: "a blunder",
-};
-
 export enum EngineName {
   Stockfish18="stockfish_18",
   Stockfish18Lite="stockfish_18lite",

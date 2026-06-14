@@ -8,7 +8,7 @@
         <!-- Engine Info -->
         <div class="small d-flex justify-content-between">
           <div>
-            <span><i class="bi bi-info-circle me-2"></i>Luminous Insights</span>
+            <span><i class="bi bi-info-circle me-2"></i>{{ 'chessboard.coachDisplay.luminousInsights' | translate }}</span>
           </div>
 
           <div class="desktopEngineData">
@@ -22,7 +22,7 @@
           </span>
 
           @if (engineData.isCloudHybridMode) {
-            <span class="badge bg-info ms-1 text-secondary">Cloud Hybrid</span>
+            <span class="badge bg-info ms-1 text-secondary">{{ 'chessboard.coachDisplay.cloudHybrid' | translate }}</span>
           }
 
           -
@@ -30,10 +30,10 @@
           @if (mostRecentEval(); as evalData) {
             @if (evalData.lines[0]) {
               <span>
-                Depth {{ evalData.lines[0].depth }}
+                {{ 'chessboard.coachDisplay.depth' | translate }} {{ evalData.lines[0].depth }}
 
                 @if (evalData.source === EvalSource.Cloud) {
-                  <span class="badge bg-info ms-1 text-secondary">CLOUD</span>
+                  <span class="badge bg-info ms-1 text-secondary">{{ 'chessboard.coachDisplay.cloud' | translate }}</span>
                 }
               </span>
             }
@@ -44,7 +44,7 @@
             {{engineMetadata()?.displayNameSmall}} -
             @if (mostRecentEval(); as evalData)
             {
-              Depth {{ evalData.lines[0].depth }}
+              {{ 'chessboard.coachDisplay.depth' | translate }} {{ evalData.lines[0].depth }}
             }
           </div>
         </div>
@@ -69,14 +69,14 @@
             <div>
               <div class="fw-bold">
                 <img [src]="iconSource()" class="coachClassificationIcon" alt="move classification"/>
-                {{ rootData.move.notation }} is {{ moveClassificationLabels[classification] }}
+                {{ rootData.move.notation }} {{ 'chessboard.coachDisplay.is' | translate }} {{ moveClassificationLabels[classification] | translate }}
               </div>
 
               <div class="small">
                 {{ rootData.move.coachComment }}
 
                 @if (rootData.move.notation.includes("#")) {
-                  Checkmate is always the best move!
+                  {{ 'chessboard.coachDisplay.checkmateAlwaysBest' | translate }}
                 }
               </div>
             </div>
@@ -139,7 +139,7 @@
                     (buttonClick)="hideSequence()" 
                     [disabled]="boardState().coachButtonsDisabled()" 
                     extraClasses="m-1 small" 
-                    label="Hide Sequence" 
+                    [label]="'chessboard.coachDisplay.hideSequence' | translate" 
                     iconClass="bi-backspace">
                   </app-icon-button>
                 }
@@ -149,7 +149,7 @@
                     (buttonClick)="continueButtonClicked()" 
                     [disabled]="boardState().coachButtonsDisabled()" 
                     extraClasses="m-1 small" 
-                    label="Continue" 
+                    [label]="'chessboard.coachDisplay.continue' | translate" 
                     iconClass="bi-forward">
                   </app-icon-button>
                 }
@@ -158,7 +158,7 @@
                   <app-icon-button 
                     (buttonClick)="hideIdeaButtonClicked()" 
                     extraClasses="m-1 small" 
-                    label="Hide Idea" 
+                    [label]="'chessboard.coachDisplay.hideIdea' | translate" 
                     iconClass="bi-lightbulb-off"  
                     overridePrimaryBackgroundColor="rgb(52, 175, 0)" 
                     overrideSecondaryBackgroundColor="green">

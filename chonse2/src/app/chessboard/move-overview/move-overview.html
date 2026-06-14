@@ -42,13 +42,13 @@
                     }
                 </div>
             } @else {
-                <div>Starting Position</div>
+                <div>{{"chessboard.moveOverview.startingPosition" | translate}}</div>
             }
         }
     </div>
 
     <!-- Move Classification Table -->
-    <table class="moveClassificationsList">
+    <table class="moveClassificationsList user-select-none">
         <tbody>
             @for(item of Object.values(MoveClassification); track item) {
                 @if (item !== MoveClassification.None) {
@@ -60,7 +60,10 @@
                             <img class="moveClassificationListIcon" [src]="'icons/' + item + '.png'">
                         </td>
                         <td class="text-start">
-                            &nbsp;&nbsp;{{ChessboardHelper.capitalizeFirstLetter(item)}}
+                            @if (MoveClassificationDisplayName[item]; as displayName)
+                            {
+                                &nbsp;&nbsp;{{displayName | translate}}
+                            }
                         </td>
                         <td class="ps-4 text-start" (click)="onClassificationClick(PieceColor.BLACK, item)">
                             {{boardState().blackMoveClassificationList().getFromString(item).length}}

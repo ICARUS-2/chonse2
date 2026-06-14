@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import BoardState from '../chessboard/chessboard/board-state';
-import LocalStorageHelper from '../chessboard/chessboard/local-storage-helper';
+import LocalStorageHelper from '../../libs/local-storage-helper';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { GameScore } from '../../libs/chonse2-lib/game-state';
 

@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PgnSources } from '../chessboard/pgn-misc';
-import LocalStorageHelper from '../chessboard/local-storage-helper';
+import LocalStorageHelper from '../../../libs/local-storage-helper';
 import {ChessComAPI, ChessComGame} from '../../../libs/server-api-lib/chesscom-api';;
 import { CommonModule } from '@angular/common';
 import GameLinkHelper from '../chessboard/game-link-helper';
@@ -13,10 +13,11 @@ import { BootstrapButton } from "../../ui/bootstrap-button/bootstrap-button";
 import { form, FormField } from '@angular/forms/signals';
 import { GameScore } from '../../../libs/chonse2-lib/game-state';
 import { IconButton } from "../../ui/icon-button/icon-button";
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-import-modal',
-  imports: [FormsModule, CommonModule, BootstrapButton, FormField, IconButton],
+  imports: [FormsModule, CommonModule, BootstrapButton, FormField, IconButton, TranslatePipe],
   templateUrl: './import-modal.html',
   styleUrl: './import-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -50,6 +51,8 @@ export class ImportModal implements OnInit
   {
     //any potential constraints in the future
   })
+
+  private translate = inject(TranslateService);
 
   constructor(private activeModal: NgbActiveModal, private toastr: ToastrService, public themeService: ThemeService)
   {
@@ -169,11 +172,11 @@ export class ImportModal implements OnInit
     try 
     {
       await navigator.clipboard.writeText(GameLinkHelper.generateChessSiteGameUrl(GameLinkHelper.CHESSCOM_SOURCE, gameId, this.form.siteUsername().value()));
-      this.toastr.info(`Successfully copied game for ${this.form.siteUsername().value()}.`);
+      this.toastr.info(`${this.translate.instant("chessboard.importModal.toastr.successfullyCopied")} ${this.form.siteUsername().value()}.`);
     }
     catch(ex)
     {
-      this.toastr.error("Game link copy failed.");
+      this.toastr.error(this.translate.instant("chessboard.importModal.toastr.failed"));
     }
   }
   
@@ -224,11 +227,11 @@ export class ImportModal implements OnInit
     try 
     {
       await navigator.clipboard.writeText(GameLinkHelper.generateChessSiteGameUrl(GameLinkHelper.LICHESS_SOURCE, game.id, this.form.siteUsername().value()));
-      this.toastr.info(`Successfully copied game for ${this.form.siteUsername().value()}.`);
+      this.toastr.info(`${this.translate.instant("chessboard.importModal.toastr.successfullyCopied")}  ${this.form.siteUsername().value()}.`);
     }
     catch(ex)
     {
-      this.toastr.error("Game link copy failed.");
+      this.toastr.error(this.translate.instant("chessboard.importModal.toastr.failed"));
     }
   }
 
