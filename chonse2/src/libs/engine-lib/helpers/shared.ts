@@ -1,7 +1,6 @@
 import { EngineName } from "../types/enums";
 import { Stockfish11 } from "../engines/stockfish11";
 import { Stockfish18 } from "../engines/stockfish18";
-import { Stockfish17_1 } from "../engines/stockfish17_1";
 
 
 export const isWasmSupported = () =>
@@ -20,9 +19,6 @@ export const isEngineSupported = (name: EngineName): boolean => {
     case EngineName.Stockfish18:
     case EngineName.Stockfish18Lite:
       return Stockfish18.isSupported();
-    case EngineName.Stockfish17_1:
-    case EngineName.Stockfish17_1Lite:
-      return Stockfish17_1.isSupported();
     case EngineName.Stockfish11:
       return Stockfish11.isSupported();
   }

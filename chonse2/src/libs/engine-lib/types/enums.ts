@@ -18,8 +18,6 @@ export enum MoveClassification
 export enum EngineName {
   Stockfish18="stockfish_18",
   Stockfish18Lite="stockfish_18lite",
-  Stockfish17_1="stockfish_17_1",
-  Stockfish17_1Lite="stockfish_17_1lite",
   Stockfish11 = "stockfish_11",
 }
 
@@ -52,26 +50,6 @@ export const EngineInformation: Map<EngineName, EngineInfo> = new Map<EngineName
         type: EngineType.NNUE, 
         sizeMb: 7,
         additionalText: "Default",
-      }
-    ],
-
-    //SF17.1
-    [EngineName.Stockfish17_1, 
-      {
-        displayName: "Stockfish 17.1", 
-        displayNameSmall: "SF17.1",
-        type: EngineType.NNUE, 
-        sizeMb: 77
-      }
-    ],
-    
-    //SF17.1 Lite
-    [EngineName.Stockfish17_1Lite, 
-      {
-        displayName: "Stockfish 17.1 Lite", 
-        displayNameSmall: "SF17.1L",
-        type: EngineType.NNUE, 
-        sizeMb: 7,
       }
     ],
     
