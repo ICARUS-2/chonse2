@@ -9,6 +9,7 @@ import { LoadPgn } from './load-pgn/load-pgn';
 import { Homepage } from './homepage/homepage';
 import { LoadFen } from './input-position/load-fen/load-fen';
 import { Database } from './database/database';
+import { NotFound } from './not-found/not-found';
 
 export enum RouteConstants {
     ROUTE_SITE = "site",
@@ -40,5 +41,9 @@ export const routes: Routes = [
     //redirects
     {path: `game/:${RouteConstants.ROUTE_SITE}/:${RouteConstants.ROUTE_USERNAME}/:${RouteConstants.ROUTE_GAMEID}`, component: LoadGame},
     {path: `pgn/:${RouteConstants.ROUTE_PGN}`, component: LoadPgn},
-    {path: `fen/:${RouteConstants.ROUTE_FEN}`, component: LoadFen}
+    {path: `fen/:${RouteConstants.ROUTE_FEN}`, component: LoadFen},
+
+    //404
+    {path: "**", component: NotFound}
+
 ];

@@ -1,0 +1,6 @@
+<div class="container">
+    <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{'notFound.heading' | translate}}</h1>
+    <h2 [style.color]="themeService.getThemeInstance().getTextColor()">{{'notFound.subheading' | translate}}</h2>
+
+    <app-icon-button (buttonClick)="returnHomeClicked()" [label]="'notFound.btnText' | translate" iconClass="bi-arrow-90deg-left"></app-icon-button>
+</div>
