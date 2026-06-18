@@ -346,5 +346,12 @@
             "success": "Link successfully copied",
             "error": "Link generation failed: "
         }
+    },
+
+    "notFound": 
+    {
+        "heading": "Error 404",
+        "subheading": "Sarcasm Module Not Found.",
+        "btnText": "Return Home"
     }
 }

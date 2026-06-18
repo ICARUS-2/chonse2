@@ -349,5 +349,12 @@
             "success": "Lien copié avec succès",
             "error": "Échec de la génération du lien : "
         }
+    },
+
+    "notFound": 
+    {
+        "heading": "Erreur 404",
+        "subheading": "Module sarcasme introuvable.",
+        "btnText": "Retour à l'accueil"
     }
 }
