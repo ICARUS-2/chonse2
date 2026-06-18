@@ -32,8 +32,8 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "baseHref": "/chonse2/",
-            "deployUrl": "/chonse2/",
+            "baseHref": "/",
+            "deployUrl": "/",
             "browser": "src/main.ts",
             "polyfills": [
               "@angular/localize/init"
