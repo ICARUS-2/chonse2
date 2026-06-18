@@ -1,4 +1,4 @@
-export const BASE_PATH: string = "/chonse2";
+export const BASE_PATH: string = "";
 
 export enum Languages
 {
