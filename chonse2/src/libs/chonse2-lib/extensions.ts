@@ -596,37 +596,38 @@ export default class Chonse2Extensions
                             {
                                 continue;
                             }
-                        }
 
-                        const enemyPieceColor: PieceColor = colorOfPiece == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-                        //if the piece is a friendly piece, then it's not skewering anything.
-                        if (!squareInQuestionPiece.startsWith(enemyPieceColor.toString()))
-                        {
-                            break;
-                        }
+                            const enemyPieceColor: PieceColor = colorOfPiece == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+                            //if the piece is a friendly piece, then it's not skewering anything.
+                            if (!squareInQuestionPiece.startsWith(enemyPieceColor.toString()))
+                            {
+                                break;
+                            }
 
-                        //if the piece is an enemy one and there is no high-value piece already, make that the skewered piece.
-                        if (!highValuePieceCoord)
-                        {
-                            highValuePieceCoord = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
-                            highValuePieceType = squareInQuestionPiece;
-                            //after the first piece is found, continue the loop and search for a potential piece for this one to be pinned to.
-                            continue;
-                        }
+                            //if the piece is an enemy one and there is no high-value piece already, make that the skewered piece.
+                            if (!highValuePieceCoord)
+                            {
+                                highValuePieceCoord = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                                highValuePieceType = squareInQuestionPiece;
+                                //after the first piece is found, continue the loop and search for a potential piece for this one to be pinned to.
+                                continue;
+                            }
 
-                        //if the skewered piece is already defined, then check if this piece is an enemy
-                        const materialOfSkeweredPiece = PieceMaterial.getMaterialFromPiece(highValuePieceType);
-                        const materialOfPotentialSecondPiece = PieceMaterial.getMaterialFromPiece(squareInQuestionPiece);
+                            //if the skewered piece is already defined, then check if this piece is an enemy
+                            const materialOfSkeweredPiece = PieceMaterial.getMaterialFromPiece(highValuePieceType);
+                            const materialOfPotentialSecondPiece = PieceMaterial.getMaterialFromPiece(squareInQuestionPiece);
 
-                        if (materialOfSkeweredPiece > materialOfPotentialSecondPiece)
-                        {
-                            const newSkewer = new Skewer();
+                            if (materialOfSkeweredPiece > materialOfPotentialSecondPiece)
+                            {
+                                console.log("condition")
+                                const newSkewer = new Skewer();
 
-                            newSkewer.attackerCoordinate = currentCoord;
-                            newSkewer.highValuePieceCoordinate = highValuePieceCoord;
-                            newSkewer.lowValuePieceBehindCoordinate = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
-                            
-                            candidateSkewers.push(newSkewer);
+                                newSkewer.attackerCoordinate = currentCoord;
+                                newSkewer.highValuePieceCoordinate = highValuePieceCoord;
+                                newSkewer.lowValuePieceBehindCoordinate = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                                
+                                candidateSkewers.push(newSkewer);
+                            }
                         }
                     }
                 }
@@ -675,6 +676,8 @@ export default class Chonse2Extensions
 
         //Reset the turn so that it's correct.
         boardCopy.turn = turnInCurrentState;
+
+        console.log(candidateSkewers)
 
         //And need to check that the skewered piece is hanging without the high value piece on the board.
         candidateSkewers = candidateSkewers.filter( sk =>
