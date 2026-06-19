@@ -1,9 +1,8 @@
-import { ChangeDetectorRef, Component, computed, input, output, signal, WritableSignal, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, computed, input, output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { EngineInformation, EngineType, MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { IconButton } from '../../ui/icon-button/icon-button';
 import BoardState from '../chessboard/board-state';
 import MoveResult from '../chessboard/move-result';
-import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachMoveSequenceType, CoachResourceFlagType, CoachUtils } from '../../../libs/coach-lib/coach-utils';
 import { EvalSource, LineEval, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { ArrowContext } from '../chessboard/arrow';
 import ChessboardHelper from '../helpers';
@@ -14,6 +13,9 @@ import LocalStorageHelper from '../../../libs/local-storage-helper';
 import Sound from '../chessboard/sound';
 import { Chessboard } from '../chessboard/chessboard';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import CoachMiscHelpers from '../../../libs/coach-lib/coach-misc-helpers';
+import { CoachMoveFlagType, CoachMoveSequenceType, CoachIdeaFlagType, CoachIdea, CoachResourceFlagType } from '../../../libs/coach-lib/coach-types';
+import { CoachUtils } from '../../../libs/coach-lib/coach-utils';
 
 @Component({
   selector: 'app-coach-display',
@@ -177,7 +179,7 @@ export class CoachDisplay {
             const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
 
             //Converts the move.
-            const {fromSquare, toSquare, promotion } = CoachUtils.convertUciToChonse2Move(engineMove);
+            const {fromSquare, toSquare, promotion } = CoachMiscHelpers.convertUciToChonse2Move(engineMove);
 
             const currentState = this.boardState().getCurrentState();
             const rawPieceIndex = Chonse2.findIndexFromCoordinate(fromSquare);

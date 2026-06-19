@@ -9,277 +9,13 @@ import { PieceType } from "../chonse2-lib/piece-type";
 import { openings } from "../engine-lib/data/openings";
 import { MoveClassification } from "../engine-lib/types/enums";
 import { LineEval, PositionEval } from "../engine-lib/types/eval";
+import CoachText from "./coach-text";
+import CoachMiscHelpers from "./coach-misc-helpers";
+import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "./coach-types";
 
 export class CoachUtils
 {
-    //#region Static text data
     static readonly COACH_MOVE_DELIMITER = "*";
-    static readonly TURN_PLACEHOLDER = "{turn}";
-    static readonly PIECE_PLACEHOLDER = "{piece}";
-    static readonly SECONDARY_PIECE_PLACEHOLDER = "{piece2}";
-
-    //At minimum one sentence should be displayed.
-    private static readonly BASE_SENTENCES: Map<MoveClassification, string[]> = new Map<MoveClassification, string[]>(
-        [
-            //Luminous moves.
-            [MoveClassification.Luminous, 
-                [
-                    `Well done, a luminous sacrifice of the ${this.PIECE_PLACEHOLDER}! `,
-                    `A luminous sacrifice. Leaving that ${this.PIECE_PLACEHOLDER} hanging will improve the position. I see what ${this.TURN_PLACEHOLDER} is trying to do here. `,
-                    `And ${this.TURN_PLACEHOLDER} sacrifices........ the ${this.PIECE_PLACEHOLDER}!!!!! `
-                ]
-            ],
-
-            //Perfect moves.
-            [MoveClassification.Perfect, 
-                [
-                    `There was one good move and ${this.TURN_PLACEHOLDER} found it! `
-                ]
-            ],
-
-            //Best moves.
-            [
-                MoveClassification.Best,
-                [
-                    "Right on target. ",
-                    "Best move! ",
-                    `${this.TURN_PLACEHOLDER} found the top move! `
-                ]
-            ],
-
-            //Excellent moves.
-            [
-                MoveClassification.Excellent,
-                [
-                    "This is a great move! ",
-                    "Well done, an excellent move. "
-                ]
-            ],
-
-            //Okay moves
-            [
-                MoveClassification.Okay,
-                [
-                    `Okay move, but ${this.TURN_PLACEHOLDER} had a better one. `,
-                    `This is decent, but not what I would have played. `
-                ]
-            ],
-
-            //Inaccuracies
-            [
-                MoveClassification.Inaccuracy,
-                [
-                    `${this.TURN_PLACEHOLDER} had a chance to play something better. `,
-                    `${this.TURN_PLACEHOLDER} didn't find the right idea here. `
-                ]
-            ],
-
-            //Mistakes
-            [
-                MoveClassification.Mistake,
-                [
-                    `Hmm, this seems like an error to me. `,
-                    `Oh my god, ${this.TURN_PLACEHOLDER} made a mistake. `
-                ]
-            ],
-
-            //Blunders
-            [
-                MoveClassification.Blunder, 
-                [
-                    `${this.TURN_PLACEHOLDER} just made a blunder. `,
-                    `This move is going to cost ${this.TURN_PLACEHOLDER}. `
-                ]
-            ],
-
-            [
-                MoveClassification.Miss,
-                [
-                    `${this.TURN_PLACEHOLDER} missed the chance to capitalize on the opponent's hang, not taking enough time to spot it. `,
-                    `The opponent slipped up and hung a piece, but ${this.TURN_PLACEHOLDER} overlooked it. `
-                ]
-            ],
-
-            //Forced
-            [
-                MoveClassification.Forced,
-                [
-                    `This was the only move. `
-                ]
-            ],
-
-            //Opening 
-            [
-                MoveClassification.Opening,
-                [
-                    ""
-                ]
-            ],
-            
-            //None
-            [
-                MoveClassification.None,
-                [
-                    ""
-                ]
-            ]
-        ]
-    )
-
-    //#region Bad=============
-    //If the player just hung a piece.
-    private static readonly PIECE_HANG_SENTENCES: Array<string> = 
-    [
-        `OUCH, ${CoachUtils.TURN_PLACEHOLDER} left their ${CoachUtils.PIECE_PLACEHOLDER} hanging! `,
-        `Whoopsie, ${CoachUtils.TURN_PLACEHOLDER} gave up a ${CoachUtils.PIECE_PLACEHOLDER}! `,
-        `This move loses a ${CoachUtils.PIECE_PLACEHOLDER}. `
-    ];
-
-    private static readonly QUEEN_BLUNDER_SENTENCES: Array<string> = 
-    [
-        `${CoachUtils.TURN_PLACEHOLDER}... your QUEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEN!!! `,
-        `${CoachUtils.TURN_PLACEHOLDER} just blundered their queen. `,
-        `BLUNDERING THE QUEEN FOR NO REASON WHATSOEVER! `
-    ]
-
-    //If the player made a move that will lose material in the line but not outright hanging a piece 
-    private static readonly PIECE_LOSS_SENTENCES: Array<string> = 
-    [
-        `They've made a mistake, and their ${CoachUtils.PIECE_PLACEHOLDER} is now lost. `,
-        `${CoachUtils.TURN_PLACEHOLDER} slipped up, which will cost them a ${CoachUtils.PIECE_PLACEHOLDER}. `,
-        `They've made an error, allowing the opponent to win ${CoachUtils.TURN_PLACEHOLDER}'s ${CoachUtils.PIECE_PLACEHOLDER} with correct play. `,
-        `${CoachUtils.TURN_PLACEHOLDER} is losing a ${CoachUtils.PIECE_PLACEHOLDER} this way :( `
-    ]
-
-    //If the player missed the opportunity to capture a vulnerable piece
-    private static readonly MISSED_HANGING_PIECE_SENTENCES: Array<string> =
-    [
-        `${CoachUtils.TURN_PLACEHOLDER} missed an opportunity to capture a free ${CoachUtils.PIECE_PLACEHOLDER}. `,
-        `The best bet here was to capture a vulnerable ${CoachUtils.PIECE_PLACEHOLDER}. `
-    ];
-
-    //If the player correctly identifies the best capture but did so with the wrong piece.
-    private static readonly CAPTURED_WITH_WRONG_PIECE_SENTENCES: Array<string> = 
-    [
-        `${CoachUtils.TURN_PLACEHOLDER} correctly captured the piece, but with the wrong attacker. `,
-        `The correct capture was identified, but the best bet was to capture the ${CoachUtils.PIECE_PLACEHOLDER} with a different piece. `
-    ]
-
-    //If the player had a viable checkmate but missed it.
-    private static readonly MISSED_CHECKMATE_SENTENCES: Array<string> = 
-    [
-        `This misses an opportunity to checkmate the king. `,
-        `${CoachUtils.TURN_PLACEHOLDER} had an opportunity to checkmate the king. `,
-        `There was an opportunity to force checkmate, but ${CoachUtils.TURN_PLACEHOLDER} overlooked it. `
-    ];
-
-    //If the opponent had a good move but instead allowed forced mate by mistake.
-    private static readonly ALLOWED_CHECKMATE_SENTENCES: Array<string> = 
-    [
-        `This allows the opponent to checkmate the king. `,
-        `${CoachUtils.TURN_PLACEHOLDER} just allowed the opponent to force checkmate. `,
-        `${CoachUtils.TURN_PLACEHOLDER} slipped up, allowing the opponent to force checkmate with correct play. `
-    ];
-
-    //If the opponent missed an opportunity to fork two+ pieces.
-    private static readonly MISSED_FORK_SENTENCES: Array<string> =
-    [
-        `${CoachUtils.TURN_PLACEHOLDER} just missed an opportunity to win material through a fork. `
-    ];
-
-    //Allowed an opponent to fork them.
-    private static readonly ALLOWED_FORK_SENTENCES: Array<string> = 
-    [
-        `This allows the opponent to win material through a fork. `,
-        `${CoachUtils.TURN_PLACEHOLDER} just allowed their own piece to get forked. `
-    ]
-
-    //Missed the opportunity to pin a piece
-    private static readonly MISSED_PIN_SENTENCES = 
-    [
-        `${CoachUtils.TURN_PLACEHOLDER} has missed an opportunity to pin a ${CoachUtils.PIECE_PLACEHOLDER} to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}. `,
-        `The best move for ${CoachUtils.TURN_PLACEHOLDER} was to cut the mobility of the opponent's ${CoachUtils.PIECE_PLACEHOLDER} by pinning it to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}. `
-    ]
-
-    //Ignored a relative pin
-    private static readonly IGNORED_PIN_SENTENCES = 
-    [
-        `${CoachUtils.TURN_PLACEHOLDER} completely ignored the pin of their ${CoachUtils.PIECE_PLACEHOLDER}, and now their ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER} is lost. `,
-        `${CoachUtils.TURN_PLACEHOLDER} didn't notice their ${CoachUtils.PIECE_PLACEHOLDER} was pinned, exposing the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER} behind it. `
-    ]
-    //#endregion
-
-    //#region Good============
-    //Player accurately found a mating sequence.
-    private static readonly FOUND_MATE_SENTENCES: Array<string> = 
-    [
-        `${CoachUtils.TURN_PLACEHOLDER} can now force checkmate with correct play. `,
-        `${CoachUtils.TURN_PLACEHOLDER} will checkmate the opponent if they find the right moves. `
-    ];
-
-    //Player is continuing mating sequence.
-    private static readonly ON_ROAD_TO_CHECKMATE_SENTENCES: Array<string> = 
-    [
-        `${CoachUtils.TURN_PLACEHOLDER} is still on the road to checkmate. `,
-    ];
-
-    //Player has positioned a piece to win material through a fork.
-    private static readonly FOUND_FORK_SENTENCES: Array<string> = 
-    [
-        `${CoachUtils.TURN_PLACEHOLDER} is able to pick up a ${CoachUtils.PIECE_PLACEHOLDER} with that fork. `,
-        `${CoachUtils.TURN_PLACEHOLDER} can now win a ${CoachUtils.PIECE_PLACEHOLDER} with that fork. `,
-    ]
-
-    //Player has pinned a piece.
-    private static readonly FOUND_PIN_SENTENCES: Array<string> = 
-    [
-        `This is a good move as it pins a ${CoachUtils.PIECE_PLACEHOLDER} to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}, restricting its control over further squares. `,
-        `The opponent will have to watch the pin on their ${CoachUtils.PIECE_PLACEHOLDER}. `,
-        `${CoachUtils.TURN_PLACEHOLDER} just pinned the ${CoachUtils.PIECE_PLACEHOLDER} to the ${CoachUtils.SECONDARY_PIECE_PLACEHOLDER}, restricting its mobility. `
-    ]
-    //#endregion
-    
-    //#region Good (development)
-    private static readonly PREPARES_BISHOP_FOR_DEVELOPMENT_SENTENCES: Array<string> = 
-    [
-        "This move prepares a bishop for development. ",
-        "This move prepares the bishop to become active. ",
-        "Moving the pawn allowing the bishop to step into the action. "
-    ]
-
-    private static readonly PREPARES_BISHOP_FOR_FIANCHETTO_DEVELOPMENT_SENTENCES: Array<string> = 
-    [
-        "This prepares the bishop for a fianchetto to control the main diagonal. ",
-        "Opens their bishop up for a fianchetto move to exert pressure on the long diagonal. "
-    ]
-
-    private static readonly BISHOP_DEVELOPED_SENTENCES: Array<string> = 
-    [
-        `${this.TURN_PLACEHOLDER} develops their bishop off its starting square. `,
-        `Their bishop comes into play, joining the action. `,
-        `${this.TURN_PLACEHOLDER} activates their bishop to control surrounding squares. `,
-        `The bishop comes into play to control the diagonals. `
-    ]
-
-    private static readonly BISHOP_FIANCHETTOED_SENTENCES: Array<string> = 
-    [
-        `${this.TURN_PLACEHOLDER} fianchettoed their bishop in order to snipe enemy pieces from a distance. `,
-        `This fianchettos the bishop on the long diagonal, prioritizing long-range effectiveness. `,
-        `Fianchettoing their bishop, putting pressure on the main diagonal. `
-    ]
-
-    private static readonly KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES: Array<string> = 
-    [
-        "This brings the knight into play and increases influence in the center. ",
-        "This move develops the knight and pressures key squares in the center. ",
-        "The knight is brought into play, eyeing the central squares.",
-        "This aims to control central space with the knight. ",
-        "The knight is moved to an active square, strengthening control over the center. ",
-        "Develops the knight and attacks the center. "
-    ]
-    //#endregion 
-
-    //#endregion
 
 
     public static performCoachAnalysis(states: Array<Chonse2>, moves: Array<MoveResult>, evals: Array<PositionEval>, isDivergenceStack: boolean = false)
@@ -318,7 +54,7 @@ export class CoachUtils
             if (state && move && posEval && posEval.bestMove)
             {
                 //What the next best state will be.
-                const nextBestMove = CoachUtils.convertUciToChonse2Move(posEval.bestMove);
+                const nextBestMove = CoachMiscHelpers.convertUciToChonse2Move(posEval.bestMove);
                 const nextBestState = state.getFullDeepCopy();
                 nextBestState.completeMove(nextBestMove.fromSquare, nextBestMove.toSquare, nextBestMove.promotion);
 
@@ -367,7 +103,7 @@ export class CoachUtils
 
                     if (previousPosEval.bestMove && previousState)
                     {
-                        previousBestMove = CoachUtils.convertUciToChonse2Move(previousPosEval.bestMove);
+                        previousBestMove = CoachMiscHelpers.convertUciToChonse2Move(previousPosEval.bestMove);
                         const previousStateCopy = previousState.getFullDeepCopy();
                         previousStateCopy.completeMove(previousBestMove.fromSquare, previousBestMove.toSquare, previousBestMove.promotion);  
                         missedState = previousStateCopy;
@@ -375,7 +111,7 @@ export class CoachUtils
                     
                     //Case: Player leaves a piece hanging.
                     {
-                        const bestMove = CoachUtils.convertUciToChonse2Move(posEval.bestMove);
+                        const bestMove = CoachMiscHelpers.convertUciToChonse2Move(posEval.bestMove);
                         const hangingPiecesArrToCheck = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
 
                         let pieceToTake = PieceType.NONE;
@@ -412,11 +148,11 @@ export class CoachUtils
                                     //if player REALLY screwed up and blundered their queen.
                                     if (pieceToTake == PieceType.WHITE_QUEEN || pieceToTake == PieceType.BLACK_QUEEN)
                                     {
-                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.QUEEN_BLUNDER_SENTENCES, colorThatMovedText, pieceToTake);
+                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.QUEEN_BLUNDER_SENTENCES, colorThatMovedText, pieceToTake);
                                     }
                                     else 
                                     {
-                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PIECE_HANG_SENTENCES, colorThatMovedText, pieceToTake);
+                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.PIECE_HANG_SENTENCES, colorThatMovedText, pieceToTake);
                                     }
 
                                     move.coachMoveFlags.push(CoachMoveFlagType.LeftPieceHanging);
@@ -432,7 +168,7 @@ export class CoachUtils
                         if (!move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging))
                         {
                             //play out the engine line
-                            const followUp = getEngineLineStates(state, posEval.lines[0]);
+                            const followUp = CoachMiscHelpers.getEngineLineStates(state, posEval.lines[0]);
 
                             //what white already had before the engine line
                             const whiteCapturedBefore = followUp[0].piecesWhiteCaptured;
@@ -535,7 +271,7 @@ export class CoachUtils
                                             }
                                         }
 
-                                        move.coachComment += CoachUtils.selectAndFormatSentence(this.PIECE_LOSS_SENTENCES, colorThatMovedText, highestValueUncompensatedPiece);
+                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.PIECE_LOSS_SENTENCES, colorThatMovedText, highestValueUncompensatedPiece);
                                         move.coachMoveFlags.push(CoachMoveFlagType.CausedMaterialLoss);
                                     }
                                 } 
@@ -552,7 +288,7 @@ export class CoachUtils
                                 const allPreviousHangingPieceCoords = Chonse2Extensions.getHangingPieces(previousState)
                                 const previousHangingPiecesArrToCheck = whiteToMove ? allPreviousHangingPieceCoords.white : allPreviousHangingPieceCoords.black;
                                 
-                                const previousBestMove = CoachUtils.convertUciToChonse2Move(previousPosEval.bestMove);
+                                const previousBestMove = CoachMiscHelpers.convertUciToChonse2Move(previousPosEval.bestMove);
 
                                 //For all the previously hanging pieces, check if the previous best move was to capture it. If it was, the coach should tell them.
                                 for (let i = 0; i < previousHangingPiecesArrToCheck.length; i++)
@@ -565,12 +301,12 @@ export class CoachUtils
                                         //Subcase 1: If they correctly captured the piece but did so with the wrong attacker.
                                         if (previousBestMove.toSquare === move.toCoord)
                                         {
-                                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.CAPTURED_WITH_WRONG_PIECE_SENTENCES, colorThatMovedText, pieceToCapture);
+                                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.CAPTURED_WITH_WRONG_PIECE_SENTENCES, colorThatMovedText, pieceToCapture);
                                             move.coachMoveFlags.push(CoachMoveFlagType.CapturedPieceWithWrongAttacker);
                                         }
                                         else //Subcase 2: If they missed the capture altogether.
                                         {
-                                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_HANGING_PIECE_SENTENCES, colorThatMovedText, pieceToCapture);
+                                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_HANGING_PIECE_SENTENCES, colorThatMovedText, pieceToCapture);
                                             move.coachMoveFlags.push(CoachMoveFlagType.MissedHangingPiece);
                                         }
                                     }
@@ -591,7 +327,7 @@ export class CoachUtils
                             {
                                 if (previousEngineLine.mate && !currentEngineLine.mate)
                                 {   
-                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_CHECKMATE_SENTENCES, colorThatMovedText, "");
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_CHECKMATE_SENTENCES, colorThatMovedText, "");
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedCheckmate);
                                 }
                             }
@@ -610,7 +346,7 @@ export class CoachUtils
                             {
                                 if (!previousEngineLine.mate && currentEngineLine.mate)
                                 {
-                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ALLOWED_CHECKMATE_SENTENCES, colorThatMovedText, "");
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.ALLOWED_CHECKMATE_SENTENCES, colorThatMovedText, "");
                                     move.coachMoveFlags.push(CoachMoveFlagType.AllowedCheckmate);
                                 }
                             }
@@ -646,7 +382,7 @@ export class CoachUtils
 
                             if (didMissFork)
                             {
-                                move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_FORK_SENTENCES, colorThatMovedText, "");
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_FORK_SENTENCES, colorThatMovedText, "");
                                 move.coachMoveFlags.push(CoachMoveFlagType.MissedFork)
                             }
                         }
@@ -710,7 +446,7 @@ export class CoachUtils
 
                             if (allowedFork)
                             {
-                                move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ALLOWED_FORK_SENTENCES, colorThatMovedText, "");
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.ALLOWED_FORK_SENTENCES, colorThatMovedText, "");
                                 move.coachMoveFlags.push(CoachMoveFlagType.AllowedFork);
                             }
                         }
@@ -742,7 +478,7 @@ export class CoachUtils
                                 const pinnedPiece = missedState.findPieceAtCoordinate(correspondingPin.pinnedPieceCoordinate);
                                 const highValuePiece = missedState.findPieceAtCoordinate(correspondingPin.highValuePieceCoordinate);
 
-                                move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.MISSED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
                                 move.coachMoveFlags.push(CoachMoveFlagType.MissedPin);
                             }
                         }
@@ -780,7 +516,7 @@ export class CoachUtils
                                     const highValuePiece = previousState.findPieceAtCoordinate(ignoredPin.highValuePieceCoordinate);
 
 
-                                    move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.IGNORED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece)
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.IGNORED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece)
                                 }
                             }
                         }
@@ -810,11 +546,11 @@ export class CoachUtils
                                 {
                                     if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
                                     {
-                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_MATE_SENTENCES, colorThatMovedText, "");
+                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_MATE_SENTENCES, colorThatMovedText, "");
                                     }
                                     else 
                                     {
-                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_MATE_SENTENCES, oppositeColorText, "");
+                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_MATE_SENTENCES, oppositeColorText, "");
                                     }
                                 }   
 
@@ -823,7 +559,7 @@ export class CoachUtils
                                 {
                                     if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
                                     {
-                                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.ON_ROAD_TO_CHECKMATE_SENTENCES, colorThatMovedText, "");
+                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.ON_ROAD_TO_CHECKMATE_SENTENCES, colorThatMovedText, "");
                                     }
                                 }
                             }
@@ -883,7 +619,7 @@ export class CoachUtils
                             const coachIdea = new CoachIdea();
                             coachIdea.arrows = arrows;
 
-                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_FORK_SENTENCES, colorThatMovedText, displayPiece)
+                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_FORK_SENTENCES, colorThatMovedText, displayPiece)
                             move.coachIdeas.set( CoachIdeaFlagType.ForkIdea, coachIdea );
                         }
                     }
@@ -909,7 +645,7 @@ export class CoachUtils
                             const pinnedPiece = previousState.findPieceAtCoordinate(initiatedPin.pinnedPieceCoordinate);
                             const highValuePiece = previousState.findPieceAtCoordinate(initiatedPin.highValuePieceCoordinate);
 
-                            move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.FOUND_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
+                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
 
                             const idea = new CoachIdea();
                             const arrow = createArrow(initiatedPin.attackerCoordinate, initiatedPin.highValuePieceCoordinate, ArrowColors.IDEA, ArrowContext.Coach);
@@ -941,10 +677,10 @@ export class CoachUtils
                         (move.fromCoord == Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "d7" || move.toCoord == "c6"))
                     )
                     {
-                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES, "");
+                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES, "");
 
                         //To evaluate central squares hit by the knight, check if the knight can move to one of them.
-                        const potentiallyLegalKnightMoves = getKnightSquareHits(state, move.toCoord);
+                        const potentiallyLegalKnightMoves = CoachMiscHelpers.getKnightSquareHits(state, move.toCoord);
                         const controlledCentralSquares: Array<string> = [];
 
                         Chonse2.CENTER_SQUARES.forEach( centralSquare => 
@@ -1008,7 +744,7 @@ export class CoachUtils
                     )
                     {
                         //Add the comment saying they can develop the bishop.
-                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PREPARES_BISHOP_FOR_DEVELOPMENT_SENTENCES, colorThatMovedText);
+                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.PREPARES_BISHOP_FOR_DEVELOPMENT_SENTENCES, colorThatMovedText);
 
                         //Clones the board to check the legal moves.
                         const boardCopy = state.getFullDeepCopy();
@@ -1115,7 +851,7 @@ export class CoachUtils
                         )
                     )
                     {
-                        move.coachComment += CoachUtils.selectAndFormatSentence(CoachUtils.PREPARES_BISHOP_FOR_FIANCHETTO_DEVELOPMENT_SENTENCES, "")
+                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.PREPARES_BISHOP_FOR_FIANCHETTO_DEVELOPMENT_SENTENCES, "")
 
                         //Determine where the fianchetto square & bishop coord is
                         let fianchettoSquare = "";
@@ -1166,13 +902,13 @@ export class CoachUtils
                         (move.fromCoord == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_BISHOP)
                     )
                     {
-                        if (FIANCHETTOS.includes(move.toCoord))
+                        if (CoachMiscHelpers.FIANCHETTOS.includes(move.toCoord))
                         {
-                            move.coachComment += CoachUtils.selectAndFormatSentence(this.BISHOP_FIANCHETTOED_SENTENCES, colorThatMovedText);
+                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.BISHOP_FIANCHETTOED_SENTENCES, colorThatMovedText);
                         }
                         else 
                         {
-                            move.coachComment += CoachUtils.selectAndFormatSentence(this.BISHOP_DEVELOPED_SENTENCES, colorThatMovedText);
+                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.BISHOP_DEVELOPED_SENTENCES, colorThatMovedText);
                         }
                     }
                 }
@@ -1182,11 +918,11 @@ export class CoachUtils
                 if (posEval.moveClassification == MoveClassification.Luminous)
                 {
                     const hungPiece = state.findPieceAtCoordinate(move.toCoord);
-                    const luminousSentences = CoachUtils.BASE_SENTENCES.get(MoveClassification.Luminous);
+                    const luminousSentences = CoachText.BASE_SENTENCES.get(MoveClassification.Luminous);
 
                     if (luminousSentences)
                     {
-                        let sentence = CoachUtils.selectAndFormatSentence(luminousSentences, colorThatMovedText, hungPiece);
+                        let sentence = CoachText.selectAndFormatSentence(luminousSentences, colorThatMovedText, hungPiece);
 
                         if (sentence.includes("And"))
                         {
@@ -1199,207 +935,15 @@ export class CoachUtils
 
                 if (move.coachComment == "")
                 {
-                    move.coachComment = this.getBaseSentence(posEval.moveClassification ?? MoveClassification.None).replace(this.TURN_PLACEHOLDER, colorThatMovedText);
+                    move.coachComment = CoachText.getBaseSentence(posEval.moveClassification ?? MoveClassification.None).replace(CoachText.TURN_PLACEHOLDER, colorThatMovedText);
                 }
             }
         }
     }
 
-    private static getBaseSentence(moveClassification: MoveClassification): string
-    {
-        //Get random item from hash map
-        const sentences = CoachUtils.BASE_SENTENCES.get(moveClassification ?? MoveClassification.None);
-        
-        if (sentences)
-        {
-            const randIndex = this.getRandomIndex(sentences.length);
-            return sentences[randIndex];
-        }
-        return "";
-    }
 
-
-    //#region Helper functions
-    //Gets a random index given the length of an array.
-    private static getRandomIndex(length: number)
-    {
-        return Math.floor(Math.random() * length);
-    }
-
-    //Converts a UCI move to the format in which it can be used to move in the Chonse2 library.
-    public static convertUciToChonse2Move(uci: string) : {fromSquare: string, toSquare: string, promotion: string}
-    {
-        const fromSquare = uci[0] + uci[1];
-        const toSquare = uci[2] + uci[3];
-        const promotion = uci[4] ? uci[4].toUpperCase() : PieceType.QUEEN;
-
-        return {fromSquare, toSquare, promotion};
-    }
-
-    public static convertPieceToText(piece: string): string
-    {
-        //Pawn
-        if (piece === PieceType.WHITE_PAWN || piece === PieceType.BLACK_PAWN)
-        {
-            return "pawn";
-        }
-
-        //Knight
-        if (piece === PieceType.WHITE_KNIGHT || piece === PieceType.BLACK_KNIGHT)
-        {
-            return "knight";
-        }
-
-        //Bishop
-        if (piece === PieceType.WHITE_BISHOP || piece === PieceType.BLACK_BISHOP)
-        {
-            return "bishop";
-        }
-
-        //Rook
-        if (piece === PieceType.WHITE_ROOK || piece === PieceType.BLACK_ROOK)
-        {
-            return "rook";
-        }
-
-        //Queen
-        if (piece === PieceType.WHITE_QUEEN || piece === PieceType.BLACK_QUEEN)
-        {
-            return "queen";
-        }
-
-        //King
-        if (piece === PieceType.WHITE_KING || piece === PieceType.BLACK_KING)
-        {
-            return "king";
-        }
-
-        return "piece";
-    }
-
-    private static _formatCoachStringWithPlaceholders(sentence: string, playerColor: string, piece: string, secondaryPiece: string): string
-    {
-        return sentence
-            .replace(CoachUtils.TURN_PLACEHOLDER, playerColor)
-            .replace(CoachUtils.PIECE_PLACEHOLDER, piece)
-            .replace(CoachUtils.SECONDARY_PIECE_PLACEHOLDER, secondaryPiece);
-    }
-
-    private static selectAndFormatSentence(arr: Array<string>, playerColor: string, piece: string = "", secondaryPiece: string = "")
-    {
-        let newSentence = arr[CoachUtils.getRandomIndex(arr.length)];
-        newSentence = this._formatCoachStringWithPlaceholders(newSentence, playerColor, CoachUtils.convertPieceToText(piece), CoachUtils.convertPieceToText(secondaryPiece));
-
-        return newSentence;
-    }
 }
 
-//#region Misc. helpers
-    function getKnightSquareHits(board: Chonse2, coordinate: string): Array<string>
-    {
-        const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
-        const legalMoves: Array<string> = [];
 
-        //A knight can only move two ahead and one to the side. These are the offsets for the eight possible squares a knight can go to relative to its current position
-        const dRow: Array<number> = [2, 1, 2, 1, -1, -2, -1, -2];
-        const dCol: Array<number> = [-1, -2, +1, +2, -2, -1, +2, +1];
-
-        //Loop over each of the potential differences.
-        for(let i = 0; i < dRow.length; i++)
-        {
-        //The rank that the knight will move to.
-        const rankInQuestion = board.pieceState[rowIndex + dRow[i]];      
-
-        //If the rank does in fact exist, find its square.
-            if (rankInQuestion)
-            {
-                //The square that might be able to be moved to.
-                const potentialMoveSquare = rankInQuestion[colIndex + dCol[i]];
-
-                //It can also be undefined if the offset exists outside the board, check for this.
-                if (potentialMoveSquare != undefined)
-                {
-                    //Legal move in either case is the current square with the 2 straight/1 side offset applied.
-                    legalMoves.push(Chonse2.COORDS[rowIndex + dRow[i]][colIndex + dCol[i]]);
-                }
-            }
-        }
-        return legalMoves
-    }
-
-    //gets all of the follow up states in an engine line.
-    function getEngineLineStates(board: Chonse2, line: LineEval): Array<Chonse2>
-    {
-        const followUp: Array<Chonse2> = [board];
-
-        line.pv.forEach( engineLineMove => 
-            {
-                const stateCopy = followUp.at(-1)?.getFullDeepCopy();
-
-                const {fromSquare, toSquare, promotion } = CoachUtils.convertUciToChonse2Move(engineLineMove);
-
-                if (stateCopy)
-                {
-                    stateCopy.completeMove(fromSquare, toSquare, promotion);
-                    followUp.push(stateCopy);
-                }   
-                else 
-                {
-                    throw "Error getting engine line followup.";
-                }
-            }
-        )
-
-        return followUp;
-    }
-
-    const FIANCHETTOS = ["g2", "b2", "g7", "b7"];
 //#endregion
 
-export class CoachIdea 
-{
-    arrows: Array<Arrow> = [];
-    highlightedSquares: Array<string> = [];
-}
-
-export enum CoachMoveSequenceType
-{
-    None = "None",
-    FollowUp = "FollowUp",
-    MissedOpportunity = "MissedOpportunity"
-}
-
-export enum CoachMoveFlagType 
-{
-    //Bad
-    LeftPieceHanging,
-    MissedHangingPiece,
-    CapturedPieceWithWrongAttacker,
-    AllowedCheckmate,
-    MissedCheckmate,
-    AllowedFork,
-    AllowedSkewer,
-    MissedFork,
-    MissedPin,
-    IgnoredPin,
-    CausedMaterialLoss,
-
-    //Good (show follow up)
-    OpportunityToCheckmate,
-    OpportunityToSkewer,
-    OpportunityToFork,
-}
-
-export enum CoachIdeaFlagType
-{
-    ForkIdea,
-    PinIdea,
-    CentralControlIdea,
-    DevelopmentIdea,
-    FianchettoIdea
-}
-
-export enum CoachResourceFlagType 
-{
-    Opening
-}
