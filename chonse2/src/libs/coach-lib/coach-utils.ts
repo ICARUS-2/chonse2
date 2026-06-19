@@ -69,6 +69,9 @@ export class CoachUtils
                 const colorThatMovedText = whiteToMove ? "Black" : "White";
                 const oppositeColorText = whiteToMove ? "White" : "Black";
 
+                //misc stuff that can be reused
+                const allHangingPieceCoords = Chonse2Extensions.getHangingPieces(state);
+
                 //=======Exclusively opening
                 if (posEval.moveClassification == MoveClassification.Opening)
                 {
@@ -97,7 +100,6 @@ export class CoachUtils
                     posEval.moveClassification == MoveClassification.Miss
                 )
                 {
-                    const allHangingPieceCoords = Chonse2Extensions.getHangingPieces(state);
                     let previousBestMove: { fromSquare: string; toSquare: string; promotion: string} | null = null;
                     let missedState: Chonse2 | null = null;
 
@@ -727,6 +729,42 @@ export class CoachUtils
                             idea.highlightedSquares.push(initiatedPin.pinnedPieceCoordinate);
 
                             move.coachIdeas.set(CoachIdeaFlagType.PinIdea, idea);
+                        }
+                    }
+
+                    //Case: Player accurately set up a skewer
+                    {
+                        const skewers = Chonse2Extensions.getSkewersOnBoard(state, allHangingPieceCoords);
+
+                        let initiatedSkewer = null;
+
+                        for(const sk of skewers)
+                        {
+                            if (sk.attackerCoordinate == move.toCoord)
+                            {
+                                initiatedSkewer = sk;
+                            }
+                        }
+
+                        if (initiatedSkewer)
+                        {
+                            const lowValuePiece = state.findPieceAtCoordinate(initiatedSkewer.lowValuePieceBehindCoordinate);
+                            
+                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_SKEWER_SENTENCES, colorThatMovedText, lowValuePiece);
+                        
+                            const idea = new CoachIdea();
+
+                            const skewerArrow = createArrow(initiatedSkewer.attackerCoordinate, initiatedSkewer.lowValuePieceBehindCoordinate, ArrowColors.IDEA, ArrowContext.Coach);
+                            const highlights = [initiatedSkewer.highValuePieceCoordinate, initiatedSkewer.lowValuePieceBehindCoordinate];
+                            
+                            if (skewerArrow)
+                            {
+                                idea.arrows.push(skewerArrow);
+                            }
+
+                            idea.highlightedSquares.push(...highlights)
+
+                            move.coachIdeas.set(CoachIdeaFlagType.SkewerIdea, idea);
                         }
                     }
                 }
