@@ -1,3 +1,4 @@
+import AlgebraicNotationMaker from "./algebraic-notation-builder";
 import Chonse2 from "./chonse2";
 import { PieceColor } from "./piece-color";
 import PieceMaterial from "./piece-material";
@@ -619,7 +620,6 @@ export default class Chonse2Extensions
 
                             if (materialOfSkeweredPiece > materialOfPotentialSecondPiece)
                             {
-                                console.log("condition")
                                 const newSkewer = new Skewer();
 
                                 newSkewer.attackerCoordinate = currentCoord;
@@ -650,6 +650,7 @@ export default class Chonse2Extensions
 
                 //Gotta check each legal move for the high value piece.
                 const legalMovesForHighValuePiece = boardCopy.getLegalMoves(sk.highValuePieceCoordinate);
+                console.log(legalMovesForHighValuePiece);
 
                 let canHighValuePieceGiveCheck: boolean = false;
 
@@ -657,8 +658,9 @@ export default class Chonse2Extensions
                 {
                     const mv = legalMovesForHighValuePiece[i];
 
-                    boardCopy.completeMove(sk.attackerCoordinate, mv);
-                    const isOpponentInCheck = boardCopy.isInCheck( boardCopy.turn ? PieceColor.WHITE : PieceColor.BLACK );
+                    const r = boardCopy.completeMove(sk.highValuePieceCoordinate, mv);
+                    const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
+                    console.log(r);
 
                     boardCopy.undoMostRecentMove();
 
@@ -672,7 +674,7 @@ export default class Chonse2Extensions
                 //If the opponent can just check the king, don't count this as a valid skewer.
                 return !canHighValuePieceGiveCheck;
             }
-            )
+        )
 
         //Reset the turn so that it's correct.
         boardCopy.turn = turnInCurrentState;
