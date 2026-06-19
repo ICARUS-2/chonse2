@@ -2,7 +2,7 @@ import { findIndex } from "rxjs";
 import { Arrow, ArrowColors, ArrowContext, createArrow } from "../../app/chessboard/chessboard/arrow";
 import MoveResult from "../../app/chessboard/chessboard/move-result";
 import Chonse2 from "../chonse2-lib/chonse2";
-import Chonse2Extensions, { Fork, Pin } from "../chonse2-lib/extensions";
+import Chonse2Extensions, { Fork, Pin, Skewer } from "../chonse2-lib/extensions";
 import { PieceColor } from "../chonse2-lib/piece-color";
 import PieceMaterial from "../chonse2-lib/piece-material";
 import { PieceType } from "../chonse2-lib/piece-type";
@@ -163,9 +163,79 @@ export class CoachUtils
                         }
                     }
 
+                    //Case: Player allowed a skewer on their own piece.
+                    {
+                        if (nextBestState)
+                        {
+                            const currentStateSkewers = Chonse2Extensions.getSkewersOnBoard(state, allHangingPieceCoords);
+                            const bestStateSkewers = Chonse2Extensions.getSkewersOnBoard(nextBestState);
+
+                            //Opponent's available skewers.
+                            const currentAttackerSkewers = currentStateSkewers.filter( sk => 
+                                {
+                                    const attackingPiece = state.findPieceAtCoordinate(sk.attackerCoordinate);
+
+                                    return whiteToMove ? attackingPiece.startsWith(PieceColor.WHITE) : attackingPiece.startsWith(PieceColor.BLACK);
+                                }
+                            )
+
+                            //Opponent's available skewers after having played the best move.
+                            const bestStateAttackerSkewers = bestStateSkewers.filter( sk => 
+                                {
+                                    const attackingPiece = nextBestState.findPieceAtCoordinate(sk.attackerCoordinate);
+
+                                    return whiteToMove ? attackingPiece.startsWith(PieceColor.WHITE) : attackingPiece.startsWith(PieceColor.BLACK);
+                                }
+                            )
+                
+                            //Check if a new skewer is introduces because of the best move.
+                            if (bestStateAttackerSkewers.length > currentAttackerSkewers.length)
+                            {
+                                const bestMoveToCoord = nextBestMove.toSquare;
+                                let bestSkewer: Skewer | null = null;
+
+                                for(let i = 0; i < bestStateAttackerSkewers.length; i++)
+                                {
+                                    const sk = bestStateAttackerSkewers[i];
+
+                                    if (sk.attackerCoordinate == bestMoveToCoord)
+                                    {
+                                        bestSkewer = sk;
+                                    }
+                                }
+
+                                if (bestSkewer != null)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.ALLOWED_SKEWER_SENTENCES, colorThatMovedText, nextBestState.findPieceAtCoordinate(bestSkewer.lowValuePieceBehindCoordinate));
+                                    move.coachMoveFlags.push(CoachMoveFlagType.AllowedSkewer);
+
+                                    const idea = new CoachIdea();
+
+                                    const bestMoveArrow = createArrow(nextBestMove.fromSquare, nextBestMove.toSquare, ArrowColors.IDEA, ArrowContext.Coach);
+                                    const skewerArrow = createArrow(bestSkewer.attackerCoordinate, bestSkewer.lowValuePieceBehindCoordinate, ArrowColors.IDEA, ArrowContext.Coach);
+                                    const highlights = [bestSkewer.highValuePieceCoordinate, bestSkewer.lowValuePieceBehindCoordinate];
+
+                                    if (bestMoveArrow)
+                                    {
+                                        idea.arrows.push(bestMoveArrow);
+                                    }
+
+                                    if (skewerArrow)
+                                    {
+                                        idea.arrows.push(skewerArrow);
+                                    }
+
+                                    idea.highlightedSquares.push(...highlights);
+
+                                    move.coachIdeas.set(CoachIdeaFlagType.SkewerIdea, idea);
+                                }
+                            }
+                        }
+                    }
+
                     //Case: Player allowed material loss but not necessarily hanging something 
                     {
-                        if (!move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging))
+                        if (!move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging) && !move.coachMoveFlags.includes(CoachMoveFlagType.AllowedSkewer))
                         {
                             //play out the engine line
                             const followUp = CoachMiscHelpers.getEngineLineStates(state, posEval.lines[0]);

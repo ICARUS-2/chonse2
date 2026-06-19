@@ -97,7 +97,7 @@ export class CoachDisplay {
     if (move.coachMoveFlags.includes(CoachMoveFlagType.CausedMaterialLoss))
     {
       return this.translate.instant('chessboard.coachDisplay.followUpButton.showMaterialLoss');
-    }
+    }    
 
     return this.translate.instant('chessboard.coachDisplay.followUpButton.showFollowUp');
   }
@@ -347,6 +347,12 @@ export class CoachDisplay {
     {
       return this.translate.instant('chessboard.coachDisplay.ideaButton.fianchetto');
     }
+
+    if (flag == CoachIdeaFlagType.SkewerIdea)
+    {
+      return this.translate.instant('chessboard.coachDisplay.ideaButton.skewer')
+    }
+    
     return this.translate.instant('chessboard.coachDisplay.ideaButton.base');
   }
 

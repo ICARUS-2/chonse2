@@ -40,10 +40,12 @@ export enum CoachIdeaFlagType
     PinIdea,
     CentralControlIdea,
     DevelopmentIdea,
-    FianchettoIdea
+    FianchettoIdea,
+    SkewerIdea
 }
 
 export enum CoachResourceFlagType 
 {
-    Opening
+    Opening,
+    Skewer
 }

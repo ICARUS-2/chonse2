@@ -104,6 +104,7 @@
                 "centerPressure": "Show Idea: Center Pressure",
                 "development": "Show Idea: Development",
                 "fianchetto": "Show Idea: Fianchetto",
+                "skewer": "Show Idea: Skewer",
                 "base": "Show Idea: "
             },
             "resourceButton": 

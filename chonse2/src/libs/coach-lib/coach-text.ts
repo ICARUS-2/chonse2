@@ -208,8 +208,8 @@ export default class CoachText
     //Allowed their piece to get skewered
     public static readonly ALLOWED_SKEWER_SENTENCES = 
     [
-        `${CoachText.TURN_PLACEHOLDER} just allowed their opponent to potentially capture their ${CoachText.PIECE_PLACEHOLDER} with a skewer. `,
-        `This possibly allows ${CoachText.TURN_PLACEHOLDER}'s opponent to grab a ${CoachText.PIECE_PLACEHOLDER} through a skewer. `,
+        `${CoachText.TURN_PLACEHOLDER} just allowed their opponent to capture their ${CoachText.PIECE_PLACEHOLDER} with a skewer. `,
+        `This allows ${CoachText.TURN_PLACEHOLDER}'s opponent to grab a ${CoachText.PIECE_PLACEHOLDER} through a skewer. `,
     ]
     //#endregion
 
@@ -245,7 +245,7 @@ export default class CoachText
     //Player set up a skewer
     public static readonly FOUND_SKEWER_SENTENCES: Array<string> = 
     [
-        `Amazing! ${CoachText.TURN_PLACEHOLDER} has set up a skewer, which may win material! `,
+        `Amazing! ${CoachText.TURN_PLACEHOLDER} has set up a skewer, which can win a ${CoachText.PIECE_PLACEHOLDER}! `,
         `${CoachText.TURN_PLACEHOLDER} can win a ${CoachText.PIECE_PLACEHOLDER} through a skewer. `
     ]
     //#endregion
