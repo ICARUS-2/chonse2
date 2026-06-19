@@ -466,6 +466,243 @@ export default class Chonse2Extensions
     }
     //#endregion
 
+    //#region Skewers
+    public static getSkewersOnBoard(board: Chonse2, optionalExistingHangingPieceArray: { white: Array<string>, black: Array<string> } | null = null): Array<Skewer>
+    {
+        let candidateSkewers: Array<Skewer> = [];
+
+        //we will need to see what pieces are currently hanging so that we can make sure that the skewering attacker is not just straight up hanging.
+        let hangingPieceCoords;
+        if (optionalExistingHangingPieceArray == null)
+        {
+            hangingPieceCoords = this.getHangingPieces(board);
+        }
+        else 
+        {
+            hangingPieceCoords = optionalExistingHangingPieceArray;
+        }
+
+        //A piece can only be skewered by a bishop, a rook or a queen.
+        const ATTACKER_TYPES = [PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN];
+
+        //Will need to check all of the pieces to see which ones could be attackers.
+        const pieceData = [board.getAllPiecesAndCoordsByColor(PieceColor.WHITE), board.getAllPiecesAndCoordsByColor(PieceColor.BLACK)];
+        const candidateAttackers: { pieces: Array<string>, coords: Array<string> } = { pieces: [], coords: [] };
+
+        //Check through all of the pieces and get the ones that could potentially be attackers (aka bishops, rooks, and queens which can skewer a piece).
+        pieceData.forEach( collection => 
+            {
+                for(let i = 0; i < collection.coords.length; i++)
+                {
+                    const coord = collection.coords[i];
+                    const piece = collection.pieces[i];
+                    const lastChar = piece[piece.length - 1];
+
+                    if (ATTACKER_TYPES.includes(lastChar))
+                    {
+                        candidateAttackers.pieces.push(piece);
+                        candidateAttackers.coords.push(coord);
+                    }
+                }
+            }
+        )
+
+        //Checks if the pieces are hanging.
+        const nonHangingCandidateAttackers: {coords: Array<string>, pieces: Array<string>} = {coords: [], pieces: []};
+        candidateAttackers.coords.forEach( (coord, idx) => 
+            {
+                const pieceInCoord = candidateAttackers.pieces[idx];
+                const firstChar = pieceInCoord[0];
+
+                const hangingPiecesToCheck = firstChar == PieceColor.WHITE ? hangingPieceCoords.white : hangingPieceCoords.black;
+
+                if (!hangingPiecesToCheck.includes(coord))
+                {
+                    nonHangingCandidateAttackers.coords.push(coord);
+                    nonHangingCandidateAttackers.pieces.push(pieceInCoord);
+                }
+            }
+        )
+
+        //For the remaining pieces:
+        for( let i = 0; i < nonHangingCandidateAttackers.pieces.length; i++ )
+        {
+            //the current piece/coord data.
+            const currentPiece = nonHangingCandidateAttackers.pieces[i];
+            const currentCoord = nonHangingCandidateAttackers.coords[i];
+
+            //represents what type of piece it is.
+            const lastCharOfPiece = currentPiece[currentPiece.length - 1];
+
+            //indicates the color of the piece
+            const colorOfPiece: PieceColor = currentPiece[0];
+
+            //will need to determine how exactly that piece can move depending on what it is.
+            let vectorX: Array<number> = [];
+            let vectorY: Array<number>  = [];
+
+            //get the corresponding vector (diagonals for bishop, horizontal for rook, and a combination of both for queen).
+            switch(lastCharOfPiece)
+            {
+                case PieceType.BISHOP:
+                    vectorX = Chonse2._BISHOP_VECTOR_X;
+                    vectorY = Chonse2._BISHOP_VECTOR_Y;
+                    break;
+
+                case PieceType.ROOK:
+                    vectorX = Chonse2._ROOK_VECTOR_X;
+                    vectorY = Chonse2._ROOK_VECTOR_Y;
+                    break;
+
+                case PieceType.QUEEN:
+                    vectorX = Chonse2._QUEEN_KING_VECTOR_X;
+                    vectorY = Chonse2._QUEEN_KING_VECTOR_Y;
+            }
+
+            //Loop through the possible vector coords
+            const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(currentCoord);
+
+            for(let offsetIndex = 0; offsetIndex < vectorX.length; offsetIndex++)
+            {
+                //change in x and y coordinates that will be applied as offsets.
+                let dx = vectorX[offsetIndex];
+                let dy = vectorY[offsetIndex];
+
+                //cap to ensure that it cannot run longer than the chessboard itself.
+                let runCount = 0;
+
+                //Will be the higher-value target at the front of the skewer.
+                let highValuePieceCoord = "";
+                let highValuePieceType = "";
+
+                for( 
+                    let currentXOffset = dx, currentYOffset = dy; //starts at the places of the vector components relative to the piece.
+                    runCount < Chonse2.SIZE; //ensures that it does not check outside the bounds.
+                    currentXOffset += dx, currentYOffset += dy, runCount++ //keep incrementing the offsets accordingly
+                )   
+                {
+                    //The row that contains the square that is being checked.
+                    const rowInQuestion = board.pieceState[rowIndex + currentXOffset];
+                    
+                    if (rowInQuestion)
+                    {
+                        //the square that is being checked.
+                        const squareInQuestionPiece = rowInQuestion[colIndex + currentYOffset];
+
+                        if (squareInQuestionPiece != undefined)
+                        {
+                            //If there's nothing in that square, then this piece can't do anything.
+                            if (squareInQuestionPiece == "")
+                            {
+                                continue;
+                            }
+                        }
+
+                        const enemyPieceColor: PieceColor = colorOfPiece == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+                        //if the piece is a friendly piece, then it's not skewering anything.
+                        if (!squareInQuestionPiece.startsWith(enemyPieceColor.toString()))
+                        {
+                            break;
+                        }
+
+                        //if the piece is an enemy one and there is no high-value piece already, make that the skewered piece.
+                        if (!highValuePieceCoord)
+                        {
+                            highValuePieceCoord = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                            highValuePieceType = squareInQuestionPiece;
+                            //after the first piece is found, continue the loop and search for a potential piece for this one to be pinned to.
+                            continue;
+                        }
+
+                        //if the skewered piece is already defined, then check if this piece is an enemy
+                        const materialOfSkeweredPiece = PieceMaterial.getMaterialFromPiece(highValuePieceType);
+                        const materialOfPotentialSecondPiece = PieceMaterial.getMaterialFromPiece(squareInQuestionPiece);
+
+                        if (materialOfSkeweredPiece > materialOfPotentialSecondPiece)
+                        {
+                            const newSkewer = new Skewer();
+
+                            newSkewer.attackerCoordinate = currentCoord;
+                            newSkewer.highValuePieceCoordinate = highValuePieceCoord;
+                            newSkewer.lowValuePieceBehindCoordinate = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                            
+                            candidateSkewers.push(newSkewer);
+                        }
+                    }
+                }
+            }
+        }
+
+        //Time to check some additional edge cases
+
+        const boardCopy = board.getFullDeepCopy();
+        const turnInCurrentState = board.turn;
+
+        //Now, need to check if the skewered high value piece cannot just check the king.
+        candidateSkewers = candidateSkewers.filter( sk => 
+            {
+                const attackerPiece = board.findPieceAtCoordinate(sk.attackerCoordinate);
+                const attackerColor = attackerPiece[0];
+
+                //Sets the turn to the defender.
+                attackerColor == PieceColor.WHITE ? boardCopy.turn = false : boardCopy.turn = true;
+
+                //Gotta check each legal move for the high value piece.
+                const legalMovesForHighValuePiece = boardCopy.getLegalMoves(sk.highValuePieceCoordinate);
+
+                let canHighValuePieceGiveCheck: boolean = false;
+
+                for(let i = 0; i < legalMovesForHighValuePiece.length; i++)
+                {
+                    const mv = legalMovesForHighValuePiece[i];
+
+                    boardCopy.completeMove(sk.attackerCoordinate, mv);
+                    const isOpponentInCheck = boardCopy.isInCheck( boardCopy.turn ? PieceColor.WHITE : PieceColor.BLACK );
+
+                    boardCopy.undoMostRecentMove();
+
+                    if (isOpponentInCheck)
+                    {
+                        canHighValuePieceGiveCheck = true;
+                        break;
+                    }
+                }
+
+                //If the opponent can just check the king, don't count this as a valid skewer.
+                return !canHighValuePieceGiveCheck;
+            }
+            )
+
+        //Reset the turn so that it's correct.
+        boardCopy.turn = turnInCurrentState;
+
+        //And need to check that the skewered piece is hanging without the high value piece on the board.
+        candidateSkewers = candidateSkewers.filter( sk =>
+            {
+                let isLowValuePieceHanging = false;
+
+                const highValuePiece = boardCopy.findPieceAtCoordinate(sk.highValuePieceCoordinate);
+
+                const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(sk.highValuePieceCoordinate);
+
+                //Temporarily remove the piece.
+                boardCopy.pieceState[rowIndex][colIndex] = "";
+
+                //check if the piece is hanging.
+                isLowValuePieceHanging = Chonse2Extensions.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
+                
+                //Put the piece back after
+                boardCopy.pieceState[rowIndex][colIndex] = highValuePiece;
+
+                //if the piece is hanging without the high value piece, it's a valid skewer.
+                return isLowValuePieceHanging;
+            }
+        )
+
+        return candidateSkewers;
+    }
+    //#endregion
+
     //#region General board state
     //Gets coords of all pieces that attack/defend a given square.
     public static getPiecesThatHitSquare(board: Chonse2, square: string): {white: Array<string>, black: Array<string>} {
@@ -552,4 +789,11 @@ export class Pin
     attackerCoordinate: string = "";
     pinnedPieceCoordinate: string = "";
     highValuePieceCoordinate: string = "";
+}
+
+export class Skewer 
+{
+    attackerCoordinate: string = "";
+    highValuePieceCoordinate: string = "";
+    lowValuePieceBehindCoordinate: string = "";
 }
