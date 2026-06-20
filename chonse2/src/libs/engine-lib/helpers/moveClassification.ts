@@ -4,7 +4,7 @@ import { openings } from "../data/openings";
 import { MoveClassification } from "../types/enums";
 import { PositionEval } from "../types/eval";
 import { Square } from "./chess";
-import { getIsPieceSacrifice, isHangingPieceCapture, uciMoveParams, uciMoveParams2 } from "./chessHelper";
+import { getIsPieceSacrifice, isHangingPieceCapture, uciMoveParams2 } from "./chessHelper";
 import LuminousDetector from "./luminous";
 import { getLineWinPercentage, getPositionWinPercentage } from "./winPercentage";
 
@@ -119,7 +119,7 @@ export const getMovesClassification = (
   return positions;
 };
 
-const classifyByWinPctChange = (winPctChange: number): MoveClassification => {
+export const classifyByWinPctChange = (winPctChange: number): MoveClassification => {
   if (winPctChange < BLUNDER_THRESHOLD) return MoveClassification.Blunder;
   if (winPctChange < MISTAKE_THRESHOLD) return MoveClassification.Mistake;
   if (winPctChange < INACCURACY_THRESHOLD) return MoveClassification.Inaccuracy;
