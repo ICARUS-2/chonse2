@@ -48,5 +48,6 @@ export enum CoachIdeaFlagType
 export enum CoachResourceFlagType 
 {
     Opening,
-    Skewer
+    Skewer,
+    Pin
 }

@@ -762,6 +762,7 @@ export class CoachUtils
                             idea.highlightedSquares.push(initiatedPin.pinnedPieceCoordinate);
 
                             move.coachIdeas.set(CoachIdeaFlagType.PinIdea, idea);
+                            move.coachResources.set(CoachResourceFlagType.Pin, CoachResourceLinks.PIN_LINK);
                         }
                     }
 

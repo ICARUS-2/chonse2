@@ -397,6 +397,11 @@ export class CoachDisplay {
       return this.translate.instant('chessboard.coachDisplay.resourceButton.skewerLearnMore');
     }
 
+    if (flag == CoachResourceFlagType.Pin)
+    {
+      return this.translate.instant('chessboard.coachDisplay.resourceButton.pinLearnMore');
+    }
+
     return this.translate.instant('chessboard.coachDisplay.resourceButton.unknownResource');
   }
 
