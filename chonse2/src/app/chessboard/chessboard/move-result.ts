@@ -1,5 +1,5 @@
 import { PieceType } from "../../../libs/chonse2-lib/piece-type";
-import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "../../../libs/coach-lib/coach-utils";
+import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "../../../libs/coach-lib/coach-types";
 
 //Object designed to hold move data as well as coach stuff.
 export default class MoveResult implements IMoveResult

@@ -95,6 +95,7 @@
                 "showMissedCapture": "Show missed capture",
                 "showAlternative": "Show alternative",
                 "showMissedPin": "Show missed pin",
+                "showMissedSkewer": "Show missed skewer",
                 "showMiss": "Show miss"
             },
             "ideaButton": 
@@ -104,11 +105,14 @@
                 "centerPressure": "Show Idea: Center Pressure",
                 "development": "Show Idea: Development",
                 "fianchetto": "Show Idea: Fianchetto",
+                "skewer": "Show Idea: Skewer",
                 "base": "Show Idea: "
             },
             "resourceButton": 
             {
                 "openingLearnMore": "Opening: Learn More",
+                "skewerLearnMore": "Skewers: Learn More",
+                "pinLearnMore": "Pin: Learn More",
                 "unknownResource": "Unknown resource"
             },
             "moveClassifications": 

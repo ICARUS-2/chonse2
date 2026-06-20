@@ -96,6 +96,7 @@
                 "showMissedCapture": "Montrer la capture manquée",
                 "showAlternative": "Montrer l'alternative",
                 "showMissedPin": "Montrer le clouage manqué",
+                "showMissedSkewer": "Afficher la brochette manquée",
                 "showMiss": "Montrer le coup manqué"
             },
             "ideaButton": 
@@ -105,11 +106,14 @@
                 "centerPressure": "Montrer l'idée : Pression au centre",
                 "development": "Montrer l'idée : Développement",
                 "fianchetto": "Montrer l'idée : Fianchetto",
+                "skewer": "Montrer l'idée: Brochette",
                 "base": "Montrer l'idée : "
             },
             "resourceButton": 
             {
                 "openingLearnMore": "Ouverture : En savoir plus",
+                "skewerLearnMore": "Brochettes: En savoir plus",
+                "pinLearnMore": "Pièce clouée: En savoir plus",
                 "unknownResource": "Ressource inconnue"
             },
             "moveClassifications": 

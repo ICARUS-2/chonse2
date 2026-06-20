@@ -272,12 +272,12 @@
 </div>  
 
 <!-- <div class="testingPurposes">
-    @let pins = Chonse2Extensions.getPinsOnBoard(this.boardState().getCurrentState(), true);
+    @let skewer = Chonse2Extensions.getSkewersOnBoard(this.boardState().getCurrentState());
 
-    @for(pin of pins; track $index)
+    @for(s of skewer; track $index)
     {
         <div>
-            {{pin.attackerCoordinate}} -> {{pin.pinnedPieceCoordinate}} -> {{pin.highValuePieceCoordinate}}
+            {{s.attackerCoordinate}} -> {{s.highValuePieceCoordinate}} -> {{s.lowValuePieceBehindCoordinate}}
         </div>
         <hr>
     }
