@@ -96,6 +96,7 @@
                 "showMissedCapture": "Montrer la capture manquée",
                 "showAlternative": "Montrer l'alternative",
                 "showMissedPin": "Montrer le clouage manqué",
+                "showMissedSkewer": "Afficher la brochette manquée",
                 "showMiss": "Montrer le coup manqué"
             },
             "ideaButton": 

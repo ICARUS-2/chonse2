@@ -524,6 +524,34 @@ export class CoachUtils
                         }
                     }
 
+                    if (missedState && previousState && previousBestMove)
+                    {
+                        //must check if the best move in this position was to cause a skewer
+                        const missedStateSkewers = Chonse2Extensions.getSkewersOnBoard(missedState);
+
+                        let bestMoveWasToCreateSkewer = false;
+                        let correspondingSkewer: Skewer | null = null;
+
+                        //verify all the skewers that existed
+                        for (const sk of missedStateSkewers)
+                        {
+                            //if the best move in that position was to skewer a piece, show it.
+                            if (previousBestMove.toSquare == sk.attackerCoordinate)
+                            {
+                                bestMoveWasToCreateSkewer = true;
+                                correspondingSkewer = sk;
+                            }
+                        }
+
+                        if (bestMoveWasToCreateSkewer && correspondingSkewer != null)
+                        {
+                            const lowValueSkewerPiece = missedState.findPieceAtCoordinate(correspondingSkewer.lowValuePieceBehindCoordinate);
+                            
+                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_SKEWER_SENTENCES, colorThatMovedText, lowValueSkewerPiece);
+                            move.coachMoveFlags.push(CoachMoveFlagType.MissedSkewer)
+                        }
+                    }
+
                     //Case: Missed an opportunity to pin a piece
                     {
                         if (missedState && previousState && previousBestMove)

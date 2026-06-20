@@ -27,6 +27,7 @@ export enum CoachMoveFlagType
     MissedPin,
     IgnoredPin,
     CausedMaterialLoss,
+    MissedSkewer,
 
     //Good (show follow up)
     OpportunityToCheckmate,
