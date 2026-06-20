@@ -10,7 +10,7 @@ import { openings } from "../engine-lib/data/openings";
 import { MoveClassification } from "../engine-lib/types/enums";
 import { LineEval, PositionEval } from "../engine-lib/types/eval";
 import CoachText from "./coach-text";
-import CoachMiscHelpers from "./coach-misc-helpers";
+import {CoachMiscHelpers, CoachResourceLinks} from "./coach-misc-helpers";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "./coach-types";
 
 export class CoachUtils
@@ -230,6 +230,7 @@ export class CoachUtils
                                     idea.highlightedSquares.push(...highlights);
 
                                     move.coachIdeas.set(CoachIdeaFlagType.SkewerIdea, idea);
+                                    move.coachResources.set(CoachResourceFlagType.Skewer, CoachResourceLinks.SKEWER_LINK);
                                 }
                             }
                         }
@@ -524,31 +525,35 @@ export class CoachUtils
                         }
                     }
 
-                    if (missedState && previousState && previousBestMove)
+                    //Case: Player missed an opportunity to skewer
                     {
-                        //must check if the best move in this position was to cause a skewer
-                        const missedStateSkewers = Chonse2Extensions.getSkewersOnBoard(missedState);
-
-                        let bestMoveWasToCreateSkewer = false;
-                        let correspondingSkewer: Skewer | null = null;
-
-                        //verify all the skewers that existed
-                        for (const sk of missedStateSkewers)
+                        if (missedState && previousState && previousBestMove)
                         {
-                            //if the best move in that position was to skewer a piece, show it.
-                            if (previousBestMove.toSquare == sk.attackerCoordinate)
+                            //must check if the best move in this position was to cause a skewer
+                            const missedStateSkewers = Chonse2Extensions.getSkewersOnBoard(missedState);
+
+                            let bestMoveWasToCreateSkewer = false;
+                            let correspondingSkewer: Skewer | null = null;
+
+                            //verify all the skewers that existed
+                            for (const sk of missedStateSkewers)
                             {
-                                bestMoveWasToCreateSkewer = true;
-                                correspondingSkewer = sk;
+                                //if the best move in that position was to skewer a piece, show it.
+                                if (previousBestMove.toSquare == sk.attackerCoordinate)
+                                {
+                                    bestMoveWasToCreateSkewer = true;
+                                    correspondingSkewer = sk;
+                                }
                             }
-                        }
 
-                        if (bestMoveWasToCreateSkewer && correspondingSkewer != null)
-                        {
-                            const lowValueSkewerPiece = missedState.findPieceAtCoordinate(correspondingSkewer.lowValuePieceBehindCoordinate);
-                            
-                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_SKEWER_SENTENCES, colorThatMovedText, lowValueSkewerPiece);
-                            move.coachMoveFlags.push(CoachMoveFlagType.MissedSkewer)
+                            //if it was indeed best to create a skewer, add the coach comment
+                            if (bestMoveWasToCreateSkewer && correspondingSkewer != null)
+                            {
+                                const lowValueSkewerPiece = missedState.findPieceAtCoordinate(correspondingSkewer.lowValuePieceBehindCoordinate);
+                                
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_SKEWER_SENTENCES, colorThatMovedText, lowValueSkewerPiece);
+                                move.coachMoveFlags.push(CoachMoveFlagType.MissedSkewer);
+                            }
                         }
                     }
 
@@ -793,6 +798,7 @@ export class CoachUtils
                             idea.highlightedSquares.push(...highlights)
 
                             move.coachIdeas.set(CoachIdeaFlagType.SkewerIdea, idea);
+                            move.coachResources.set(CoachResourceFlagType.Skewer, CoachResourceLinks.SKEWER_LINK);
                         }
                     }
                 }

@@ -13,7 +13,7 @@ import LocalStorageHelper from '../../../libs/local-storage-helper';
 import Sound from '../chessboard/sound';
 import { Chessboard } from '../chessboard/chessboard';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import CoachMiscHelpers from '../../../libs/coach-lib/coach-misc-helpers';
+import { CoachMiscHelpers } from '../../../libs/coach-lib/coach-misc-helpers';
 import { CoachMoveFlagType, CoachMoveSequenceType, CoachIdeaFlagType, CoachIdea, CoachResourceFlagType } from '../../../libs/coach-lib/coach-types';
 import { CoachUtils } from '../../../libs/coach-lib/coach-utils';
 
@@ -390,6 +390,11 @@ export class CoachDisplay {
     if (flag == CoachResourceFlagType.Opening)
     {
       return this.translate.instant('chessboard.coachDisplay.resourceButton.openingLearnMore');
+    }
+
+    if (flag == CoachResourceFlagType.Skewer)
+    {
+      return this.translate.instant('chessboard.coachDisplay.resourceButton.skewerLearnMore');
     }
 
     return this.translate.instant('chessboard.coachDisplay.resourceButton.unknownResource');

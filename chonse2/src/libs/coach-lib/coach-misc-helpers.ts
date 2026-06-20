@@ -2,7 +2,7 @@ import Chonse2 from "../chonse2-lib/chonse2";
 import { PieceType } from "../chonse2-lib/piece-type";
 import { LineEval } from "../engine-lib/types/eval";
 
-export default class CoachMiscHelpers 
+export class CoachMiscHelpers 
 {
     //where the bishop can be fianchettoed to
     public static readonly FIANCHETTOS = ["g2", "b2", "g7", "b7"];   
@@ -76,6 +76,10 @@ export default class CoachMiscHelpers
         return {fromSquare, toSquare, promotion};
     }
     
+}
 
-
+export class CoachResourceLinks 
+{
+    public static readonly SKEWER_LINK = "https://www.chess.com/terms/skewer-chess";
+    public static readonly PIN_LINK = "https://www.chess.com/terms/pin-chess"
 }

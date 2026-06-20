@@ -111,6 +111,7 @@
             "resourceButton": 
             {
                 "openingLearnMore": "Opening: Learn More",
+                "skewerLearnMore": "Skewers: Learn More",
                 "unknownResource": "Unknown resource"
             },
             "moveClassifications": 
