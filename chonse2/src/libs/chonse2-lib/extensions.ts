@@ -739,6 +739,48 @@ export default class Chonse2Extensions
     }
     //#endregion
 
+    //#region Connecting rooks
+    public static doesBoardHaveConnectedRooks(board: Chonse2):{white: boolean, black: boolean}
+    {
+        const returnObj = {white: false, black: false};
+
+        //All of the pieces on the board.
+        const boardData = [board.getAllPiecesAndCoordsByColor(PieceColor.WHITE), board.getAllPiecesAndCoordsByColor(PieceColor.BLACK)];
+        
+        //Used to differentiate different colored rooks
+        const colors = [PieceColor.WHITE, PieceColor.BLACK];
+
+        //Used to store each color
+        const whiteRookCoords: Array<string> = [];
+        const blackRookCoords: Array<string> = [];
+
+        //Filter out which pieces are the rooks of each color.
+        for(let cCounter = 0; cCounter < boardData.length; cCounter++)
+        {
+            const colorPieceData = boardData[cCounter];
+            const color = colors[cCounter];
+            const addToArr = color == PieceColor.WHITE ? whiteRookCoords : blackRookCoords;
+
+            colorPieceData.coords.forEach((coord, idx) => 
+                {
+                    const piece = colorPieceData.pieces[idx];
+                    const rookType = color == PieceColor.WHITE ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
+
+                    if (piece == rookType)
+                    {
+                        addToArr.push(coord);
+                    }
+                }
+            )
+        }
+
+        console.log(whiteRookCoords);
+        console.log(blackRookCoords);
+
+
+        return returnObj;
+    }
+
     //#region General board state
     //Gets coords of all pieces that attack/defend a given square.
     public static getPiecesThatHitSquare(board: Chonse2, square: string): {white: Array<string>, black: Array<string>} {

@@ -271,14 +271,9 @@
     }
 </div>  
 
-<!-- <div class="testingPurposes">
-    @let skewer = Chonse2Extensions.getSkewersOnBoard(this.boardState().getCurrentState());
+<div class="testingPurposes">
+    @let rooksConnected = Chonse2Extensions.doesBoardHaveConnectedRooks(this.boardState().getCurrentState());
 
-    @for(s of skewer; track $index)
-    {
-        <div>
-            {{s.attackerCoordinate}} -> {{s.highValuePieceCoordinate}} -> {{s.lowValuePieceBehindCoordinate}}
-        </div>
-        <hr>
-    }
-</div> -->
+    {{rooksConnected.white}}
+    {{rooksConnected.black}}
+</div>
