@@ -28,11 +28,13 @@ export enum CoachMoveFlagType
     IgnoredPin,
     CausedMaterialLoss,
     MissedSkewer,
+    MissedCastle,
 
     //Good (show follow up)
     OpportunityToCheckmate,
     OpportunityToSkewer,
     OpportunityToFork,
+    Castled
 }
 
 export enum CoachIdeaFlagType

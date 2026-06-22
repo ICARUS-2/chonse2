@@ -473,6 +473,30 @@ export default class Chonse2Extensions
     public static readonly BLACK_KINGSIDE_CASTLE_SQUARES = ["h8", "g8"];
     public static readonly BLACK_QUEENSIDE_CASTLE_SQUARES = ["a8", "b8", "c8"]
 
+    //White castling moves
+    static readonly WHITE_KINGSIDE_CASTLE = 
+    {
+        kingFrom: "e1",
+        kingTo: "g1",
+    };
+
+    static readonly WHITE_QUEENSIDE_CASTLE = 
+    {
+        kingFrom: "e1",
+        kingTo: "c1",
+    };
+
+    //Black castling moves
+    static readonly BLACK_KINGSIDE_CASTLE = {
+        kingFrom: "e8",
+        kingTo: "g8",
+    };
+
+    static readonly BLACK_QUEENSIDE_CASTLE = {
+        kingFrom: "e8",
+        kingTo: "c8",
+    };
+
     public static didPlayersLikelyCastle(board:Chonse2): {
         whiteKingside: boolean, 
         whiteQueenside: boolean,

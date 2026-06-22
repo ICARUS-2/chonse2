@@ -95,6 +95,7 @@
                 "showMissedCapture": "Show missed capture",
                 "showAlternative": "Show alternative",
                 "showMissedPin": "Show missed pin",
+                "showMissedCastle": "Show missed castle",
                 "showMissedSkewer": "Show missed skewer",
                 "showMiss": "Show miss"
             },

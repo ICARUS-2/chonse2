@@ -243,7 +243,7 @@ export default class CoachText
         `Better option here was for ${CoachText.TURN_PLACEHOLDER} to perform a queenside castle, both securing their king and getting a rook extremely active. `,
         `Castling queenside was a better option here, for both king safety and piece activity. `,
         `Castling queenside was the more active option here, giving your rook faster access to central play. while providing good king safety. `,
-        `When the position favors queenside castling, delaying it often means missing your best chance to seize the initiative. `
+        `This position favored castling queenside, and delaying it often means missing your best chance to seize the initiative in controlling open files with the corresponding rook. `
     ]
     //#endregion
 

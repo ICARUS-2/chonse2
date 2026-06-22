@@ -295,6 +295,11 @@ export class CoachDisplay {
       return this.translate.instant('chessboard.coachDisplay.missButton.showMissedSkewer');
     }
 
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedCastle))
+    {
+      return this.translate.instant('chessboard.coachDisplay.missButton.showMissedCastle');
+    }
+
     return this.translate.instant('chessboard.coachDisplay.missButton.showMiss');
 }
 
