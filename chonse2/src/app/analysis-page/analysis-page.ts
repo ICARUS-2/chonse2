@@ -167,7 +167,7 @@ export class AnalysisPage implements OnInit{
 
       //Places it into a valid board state and adds it.
       const boardState = new BoardState([restoredPosition]);
-      boardState.isReadOnly.set(true); //TODO WHY THE FUCK DOES THIS FIX IT
+      boardState.isReadOnly.set(true);
       this.gameService.deleteGame(BoardNames.Analysis);
       this.gameService.addGame(BoardNames.Analysis, boardState);
       boardState.doEvaluateGame.set(true);

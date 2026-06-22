@@ -1104,8 +1104,6 @@ export default class Chonse2
       //King cannot castle while in check
       if (!this.isInCheck(color))
       {
-        //TODO: MAKE SURE KING CANNOT CASTLE THROUGH A SQUARE THAT CAN BE SEEN BY AN ENEMY PIECE
-
         //Kingside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
         if (this.turn == true ? this.whiteCastlingRights.kingSide : this.blackCastlingRights.kingSide)
         {
