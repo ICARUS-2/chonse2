@@ -91,12 +91,14 @@
             },
             "missButton": 
             {
-                "showMissedCheckmate": "Montrer le mat manqué",
-                "showMissedFork": "Montrer la fourchette manquée",
-                "showMissedCapture": "Montrer la capture manquée",
+                "showMissedCheckmate": "Montrer: Mat manqué",
+                "showMissedFork": "Montrer: Fourchette manquée",
+                "showMissedCapture": "Montrer: Capture manquée",
                 "showAlternative": "Montrer l'alternative",
-                "showMissedPin": "Montrer le clouage manqué",
-                "showMissedSkewer": "Afficher la brochette manquée",
+                "showMissedPin": "Montrer: Clouage manqué",
+                "showMissedSkewer": "Montrer: Brochette manquée",
+                "showMissedCastle": "Montrer: Roque manqué",
+                "showMissedDevelopment" : "Montrer: Développement manqué",
                 "showMiss": "Montrer le coup manqué"
             },
             "ideaButton": 

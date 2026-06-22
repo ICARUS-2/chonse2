@@ -280,7 +280,7 @@ export class CoachDisplay {
       return this.translate.instant('chessboard.coachDisplay.missButton.showMissedCapture');
     }
 
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.CapturedPieceWithWrongAttacker))
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.CapturedPieceWithWrongAttacker) || move.coachMoveFlags.includes(CoachMoveFlagType.WrongDevelopment))
     {
       return this.translate.instant('chessboard.coachDisplay.missButton.showAlternative');
     }
@@ -293,6 +293,16 @@ export class CoachDisplay {
     if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedSkewer))
     {
       return this.translate.instant('chessboard.coachDisplay.missButton.showMissedSkewer');
+    }
+
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedCastle))
+    {
+      return this.translate.instant('chessboard.coachDisplay.missButton.showMissedCastle');
+    }
+
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedDevelopment))
+    {
+      return this.translate.instant('chessboard.coachDisplay.missButton.showMissedDevelopment');
     }
 
     return this.translate.instant('chessboard.coachDisplay.missButton.showMiss');

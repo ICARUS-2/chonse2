@@ -11,6 +11,7 @@ import { LineEval, PositionEval } from "../engine-lib/types/eval";
 import CoachText from "./coach-text";
 import {CoachMiscHelpers, CoachResourceLinks} from "./coach-misc-helpers";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "./coach-types";
+import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
 export class CoachUtils
 {
     static readonly COACH_MOVE_DELIMITER = "*";
@@ -625,9 +626,36 @@ export class CoachUtils
                         }
                     }
 
+                    //Case: Missed an opportunity to castle
+                    {
+                        if (previousBestMove)
+                        {
+                            const castlingRights = whiteToMove ? previousState.blackCastlingRights : previousState.whiteCastlingRights;
+
+                            //Via this, we will automatically know that it's the king that's supposed to move because if the king weren't on the starting square there would be no castling rights.
+                            if (castlingRights.kingSide || castlingRights.queenSide)
+                            {
+                                const kingsideCastle = whiteToMove ? Chonse2Extensions.BLACK_KINGSIDE_CASTLE : Chonse2Extensions.WHITE_KINGSIDE_CASTLE;
+                                const queensideCastle = whiteToMove ? Chonse2Extensions.BLACK_QUEENSIDE_CASTLE : Chonse2Extensions.WHITE_QUEENSIDE_CASTLE;
+
+                                if (previousBestMove.fromSquare == kingsideCastle.kingFrom && previousBestMove.toSquare == kingsideCastle.kingTo)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_CASTLING_KINGSIDE, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedCastle);
+                                }
+
+                                if (previousBestMove.fromSquare == queensideCastle.kingFrom && previousBestMove.toSquare == queensideCastle.kingTo)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_CASTLING_QUEENSIDE, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedCastle);
+                                }
+                            }
+                        }
+                    }
+
                     //Case: Player missed an opportunity to connect rooks.
                     {
-                        if (previousState && missedState)
+                        if (previousState && missedState && !move.coachMoveFlags.includes(CoachMoveFlagType.MissedCastle))
                         {
                             const currentRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(state);
                             const previousRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(previousState);
@@ -664,8 +692,113 @@ export class CoachUtils
                             }
                         }
                     }
-                }
 
+//Case: Player missed development or did it wrong.
+                    {
+                        if (previousState && previousBestMove)
+                        {
+                            const knightPiece = whiteToMove ? PieceType.BLACK_KNIGHT : PieceType.WHITE_KNIGHT;
+                            const bishopPiece = whiteToMove ? PieceType.BLACK_BISHOP : PieceType.WHITE_BISHOP;
+                            
+                            const kingsideKnightSquare = whiteToMove ? Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE : Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE;
+                            const kingsideBishopSquare = whiteToMove ? Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE : Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE;
+                            const queensideKnightSquare = whiteToMove ? Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE : Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE;
+                            const queensideBishopSquare = whiteToMove ? Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE : Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE;
+                        
+                            let developmentPieceInQuestion = "";
+                            let didPlayerMissDevelopment = false;
+                            let didPlayerDevelopRightPieceButToWrongSquare = false;
+
+                            //kingside knight
+                            if (
+                                previousBestMove.fromSquare == kingsideKnightSquare //Best move in previous position was to move a piece from the kingside knight square.
+                                && previousState.findPieceAtCoordinate(kingsideKnightSquare) == knightPiece //Confirms that there was indeed a knight there.
+                            ) 
+                            {
+                                //Confirms that they didn't move the knight.
+                                if (move.fromCoord != kingsideKnightSquare)
+                                {
+                                    didPlayerMissDevelopment = true;
+                                }
+                                else //If they did indeed move the knight, they did it to the wrong square. 
+                                {
+                                    didPlayerDevelopRightPieceButToWrongSquare = true;
+                                }
+
+                                developmentPieceInQuestion = PieceType.KNIGHT;
+                            }
+
+                            //kingside bishop
+                            if (
+                                previousBestMove.fromSquare == kingsideBishopSquare
+                                && previousState.findPieceAtCoordinate(kingsideBishopSquare) == bishopPiece
+                            )
+                            {
+                                if (move.fromCoord != kingsideBishopSquare)
+                                {
+                                    didPlayerMissDevelopment = true;
+                                }
+                                else
+                                {
+                                    didPlayerDevelopRightPieceButToWrongSquare = true;
+                                }
+
+                                developmentPieceInQuestion = PieceType.BISHOP;
+                            }
+
+                            //queenside knight
+                            if (
+                                previousBestMove.fromSquare == queensideKnightSquare
+                                && previousState.findPieceAtCoordinate(queensideKnightSquare) == knightPiece
+                            )
+                            {
+                                if (move.fromCoord != queensideKnightSquare)
+                                {
+                                    didPlayerMissDevelopment = true;
+                                }
+                                else
+                                {
+                                    didPlayerDevelopRightPieceButToWrongSquare = true;
+                                }
+
+                                developmentPieceInQuestion = PieceType.KNIGHT;
+                            }
+
+                            //queenside bishop
+                            if (
+                                previousBestMove.fromSquare == queensideBishopSquare
+                                && previousState.findPieceAtCoordinate(queensideBishopSquare) == bishopPiece
+                            )
+                            {
+                                if (move.fromCoord != queensideBishopSquare)
+                                {
+                                    didPlayerMissDevelopment = true;
+                                }
+                                else
+                                {
+                                    didPlayerDevelopRightPieceButToWrongSquare = true;
+                                }
+
+                                developmentPieceInQuestion = PieceType.BISHOP;
+                            }
+
+                            //If the player did indeed make a development error, coach should flag it
+                            if (developmentPieceInQuestion != "")
+                            {
+                                if (didPlayerMissDevelopment)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_DEVELOPMENT, colorThatMovedText, developmentPieceInQuestion);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedDevelopment);
+                                }
+                                else 
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.INCORRECT_DEVELOPMENT, colorThatMovedText, developmentPieceInQuestion);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.WrongDevelopment);
+                                }
+                            }
+                        }
+                    }
+                }
 
                 //=======Good
                 if (posEval.moveClassification == MoveClassification.Excellent ||
@@ -841,9 +974,70 @@ export class CoachUtils
                         }
                     }
 
-                    //Case: Player accurately connected rooks
+                    //Case: Player cleared the way for castling
                     {
                         if (previousState)
+                        {
+                            const currentCastlingClearance = Chonse2Extensions.areSquaresClearForCastlingProvidedRightsAreThere(state);
+                            const previousCastlingClearance = Chonse2Extensions.areSquaresClearForCastlingProvidedRightsAreThere(previousState);
+
+                            const currentKingside = whiteToMove ? currentCastlingClearance.blackKingside : currentCastlingClearance.whiteKingside;
+                            const currentQueenside = whiteToMove ? currentCastlingClearance.blackQueenside : currentCastlingClearance.whiteQueenside;
+                            const previousKingside = whiteToMove ? previousCastlingClearance.blackKingside : previousCastlingClearance.whiteKingside;
+                            const previousQueenside = whiteToMove ? previousCastlingClearance.blackQueenside : previousCastlingClearance.whiteQueenside;
+                        
+                            if (currentKingside && !previousKingside)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CLEARED_CASTLING_WAY_SENTENCES, colorThatMovedText, PieceType.WHITE_KING);
+                                move.coachMoveFlags.push(CoachMoveFlagType.ClearedWayToCastle);
+                            }
+                            
+                            if (currentQueenside && !previousQueenside)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CLEARED_CASTLING_WAY_SENTENCES, colorThatMovedText, PieceType.WHITE_QUEEN);
+                                move.coachMoveFlags.push(CoachMoveFlagType.ClearedWayToCastle);
+                            }
+                        }
+                    }
+
+                    //Case: Player accurately castled kingside or queenside
+                    {
+                        //player castled somewhere
+                        if (move.notation.includes(AlgebraicNotationMaker.KINGSIDE_CASTLE))
+                        {
+                            let opponentCastledOpposite = false;
+
+                            //used for checking opposite side castling
+                            const castleStatus = Chonse2Extensions.didPlayersLikelyCastle(state);
+
+                            //player just castled queenside
+                            if (move.notation.includes(AlgebraicNotationMaker.QUEENSIDE_CASTLE))
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CASTLED_QUEENSIDE_SENTENCES, colorThatMovedText);
+
+                                opponentCastledOpposite = whiteToMove ? castleStatus.whiteKingside : castleStatus.blackKingside
+                            }
+                            else //player just castled kingside
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CASTLED_KINGSIDE_SENTENCES, colorThatMovedText);
+                            
+                                opponentCastledOpposite = whiteToMove ? castleStatus.whiteQueenside : castleStatus.blackQueenside;
+                            }
+
+                            //additional comment if they castled opposite sides.
+                            if (opponentCastledOpposite)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.OPPOSITE_SIDE_CASTLING_SENTENCES, colorThatMovedText);
+                            }
+
+                            move.coachMoveFlags.push(CoachMoveFlagType.Castled);
+                        }
+                    }
+
+                    //Case: Player accurately connected rooks
+                    {
+                        //need to make sure we can see the previous state AND that the opponent didn't just castle (since we already know from those sentences that it connects rooks).
+                        if (previousState && !move.coachMoveFlags.includes(CoachMoveFlagType.Castled))
                         {
                             const currentRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(state);
                             const previousRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(previousState);
