@@ -34,7 +34,8 @@ export enum CoachMoveFlagType
     OpportunityToCheckmate,
     OpportunityToSkewer,
     OpportunityToFork,
-    Castled
+    Castled,
+    ClearedWayToCastle
 }
 
 export enum CoachIdeaFlagType

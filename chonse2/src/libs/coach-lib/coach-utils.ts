@@ -868,6 +868,32 @@ export class CoachUtils
                         }
                     }
 
+                    //Case: Player cleared the way for castling
+                    {
+                        if (previousState)
+                        {
+                            const currentCastlingClearance = Chonse2Extensions.areSquaresClearForCastlingProvidedRightsAreThere(state);
+                            const previousCastlingClearance = Chonse2Extensions.areSquaresClearForCastlingProvidedRightsAreThere(previousState);
+
+                            const currentKingside = whiteToMove ? currentCastlingClearance.blackKingside : currentCastlingClearance.whiteKingside;
+                            const currentQueenside = whiteToMove ? currentCastlingClearance.blackQueenside : currentCastlingClearance.whiteQueenside;
+                            const previousKingside = whiteToMove ? previousCastlingClearance.blackKingside : previousCastlingClearance.whiteKingside;
+                            const previousQueenside = whiteToMove ? previousCastlingClearance.blackQueenside : previousCastlingClearance.whiteQueenside;
+                        
+                            if (currentKingside && !previousKingside)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CLEARED_CASTLING_WAY_SENTENCES, colorThatMovedText, PieceType.WHITE_KING);
+                                move.coachMoveFlags.push(CoachMoveFlagType.ClearedWayToCastle);
+                            }
+                            
+                            if (currentQueenside && !previousQueenside)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CLEARED_CASTLING_WAY_SENTENCES, colorThatMovedText, PieceType.WHITE_QUEEN);
+                                move.coachMoveFlags.push(CoachMoveFlagType.ClearedWayToCastle);
+                            }
+                        }
+                    }
+
                     //Case: Player accurately castled kingside or queenside
                     {
                         //player castled somewhere

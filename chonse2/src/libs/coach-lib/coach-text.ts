@@ -316,6 +316,14 @@ export default class CoachText
         `Oooh, opposite side castling... It becomes a race to see who can bust down the other's defence first with a pawn storm. `,
     ]
 
+    //player cleared the necessary squares to castle on a side
+    public static readonly CLEARED_CASTLING_WAY_SENTENCES: Array<string> = 
+    [
+        `This development prepares a safe ${CoachText.PIECE_PLACEHOLDER}side castle for ${CoachText.TURN_PLACEHOLDER}'s king. `,
+        `Good development here will allow for ${CoachText.PIECE_PLACEHOLDER}side castling as early as next move. `,
+        `${CoachText.TURN_PLACEHOLDER} is preparing to potentially castle ${CoachText.PIECE_PLACEHOLDER} with this move. `
+    ]
+
     //#endregion
     
     //#region Good (development)

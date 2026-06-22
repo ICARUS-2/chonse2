@@ -537,6 +537,59 @@ export default class Chonse2Extensions
 
         return returnObj;
     }
+
+    public static areSquaresClearForCastlingProvidedRightsAreThere(board: Chonse2): {whiteKingside: boolean, whiteQueenside: boolean, blackKingside: boolean, blackQueenside: boolean}
+    {
+        const returnObj = 
+        {
+            whiteKingside: false,
+            whiteQueenside: false,
+            blackKingside: false,
+            blackQueenside: false   
+        };
+
+        //white
+        if (board.whiteCastlingRights.kingSide) 
+        {
+            // King is on e1, Rook is on h1. Squares to check: f1, g1
+            const f1Clear = board.findPieceAtCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) === "";
+            const g1Clear = board.findPieceAtCoordinate(Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) === "";
+            
+            returnObj.whiteKingside = f1Clear && g1Clear;
+        }
+
+        if (board.whiteCastlingRights.queenSide) 
+        {
+            // King is on e1, Rook is on a1. Squares to check: d1, c1, b1
+            const d1Clear = board.findPieceAtCoordinate(Chonse2.WHITE_QUEEN_SQUARE) === "";
+            const c1Clear = board.findPieceAtCoordinate(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) === "";
+            const b1Clear = board.findPieceAtCoordinate(Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE) === "";
+            
+            returnObj.whiteQueenside = d1Clear && c1Clear && b1Clear;
+        }
+
+        //black
+        if (board.blackCastlingRights.kingSide) 
+        {
+            // King is on e8, Rook is on h8. Squares to check: f8, g8
+            const f8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) === "";
+            const g8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE) === "";
+            
+            returnObj.blackKingside = f8Clear && g8Clear;
+        }
+
+        if (board.blackCastlingRights.queenSide) 
+        {
+            //king is on e8, Rook is on a8. Squares to check: d8, c8, b8
+            const d8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_QUEEN_SQUARE) === "";
+            const c8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) === "";
+            const b8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE) === "";
+            
+            returnObj.blackQueenside = d8Clear && c8Clear && b8Clear;
+        }
+
+        return returnObj;
+    }
     //#endregion
     
     //#region Skewers
