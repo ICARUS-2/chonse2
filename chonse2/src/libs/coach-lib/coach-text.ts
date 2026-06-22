@@ -245,6 +245,23 @@ export default class CoachText
         `Castling queenside was the more active option here, giving your rook faster access to central play. while providing good king safety. `,
         `This position favored castling queenside, and delaying it often means missing your best chance to seize the initiative in controlling open files with the corresponding rook. `
     ]
+
+    //Inaccurately missed development
+    public static readonly MISSED_DEVELOPMENT: Array<string> = 
+    [
+        `A better option for ${CoachText.TURN_PLACEHOLDER} was to develop a ${CoachText.PIECE_PLACEHOLDER}. `,
+        `${CoachText.TURN_PLACEHOLDER} should have focused on developing their ${CoachText.PIECE_PLACEHOLDER} here instead. `,
+        `${CoachText.TURN_PLACEHOLDER} missed a chance to develop a ${CoachText.PIECE_PLACEHOLDER}. `
+        
+    ]
+
+    //Developed a piece but there was a better way to do so.
+    public static readonly INCORRECT_DEVELOPMENT: Array<string> = 
+    [
+        `There was a better way for ${CoachText.TURN_PLACEHOLDER} to have developed their ${CoachText.PIECE_PLACEHOLDER} here. `,
+        `${CoachText.TURN_PLACEHOLDER} correctly identified that their ${CoachText.PIECE_PLACEHOLDER} needed to be developed, but there was a better development square. `,
+        `${CoachText.TURN_PLACEHOLDER} had a better way to develop their ${CoachText.PIECE_PLACEHOLDER} long-term. `
+    ]
     //#endregion
 
     //#region Good============
@@ -398,37 +415,37 @@ export default class CoachText
     public static convertPieceToText(piece: string): string
     {
         //Pawn
-        if (piece === PieceType.WHITE_PAWN || piece === PieceType.BLACK_PAWN)
+        if (piece === PieceType.WHITE_PAWN || piece === PieceType.BLACK_PAWN || piece === PieceType.PAWN)
         {
             return "pawn";
         }
 
         //Knight
-        if (piece === PieceType.WHITE_KNIGHT || piece === PieceType.BLACK_KNIGHT)
+        if (piece === PieceType.WHITE_KNIGHT || piece === PieceType.BLACK_KNIGHT || piece === PieceType.KNIGHT)
         {
             return "knight";
         }
 
         //Bishop
-        if (piece === PieceType.WHITE_BISHOP || piece === PieceType.BLACK_BISHOP)
+        if (piece === PieceType.WHITE_BISHOP || piece === PieceType.BLACK_BISHOP || piece === PieceType.BISHOP)
         {
             return "bishop";
         }
 
         //Rook
-        if (piece === PieceType.WHITE_ROOK || piece === PieceType.BLACK_ROOK)
+        if (piece === PieceType.WHITE_ROOK || piece === PieceType.BLACK_ROOK || piece === PieceType.ROOK)
         {
             return "rook";
         }
 
         //Queen
-        if (piece === PieceType.WHITE_QUEEN || piece === PieceType.BLACK_QUEEN)
+        if (piece === PieceType.WHITE_QUEEN || piece === PieceType.BLACK_QUEEN || piece === PieceType.QUEEN)
         {
             return "queen";
         }
 
         //King
-        if (piece === PieceType.WHITE_KING || piece === PieceType.BLACK_KING)
+        if (piece === PieceType.WHITE_KING || piece === PieceType.BLACK_KING || piece === PieceType.KING)
         {
             return "king";
         }

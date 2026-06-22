@@ -692,6 +692,112 @@ export class CoachUtils
                             }
                         }
                     }
+
+//Case: Player missed development or did it wrong.
+                    {
+                        if (previousState && previousBestMove)
+                        {
+                            const knightPiece = whiteToMove ? PieceType.BLACK_KNIGHT : PieceType.WHITE_KNIGHT;
+                            const bishopPiece = whiteToMove ? PieceType.BLACK_BISHOP : PieceType.WHITE_BISHOP;
+                            
+                            const kingsideKnightSquare = whiteToMove ? Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE : Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE;
+                            const kingsideBishopSquare = whiteToMove ? Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE : Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE;
+                            const queensideKnightSquare = whiteToMove ? Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE : Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE;
+                            const queensideBishopSquare = whiteToMove ? Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE : Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE;
+                        
+                            let developmentPieceInQuestion = "";
+                            let didPlayerMissDevelopment = false;
+                            let didPlayerDevelopRightPieceButToWrongSquare = false;
+
+                            //kingside knight
+                            if (
+                                previousBestMove.fromSquare == kingsideKnightSquare //Best move in previous position was to move a piece from the kingside knight square.
+                                && previousState.findPieceAtCoordinate(kingsideKnightSquare) == knightPiece //Confirms that there was indeed a knight there.
+                            ) 
+                            {
+                                //Confirms that they didn't move the knight.
+                                if (move.fromCoord != kingsideKnightSquare)
+                                {
+                                    didPlayerMissDevelopment = true;
+                                }
+                                else //If they did indeed move the knight, they did it to the wrong square. 
+                                {
+                                    didPlayerDevelopRightPieceButToWrongSquare = true;
+                                }
+
+                                developmentPieceInQuestion = PieceType.KNIGHT;
+                            }
+
+                            //kingside bishop
+                            if (
+                                previousBestMove.fromSquare == kingsideBishopSquare
+                                && previousState.findPieceAtCoordinate(kingsideBishopSquare) == bishopPiece
+                            )
+                            {
+                                if (move.fromCoord != kingsideBishopSquare)
+                                {
+                                    didPlayerMissDevelopment = true;
+                                }
+                                else
+                                {
+                                    didPlayerDevelopRightPieceButToWrongSquare = true;
+                                }
+
+                                developmentPieceInQuestion = PieceType.BISHOP;
+                            }
+
+                            //queenside knight
+                            if (
+                                previousBestMove.fromSquare == queensideKnightSquare
+                                && previousState.findPieceAtCoordinate(queensideKnightSquare) == knightPiece
+                            )
+                            {
+                                if (move.fromCoord != queensideKnightSquare)
+                                {
+                                    didPlayerMissDevelopment = true;
+                                }
+                                else
+                                {
+                                    didPlayerDevelopRightPieceButToWrongSquare = true;
+                                }
+
+                                developmentPieceInQuestion = PieceType.KNIGHT;
+                            }
+
+                            //queenside bishop
+                            if (
+                                previousBestMove.fromSquare == queensideBishopSquare
+                                && previousState.findPieceAtCoordinate(queensideBishopSquare) == bishopPiece
+                            )
+                            {
+                                if (move.fromCoord != queensideBishopSquare)
+                                {
+                                    didPlayerMissDevelopment = true;
+                                }
+                                else
+                                {
+                                    didPlayerDevelopRightPieceButToWrongSquare = true;
+                                }
+
+                                developmentPieceInQuestion = PieceType.BISHOP;
+                            }
+
+                            //If the player did indeed make a development error, coach should flag it
+                            if (developmentPieceInQuestion != "")
+                            {
+                                if (didPlayerMissDevelopment)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_DEVELOPMENT, colorThatMovedText, developmentPieceInQuestion);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedDevelopment);
+                                }
+                                else 
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.INCORRECT_DEVELOPMENT, colorThatMovedText, developmentPieceInQuestion);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.WrongDevelopment);
+                                }
+                            }
+                        }
+                    }
                 }
 
                 //=======Good

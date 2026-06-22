@@ -29,6 +29,8 @@ export enum CoachMoveFlagType
     CausedMaterialLoss,
     MissedSkewer,
     MissedCastle,
+    MissedDevelopment,
+    WrongDevelopment,
 
     //Good (show follow up)
     OpportunityToCheckmate,
