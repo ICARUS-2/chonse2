@@ -211,6 +211,21 @@ export default class CoachText
         `${CoachText.TURN_PLACEHOLDER} just allowed their opponent to capture their ${CoachText.PIECE_PLACEHOLDER} with a skewer. `,
         `This allows ${CoachText.TURN_PLACEHOLDER}'s opponent to grab a ${CoachText.PIECE_PLACEHOLDER} through a skewer. `,
     ]
+
+    //Did not connect their rooks
+    public static readonly MISSED_ROOK_CONNECTION_SENTENCES =
+    [
+        `${CoachText.TURN_PLACEHOLDER}'s best move in this position was to connect their rooks in order for them to provide mutual defence. `,
+        `Instead, ${CoachText.TURN_PLACEHOLDER} should have connected their rooks so that they can both defend each other and team up for attacks. `,
+        `${CoachText.TURN_PLACEHOLDER} missed a chance to connect their rooks here. `
+    ]
+
+    //Inaccurately disconnected their rooks
+    public static readonly DISCONNECTED_ROOKS = 
+    [
+        `${CoachText.TURN_PLACEHOLDER} erroneously disconnected their rooks here. They can no longer defend each other. `,
+        `${CoachText.TURN_PLACEHOLDER} should have kept their rooks connected. `
+    ]
     //#endregion
 
     //#region Good============
@@ -248,9 +263,18 @@ export default class CoachText
         `Amazing! ${CoachText.TURN_PLACEHOLDER} has set up a skewer, which can win a ${CoachText.PIECE_PLACEHOLDER}! `,
         `${CoachText.TURN_PLACEHOLDER} can win a ${CoachText.PIECE_PLACEHOLDER} through a skewer. `
     ]
+
+    //Player connected their rooks
+    public static readonly CONNECTED_ROOKS_SENTENCES: Array<string> = 
+    [
+        `A great find by ${CoachText.TURN_PLACEHOLDER}, connecting the rooks will allow them to provide mutual defence. `,
+        `Connected rooks are a good idea, as they can easily defend each other this way. `,
+        `${CoachText.TURN_PLACEHOLDER} has connected their rooks, allowing them to team up more effectively. `
+    ]
     //#endregion
     
     //#region Good (development)
+    //moved a center pawn allowing bishop development
     public static readonly PREPARES_BISHOP_FOR_DEVELOPMENT_SENTENCES: Array<string> = 
     [
         "This move prepares a bishop for development. ",
@@ -258,12 +282,14 @@ export default class CoachText
         "Moving the pawn allowing the bishop to step into the action. "
     ]
 
+    //moved the pawn allowing a bishop to be fianchettoed
     public static readonly PREPARES_BISHOP_FOR_FIANCHETTO_DEVELOPMENT_SENTENCES: Array<string> = 
     [
         "This prepares the bishop for a fianchetto to control the main diagonal. ",
         "Opens their bishop up for a fianchetto move to exert pressure on the long diagonal. "
     ]
 
+    //moved the bishop out
     public static readonly BISHOP_DEVELOPED_SENTENCES: Array<string> = 
     [
         `${this.TURN_PLACEHOLDER} develops their bishop off its starting square. `,
@@ -272,6 +298,7 @@ export default class CoachText
         `The bishop comes into play to control the diagonals. `
     ]
 
+    //moved the bishop out on the main diag.
     public static readonly BISHOP_FIANCHETTOED_SENTENCES: Array<string> = 
     [
         `${this.TURN_PLACEHOLDER} fianchettoed their bishop in order to snipe enemy pieces from a distance. `,
@@ -279,6 +306,7 @@ export default class CoachText
         `Fianchettoing their bishop, putting pressure on the main diagonal. `
     ]
 
+    //developed the knight and attacked the center.
     public static readonly KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES: Array<string> = 
     [
         "This brings the knight into play and increases influence in the center. ",

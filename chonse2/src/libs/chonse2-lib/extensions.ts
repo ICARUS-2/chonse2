@@ -739,8 +739,87 @@ export default class Chonse2Extensions
     }
     //#endregion
 
+    //#region Connecting rooks
+    public static doesBoardHaveConnectedRooks(board: Chonse2):{white: boolean, black: boolean}
+    {
+        const returnObj = {white: false, black: false};
+
+        //All of the pieces on the board.
+        const boardData = [board.getAllPiecesAndCoordsByColor(PieceColor.WHITE), board.getAllPiecesAndCoordsByColor(PieceColor.BLACK)];
+        
+        //Used to differentiate different colored rooks
+        const colors = [PieceColor.WHITE, PieceColor.BLACK];
+
+        //Used to store each color
+        const whiteRookCoords: Array<string> = [];
+        const blackRookCoords: Array<string> = [];
+
+        //Filter out which pieces are the rooks of each color.
+        for(let cCounter = 0; cCounter < boardData.length; cCounter++)
+        {
+            const colorPieceData = boardData[cCounter];
+            const color = colors[cCounter];
+            const addToArr = color == PieceColor.WHITE ? whiteRookCoords : blackRookCoords;
+
+            colorPieceData.coords.forEach((coord, idx) => 
+                {
+                    const piece = colorPieceData.pieces[idx];
+                    const rookType = color == PieceColor.WHITE ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
+
+                    if (piece == rookType)
+                    {
+                        addToArr.push(coord);
+                    }
+                }
+            )
+        }
+
+        //black and white rook coords in array for code reuse
+        const rookCoordData = [whiteRookCoords, blackRookCoords];
+
+        //loop through both arrays
+        for(let cCounter = 0; cCounter < rookCoordData.length; cCounter++)
+        {
+            //the specific rook coords (color) we are checking
+            const rookCoords = rookCoordData[cCounter];
+            const color = colors[cCounter];
+
+            //Check through every coord of a rook.
+            for(let i = 0; i < rookCoords.length; i++)
+            {
+                //efficiency: don't run this loop more times than necessary
+                if ( color == PieceColor.WHITE ? returnObj.white : returnObj.black )
+                {
+                    break;
+                }
+
+                //the place where the rook is.
+                const currentRookCoord = rookCoords[i];
+
+                //every piece that can see it.
+                const piecesThatHitSquare = color == PieceColor.WHITE ? this.getPiecesThatHitSquare(board, currentRookCoord).white : this.getPiecesThatHitSquare(board, currentRookCoord).black;
+
+                //Loop through every piece that can see this rook and check if another rook (same color) can see it.
+                for(let j = 0; j < piecesThatHitSquare.length; j++)
+                {
+                    const pieceInSquareWeAreChecking = piecesThatHitSquare[j];
+                    const rookType = color == PieceColor.WHITE ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
+
+                    //if a rook of the same color can see this rook, then it follows that there is at least one instance of connected rooks on the board. 
+                    if (pieceInSquareWeAreChecking == rookType)
+                    {
+                        color == PieceColor.WHITE ? returnObj.white = true : returnObj.black = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return returnObj;
+    }
+
     //#region General board state
-    //Gets coords of all pieces that attack/defend a given square.
+    //Gets all pieces that attack/defend a given square.
     public static getPiecesThatHitSquare(board: Chonse2, square: string): {white: Array<string>, black: Array<string>} {
         const boardCopy = board.getFullDeepCopy();
         const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(square);

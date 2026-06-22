@@ -109,8 +109,9 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   animatedPiece = signal('');
   animatedPieceX = signal(0);
   animatedPieceY = signal(0);
-  static animationDuration = 125; // ms
+  static animationDuration = 110; // ms
   animatedPieceCoord = signal('');
+  animatedPieceDestCoord = signal('');
 
   static readonly moveClassificationColors: Map<string, string> = new Map<string, string>( 
     [
@@ -1220,6 +1221,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     //set piece state
     this.animatedPieceCoord.set(from);
+    this.animatedPieceDestCoord.set(to); 
     this.animatedPiece.set(piece);
     this.animatedPieceX.set(fromCoords.x);
     this.animatedPieceY.set(fromCoords.y);
@@ -1253,6 +1255,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     this.animatedPiece.set("");
     this.animatedPieceCoord.set("");
+    this.animatedPieceDestCoord.set("");
   }
   //#endregion
   

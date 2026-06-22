@@ -217,7 +217,7 @@ export class CoachDisplay {
 
             
             //Then wait one second for the next move.
-            await this.delay(1200);
+            await this.delay(1000);
           }
           else 
           {
