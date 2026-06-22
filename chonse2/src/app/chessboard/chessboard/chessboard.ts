@@ -103,7 +103,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   private resizeObserver: ResizeObserver;
   mouseX = signal(0);
   mouseY = signal(0);
-  //arrows = signal<Arrow[]>([]);
+
   @ViewChild('board', { static: false }) boardElement!: ElementRef<HTMLDivElement>;
   boardPixelSize = signal(0);
   animatedPiece = signal('');
@@ -1257,6 +1257,20 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.animatedPieceCoord.set("");
     this.animatedPieceDestCoord.set("");
   }
+
+  showPieceForCoord = computed(() => {
+    const animCoord = this.animatedPieceCoord();
+    const animDestCoord = this.animatedPieceDestCoord();
+    const fromSq = this.fromSquare();
+    const clickToMove = LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE);
+
+    return (coord: string): boolean => {
+      if (animCoord) {
+        return coord !== animCoord && coord !== animDestCoord;
+      }
+      return clickToMove ? true : coord !== fromSq;
+    };
+  });
   //#endregion
   
 }

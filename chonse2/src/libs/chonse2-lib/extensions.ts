@@ -467,6 +467,54 @@ export default class Chonse2Extensions
     }
     //#endregion
 
+    //#region Castling
+    public static readonly WHITE_KINGSIDE_CASTLE_SQUARES = ["g1", "h1"];
+    public static readonly WHITE_QUEENSIDE_CASTLE_SQUARES = ["a1", "b1", "c1"];
+    public static readonly BLACK_KINGSIDE_CASTLE_SQUARES = ["h8", "g8"];
+    public static readonly BLACK_QUEENSIDE_CASTLE_SQUARES = ["a8", "b8", "c8"]
+
+    public static didPlayersLikelyCastle(board:Chonse2): {
+        whiteKingside: boolean, 
+        whiteQueenside: boolean,
+        blackKingside: boolean,
+        blackQueenside: boolean}
+    {
+        const returnObj = {whiteKingside: false, whiteQueenside: false, blackKingside: false, blackQueenside: false}
+
+        const whiteKingCoord = board.getKingCoordinate(PieceColor.WHITE);
+        const blackKingCoord = board.getKingCoordinate(PieceColor.BLACK);
+
+        //It's impossible to have castled if castling rights are still there.
+        if (!board.whiteCastlingRights.kingSide && !board.whiteCastlingRights.queenSide)
+        {
+            if (Chonse2Extensions.WHITE_KINGSIDE_CASTLE_SQUARES.includes(whiteKingCoord))
+            {
+                returnObj.whiteKingside = true;
+            }
+
+            if (Chonse2Extensions.WHITE_QUEENSIDE_CASTLE_SQUARES.includes(whiteKingCoord))
+            {
+                returnObj.whiteQueenside = true;
+            }
+        }
+
+        if (!board.blackCastlingRights.kingSide && !board.blackCastlingRights.queenSide)
+        {
+            if (Chonse2Extensions.BLACK_KINGSIDE_CASTLE_SQUARES.includes(blackKingCoord))
+            {
+                returnObj.blackKingside = true;
+            }
+
+            if (Chonse2Extensions.BLACK_QUEENSIDE_CASTLE_SQUARES.includes(blackKingCoord))
+            {
+                returnObj.blackQueenside = true;
+            }
+        }
+
+        return returnObj;
+    }
+    //#endregion
+    
     //#region Skewers
     public static getSkewersOnBoard(board: Chonse2, optionalExistingHangingPieceArray: { white: Array<string>, black: Array<string> } | null = null): Array<Skewer>
     {
