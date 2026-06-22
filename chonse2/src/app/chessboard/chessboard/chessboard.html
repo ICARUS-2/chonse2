@@ -113,12 +113,7 @@
                                         [isDark]="(rankIndex + fileIndex) % 2 == 1"
                                         [showFile]="rankIndex == rank.length - 1"
                                         [showRank]="fileIndex == 0"
-                                        [showPiece]="animatedPieceCoord() 
-                                        ? this.COORDS[rankIndex][fileIndex] != animatedPieceCoord() 
-                                            && this.COORDS[rankIndex][fileIndex] != animatedPieceDestCoord()
-                                        : LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE) 
-                                            ? true 
-                                            : this.COORDS[rankIndex][fileIndex] != fromSquare()"
+                                        [showPiece]="showPieceForCoord()(this.COORDS[rankIndex][fileIndex])"
                                         [isFlipped]="boardState().isFlipped()"
                                         [isLegalMove]="currentLegalMoves().includes(this.COORDS[rankIndex][fileIndex])"
                                         [isInCheck]="(boardState().getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState().getCurrentState().isInCheck(PieceColor.WHITE)) || (boardState().getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState().getCurrentState().isInCheck(PieceColor.BLACK)) "
@@ -276,9 +271,11 @@
     }
 </div>  
 
-<div class="testingPurposes">
-    @let rooksConnected = Chonse2Extensions.doesBoardHaveConnectedRooks(this.boardState().getCurrentState());
+<!-- <div class="testingPurposes">
+    @let castling = Chonse2Extensions.didPlayersLikelyCastle(this.boardState().getCurrentState());
 
-    {{rooksConnected.white}}
-    {{rooksConnected.black}}
-</div>
+    {{castling.whiteKingside}}
+    {{castling.whiteQueenside}}
+    {{castling.blackKingside}}
+    {{castling.blackQueenside}}
+</div> -->

@@ -185,35 +185,35 @@ export default class CoachText
     ]
 
     //Missed the opportunity to pin a piece
-    public static readonly MISSED_PIN_SENTENCES = 
+    public static readonly MISSED_PIN_SENTENCES: Array<string> = 
     [
         `${CoachText.TURN_PLACEHOLDER} has missed an opportunity to pin a ${CoachText.PIECE_PLACEHOLDER} to the ${CoachText.SECONDARY_PIECE_PLACEHOLDER}. `,
         `The best move for ${CoachText.TURN_PLACEHOLDER} was to cut the mobility of the opponent's ${CoachText.PIECE_PLACEHOLDER} by pinning it to the ${CoachText.SECONDARY_PIECE_PLACEHOLDER}. `
     ]
 
     //Ignored a relative pin
-    public static readonly IGNORED_PIN_SENTENCES = 
+    public static readonly IGNORED_PIN_SENTENCES: Array<string> = 
     [
         `${CoachText.TURN_PLACEHOLDER} completely ignored the pin of their ${CoachText.PIECE_PLACEHOLDER}, and now their ${CoachText.SECONDARY_PIECE_PLACEHOLDER} is lost. `,
         `${CoachText.TURN_PLACEHOLDER} didn't notice their ${CoachText.PIECE_PLACEHOLDER} was pinned, exposing the ${CoachText.SECONDARY_PIECE_PLACEHOLDER} behind it. `
     ]
 
     //missed a skewer
-    public static readonly MISSED_SKEWER_SENTENCES = 
+    public static readonly MISSED_SKEWER_SENTENCES: Array<string> = 
     [
         `${CoachText.TURN_PLACEHOLDER} lost a chance to win a ${CoachText.PIECE_PLACEHOLDER} through a skewer. `,
         `${CoachText.TURN_PLACEHOLDER} had a chance to acquire a ${CoachText.PIECE_PLACEHOLDER} via a skewer, but overlooked it. `
     ]
 
     //Allowed their piece to get skewered
-    public static readonly ALLOWED_SKEWER_SENTENCES = 
+    public static readonly ALLOWED_SKEWER_SENTENCES: Array<string> = 
     [
         `${CoachText.TURN_PLACEHOLDER} just allowed their opponent to capture their ${CoachText.PIECE_PLACEHOLDER} with a skewer. `,
         `This allows ${CoachText.TURN_PLACEHOLDER}'s opponent to grab a ${CoachText.PIECE_PLACEHOLDER} through a skewer. `,
     ]
 
     //Did not connect their rooks
-    public static readonly MISSED_ROOK_CONNECTION_SENTENCES =
+    public static readonly MISSED_ROOK_CONNECTION_SENTENCES: Array<string> =
     [
         `${CoachText.TURN_PLACEHOLDER}'s best move in this position was to connect their rooks in order for them to provide mutual defence. `,
         `Instead, ${CoachText.TURN_PLACEHOLDER} should have connected their rooks so that they can both defend each other and team up for attacks. `,
@@ -221,10 +221,29 @@ export default class CoachText
     ]
 
     //Inaccurately disconnected their rooks
-    public static readonly DISCONNECTED_ROOKS = 
+    public static readonly DISCONNECTED_ROOKS: Array<string> = 
     [
         `${CoachText.TURN_PLACEHOLDER} erroneously disconnected their rooks here. They can no longer defend each other. `,
         `${CoachText.TURN_PLACEHOLDER} should have kept their rooks connected. `
+    ]
+
+    //Inaccurately missed castling kingside.
+    public static readonly MISSED_CASTLING_KINGSIDE: Array<string> = 
+    [
+        `A better option here was for ${CoachText.TURN_PLACEHOLDER} to secure their king with a kingside castle.`,
+        `They should have prioritized king safety via a kingside castle. `,
+        `Castling kingside here would have improved king safety and connected the rooks immediately. `,
+        `Delaying castling leaves their king more exposed in the center, where tactics are more dangerous. `,
+        `In most positions like this, early kingside castling is the most reliable way to stabilize. `
+    ]
+
+    //Inaccurately missed castling queenside.
+    public static readonly MISSED_CASTLING_QUEENSIDE: Array<string> = 
+    [
+        `Better option here was for ${CoachText.TURN_PLACEHOLDER} to perform a queenside castle, both securing their king and getting a rook extremely active. `,
+        `Castling queenside was a better option here, for both king safety and piece activity. `,
+        `Castling queenside was the more active option here, giving your rook faster access to central play. while providing good king safety. `,
+        `When the position favors queenside castling, delaying it often means missing your best chance to seize the initiative. `
     ]
     //#endregion
 
@@ -271,6 +290,32 @@ export default class CoachText
         `Connected rooks are a good idea, as they can easily defend each other this way. `,
         `${CoachText.TURN_PLACEHOLDER} has connected their rooks, allowing them to team up more effectively. `
     ]
+
+    //Player accurately castled kingside
+    public static readonly CASTLED_KINGSIDE_SENTENCES: Array<string> = 
+    [
+        `Castling kingside is generally better for king safety as the king is further from the center. `,
+        `Castling kingside is a solid defensive choice that quickly hides the king behind a safe pawn shield. `,
+        `Securing the king via a kingside castle and activating a rook. `
+    ]
+
+    //Player accurately castled queenside
+    public static readonly CASTLED_QUEENSIDE_SENTENCES: Array<string> = 
+    [
+        `Because the king starts closer to open lines, timing and preparation are critical to avoid tactical pressure when choosing a queenside castle. `,
+        `Castling queenside is considered a good balance between king safety and piece activity because your rook starts closer to the center files. `,
+        `Castling queenside is an ambitious choice that often supports faster piece activity on the center and queenside. `,
+    ]
+
+    //players caseul on opposite sides
+    public static readonly OPPOSITE_SIDE_CASTLING_SENTENCES: Array<string> = 
+    [
+        `Players chose to castle on opposite sides, often resulting in a race to see who can pawn storm the crap out of the other first. `,
+        `Opposite-side castling often leads to both interesting and highly aggressive games with pawn bombardments on either side. `,
+        `When opposite-side castling occurs, small inaccuracies can decide the game quickly since both kings are in direct line of fire. `,
+        `Oooh, opposite side castling... It becomes a race to see who can bust down the other's defence first with a pawn storm. `,
+    ]
+
     //#endregion
     
     //#region Good (development)
