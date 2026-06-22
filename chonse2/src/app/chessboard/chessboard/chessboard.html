@@ -113,7 +113,12 @@
                                         [isDark]="(rankIndex + fileIndex) % 2 == 1"
                                         [showFile]="rankIndex == rank.length - 1"
                                         [showRank]="fileIndex == 0"
-                                        [showPiece]="animatedPieceCoord() ? this.COORDS[rankIndex][fileIndex] != animatedPieceCoord() : LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE) ? true : this.COORDS[rankIndex][fileIndex] != fromSquare()"
+                                        [showPiece]="animatedPieceCoord() 
+                                        ? this.COORDS[rankIndex][fileIndex] != animatedPieceCoord() 
+                                            && this.COORDS[rankIndex][fileIndex] != animatedPieceDestCoord()
+                                        : LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE) 
+                                            ? true 
+                                            : this.COORDS[rankIndex][fileIndex] != fromSquare()"
                                         [isFlipped]="boardState().isFlipped()"
                                         [isLegalMove]="currentLegalMoves().includes(this.COORDS[rankIndex][fileIndex])"
                                         [isInCheck]="(boardState().getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState().getCurrentState().isInCheck(PieceColor.WHITE)) || (boardState().getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState().getCurrentState().isInCheck(PieceColor.BLACK)) "

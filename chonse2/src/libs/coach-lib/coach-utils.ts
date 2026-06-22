@@ -1,4 +1,3 @@
-import { findIndex } from "rxjs";
 import { Arrow, ArrowColors, ArrowContext, createArrow } from "../../app/chessboard/chessboard/arrow";
 import MoveResult from "../../app/chessboard/chessboard/move-result";
 import Chonse2 from "../chonse2-lib/chonse2";
@@ -12,7 +11,6 @@ import { LineEval, PositionEval } from "../engine-lib/types/eval";
 import CoachText from "./coach-text";
 import {CoachMiscHelpers, CoachResourceLinks} from "./coach-misc-helpers";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "./coach-types";
-
 export class CoachUtils
 {
     static readonly COACH_MOVE_DELIMITER = "*";
@@ -626,6 +624,44 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Player missed an opportunity to connect rooks.
+                    {
+                        if (previousState && missedState)
+                        {
+                            const currentRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(state);
+                            const previousRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(previousState);
+                            const missedRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(missedState);
+                        
+                            const areRooksCurrentlyConnected = whiteToMove ? currentRookState.black : currentRookState.white;
+                            const wereRooksPreviouslyConnected = whiteToMove ? previousRookState.black : previousRookState.white;
+                            const wasBestMoveToConnectRooks = whiteToMove ? missedRookState.black : missedRookState.white;
+
+                            if (!areRooksCurrentlyConnected && !wereRooksPreviouslyConnected && wasBestMoveToConnectRooks)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_ROOK_CONNECTION_SENTENCES, colorThatMovedText);
+                            }
+                        }
+                    }
+
+                    //Case: Player erroneously disconnected their rooks
+                    {
+                        if (previousState && missedState)
+                        {
+                            const currentRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(state);
+                            const previousRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(previousState);
+                            const missedRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(missedState);
+                        
+                            const areRooksCurrentlyConnected = whiteToMove ? currentRookState.black : currentRookState.white;
+                            const wereRooksPreviouslyConnected = whiteToMove ? previousRookState.black : previousRookState.white;
+                            const didBestMoveInvolveKeepingRooksConnected = whiteToMove ? missedRookState.black : missedRookState.white;
+
+                            if (!areRooksCurrentlyConnected && wereRooksPreviouslyConnected && didBestMoveInvolveKeepingRooksConnected)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.DISCONNECTED_ROOKS, colorThatMovedText);
+                            }
+                        }
+                    }
                 }
 
 
@@ -800,6 +836,23 @@ export class CoachUtils
 
                             move.coachIdeas.set(CoachIdeaFlagType.SkewerIdea, idea);
                             move.coachResources.set(CoachResourceFlagType.Skewer, CoachResourceLinks.SKEWER_LINK);
+                        }
+                    }
+
+                    //Case: Player accurately connected rooks
+                    {
+                        if (previousState)
+                        {
+                            const currentRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(state);
+                            const previousRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(previousState);
+
+                            const areRooksCurrentlyConnected = whiteToMove ? currentRookState.black : currentRookState.white;
+                            const wereRooksPreviouslyConnected = whiteToMove ? previousRookState.black : previousRookState.white;
+
+                            if (!wereRooksPreviouslyConnected && areRooksCurrentlyConnected)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CONNECTED_ROOKS_SENTENCES, colorThatMovedText);
+                            }
                         }
                     }
                 }
