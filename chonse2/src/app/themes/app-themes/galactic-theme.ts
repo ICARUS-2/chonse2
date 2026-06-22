@@ -4,12 +4,12 @@ export default class GalacticTheme implements IAppTheme
 {
     getPrimaryColor(): string 
     {
-        return "fuchsia"
+        return "fuchsia";
     }
 
     getHoverColor(): string 
     {
-        return "darkpurple;"
+        return "rgb(153, 0, 255)";
     }
 
     getBackgroundColor(): string 

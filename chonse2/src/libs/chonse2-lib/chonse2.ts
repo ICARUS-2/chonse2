@@ -217,12 +217,12 @@ export default class Chonse2
         Chonse2._playDummyMove(deepCopy, coordinate, item);
 
         //Return true if the player was not in check after the legal move, false if the move would put them in check
-        const isCheck = this.turn ? !deepCopy.isInCheck(PieceColor.WHITE) : !deepCopy.isInCheck(PieceColor.BLACK);
+        const isKingSafe = this.turn ? !deepCopy.isInCheck(PieceColor.WHITE) : !deepCopy.isInCheck(PieceColor.BLACK);
       
         //Undo the move so that this object can be reused to check the legality of the next
         deepCopy.undoMostRecentMove();
 
-        return isCheck;
+        return isKingSafe;
       }
     )
 
