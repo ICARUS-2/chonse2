@@ -109,7 +109,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   animatedPiece = signal('');
   animatedPieceX = signal(0);
   animatedPieceY = signal(0);
-  static animationDuration = 125; // ms
+  static animationDuration = 75; // ms
   animatedPieceCoord = signal('');
   animatedPieceDestCoord = signal('');
 

@@ -637,6 +637,7 @@ export class CoachUtils
                             const wereRooksPreviouslyConnected = whiteToMove ? previousRookState.black : previousRookState.white;
                             const wasBestMoveToConnectRooks = whiteToMove ? missedRookState.black : missedRookState.white;
 
+                            //If the rooks are not currently connected but the best move involved connecting them, tell the player.
                             if (!areRooksCurrentlyConnected && !wereRooksPreviouslyConnected && wasBestMoveToConnectRooks)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_ROOK_CONNECTION_SENTENCES, colorThatMovedText);
@@ -656,6 +657,7 @@ export class CoachUtils
                             const wereRooksPreviouslyConnected = whiteToMove ? previousRookState.black : previousRookState.white;
                             const didBestMoveInvolveKeepingRooksConnected = whiteToMove ? missedRookState.black : missedRookState.white;
 
+                            //If the rooks are disconnected when they previously were not, and the best move did not involve disconnecting them, flag this.
                             if (!areRooksCurrentlyConnected && wereRooksPreviouslyConnected && didBestMoveInvolveKeepingRooksConnected)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.DISCONNECTED_ROOKS, colorThatMovedText);
