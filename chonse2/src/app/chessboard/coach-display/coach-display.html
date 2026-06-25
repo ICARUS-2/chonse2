@@ -1,4 +1,4 @@
-@if(boardState().eval())
+@if(boardState().doEvaluateGame())
 {
   <div class="d-flex flex-column justify-content-between overflow-x-auto coachDisplay p-4"
   [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()"

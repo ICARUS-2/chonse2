@@ -232,7 +232,7 @@ export default class CoachText
     [
         `A better option here was for ${CoachText.TURN_PLACEHOLDER} to secure their king with a kingside castle.`,
         `They should have prioritized king safety via a kingside castle. `,
-        `Castling kingside here would have improved king safety and connected the rooks immediately. `,
+        `Castling kingside here would have improved king safety and activated a rook immediately. `,
         `Delaying castling leaves their king more exposed in the center, where tactics are more dangerous. `,
         `In most positions like this, early kingside castling is the most reliable way to stabilize. `
     ]
