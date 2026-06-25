@@ -65,7 +65,7 @@ import { TranslateService } from '@ngx-translate/core';
 ],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   pieceType = PieceType;
@@ -112,7 +112,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   animatedPieceY = signal(0);
   static animationDuration = 110; // ms
   animatedPieceCoord = signal('');
-  animatedPieceDestCoord = signal('');
 
   static readonly moveClassificationColors: Map<string, string> = new Map<string, string>( 
     [
@@ -1215,23 +1214,17 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   })
 
   animateMove(from: string, to: string, piece: string) {
-    
-    //Invalidate any previous stale timeout by bumping the ID
-    const currentId = ++this.animationId;
-
+  
     const fromCoords = this.calculatePixelPosition(from);
     const toCoords = this.calculatePixelPosition(to);
 
     this.animatedPieceCoord.set(from);
-    this.animatedPieceDestCoord.set(to);
     this.animatedPiece.set(piece);
     this.animatedPieceX.set(fromCoords.x);
     this.animatedPieceY.set(fromCoords.y);
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        // Only animate if this is still the current animation
-        if (this.animationId !== currentId) return;
         this.animatedPieceX.set(toCoords.x);
         this.animatedPieceY.set(toCoords.y);
       });
@@ -1239,9 +1232,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     setTimeout(() => {
       // Only clear if this timeout belongs to the current animation
-      if (this.animationId === currentId) {
         this.onAnimationEnd();
-      }
     }, 500);
   }
 
@@ -1259,18 +1250,16 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     this.animatedPiece.set("");
     this.animatedPieceCoord.set("");
-    this.animatedPieceDestCoord.set("");
   }
 
   showPieceForCoord = computed(() => {
     const animCoord = this.animatedPieceCoord();
-    const animDestCoord = this.animatedPieceDestCoord();
     const fromSq = this.fromSquare();
     const clickToMove = LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE);
 
     return (coord: string): boolean => {
       if (animCoord) {
-        return coord !== animCoord && coord !== animDestCoord;
+        return coord !== animCoord;
       }
       return clickToMove ? true : coord !== fromSq;
     };
