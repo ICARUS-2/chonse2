@@ -1009,6 +1009,35 @@ export default class Chonse2Extensions
         }
         return o;
     }
+
+    //All open files on a given board
+    public static getAllOpenFiles(board: Chonse2): Array<string>
+    {
+        const openFiles: Array<string> = [];
+
+        for(let file = 0; file < Chonse2.SIZE; file++)
+        {
+            let fileDoesContainPawn = false;
+            for(let rank = 0; rank < Chonse2.SIZE; rank++)
+            {
+                const pieceInSquare = board.pieceState[rank][file];
+                if (pieceInSquare == PieceType.WHITE_PAWN || pieceInSquare == PieceType.BLACK_PAWN)
+                {
+                    fileDoesContainPawn = true;
+                    break;
+                }
+            }
+
+            if (!fileDoesContainPawn)
+            {
+                const fileCoord = Chonse2.COORDS[0][file];
+
+                //first letter of rank and file combo
+                openFiles.push(fileCoord[0]);
+            }
+        }
+        return openFiles;
+    }
     //#endregion
 }
 
