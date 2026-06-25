@@ -860,6 +860,15 @@ export default class Chonse2Extensions
             }
         )
 
+        //For now don't count pawns in skewers
+        candidateSkewers = candidateSkewers.filter( sk => 
+            {
+                const lowValuePiece = boardCopy.findPieceAtCoordinate(sk.lowValuePieceBehindCoordinate);
+
+                return lowValuePiece != PieceType.WHITE_PAWN && lowValuePiece != PieceType.BLACK_PAWN;
+            }
+        )
+
         return candidateSkewers;
     }
     //#endregion
@@ -942,6 +951,48 @@ export default class Chonse2Extensions
 
         return returnObj;
     }
+    //#endregion
+
+    //#region Rooks on open files
+    public static getOpenFilesWithRooks(board: Chonse2): { white: string[], black: string[] }
+    {
+        const returnObj = 
+        {
+            white: [] as string[],
+            black: [] as string[]
+        };
+
+        const openFiles = Chonse2Extensions.getAllOpenFiles(board);
+
+        for (const fileLetter of openFiles)
+        {
+            //convert file letter back to index
+            const fileIndex = Chonse2.COORDS[0].findIndex(coord => coord[0] === fileLetter);
+
+            //check through each square to see if a rook is controlling it.
+            for (let rank = 0; rank < Chonse2.SIZE; rank++)
+            {
+                const piece = board.pieceState[rank][fileIndex];
+
+                if (piece === PieceType.WHITE_ROOK)
+                {
+                    returnObj.white.push(fileLetter);
+                    
+                    //only one rook needs to be on the file.
+                    break; 
+                }
+
+                if (piece === PieceType.BLACK_ROOK)
+                {
+                    returnObj.black.push(fileLetter);
+                    break;
+                }
+            }
+        }
+
+        return returnObj;
+    }
+    //#endregion
 
     //#region General board state
     //Gets all pieces that attack/defend a given square.
@@ -1015,12 +1066,15 @@ export default class Chonse2Extensions
     {
         const openFiles: Array<string> = [];
 
+        //check through every file
         for(let file = 0; file < Chonse2.SIZE; file++)
         {
             let fileDoesContainPawn = false;
             for(let rank = 0; rank < Chonse2.SIZE; rank++)
             {
                 const pieceInSquare = board.pieceState[rank][file];
+                
+                //if the file contains a pawn, then it's not an open file.
                 if (pieceInSquare == PieceType.WHITE_PAWN || pieceInSquare == PieceType.BLACK_PAWN)
                 {
                     fileDoesContainPawn = true;

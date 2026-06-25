@@ -693,7 +693,7 @@ export class CoachUtils
                         }
                     }
 
-//Case: Player missed development or did it wrong.
+                    //Case: Player missed development or did it wrong.
                     {
                         if (previousState && previousBestMove)
                         {
@@ -794,6 +794,46 @@ export class CoachUtils
                                 {
                                     move.coachComment += CoachText.selectAndFormatSentence(CoachText.INCORRECT_DEVELOPMENT, colorThatMovedText, developmentPieceInQuestion);
                                     move.coachMoveFlags.push(CoachMoveFlagType.WrongDevelopment);
+                                }
+                            }
+                        }
+                    }
+
+                    //Case: Player should have controlled an open file with the rook.
+                    {
+                        if (previousState && missedState && previousBestMove)
+                        {
+                            //need to check if the best thing was for the person to move their rook.
+                            const rookPiece = whiteToMove ? PieceType.BLACK_ROOK : PieceType.WHITE_ROOK;
+                            const bestMovePiece = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
+                            const movedPiece = state.findPieceAtCoordinate(move.toCoord);
+
+                            //if the best bet was to indeed move the rook, check if it was to place it on an open file.
+                            if (bestMovePiece == rookPiece)
+                            {
+                                //this is in case they moved the wrong rook.
+                                const rookOpenFiles = Chonse2Extensions.getOpenFilesWithRooks(state);
+                                const rookOpenFilesControlledByColor = whiteToMove ? rookOpenFiles.black : rookOpenFiles.white; 
+                        
+                                const missedRookOpenFiles = Chonse2Extensions.getOpenFilesWithRooks(missedState);
+                                const missedRookOpenFilesControlledByColor = whiteToMove ? missedRookOpenFiles.black : missedRookOpenFiles.white;
+
+                                const fromFile = move.fromCoord[0];
+                                const toFile = move.toCoord[0];
+                                const bestFile = previousBestMove.toSquare[0];
+
+                                //If the rook was moved to any open file (Accounts for if they took the right file with the wrong rook).
+                                const wasRookMovedToOpenFile = rookOpenFilesControlledByColor.includes(move.toCoord[0]) && movedPiece == rookPiece;
+                                
+                                //If the rook was already on the best open file (Accounts for if they moved the rook along the file but this file if open was already the best one).
+                                const wasRookPreviouslyOnBestOpenFile = movedPiece == rookPiece && (fromFile == toFile && toFile == bestFile);
+
+                                //If the player should have moved a rook to the open file in question.
+                                const wasBestMoveToPlaceRookOnOpenFile = missedRookOpenFilesControlledByColor.includes(previousBestMove.toSquare[0]);
+
+                                if (!wasRookMovedToOpenFile && !wasRookPreviouslyOnBestOpenFile && wasBestMoveToPlaceRookOnOpenFile)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_ROOK_OPEN_FILE_SENTENCES, colorThatMovedText);
                                 }
                             }
                         }
@@ -1048,6 +1088,39 @@ export class CoachUtils
                             if (!wereRooksPreviouslyConnected && areRooksCurrentlyConnected)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.CONNECTED_ROOKS_SENTENCES, colorThatMovedText);
+                            }
+                        }
+                    }
+
+                    //Case: Player placed a rook on an open file
+                    {
+                        if (previousState)
+                        {
+                            const hanging = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
+                            
+                            //Makes sure that the piece wasn't just left hanging.
+                            if (!hanging.includes(move.toCoord))
+                            {
+                                const pieceInToSquare = state.findPieceAtCoordinate(move.toCoord);
+                                const rookPiece = whiteToMove ? PieceType.BLACK_ROOK : PieceType.WHITE_ROOK;
+
+                                //If the player moved a rook and it wasn't hanging.
+                                if (pieceInToSquare == rookPiece)
+                                {
+                                    //Get what open files are controlled by rooks of the color that just moved.
+                                    const rookOpenFiles = Chonse2Extensions.getOpenFilesWithRooks(state);
+                                    const rookOpenFilesControlledByColor = whiteToMove ? rookOpenFiles.black : rookOpenFiles.white; 
+                                    
+                                    //Get the same thing but for the previous state.
+                                    const prevRookOpenFiles = Chonse2Extensions.getOpenFilesWithRooks(previousState);
+                                    const prevRookOpenFilesControlledByColor = whiteToMove ? prevRookOpenFiles.black : prevRookOpenFiles.white;
+
+                                    //If this rook just moved to the open file, say it.
+                                    if (rookOpenFilesControlledByColor.includes(move.toCoord[0]) && !prevRookOpenFilesControlledByColor.includes(move.toCoord[0]))
+                                    {
+                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.TOOK_OPEN_FILE_WITH_ROOK, colorThatMovedText);
+                                    }
+                                }
                             }
                         }
                     }
