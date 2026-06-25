@@ -103,6 +103,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   private resizeObserver: ResizeObserver;
   mouseX = signal(0);
   mouseY = signal(0);
+  private animationId = 0; // increment on each new animation
 
   @ViewChild('board', { static: false }) boardElement!: ElementRef<HTMLDivElement>;
   boardPixelSize = signal(0);
@@ -1213,32 +1214,35 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     return this.boardPixelSize() / Chonse2.SIZE;
   })
 
-  animateMove(from: string, to: string, piece: string) 
-  {
-    //calculate the pixel coordinates for from and to, in order to know how to animate it.
+  animateMove(from: string, to: string, piece: string) {
+    
+    //Invalidate any previous stale timeout by bumping the ID
+    const currentId = ++this.animationId;
+
     const fromCoords = this.calculatePixelPosition(from);
     const toCoords = this.calculatePixelPosition(to);
 
-    //set piece state
     this.animatedPieceCoord.set(from);
-    this.animatedPieceDestCoord.set(to); 
+    this.animatedPieceDestCoord.set(to);
     this.animatedPiece.set(piece);
     this.animatedPieceX.set(fromCoords.x);
     this.animatedPieceY.set(fromCoords.y);
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
+        // Only animate if this is still the current animation
+        if (this.animationId !== currentId) return;
         this.animatedPieceX.set(toCoords.x);
         this.animatedPieceY.set(toCoords.y);
       });
     });
 
-    //if the animation takes longer than 500ms, force-clear it, prevents the piece from staying 'invisible' on the main board
     setTimeout(() => {
-      if (this.animatedPiece() === piece) {
+      // Only clear if this timeout belongs to the current animation
+      if (this.animationId === currentId) {
         this.onAnimationEnd();
       }
-    }, 500); 
+    }, 500);
   }
 
   private calculatePixelPosition(coordinate: string): { x: number, y: number } 

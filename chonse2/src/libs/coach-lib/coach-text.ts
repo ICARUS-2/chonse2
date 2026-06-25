@@ -262,6 +262,14 @@ export default class CoachText
         `${CoachText.TURN_PLACEHOLDER} correctly identified that their ${CoachText.PIECE_PLACEHOLDER} needed to be developed, but there was a better development square. `,
         `${CoachText.TURN_PLACEHOLDER} had a better way to develop their ${CoachText.PIECE_PLACEHOLDER} long-term. `
     ]
+
+    //Player should have placed their rook on an open file.
+    public static readonly MISSED_ROOK_OPEN_FILE_SENTENCES: Array<string> =
+    [
+        `Taking an open file with the rook would have increased its scope tremendously. `,
+        `${CoachText.TURN_PLACEHOLDER} should have increased the scope of their rook by moving it to an open file. `,
+        `${CoachText.TURN_PLACEHOLDER}'s better option here was to take an open file with a rook. `,
+    ]
     //#endregion
 
     //#region Good============
@@ -338,7 +346,16 @@ export default class CoachText
     [
         `This development prepares a safe ${CoachText.PIECE_PLACEHOLDER}side castle for ${CoachText.TURN_PLACEHOLDER}'s king. `,
         `Good development here will allow for ${CoachText.PIECE_PLACEHOLDER}side castling as early as next move. `,
-        `${CoachText.TURN_PLACEHOLDER} is preparing to potentially castle ${CoachText.PIECE_PLACEHOLDER} with this move. `
+        `${CoachText.TURN_PLACEHOLDER} is preparing to potentially castle ${CoachText.PIECE_PLACEHOLDER}side with this move. `
+    ]
+
+    //player placed their rook on an open file.
+    public static readonly TOOK_OPEN_FILE_WITH_ROOK: Array<string> = 
+    [
+        `${CoachText.TURN_PLACEHOLDER} placed their rook on an open file. `,
+        `${CoachText.TURN_PLACEHOLDER} is controlling the open file with their rook. `,
+        `${CoachText.TURN_PLACEHOLDER} took an open file with their rook. `,
+        `Placing the rook on an open file will increase ${CoachText.TURN_PLACEHOLDER}'s control over the board. `
     ]
 
     //#endregion
