@@ -10,6 +10,7 @@ import { Homepage } from './homepage/homepage';
 import { LoadFen } from './input-position/load-fen/load-fen';
 import { Database } from './database/database';
 import { NotFound } from './not-found/not-found';
+import { Development } from './development/development';
 
 export enum RouteConstants {
     ROUTE_SITE = "site",
@@ -37,6 +38,7 @@ export const routes: Routes = [
     {path: `vs-ai`, component: VsAi},
     {path: "pgn-link", component: PgnLink},
     {path: "database", component: Database},
+    {path: "development", component: Development},
 
     //redirects
     {path: `game/:${RouteConstants.ROUTE_SITE}/:${RouteConstants.ROUTE_USERNAME}/:${RouteConstants.ROUTE_GAMEID}`, component: LoadGame},

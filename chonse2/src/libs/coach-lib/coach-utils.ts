@@ -828,15 +828,15 @@ export class CoachUtils
                                 const missedRookOpenFiles = Chonse2Extensions.getOpenFilesWithRooks(missedState);
                                 const missedRookOpenFilesControlledByColor = whiteToMove ? missedRookOpenFiles.black : missedRookOpenFiles.white;
 
-                                const fromFile = move.fromCoord[0];
-                                const toFile = move.toCoord[0];
-                                const bestFile = previousBestMove.toSquare[0];
+                                const fromFile = previousBestMove.fromSquare[0];
+                                const toFile = previousBestMove.toSquare[0];
 
                                 //If the rook was moved to any open file (Accounts for if they took the right file with the wrong rook).
                                 const wasRookMovedToOpenFile = rookOpenFilesControlledByColor.includes(move.toCoord[0]) && movedPiece == rookPiece;
                                 
                                 //If the rook was already on the best open file (Accounts for if they moved the rook along the file but this file if open was already the best one).
-                                const wasRookPreviouslyOnBestOpenFile = movedPiece == rookPiece && (fromFile == toFile && toFile == bestFile);
+                                const wasRookPreviouslyOnBestOpenFile = bestMovePiece == rookPiece && (fromFile == toFile);
+                                
 
                                 //If the player should have moved a rook to the open file in question.
                                 const wasBestMoveToPlaceRookOnOpenFile = missedRookOpenFilesControlledByColor.includes(previousBestMove.toSquare[0]);

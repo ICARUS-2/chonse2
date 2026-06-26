@@ -355,6 +355,22 @@
         }
     },
 
+    "development": 
+    {
+        "title": "Development Process",
+
+        "steps":
+        {
+            "2026-01-26": "2026-01-26 - First test chessboard renders.",
+            "2026-02-05": "2026-02-05 - Chess logic fully implemented.",
+            "2026-02-15": "2026-02-15 - Controls + First Stockfish integration.",
+            "2026-03-30": "2026-03-30 - Stockfish + board editor + vs AI + PGN Link fully integrated, first coach test.",
+            "2026-06-26": "2026-06-26 - Full UI rebuild + Coach HCEs."
+        },
+
+        "thanks": "Thank you for using CHONSE2."
+    },
+
     "notFound": 
     {
         "heading": "Error 404",

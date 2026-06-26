@@ -358,6 +358,22 @@
         }
     },
 
+    "development": 
+    {
+        "title": "Processus de développement",
+
+        "steps":
+        {
+            "2026-01-26": "2026-01-26 - Premiers rendus de test de l'échiquier.",
+            "2026-02-05": "2026-02-05 - Logique du jeu d'échecs entièrement implémentée.",
+            "2026-02-15": "2026-02-15 - Contrôles + première intégration de Stockfish.",
+            "2026-03-30": "2026-03-30 - Intégration complète de Stockfish + éditeur de plateau + mode contre l'IA + lien PGN, premier test de l'entraîneur.",
+            "2026-06-26": "2026-06-26 - Refonte complète de l'interface + HCE de l'entraîneur."
+        },
+
+        "thanks": "Merci d'utiliser CHONSE2."
+    },
+
     "notFound": 
     {
         "heading": "Erreur 404",
