@@ -882,6 +882,13 @@ export class CoachUtils
                     posEval.moveClassification == MoveClassification.Okay
                 )
                 {
+                    //Case: Player accurately captured a piece 
+                    {
+                        if (move.notation.includes(AlgebraicNotationMaker.CAPTURE))
+                        {
+                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.CAPTURE_SENTENCES, colorThatMovedText);
+                        }
+                    }
 
                     //Case: Moving toward checkmate
                     {
@@ -1175,7 +1182,7 @@ export class CoachUtils
 
                                 if (opponentNextDoubledPawnsAmount > opponentDoubledPawnsAmount)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.FORCED_DOUBLING_OF_PAWNS, colorThatMovedText);
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.FORCED_DOUBLING_OF_PAWNS_SENTENCES, colorThatMovedText);
                                 }
                             }
                         }
