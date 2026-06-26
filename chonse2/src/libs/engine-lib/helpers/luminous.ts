@@ -1,5 +1,6 @@
 import Chonse2 from "../../chonse2-lib/chonse2";
 import Chonse2Extensions from "../../chonse2-lib/extensions";
+import { PieceColor } from "../../chonse2-lib/piece-color";
 import PieceMaterial from "../../chonse2-lib/piece-material";
 import { PieceType } from "../../chonse2-lib/piece-type";
 import { LineEval } from "../types/eval";
@@ -135,9 +136,31 @@ export default class LuminousDetector
 
     private static _didMoveLeavePieceVulnerable(afterState: Chonse2, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;} ): boolean 
     {
+        //If the piece isn't hanging, don't consider it a luminous sacrifice.
         const isHangingPiece = Chonse2Extensions.doesSquareHaveHangingPiece(afterState, uciPlayedMove.to);
+        if (!isHangingPiece)
+        {
+            return false;
+        }
+        
+        //Now we need to see if this hanging piece can actually be recaptured in any way.
+        let canPieceActuallyBeRecaptured = false;
 
-        return isHangingPiece;
+        const sideThatCanPotentiallyRecapture = afterState.turn ? PieceColor.WHITE : PieceColor.BLACK;
+        const pieceDataForOpponent = afterState.getAllPiecesAndCoordsByColor(sideThatCanPotentiallyRecapture);
+
+        for(let i = 0; i < pieceDataForOpponent.coords.length; i++)
+        {
+            const legalMoves = afterState.getLegalMoves(pieceDataForOpponent.coords[i]);
+
+            //If the piece can indeed be recaptured, it's a candidate. If it cannot, then it isn't technically a sacrifice.
+            if (legalMoves.includes(uciPlayedMove.to))
+            {
+                canPieceActuallyBeRecaptured = true;
+            }
+        }
+
+        return canPieceActuallyBeRecaptured;
     }
 
     private static _shouldOpponentRecaptureIfMateNotForced(uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;}, currentLines: Array<LineEval>)
