@@ -1,0 +1,25 @@
+@let data = 
+[
+    {imgSrc: "img/development/jan262026.webp", header: "development.steps.2026-01-26" | translate},
+    {imgSrc: "img/development/feb52026.webp", header: "development.steps.2026-02-05" | translate},
+    {imgSrc: "img/development/feb152026.webp", header: "development.steps.2026-02-15" | translate},
+    {imgSrc: "img/development/mar302026.webp", header: "development.steps.2026-03-30" | translate},
+    {imgSrc: "img/development/jn262026.webp", header: "development.steps.2026-06-26" | translate},
+];
+
+<div class="container" [style.color]="themeService.getThemeInstance().getTextColor()">
+    <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()" class="p-4" [class]="themeService.getThemeInstance().getGlassPanelTheme()">{{ 'development.title' | translate }}</h1>
+    <hr>
+
+    <div class="p-4" [class]="themeService.getThemeInstance().getGlassPanelTheme()" >
+    @for(d of data; track $index)
+    {
+        <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()" class="">{{d.header}}</h2>
+        <img class="w-100 mb-5 rounded" [src]="d.imgSrc" alt="development step">
+
+        <hr>
+    }
+
+        <h3>{{"development.thanks" | translate}}</h3>
+    </div>
+</div>
