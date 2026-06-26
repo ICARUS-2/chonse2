@@ -57,6 +57,10 @@ export class CoachUtils
                 const nextBestState = state.getFullDeepCopy();
                 nextBestState.completeMove(nextBestMove.fromSquare, nextBestMove.toSquare, nextBestMove.promotion);
 
+                //play out the engine line
+                const currentFollowUp = CoachMiscHelpers.getEngineLineStates(state, posEval.lines[0]);
+
+
                 //If this is a move the coach played (like a follow up), it doesn't need an evaluation since it is already the best move.
                 if (move.coachComment == CoachUtils.COACH_MOVE_DELIMITER)
                 {
@@ -239,20 +243,17 @@ export class CoachUtils
                     {
                         if (!move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging) && !move.coachMoveFlags.includes(CoachMoveFlagType.AllowedSkewer))
                         {
-                            //play out the engine line
-                            const followUp = CoachMiscHelpers.getEngineLineStates(state, posEval.lines[0]);
-
                             //what white already had before the engine line
-                            const whiteCapturedBefore = followUp[0].piecesWhiteCaptured;
+                            const whiteCapturedBefore = currentFollowUp[0].piecesWhiteCaptured;
 
                             //what white had after all follow up moves were completed.
-                            const whiteCapturedAfter = followUp.at(-1)?.piecesWhiteCaptured;
+                            const whiteCapturedAfter = currentFollowUp.at(-1)?.piecesWhiteCaptured;
 
                             //what black already had before the engine line
-                            const blackCapturedBefore = followUp[0].piecesBlackCaptured;
+                            const blackCapturedBefore = currentFollowUp[0].piecesBlackCaptured;
 
                             //what black had after all follow up moves were completed.
-                            const blackCapturedAfter = followUp.at(-1)?.piecesBlackCaptured;
+                            const blackCapturedAfter = currentFollowUp.at(-1)?.piecesBlackCaptured;
 
 
                             //Only the NEW pieces gained after this engine line.

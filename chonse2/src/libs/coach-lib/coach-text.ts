@@ -270,6 +270,14 @@ export default class CoachText
         `${CoachText.TURN_PLACEHOLDER} should have increased the scope of their rook by moving it to an open file. `,
         `${CoachText.TURN_PLACEHOLDER}'s better option here was to take an open file with a rook. `,
     ]
+
+    //Player missed an opportunity to force doubling of pawns.
+    public static readonly MISSED_FORCED_DOUBLED_PAWNS: Array<string>  = 
+    [
+        `The best move here was to force doubling of pawns. `,
+        `They should have forced the opponent to double their pawns. `,
+        `They missed an opportunity to force the opponent to damage their structure by doubling pawns. `,
+    ]
     //#endregion
 
     //#region Good============
