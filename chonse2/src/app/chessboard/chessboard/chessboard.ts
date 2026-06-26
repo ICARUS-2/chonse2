@@ -1231,7 +1231,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     });
 
     setTimeout(() => {
-      // Only clear if this timeout belongs to the current animation
         this.onAnimationEnd();
     }, 500);
   }
