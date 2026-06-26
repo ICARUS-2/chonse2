@@ -270,6 +270,14 @@ export default class CoachText
         `${CoachText.TURN_PLACEHOLDER} should have increased the scope of their rook by moving it to an open file. `,
         `${CoachText.TURN_PLACEHOLDER}'s better option here was to take an open file with a rook. `,
     ]
+
+    //Player missed an opportunity to force doubling of pawns.
+    public static readonly MISSED_FORCED_DOUBLED_PAWNS: Array<string>  = 
+    [
+        `The best move here was to force doubling of pawns. `,
+        `They should have forced the opponent to double their pawns. `,
+        `They missed an opportunity to force the opponent to damage their structure by doubling pawns. `,
+    ]
     //#endregion
 
     //#region Good============
@@ -356,6 +364,15 @@ export default class CoachText
         `${CoachText.TURN_PLACEHOLDER} is controlling the open file with their rook. `,
         `${CoachText.TURN_PLACEHOLDER} took an open file with their rook. `,
         `Placing the rook on an open file will increase ${CoachText.TURN_PLACEHOLDER}'s control over the board. `
+    ]
+
+    //Player forced opponent to double pawns.
+    public static readonly FORCED_DOUBLING_OF_PAWNS: Array<string> = 
+    [
+        `Nice, now the opponent's best move is to double their own pawns, damaging their structure. `,
+        `This will make the opponent double their pawns with the best move, reducing pawn mobility. `,
+        `With the best move in the opponent's position, pawns will become doubled, hindering mobility and creating easy targets long-term. `,
+        `Good, now they have to double pawns in order to maintain the best position possible in their circumstances. `
     ]
 
     //#endregion

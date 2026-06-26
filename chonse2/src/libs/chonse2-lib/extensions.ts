@@ -994,6 +994,50 @@ export default class Chonse2Extensions
     }
     //#endregion
 
+    //#region Doubled pawns
+    public static getDoubledPawnFiles(board: Chonse2): {white: Array<string>, black: Array<string>}
+    {
+        const returnObj = {white: [] as Array<string>, black: [] as Array<string>}
+
+        //check through every file
+        for(let file = 0; file < Chonse2.SIZE; file++)
+        {
+            let fileWhitePawnCount: number = 0;
+            let fileBlackPawnCount: number = 0;
+            
+            for(let rank = 0; rank < Chonse2.SIZE; rank++)
+            {
+                const pieceInSquare = board.pieceState[rank][file];
+                
+                if (pieceInSquare == PieceType.WHITE_PAWN)
+                {
+                    fileWhitePawnCount++;
+                }
+
+                if (pieceInSquare == PieceType.BLACK_PAWN)
+                {
+                    fileBlackPawnCount++;
+                }
+            }
+
+            const fileLetter = Chonse2.COORDS[0][file][0];
+
+            if (fileWhitePawnCount >= 2)
+            {
+                returnObj.white.push(fileLetter);
+            }
+
+            if (fileBlackPawnCount >= 2)
+            {
+                returnObj.black.push(fileLetter);
+            }
+        }
+
+        return returnObj;
+    }
+    //#endregion
+
+
     //#region General board state
     //Gets all pieces that attack/defend a given square.
     public static getPiecesThatHitSquare(board: Chonse2, square: string): {white: Array<string>, black: Array<string>} {
