@@ -367,7 +367,7 @@ export default class CoachText
     ]
 
     //Player forced opponent to double pawns.
-    public static readonly FORCED_DOUBLING_OF_PAWNS: Array<string> = 
+    public static readonly FORCED_DOUBLING_OF_PAWNS_SENTENCES: Array<string> = 
     [
         `Nice, now the opponent's best move is to double their own pawns, damaging their structure. `,
         `This will make the opponent double their pawns with the best move, reducing pawn mobility. `,
@@ -375,6 +375,14 @@ export default class CoachText
         `Good, now they have to double pawns in order to maintain the best position possible in their circumstances. `
     ]
 
+    //Player recaptured a piece.
+    public static readonly CAPTURE_SENTENCES: Array<string> = 
+    [
+        `A straightforward capture. `,
+        `Good capture. `,
+        `Capturing. `,
+        `Well done, a solid capture. `
+    ]
     //#endregion
     
     //#region Good (development)
