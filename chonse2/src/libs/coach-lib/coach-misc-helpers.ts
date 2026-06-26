@@ -20,10 +20,10 @@ export class CoachMiscHelpers
         //Loop over each of the potential differences.
         for(let i = 0; i < dRow.length; i++)
         {
-        //The rank that the knight will move to.
-        const rankInQuestion = board.pieceState[rowIndex + dRow[i]];      
+            //The rank that the knight will move to.
+            const rankInQuestion = board.pieceState[rowIndex + dRow[i]];      
 
-        //If the rank does in fact exist, find its square.
+            //If the rank does in fact exist, find its square.
             if (rankInQuestion)
             {
                 //The square that might be able to be moved to.

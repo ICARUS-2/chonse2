@@ -305,6 +305,11 @@ export class CoachDisplay {
       return this.translate.instant('chessboard.coachDisplay.missButton.showMissedDevelopment');
     }
 
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedForcedPawnDoubling))
+    {
+      return this.translate.instant('chessboard.coachDisplay.missButton.showMissedDoubling');
+    }
+
     return this.translate.instant('chessboard.coachDisplay.missButton.showMiss');
 }
 

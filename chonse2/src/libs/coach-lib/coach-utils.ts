@@ -58,8 +58,17 @@ export class CoachUtils
                 nextBestState.completeMove(nextBestMove.fromSquare, nextBestMove.toSquare, nextBestMove.promotion);
 
                 //play out the engine line
-                const currentFollowUp = CoachMiscHelpers.getEngineLineStates(state, posEval.lines[0]);
+                const currentFollowUp: Array<Chonse2> = CoachMiscHelpers.getEngineLineStates(state, posEval.lines[0]);
 
+                let previousFollowUp: Array<Chonse2> = [];
+
+                if (previousState && previousPosEval)
+                {
+                    if (previousPosEval.lines[0])
+                    {
+                        previousFollowUp = CoachMiscHelpers.getEngineLineStates(previousState, previousPosEval.lines[0]);
+                    }
+                }
 
                 //If this is a move the coach played (like a follow up), it doesn't need an evaluation since it is already the best move.
                 if (move.coachComment == CoachUtils.COACH_MOVE_DELIMITER)
@@ -239,9 +248,73 @@ export class CoachUtils
                         }
                     }
 
+                    //Case: Player allowed the opportunity to fork
+                    {
+                        if (previousState)
+                        {
+                            let allowedFork: boolean = false;
+
+                            const attackerColor = whiteToMove ? PieceColor.WHITE : PieceColor.BLACK;
+                            const currentForksForOpponent: Array<Fork> = Chonse2Extensions.getForksOnBoard(state, attackerColor);
+
+                            //Subcase 1: Opponent moved one of their own pieces into a fork.
+                            if (currentForksForOpponent.length > 0)
+                            {
+                                allowedFork = true;
+                            }
+                            //Subcase 2: Opponent failed to move one of their pieces out of the fork.
+                            else
+                            {
+                                const nextBestStateForks = Chonse2Extensions.getForksOnBoard(nextBestState, attackerColor);
+
+                                if (nextBestStateForks.length > 0)
+                                {
+                                    allowedFork = true;
+
+                                    //We want to show the possible fork with the coach arrows.
+                                    const arrowsArr: Array<Arrow> = [];
+                                    const moveToForkArrow = createArrow(nextBestMove.fromSquare, nextBestMove.toSquare, ArrowColors.IDEA, ArrowContext.Coach);
+                                    
+                                    //First, add the move that the piece takes to fork the other 2+ pieces.
+                                    if (moveToForkArrow)
+                                    {
+                                        arrowsArr.push(moveToForkArrow);
+                                    }
+
+                                    //Then, add all of the arrows to the actual forked pieces that are hit once the best move is made.
+                                    for(const fork of nextBestStateForks)
+                                    {
+                                        const attackercoord = fork.attackerCoordinate;
+                                        
+                                        for(const forkedPiece of fork.coordinatesAttacked)
+                                        {
+                                            const newArrow = createArrow(attackercoord, forkedPiece, ArrowColors.IDEA, ArrowContext.Coach);
+
+                                            if (newArrow)
+                                            {
+                                                arrowsArr.push(newArrow);
+                                            }
+                                        }
+                                    }
+
+                                    const coachIdea = new CoachIdea();
+                                    coachIdea.arrows = arrowsArr;
+
+                                    move.coachIdeas.set(CoachIdeaFlagType.ForkIdea, coachIdea);
+                                }
+                            }
+
+                            if (allowedFork)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.ALLOWED_FORK_SENTENCES, colorThatMovedText, "");
+                                move.coachMoveFlags.push(CoachMoveFlagType.AllowedFork);
+                            }
+                        }
+                    }
+
                     //Case: Player allowed material loss but not necessarily hanging something 
                     {
-                        if (!move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging) && !move.coachMoveFlags.includes(CoachMoveFlagType.AllowedSkewer))
+                        if (!move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging) && !move.coachMoveFlags.includes(CoachMoveFlagType.AllowedSkewer) && !move.coachMoveFlags.includes(CoachMoveFlagType.AllowedFork))
                         {
                             //what white already had before the engine line
                             const whiteCapturedBefore = currentFollowUp[0].piecesWhiteCaptured;
@@ -457,70 +530,6 @@ export class CoachUtils
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_FORK_SENTENCES, colorThatMovedText, "");
                                 move.coachMoveFlags.push(CoachMoveFlagType.MissedFork)
-                            }
-                        }
-                    }
-
-                    //Case: Player allowed the opportunity to fork
-                    {
-                        if (previousState)
-                        {
-                            let allowedFork: boolean = false;
-
-                            const attackerColor = whiteToMove ? PieceColor.WHITE : PieceColor.BLACK;
-                            const currentForksForOpponent: Array<Fork> = Chonse2Extensions.getForksOnBoard(state, attackerColor);
-
-                            //Subcase 1: Opponent moved one of their own pieces into a fork.
-                            if (currentForksForOpponent.length > 0)
-                            {
-                                allowedFork = true;
-                            }
-                            //Subcase 2: Opponent failed to move one of their pieces out of the fork.
-                            else
-                            {
-                                const nextBestStateForks = Chonse2Extensions.getForksOnBoard(nextBestState, attackerColor);
-
-                                if (nextBestStateForks.length > 0)
-                                {
-                                    allowedFork = true;
-
-                                    //We want to show the possible fork with the coach arrows.
-                                    const arrowsArr: Array<Arrow> = [];
-                                    const moveToForkArrow = createArrow(nextBestMove.fromSquare, nextBestMove.toSquare, ArrowColors.IDEA, ArrowContext.Coach);
-                                    
-                                    //First, add the move that the piece takes to fork the other 2+ pieces.
-                                    if (moveToForkArrow)
-                                    {
-                                        arrowsArr.push(moveToForkArrow);
-                                    }
-
-                                    //Then, add all of the arrows to the actual forked pieces that are hit once the best move is made.
-                                    for(const fork of nextBestStateForks)
-                                    {
-                                        const attackercoord = fork.attackerCoordinate;
-                                        
-                                        for(const forkedPiece of fork.coordinatesAttacked)
-                                        {
-                                            const newArrow = createArrow(attackercoord, forkedPiece, ArrowColors.IDEA, ArrowContext.Coach);
-
-                                            if (newArrow)
-                                            {
-                                                arrowsArr.push(newArrow);
-                                            }
-                                        }
-                                    }
-
-                                    const coachIdea = new CoachIdea();
-                                    coachIdea.arrows = arrowsArr;
-
-                                    move.coachIdeas.set(CoachIdeaFlagType.ForkIdea, coachIdea);
-                                }
-                            }
-
-                            if (allowedFork)
-                            {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.ALLOWED_FORK_SENTENCES, colorThatMovedText, "");
-                                move.coachMoveFlags.push(CoachMoveFlagType.AllowedFork);
                             }
                         }
                     }
@@ -839,6 +848,31 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Player missed an opportunity to get the opponent to double pawns
+                    {
+                        if (previousFollowUp)
+                        {
+                            if (previousFollowUp.length > 1)
+                            {
+                                const laterMissedState = previousFollowUp[1];
+                                const laterState = currentFollowUp[1];
+
+                                const laterMissedStateDoubledPawns = Chonse2Extensions.getDoubledPawnFiles(laterMissedState);
+                                const laterStateDoubledPawns = Chonse2Extensions.getDoubledPawnFiles(laterState);
+
+                                const missDoubledPawnInstances = whiteToMove ? laterMissedStateDoubledPawns.white.length : laterMissedStateDoubledPawns.black.length;
+                                const laterDoubledPawnInstances = whiteToMove ? laterStateDoubledPawns.white.length : laterMissedStateDoubledPawns.black.length;
+
+                                //If the previously best engine line doubled the opponent's pawns but does not anymore, flag it.
+                                if (missDoubledPawnInstances > laterDoubledPawnInstances)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_FORCED_DOUBLED_PAWNS, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedForcedPawnDoubling);
+                                }
+                            }
+                        }
+                    }
                 }
 
                 //=======Good
@@ -1121,6 +1155,27 @@ export class CoachUtils
                                     {
                                         move.coachComment += CoachText.selectAndFormatSentence(CoachText.TOOK_OPEN_FILE_WITH_ROOK, colorThatMovedText);
                                     }
+                                }
+                            }
+                        }
+                    }
+
+                    //Case: Player forced opponent to double pawns
+                    {
+                        if (currentFollowUp)
+                        {
+                            if (currentFollowUp.length > 1)
+                            {
+                                const nextPosition = currentFollowUp[1];
+                                const currentDoubledPawnFiles = Chonse2Extensions.getDoubledPawnFiles(state);
+                                const nextDoubledPawnFiles = Chonse2Extensions.getDoubledPawnFiles(nextPosition);
+
+                                const opponentDoubledPawnsAmount = whiteToMove ? currentDoubledPawnFiles.white.length : currentDoubledPawnFiles.black.length;
+                                const opponentNextDoubledPawnsAmount = whiteToMove ? nextDoubledPawnFiles.white.length : nextDoubledPawnFiles.black.length;
+
+                                if (opponentNextDoubledPawnsAmount > opponentDoubledPawnsAmount)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.FORCED_DOUBLING_OF_PAWNS, colorThatMovedText);
                                 }
                             }
                         }

@@ -366,6 +366,15 @@ export default class CoachText
         `Placing the rook on an open file will increase ${CoachText.TURN_PLACEHOLDER}'s control over the board. `
     ]
 
+    //Player forced opponent to double pawns.
+    public static readonly FORCED_DOUBLING_OF_PAWNS: Array<string> = 
+    [
+        `Nice, now the opponent's best move is to double their own pawns, damaging their structure. `,
+        `This will make the opponent double their pawns with the best move, reducing pawn mobility. `,
+        `With the best move in the opponent's position, pawns will become doubled, hindering mobility and creating easy targets long-term. `,
+        `Good, now they have to double pawns in order to maintain the best position possible in their circumstances. `
+    ]
+
     //#endregion
     
     //#region Good (development)
