@@ -1160,7 +1160,11 @@ export class CoachUtils
                                     //If this rook just moved to the open file, say it.
                                     if (rookOpenFilesControlledByColor.includes(move.toCoord[0]) && !prevRookOpenFilesControlledByColor.includes(move.toCoord[0]))
                                     {
-                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.TOOK_OPEN_FILE_WITH_ROOK, colorThatMovedText);
+                                        //Additional check to make rook endgames not show the message too much
+                                        if (rookOpenFilesControlledByColor.length > prevRookOpenFilesControlledByColor.length)
+                                        {
+                                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.TOOK_OPEN_FILE_WITH_ROOK, colorThatMovedText);
+                                        }
                                     }
                                 }
                             }
