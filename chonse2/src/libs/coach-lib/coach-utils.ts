@@ -1274,6 +1274,9 @@ export class CoachUtils
                             if (currentPassedPawns.length > previousPassedPawns.length)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.CREATED_PASSED_PAWN_SENTENCES, colorThatMovedText);
+                                const idea = new CoachIdea();
+                                idea.highlightedSquares = currentPassedPawns;
+                                move.coachIdeas.set(CoachIdeaFlagType.PassedPawnIdea, idea);
                             }
                         }
                     }
