@@ -13,14 +13,14 @@
 - Load and analyze games from Chess.com, Lichess, or manually from an inputted PGN via the Stockfish version of your choice.
 - Easily link to and share games/analyses with friends.
 - Display move classifications (Luminous, perfect, blunder, etc), engine hierarchy, accuracies, elo estimations, graphs and evaluation bar.
-- Perform moves with real-time analysis.
-- Cloud Hybrid analysis mode, allowing for deeper, faster evaluations using a fraction of the CPU power.
-- Multithreading analysis support, allowing for analysis up to 12x faster on capable devices.
+- Multithreading + Cloud Hybrid eval options.
+
 
 ## Editor
 - Input any position onto a board via dragging and dropping.
 - Set castling and en passant rights.
 - Analyze inputted position or play vs AI from there.
+- FEN link to editor state.
 
 ## Play vs AI
 - Set player color and elo limitations for Stockfish.
@@ -32,10 +32,15 @@
 
 # Running Locally
 Ensure [Node+NPM](https://nodejs.org/en) are installed.
+Download the codebase and cd to it in your terminal.
 
 Install dependencies
 ```bash
 npm install
+```
+or, alternatively
+```bash
+npm install --legacy-peer-deps
 ```
 
 Run dev server
@@ -43,4 +48,4 @@ Run dev server
 ng serve --host=0.0.0.0
 ```
 
-Open [http://localhost:4200/chonse2/](http://localhost:4200/chonse2/) in the browser.
+Open [http://localhost:4200/chonse2/](http://localhost:4200/) in the browser.
