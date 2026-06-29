@@ -289,6 +289,15 @@ export default class CoachText
         `The ${CoachText.PIECE_PLACEHOLDER} bishop is being blocked by a pawn with this move. `,
         `This move weakens ${CoachText.TURN_PLACEHOLDER}'s development by blocking in the ${CoachText.PIECE_PLACEHOLDER} bishop with a pawn. `
     ]
+
+    //Player allowed the opponent to have a passed pawn.
+    public static readonly CREATED_PASSED_PAWN_FOR_OPPONENT_SENTENCES: Array<string> = 
+    [
+        `This is giving the opponent a passed pawn, which can be difficult to stop from queening at times. `,
+        `It's best to avoid giving the opponent a passed pawn wherever possible. `,
+        `This creates a passed pawn for the opponent. `,
+        `${CoachText.TURN_PLACEHOLDER} will need to watch out for the passed pawn they created for their opponent, as it will have an easier time queening. `
+    ]
     //#endregion
 
     //#region Good============
@@ -393,6 +402,15 @@ export default class CoachText
         `Good capture. `,
         `Capturing. `,
         `Well done, a solid capture. `
+    ]
+
+    //Player created a passed pawn for themselves
+    public static readonly CREATED_PASSED_PAWN_SENTENCES: Array<string> = 
+    [
+        `This creates a passed pawn with a clear path to promotion. `,
+        `The opponent will have to watch that passed pawn. `,
+        `The opponent will have to be careful of that newly created passed pawn. `,
+        `This makes a passed pawn, potentially making it easier to promote to a queen. `
     ]
     //#endregion
     
