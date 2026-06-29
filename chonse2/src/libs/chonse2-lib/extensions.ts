@@ -96,7 +96,7 @@ export default class Chonse2Extensions
     public static getForksOnBoard(
         board: Chonse2, 
         attackerColor: string, 
-        _: { white: Array<string>, black: Array<string> } | null = null //Array of all hanging pieces. 
+        _precomputedHangingPieceArr: { white: Array<string>, black: Array<string> } | null = null //Array of all hanging pieces. 
                          // For efficiency in cases where the hanging pieces have already been computed, don't compute them again
     ): Array<Fork>
     {
@@ -113,7 +113,7 @@ export default class Chonse2Extensions
         const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board.getAllPiecesAndCoordsByColor(attackerColor);
         
         //All of the hanging pieces on the board regardless of color.
-        const allHangingPieces = _ == null ? Chonse2Extensions.getHangingPieces(boardCopy) : _;
+        const allHangingPieces = _precomputedHangingPieceArr == null ? Chonse2Extensions.getHangingPieces(boardCopy) : _precomputedHangingPieceArr;
     
         //Need to check through every piece to find which ones might be forking.
         for(let i = 0; i < piecesAndCoords.coords.length; i++)
@@ -1037,6 +1037,96 @@ export default class Chonse2Extensions
     }
     //#endregion
 
+    //#region Passed pawns
+    public static getAllPassedPawns(board: Chonse2): {white: Array<string>, black: Array<string>}
+    {
+        //return object with the passed pawn coords. 
+        const returnObj: { white: string[], black: string[] } = { white: [], black: [] };
+        const whitePieces = board.getAllPiecesAndCoordsByColor(PieceColor.WHITE);
+        const blackPieces = board.getAllPiecesAndCoordsByColor(PieceColor.BLACK);
+
+        const whitePawns: Array<string> = [];
+        const blackPawns: Array<string> = [];
+
+        whitePieces.coords.forEach( (coord, idx) => 
+        {
+            const p = whitePieces.pieces[idx];
+            
+            if (p == PieceType.WHITE_PAWN)
+            {
+                whitePawns.push(coord);
+            }
+        } )
+
+        blackPieces.coords.forEach( (coord, idx) => 
+        {
+            const p = blackPieces.pieces[idx];
+            
+            if (p == PieceType.BLACK_PAWN)
+            {
+                blackPawns.push(coord);
+            }
+        } );
+
+        whitePawns.forEach( whitePawnCoord => 
+            {
+                const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(whitePawnCoord);
+
+                let isPassed = true;
+
+                //Checks through every row above that one.
+                for (let r = rowIndex - 1; r >= 0 && isPassed; r--)
+                {
+                    //Checks through the columns to ensure that no opposing pawn can capture it or block it
+                    for (let c = colIndex - 1; c <= colIndex + 1; c++)
+                    {
+                        if (c < 0 || c > 7) continue;
+
+                        if (board.pieceState[r][c] === PieceType.BLACK_PAWN)
+                        {
+                            isPassed = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (isPassed)
+                {
+                    returnObj.white.push(whitePawnCoord);
+                }
+            }
+        )
+
+        blackPawns.forEach( blackPawnCoord => 
+            {
+                const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(blackPawnCoord);
+
+                let isPassed = true;
+
+                for (let r = rowIndex + 1; r <= 7 && isPassed; r++)
+                {
+                    for (let c = colIndex - 1; c <= colIndex + 1; c++)
+                    {
+                        if (c < 0 || c > 7) continue;
+
+                        if (board.pieceState[r][c] === PieceType.WHITE_PAWN)
+                        {
+                            isPassed = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (isPassed)
+                {
+                    returnObj.black.push(blackPawnCoord);
+                }
+            }
+        )
+
+        return returnObj;
+    }
+    //endregion
 
     //#region General board state
     //Gets all pieces that attack/defend a given square.
