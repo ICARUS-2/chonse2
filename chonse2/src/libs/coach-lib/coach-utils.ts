@@ -1263,6 +1263,20 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Player created a passed pawn for themselves
+                    {
+                        if (previousState)
+                        {
+                            const currentPassedPawns = whiteToMove ? Chonse2Extensions.getAllPassedPawns(state).black : Chonse2Extensions.getAllPassedPawns(state).white;
+                            const previousPassedPawns = whiteToMove ? Chonse2Extensions.getAllPassedPawns(previousState).black : Chonse2Extensions.getAllPassedPawns(previousState).white;
+
+                            if (currentPassedPawns.length > previousPassedPawns.length)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CREATED_PASSED_PAWN_SENTENCES, colorThatMovedText);
+                            }
+                        }
+                    }
                 }
             
                 //=======Good - Development
