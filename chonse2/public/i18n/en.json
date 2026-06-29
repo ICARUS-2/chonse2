@@ -109,6 +109,7 @@
                 "development": "Show Idea: Development",
                 "fianchetto": "Show Idea: Fianchetto",
                 "skewer": "Show Idea: Skewer",
+                "passedPawn": "Show Passed Pawn",
                 "base": "Show Idea: "
             },
             "resourceButton": 

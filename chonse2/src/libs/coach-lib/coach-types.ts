@@ -49,7 +49,8 @@ export enum CoachIdeaFlagType
     CentralControlIdea,
     DevelopmentIdea,
     FianchettoIdea,
-    SkewerIdea
+    SkewerIdea,
+    PassedPawnIdea
 }
 
 export enum CoachResourceFlagType 

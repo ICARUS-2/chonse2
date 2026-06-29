@@ -924,6 +924,27 @@ export class CoachUtils
                             move.coachComment += CoachText.selectAndFormatSentence(CoachText.BLOCKED_BISHOP_SENTENCES, colorThatMovedText, blockedBishop);
                         }
                     }
+
+                    //Case: Player created a passed pawn for the opponent
+                    {
+                        if (previousState && missedState)
+                        {
+                            const currentPassedPawns = whiteToMove ? Chonse2Extensions.getAllPassedPawns(state).white : Chonse2Extensions.getAllPassedPawns(state).black;
+                            const previousPassedPawns = whiteToMove ? Chonse2Extensions.getAllPassedPawns(previousState).white : Chonse2Extensions.getAllPassedPawns(previousState).black;
+                            const bestStatePassedPawns = whiteToMove ? Chonse2Extensions.getAllPassedPawns(missedState).white : Chonse2Extensions.getAllPassedPawns(missedState).black;
+
+                            const playerCreatedPassedPawnForOpponent = currentPassedPawns.length > previousPassedPawns.length;
+                            const bestMoveDidNotCreatePassedPawnForOpponent = currentPassedPawns.length > bestStatePassedPawns.length;
+                        
+                            if (playerCreatedPassedPawnForOpponent && bestMoveDidNotCreatePassedPawnForOpponent)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CREATED_PASSED_PAWN_FOR_OPPONENT_SENTENCES, colorThatMovedText);
+                                const idea = new CoachIdea();
+                                idea.highlightedSquares = currentPassedPawns;
+                                move.coachIdeas.set(CoachIdeaFlagType.PassedPawnIdea, idea);
+                            }
+                        }
+                    }
                 }
 
                 //=======Good

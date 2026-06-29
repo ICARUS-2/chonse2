@@ -373,6 +373,11 @@ export class CoachDisplay {
       return this.translate.instant('chessboard.coachDisplay.ideaButton.skewer')
     }
     
+    if (flag == CoachIdeaFlagType.PassedPawnIdea)
+    {
+      return this.translate.instant('chessboard.coachDisplay.ideaButton.passedPawn')
+    }
+
     return this.translate.instant('chessboard.coachDisplay.ideaButton.base');
   }
 
