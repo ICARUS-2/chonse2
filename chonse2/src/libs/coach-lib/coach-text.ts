@@ -8,6 +8,9 @@ export default class CoachText
     static readonly PIECE_PLACEHOLDER = "{piece}";
     static readonly SECONDARY_PIECE_PLACEHOLDER = "{piece2}";
 
+    static readonly LIGHT_SQUARED = "light-squared";
+    static readonly DARK_SQUARED = "dark-squared";
+
     //At minimum one sentence should be displayed.
     public static readonly BASE_SENTENCES: Map<MoveClassification, string[]> = new Map<MoveClassification, string[]>(
         [
@@ -278,6 +281,14 @@ export default class CoachText
         `They should have forced the opponent to double their pawns. `,
         `They missed an opportunity to force the opponent to damage their structure by doubling pawns. `,
     ]
+
+    //Player blocked their own bishop with a pawn.
+    public static readonly BLOCKED_BISHOP_SENTENCES: Array<string> = 
+    [
+        `They are blocking in their ${CoachText.PIECE_PLACEHOLDER} bishop with their pawn by doing this. `,
+        `The ${CoachText.PIECE_PLACEHOLDER} bishop is being blocked by a pawn with this move. `,
+        `This move weakens ${CoachText.TURN_PLACEHOLDER}'s development by blocking in the ${CoachText.PIECE_PLACEHOLDER} bishop with a pawn. `
+    ]
     //#endregion
 
     //#region Good============
@@ -492,7 +503,7 @@ export default class CoachText
             return "king";
         }
 
-        return "piece";
+        return piece;
     }
 
     private static _formatCoachStringWithPlaceholders(sentence: string, playerColor: string, piece: string, secondaryPiece: string): string

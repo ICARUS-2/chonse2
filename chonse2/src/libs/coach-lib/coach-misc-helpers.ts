@@ -83,3 +83,27 @@ export class CoachResourceLinks
     public static readonly SKEWER_LINK = "https://www.chess.com/terms/skewer-chess";
     public static readonly PIN_LINK = "https://www.chess.com/terms/pin-chess"
 }
+
+export const BLOCKED_BISHOPS = 
+{
+    WhiteLightSquared: 
+    {
+        bishopSquare: Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE,
+        pawnSquare: "d3",
+    },
+    WhiteDarkSquared: 
+    {
+        bishopSquare: Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE,
+        pawnSquare: "e3",
+    },
+    BlackLightSquared: 
+    {
+        bishopSquare: Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE,
+        pawnSquare: "e6",
+    },
+    BlackDarkSquared: 
+    {
+        bishopSquare: Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE,
+        pawnSquare: "d6",
+    },
+}

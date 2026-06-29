@@ -9,7 +9,7 @@ import { openings } from "../engine-lib/data/openings";
 import { MoveClassification } from "../engine-lib/types/enums";
 import { LineEval, PositionEval } from "../engine-lib/types/eval";
 import CoachText from "./coach-text";
-import {CoachMiscHelpers, CoachResourceLinks} from "./coach-misc-helpers";
+import {BLOCKED_BISHOPS, CoachMiscHelpers, CoachResourceLinks} from "./coach-misc-helpers";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "./coach-types";
 import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
 export class CoachUtils
@@ -871,6 +871,57 @@ export class CoachUtils
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedForcedPawnDoubling);
                                 }
                             }
+                        }
+                    }
+
+                    //Case: Player blocked their own bishop
+                    {
+                        const pieceThatJustMoved = state.findPieceAtCoordinate(move.toCoord);
+                        let blockedBishop: string = "";
+
+                        //If the piece that moved was a pawn, it could have blocked a bishop.
+                        if (whiteToMove ? pieceThatJustMoved == PieceType.BLACK_PAWN : pieceThatJustMoved == PieceType.WHITE_PAWN)
+                        {
+                            // White light-squared bishop
+                            if (
+                                move.toCoord == BLOCKED_BISHOPS.WhiteLightSquared.pawnSquare &&
+                                state.findPieceAtCoordinate(BLOCKED_BISHOPS.WhiteLightSquared.bishopSquare) == PieceType.WHITE_BISHOP
+                            )
+                            {
+                                blockedBishop = CoachText.LIGHT_SQUARED;
+                            }
+
+                            // White dark-squared bishop
+                            else if (
+                                move.toCoord == BLOCKED_BISHOPS.WhiteDarkSquared.pawnSquare &&
+                                state.findPieceAtCoordinate(BLOCKED_BISHOPS.WhiteDarkSquared.bishopSquare) == PieceType.WHITE_BISHOP
+                            )
+                            {
+                                blockedBishop = CoachText.DARK_SQUARED;
+                            }
+
+                            // Black light-squared bishop
+                            else if (
+                                move.toCoord == BLOCKED_BISHOPS.BlackLightSquared.pawnSquare &&
+                                state.findPieceAtCoordinate(BLOCKED_BISHOPS.BlackLightSquared.bishopSquare) == PieceType.BLACK_BISHOP
+                            )
+                            {
+                                blockedBishop = CoachText.LIGHT_SQUARED;
+                            }
+
+                            // Black dark-squared bishop
+                            else if (
+                                move.toCoord == BLOCKED_BISHOPS.BlackDarkSquared.pawnSquare &&
+                                state.findPieceAtCoordinate(BLOCKED_BISHOPS.BlackDarkSquared.bishopSquare) == PieceType.BLACK_BISHOP
+                            )
+                            {
+                                blockedBishop = CoachText.DARK_SQUARED;
+                            }
+                        }
+
+                        if (blockedBishop)
+                        {
+                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.BLOCKED_BISHOP_SENTENCES, colorThatMovedText, blockedBishop);
                         }
                     }
                 }
