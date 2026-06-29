@@ -412,6 +412,13 @@ export default class CoachText
         `The opponent will have to be careful of that newly created passed pawn. `,
         `This makes a passed pawn, potentially making it easier to promote to a queen. `
     ]
+
+    //Player sat a piece on the promotion square of a passed pawn preventing it from queening.
+    public static readonly SAT_PIECE_ON_PROMOTION_SQUARE_SENTENCES: Array<string> = 
+    [
+        `Cool idea, that passed pawn cannot promote as long as that ${CoachText.PIECE_PLACEHOLDER} is chilling there. `,
+        `That passed pawn won't be promoting with ${CoachText.TURN_PLACEHOLDER}'s ${CoachText.PIECE_PLACEHOLDER} sitting on its promotion square. `
+    ]
     //#endregion
     
     //#region Good (development)
