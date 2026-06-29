@@ -1037,7 +1037,7 @@ export default class Chonse2Extensions
     }
     //#endregion
 
-    //#region Passed pawns
+    //#region
     public static getAllPassedPawns(board: Chonse2): {white: Array<string>, black: Array<string>}
     {
         //return object with the passed pawn coords. 
@@ -1126,7 +1126,63 @@ export default class Chonse2Extensions
 
         return returnObj;
     }
-    //endregion
+    //#endregion
+
+    //#region Piece sitting on passed pawn promotion square.
+    public static getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(board: Chonse2): {white: Array<string>, black: Array<string>}
+    {
+        const returnObj = {white: [] as Array<string>, black: [] as Array<string>}
+        
+        const passedPawns = Chonse2Extensions.getAllPassedPawns(board);
+        
+        //For each of the passed pawns, check if there is a piece of the opponent color sitting on the spot, actively preventing it from promotion.
+        passedPawns.white.forEach( wppCoord => 
+            {
+                const {colIndex} = Chonse2.findIndexFromCoordinate(wppCoord);
+
+                const promotionSquare = Chonse2.COORDS[0][colIndex];
+
+                const pieceInPromotionSquare = board.findPieceAtCoordinate(promotionSquare);
+
+                if (pieceInPromotionSquare)
+                {
+                    if (pieceInPromotionSquare.startsWith(PieceColor.BLACK))
+                    {
+                        if (!returnObj.black.includes(wppCoord))
+                        {
+                            returnObj.black.push(wppCoord);
+                        }
+                    }
+                }
+            }
+        )
+
+        passedPawns.black.forEach( bpp => 
+            {
+                const {colIndex} = Chonse2.findIndexFromCoordinate(bpp);
+
+                const promotionSquare = Chonse2.COORDS[7][colIndex];
+
+                const pieceInPromotionSquare = board.findPieceAtCoordinate(promotionSquare);
+
+                console.log(promotionSquare + " " + pieceInPromotionSquare)
+
+                if (pieceInPromotionSquare)
+                {
+                    if (pieceInPromotionSquare.startsWith(PieceColor.WHITE))
+                    {
+                        if (!returnObj.white.includes(bpp))
+                        {
+                            returnObj.white.push(bpp);
+                        }
+                    }
+                }
+            }
+        )
+
+        return returnObj;
+    }
+    //#endregion
 
     //#region General board state
     //Gets all pieces that attack/defend a given square.

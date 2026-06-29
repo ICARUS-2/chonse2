@@ -1280,6 +1280,21 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Player sat a promotion piece on a passed pawn's promotion square
+                    {
+                        if (previousState)
+                        {
+                            const passedPawnStoppers = whiteToMove ? Chonse2Extensions.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(state).black : Chonse2Extensions.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(state).white;
+                            const previousPassedPawnStoppers = whiteToMove ? Chonse2Extensions.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(previousState).black : Chonse2Extensions.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(previousState).white;
+                            const toCoordPiece = state.findPieceAtCoordinate(move.toCoord);
+
+                            if (passedPawnStoppers.length > previousPassedPawnStoppers.length)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.SAT_PIECE_ON_PROMOTION_SQUARE_SENTENCES, colorThatMovedText, toCoordPiece);
+                            }
+                        }
+                    }
                 }
             
                 //=======Good - Development
