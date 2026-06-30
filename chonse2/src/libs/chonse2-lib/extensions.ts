@@ -1164,13 +1164,73 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Isolated pawns
-    public static getAllIsolatedPawns(board:Chonse2): {white: Array<string>, black: Array<string>}
+    public static getAllIsolatedPawns(board: Chonse2): { white: Array<string>, black: Array<string> }
     {
-        const returnObj = {white: [] as Array<string>, black: [] as Array<string>}
+        const returnObj = { white: [] as Array<string>, black: [] as Array<string> };
+        const allPawns = Chonse2Extensions.getAllPieceCoordsOfType(board, PieceType.PAWN);
+
+        [
+            {
+                pawns: allPawns.white,
+                pawnType: PieceType.WHITE_PAWN,
+                output: returnObj.white
+            },
+            {
+                pawns: allPawns.black,
+                pawnType: PieceType.BLACK_PAWN,
+                output: returnObj.black
+            }
+        ].forEach(({ pawns, pawnType, output }) =>
+        {
+            //Check every pawn for its isolation status.
+            pawns.forEach(pawnCoord =>
+            {
+                const { colIndex } = Chonse2.findIndexFromCoordinate(pawnCoord);
+
+                const filesToCheck: number[] = [];
+
+                //Ensure it doesn't check outside the chess board.
+                if (colIndex - 1 >= 0)
+                {
+                    filesToCheck.push(colIndex - 1);
+                }
+
+                if (colIndex + 1 < Chonse2.SIZE)
+                {
+                    filesToCheck.push(colIndex + 1);
+                }
+
+                let nearbyFileContainsFriendlyPawn = false;
+
+                //Verify that the left/right files contain no friendly pawns.
+                for (const fileIdx of filesToCheck)
+                {
+                    for (let row = 0; row < Chonse2.SIZE; row++)
+                    {
+                        if (board.pieceState[row][fileIdx] === pawnType)
+                        {
+                            nearbyFileContainsFriendlyPawn = true;
+                            break;
+                        }
+                    }
+
+                    //If there is a friendly pawn, stop because this one isn't isolated.
+                    if (nearbyFileContainsFriendlyPawn)
+                    {
+                        break;
+                    }
+                }
+
+                //And if there is no friendly pawn on either nearby file, it's isolated.
+                if (!nearbyFileContainsFriendlyPawn)
+                {
+                    output.push(pawnCoord);
+                }
+            });
+        });
 
         return returnObj;
     }
-    
     //#region General board state
     //Gets all pieces that attack/defend a given square.
     public static getPiecesThatHitSquare(board: Chonse2, square: string): {white: Array<string>, black: Array<string>} {
