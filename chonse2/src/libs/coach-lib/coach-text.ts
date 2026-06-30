@@ -306,6 +306,15 @@ export default class CoachText
         `Now ${CoachText.TURN_PLACEHOLDER} has an isolated pawn. `,
         `Being stuck with an isolated pawn may make it harder to advance long-term. `,
     ]
+
+    //Player weakened their castled king with a b or g pawn push
+    public static readonly WEAKENED_KING_WITH_PAWN_MOVE_SENTENCES: Array<string> = 
+    [
+        `That pawn is there to protect the king, moving it simply reduces king safety. `,
+        `${CoachText.TURN_PLACEHOLDER} is weakening their king with that pawn move. `,
+        `That pawn move undermines the safety of ${CoachText.TURN_PLACEHOLDER}'s king, as it can potentially allow infiltration. `,
+        `That pawn move can weaken the safety of a castled king. `
+    ]
     //#endregion
 
     //#region Good============

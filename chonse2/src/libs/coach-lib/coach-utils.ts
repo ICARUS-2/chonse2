@@ -9,7 +9,7 @@ import { openings } from "../engine-lib/data/openings";
 import { MoveClassification } from "../engine-lib/types/enums";
 import { LineEval, PositionEval } from "../engine-lib/types/eval";
 import CoachText from "./coach-text";
-import {BLOCKED_BISHOPS, CoachMiscHelpers, CoachResourceLinks} from "./coach-misc-helpers";
+import {BLOCKED_BISHOPS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "./coach-types";
 import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
 export class CoachUtils
@@ -965,6 +965,55 @@ export class CoachUtils
                                 move.coachIdeas.set(CoachIdeaFlagType.IsolatedPawnIdea, idea);
                             }
                         }
+                    }
+
+                    //Case: Player weakened their king with a b or g pawn push
+                    {
+                        //Check who is castled.
+                        const castle = Chonse2Extensions.didPlayersLikelyCastle(state);
+                        const didCastleKingside = whiteToMove ? castle.blackKingside : castle.whiteKingside;
+                        const didCastleQueenside = whiteToMove ? castle.blackQueenside : castle.whiteQueenside;
+                        let didPawnPushWeakenKing = false;
+
+                        //Need to establish whether the player moved a pawn.
+                        const movedPiece = state.findPieceAtCoordinate(move.toCoord);
+                        const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
+
+                        //If so, check if they weakened the king.
+                        if (movedPiece == pawnPiece)
+                        {
+                            if (didCastleKingside || didCastleQueenside)
+                            {
+                                //If they pushed their g pawn, tell em it weakens the king.
+                                if (didCastleKingside)
+                                {
+                                    const kingsideWeakenedPawn = whiteToMove ? PAWN_PUSH_KING_WEAKNESSES.blackKingside : PAWN_PUSH_KING_WEAKNESSES.whiteKingside;
+
+                                    if (move.fromCoord == kingsideWeakenedPawn && previousBestMove?.fromSquare != kingsideWeakenedPawn)
+                                    {
+                                        didPawnPushWeakenKing = true;
+                                    }
+                                }
+
+                                //Same for the b pawn queenside.
+                                if (didCastleQueenside)
+                                {
+                                    const queensideWeakenedPawn = whiteToMove ? PAWN_PUSH_KING_WEAKNESSES.blackQueenside : PAWN_PUSH_KING_WEAKNESSES.whiteQueenside;
+
+                                    if (move.fromCoord == queensideWeakenedPawn && previousBestMove?.fromSquare != queensideWeakenedPawn)
+                                    {
+                                        didPawnPushWeakenKing = true;
+                                    }
+                                }
+                            }
+
+                            //If they did indeed weaken the king, flag it.
+                            if (didPawnPushWeakenKing)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.WEAKENED_KING_WITH_PAWN_MOVE_SENTENCES, colorThatMovedText);
+                            }
+                        }
+
                     }
                 }
 
