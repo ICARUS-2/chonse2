@@ -107,3 +107,11 @@ export const BLOCKED_BISHOPS =
         pawnSquare: "d6",
     },
 }
+
+export const PAWN_PUSH_KING_WEAKNESSES = 
+{
+    whiteKingside: "g2",
+    whiteQueenside: "b2",
+    blackKingside: "g7",
+    blackQueenside: "b7"
+}
