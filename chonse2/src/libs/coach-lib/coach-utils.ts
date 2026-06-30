@@ -945,6 +945,27 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Player isolated their own pawn. 
+                    {
+                        if (previousState && missedState)
+                        {
+                            const currentIsolatedPawns = whiteToMove ? Chonse2Extensions.getAllIsolatedPawns(state).black : Chonse2Extensions.getAllIsolatedPawns(state).white;
+                            const prevIsolatedPawns = whiteToMove ? Chonse2Extensions.getAllIsolatedPawns(previousState).black : Chonse2Extensions.getAllIsolatedPawns(previousState).white;
+                            const missedIsolatedPawns = whiteToMove ? Chonse2Extensions.getAllIsolatedPawns(missedState).black : Chonse2Extensions.getAllIsolatedPawns(missedState).white;
+
+                            const didPlayerIsolateOwnPawn = currentIsolatedPawns.length > prevIsolatedPawns.length;
+                            const didBestMoveInvolveIsolatingOwnPawn = missedIsolatedPawns.length > prevIsolatedPawns.length;
+
+                            if (didPlayerIsolateOwnPawn && !didBestMoveInvolveIsolatingOwnPawn)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.ISOLATED_OWN_PAWN_SENTENCES, colorThatMovedText);
+                                const idea = new CoachIdea();
+                                idea.highlightedSquares = currentIsolatedPawns;
+                                move.coachIdeas.set(CoachIdeaFlagType.IsolatedPawnIdea, idea);
+                            }
+                        }
+                    }
                 }
 
                 //=======Good
@@ -1292,6 +1313,32 @@ export class CoachUtils
                             if (passedPawnStoppers.length > previousPassedPawnStoppers.length)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.SAT_PIECE_ON_PROMOTION_SQUARE_SENTENCES, colorThatMovedText, toCoordPiece);
+                            }
+                        }
+                    }
+
+                    //Case: Player isolated an opponent's pawn
+                    {
+                        if (previousState)
+                        {
+                            const currentIsolatedPawns = Chonse2Extensions.getAllIsolatedPawns(state);
+                            const prevIsolatedPawns = Chonse2Extensions.getAllIsolatedPawns(previousState)
+                        
+                            const opponentCurrentIsolatedPawns = whiteToMove ? currentIsolatedPawns.white : currentIsolatedPawns.black;
+                            const opponentPrevIsolatedPawns = whiteToMove ? prevIsolatedPawns.white : prevIsolatedPawns.black;
+
+                            const colorThatJustPlayedIsolatedPawns = whiteToMove ? currentIsolatedPawns.black : currentIsolatedPawns.white;
+                            const colorThatJustPlayedPrevIsolatedPawns = whiteToMove ? prevIsolatedPawns.black : prevIsolatedPawns.white;
+
+                            if ( 
+                                (opponentCurrentIsolatedPawns.length > opponentPrevIsolatedPawns.length) && //if the opponent is forced to isolate
+                                (colorThatJustPlayedIsolatedPawns.length <= colorThatJustPlayedPrevIsolatedPawns.length)) //AND the player that just moved is NOT.
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.ISOLATED_OPPONENT_PAWN_SENTENCES, colorThatMovedText);
+                                
+                                const idea = new CoachIdea();
+                                idea.highlightedSquares = opponentCurrentIsolatedPawns;
+                                move.coachIdeas.set(CoachIdeaFlagType.IsolatedPawnIdea, idea);
                             }
                         }
                     }
