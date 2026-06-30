@@ -110,6 +110,7 @@
                 "fianchetto": "Show Idea: Fianchetto",
                 "skewer": "Show Idea: Skewer",
                 "passedPawn": "Show Passed Pawn",
+                "isolatedPawn": "Show Isolated Pawn",
                 "base": "Show Idea: "
             },
             "resourceButton": 

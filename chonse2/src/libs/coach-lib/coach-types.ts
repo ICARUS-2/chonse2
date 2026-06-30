@@ -50,7 +50,8 @@ export enum CoachIdeaFlagType
     DevelopmentIdea,
     FianchettoIdea,
     SkewerIdea,
-    PassedPawnIdea
+    PassedPawnIdea,
+    IsolatedPawnIdea
 }
 
 export enum CoachResourceFlagType 

@@ -375,7 +375,12 @@ export class CoachDisplay {
     
     if (flag == CoachIdeaFlagType.PassedPawnIdea)
     {
-      return this.translate.instant('chessboard.coachDisplay.ideaButton.passedPawn')
+      return this.translate.instant('chessboard.coachDisplay.ideaButton.passedPawn');
+    }
+
+    if (flag == CoachIdeaFlagType.IsolatedPawnIdea)
+    {
+      return this.translate.instant('chessboard.coachDisplay.ideaButton.isolatedPawn');
     }
 
     return this.translate.instant('chessboard.coachDisplay.ideaButton.base');

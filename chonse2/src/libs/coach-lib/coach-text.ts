@@ -298,6 +298,14 @@ export default class CoachText
         `This creates a passed pawn for the opponent. `,
         `${CoachText.TURN_PLACEHOLDER} will need to watch out for the passed pawn they created for their opponent, as it will have an easier time queening. `
     ]
+
+    //Player isolated their own pawn
+    public static readonly ISOLATED_OWN_PAWN_SENTENCES: Array<string> = 
+    [
+        `This isolates ${CoachText.TURN_PLACEHOLDER}'s pawn, giving it no defence from other ones. `,
+        `Now ${CoachText.TURN_PLACEHOLDER} has an isolated pawn. `,
+        `Being stuck with an isolated pawn may make it harder to advance long-term. `,
+    ]
     //#endregion
 
     //#region Good============
@@ -463,6 +471,16 @@ export default class CoachText
         "This aims to control central space with the knight. ",
         "The knight is moved to an active square, strengthening control over the center. ",
         "Develops the knight and attacks the center. "
+    ]
+
+    //forced an isolated pawn for the opponent. 
+    public static readonly ISOLATED_OPPONENT_PAWN_SENTENCES: Array<string> = 
+    [
+        `Now the opponent has an isolated pawn. `,
+        `Now the opponent is stuck with an isolated pawn which has no help from others. `,
+        `Pawns excel at defending each other when pushing to the other side, and isolating that pawn will make that much harder for the opponent. `,
+        `This forces the opponent to have an isolated pawn, which has no existing adjacent ones to help defend it. `,
+        `This creates an isolated pawn for the opponent, breaking the backbone of their structure. `
     ]
     //#endregion 
 

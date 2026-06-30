@@ -111,6 +111,7 @@
                 "fianchetto": "Montrer l'idée : Fianchetto",
                 "skewer": "Montrer l'idée: Brochette",
                 "passedPawn": "Montrer pion passé",
+                "isolatedPawn": "Montrer pion isolé",
                 "base": "Montrer l'idée : "
             },
             "resourceButton": 
