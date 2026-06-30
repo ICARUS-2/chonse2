@@ -1037,36 +1037,15 @@ export default class Chonse2Extensions
     }
     //#endregion
 
-    //#region
+    //#region Passed pawns
     public static getAllPassedPawns(board: Chonse2): {white: Array<string>, black: Array<string>}
     {
         //return object with the passed pawn coords. 
         const returnObj: { white: string[], black: string[] } = { white: [], black: [] };
-        const whitePieces = board.getAllPiecesAndCoordsByColor(PieceColor.WHITE);
-        const blackPieces = board.getAllPiecesAndCoordsByColor(PieceColor.BLACK);
 
-        const whitePawns: Array<string> = [];
-        const blackPawns: Array<string> = [];
-
-        whitePieces.coords.forEach( (coord, idx) => 
-        {
-            const p = whitePieces.pieces[idx];
-            
-            if (p == PieceType.WHITE_PAWN)
-            {
-                whitePawns.push(coord);
-            }
-        } )
-
-        blackPieces.coords.forEach( (coord, idx) => 
-        {
-            const p = blackPieces.pieces[idx];
-            
-            if (p == PieceType.BLACK_PAWN)
-            {
-                blackPawns.push(coord);
-            }
-        } );
+        const allPawns = Chonse2Extensions.getAllPieceCoordsOfType(board, PieceType.PAWN);
+        const whitePawns: Array<string> = allPawns.white;
+        const blackPawns: Array<string> = allPawns.black;
 
         whitePawns.forEach( whitePawnCoord => 
             {
@@ -1184,6 +1163,14 @@ export default class Chonse2Extensions
     }
     //#endregion
 
+    //#region Isolated pawns
+    public static getAllIsolatedPawns(board:Chonse2): {white: Array<string>, black: Array<string>}
+    {
+        const returnObj = {white: [] as Array<string>, black: [] as Array<string>}
+
+        return returnObj;
+    }
+    
     //#region General board state
     //Gets all pieces that attack/defend a given square.
     public static getPiecesThatHitSquare(board: Chonse2, square: string): {white: Array<string>, black: Array<string>} {
@@ -1281,6 +1268,87 @@ export default class Chonse2Extensions
             }
         }
         return openFiles;
+    }
+
+    public static getAllPieceCoordsOfType(board: Chonse2, pieceType: PieceType): {white: Array<string>, black: Array<string>}
+    {
+        const returnObj: { white: string[], black: string[] } = { white: [], black: [] };
+        const allWhitePieces = board.getAllPiecesAndCoordsByColor(PieceColor.WHITE);
+        const allBlackPieces = board.getAllPiecesAndCoordsByColor(PieceColor.BLACK);
+
+        let desiredWhitePiece: PieceType = PieceType.NONE;
+        if (pieceType == PieceType.PAWN || pieceType == PieceType.WHITE_PAWN || pieceType == PieceType.BLACK_PAWN)
+        {
+            desiredWhitePiece = PieceType.WHITE_PAWN;
+        }
+        else if (pieceType == PieceType.KNIGHT || pieceType == PieceType.WHITE_KNIGHT || pieceType == PieceType.BLACK_KNIGHT)
+        {
+            desiredWhitePiece = PieceType.WHITE_KNIGHT;
+        }
+        else if (pieceType == PieceType.BISHOP || pieceType == PieceType.WHITE_BISHOP || pieceType == PieceType.BLACK_BISHOP)
+        {
+            desiredWhitePiece = PieceType.WHITE_BISHOP;
+        }
+        else if (pieceType == PieceType.ROOK || pieceType == PieceType.WHITE_ROOK || pieceType == PieceType.BLACK_ROOK)
+        {
+            desiredWhitePiece = PieceType.WHITE_ROOK;
+        }
+        else if (pieceType == PieceType.QUEEN || pieceType == PieceType.WHITE_QUEEN || pieceType == PieceType.BLACK_QUEEN)
+        {
+            desiredWhitePiece = PieceType.WHITE_QUEEN;
+        }
+        else if (pieceType == PieceType.KING || pieceType == PieceType.WHITE_KING || pieceType == PieceType.BLACK_KING)
+        {
+            desiredWhitePiece = PieceType.WHITE_KING;
+        }
+
+        let desiredBlackPiece: PieceType = PieceType.NONE;
+        if (pieceType == PieceType.PAWN || pieceType == PieceType.WHITE_PAWN || pieceType == PieceType.BLACK_PAWN)
+        {
+            desiredBlackPiece = PieceType.BLACK_PAWN;
+        }
+        else if (pieceType == PieceType.KNIGHT || pieceType == PieceType.WHITE_KNIGHT || pieceType == PieceType.BLACK_KNIGHT)
+        {
+            desiredBlackPiece = PieceType.BLACK_KNIGHT;
+        }
+        else if (pieceType == PieceType.BISHOP || pieceType == PieceType.WHITE_BISHOP || pieceType == PieceType.BLACK_BISHOP)
+        {
+            desiredBlackPiece = PieceType.BLACK_BISHOP;
+        }
+        else if (pieceType == PieceType.ROOK || pieceType == PieceType.WHITE_ROOK || pieceType == PieceType.BLACK_ROOK)
+        {
+            desiredBlackPiece = PieceType.BLACK_ROOK;
+        }
+        else if (pieceType == PieceType.QUEEN || pieceType == PieceType.WHITE_QUEEN || pieceType == PieceType.BLACK_QUEEN)
+        {
+            desiredBlackPiece = PieceType.BLACK_QUEEN;
+        }
+        else if (pieceType == PieceType.KING || pieceType == PieceType.WHITE_KING || pieceType == PieceType.BLACK_KING)
+        {
+            desiredBlackPiece = PieceType.BLACK_KING;
+        }
+
+        allWhitePieces.coords.forEach( (coord, idx) => 
+        {
+            const p = allWhitePieces.pieces[idx];
+            
+            if (p == PieceType.WHITE_PAWN)
+            {
+                returnObj.white.push(coord);
+            }
+        } )
+
+        allBlackPieces.coords.forEach( (coord, idx) => 
+        {
+            const p = allBlackPieces.pieces[idx];
+            
+            if (p == PieceType.BLACK_PAWN)
+            {
+                returnObj.black.push(coord);
+            }
+        } );
+
+        return returnObj;
     }
     //#endregion
 }
