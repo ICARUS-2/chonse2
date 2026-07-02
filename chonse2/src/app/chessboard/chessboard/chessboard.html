@@ -38,7 +38,7 @@
                                 translate(' + animatedPieceX() + 'px,' + animatedPieceY() + 'px)' 
                                 + (boardState().isFlipped() ? ' rotate(180deg)' : '')"
 
-                            [style.transition]="'all ' + Chessboard.animationDuration + 'ms ease-in-out'"
+                            [style.transition]="'all ' + Chessboard.ANIMATION_DURATION_MS + 'ms ease-in-out'"
                             (transitionend)="onAnimationEnd()"/>
                     }
                     <!-- ARROW OVERLAY -->

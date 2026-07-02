@@ -194,7 +194,7 @@ export class CoachDisplay {
                 to: toSquare,
                 piece
               });
-              await this.delay(Chessboard.animationDuration);
+              await this.delay(Chessboard.ANIMATION_DURATION_MS);
             }
 
             //Then play the move.

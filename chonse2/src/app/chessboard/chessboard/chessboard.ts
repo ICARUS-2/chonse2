@@ -44,6 +44,13 @@ import GameLinkHelper from './game-link-helper';
 import { DatabaseModal } from '../database-modal/database-modal';
 import { TranslateService } from '@ngx-translate/core';
 
+interface PieceAnimationState {
+  piece: string;
+  fromCoord: string;
+  x: number;
+  y: number;
+}
+
 @Component({
   selector: 'app-chessboard',
   imports: [
@@ -103,15 +110,24 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   private resizeObserver: ResizeObserver;
   mouseX = signal(0);
   mouseY = signal(0);
-  private animationId = 0; // increment on each new animation
 
   @ViewChild('board', { static: false }) boardElement!: ElementRef<HTMLDivElement>;
   boardPixelSize = signal(0);
-  animatedPiece = signal('');
-  animatedPieceX = signal(0);
-  animatedPieceY = signal(0);
-  static animationDuration = 110; // ms
-  animatedPieceCoord = signal('');
+
+
+  //Single source of truth for the in-flight animation. Bundling piece/coord/x/y
+  //together means there's no way for one part to get cleared while another
+  //still points at the old animation - they change atomically.
+  private animationState = signal<PieceAnimationState | null>(null);
+  private animationRequestId = 0;
+  animatedPieceCoord = computed(() => this.animationState()?.fromCoord ?? '');
+  animatedPiece = computed(() => this.animationState()?.piece ?? '');
+  animatedPieceX = computed(() => this.animationState()?.x ?? 0);
+  animatedPieceY = computed(() => this.animationState()?.y ?? 0);
+  getSquarePixelSize = computed(() => this.boardPixelSize() / Chonse2.SIZE);
+
+  // Must match the transition-duration on the ghost piece element in CSS.
+  public static readonly ANIMATION_DURATION_MS = 70;
 
   static readonly moveClassificationColors: Map<string, string> = new Map<string, string>( 
     [
@@ -589,7 +605,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
         this.forcePushState(stateCopy, moveResult);
         Sound.playSoundForMove(moveResult.notation);
-      }, Chessboard.animationDuration);
+      }, Chessboard.ANIMATION_DURATION_MS);
     }
     else 
     {
@@ -671,7 +687,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         this.boardState().goBack();
         Sound.playSound(Sound.MOVE);
 
-      }, Chessboard.animationDuration )
+      }, Chessboard.ANIMATION_DURATION_MS )
     }    
     else 
     {
@@ -693,7 +709,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         this.boardState().goForward();
         Sound.playSoundForMove(mostRecentMove.notation);
 
-      }, Chessboard.animationDuration )
+      }, Chessboard.ANIMATION_DURATION_MS )
     }
     else 
     {
@@ -1197,42 +1213,40 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.boardPixelSize.set(this.boardElement.nativeElement.getBoundingClientRect().width);
   }
   
-  getBoardTopLeft = computed( (): { left: number; top: number }  => 
+  getBoardTopLeft(): { left: number; top: number } 
   {
     const rect = this.boardElement.nativeElement.getBoundingClientRect();
     return { left: rect.left, top: rect.top };
-  })
+  }
 
   getBoardPixelSize = computed( (): number => 
   {
     return this.boardPixelSize();
   }) 
 
-  getSquarePixelSize = computed( (): number => 
-  {
-    return this.boardPixelSize() / Chonse2.SIZE;
-  })
-
-  animateMove(from: string, to: string, piece: string) {
-  
+  animateMove(from: string, to: string, piece: string): void {
+    const requestId = ++this.animationRequestId;
     const fromCoords = this.calculatePixelPosition(from);
     const toCoords = this.calculatePixelPosition(to);
 
-    this.animatedPieceCoord.set(from);
-    this.animatedPiece.set(piece);
-    this.animatedPieceX.set(fromCoords.x);
-    this.animatedPieceY.set(fromCoords.y);
+    this.animationState.set({ piece, fromCoord: from, x: fromCoords.x, y: fromCoords.y });
 
+    // Two rAFs: the first fires before the browser has painted the "from"
+    // position; by the second, it has, so the jump to "to" gets picked up by
+    // the CSS transition instead of being collapsed into a single frame.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        this.animatedPieceX.set(toCoords.x);
-        this.animatedPieceY.set(toCoords.y);
+        if (requestId !== this.animationRequestId) return; // superseded
+        this.animationState.update(state =>
+          state ? { ...state, x: toCoords.x, y: toCoords.y } : state
+        );
       });
     });
 
     setTimeout(() => {
-        this.onAnimationEnd();
-    }, 500);
+      if (requestId !== this.animationRequestId) return; // superseded
+      this.onAnimationEnd();
+    }, Chessboard.ANIMATION_DURATION_MS);
   }
 
   private calculatePixelPosition(coordinate: string): { x: number, y: number } 
@@ -1245,10 +1259,9 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     };
   }
 
-  onAnimationEnd() 
+  onAnimationEnd(): void 
   {
-    this.animatedPiece.set("");
-    this.animatedPieceCoord.set("");
+    this.animationState.set(null);
   }
 
   showPieceForCoord = computed(() => {
