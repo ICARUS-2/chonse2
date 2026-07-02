@@ -452,6 +452,15 @@ export default class CoachText
         `Cool idea, that passed pawn cannot promote as long as that ${CoachText.PIECE_PLACEHOLDER} is chilling there. `,
         `That passed pawn won't be promoting with ${CoachText.TURN_PLACEHOLDER}'s ${CoachText.PIECE_PLACEHOLDER} sitting on its promotion square. `
     ]
+
+    //Player accurately attacked a pawn chain
+    public static readonly ATTACKED_PAWN_CHAIN_SENTENCES: Array<string> = 
+    [
+        `This applies pressure to the opponent's pawn chain, undermining their overall structure. `,
+        `This move attacks a pawn chain. `,
+        `Solid, this is applying pressure to that pawn chain. `,
+        `Attacking the pawn chain is a good way to open up the position. `
+    ]
     //#endregion
     
     //#region Good (development)

@@ -1422,6 +1422,26 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Player attacked a pawn chain
+                    {
+                        if (previousState)
+                        {
+                            const movedPiece = state.findPieceAtCoordinate(move.toCoord);
+
+                            const pawnChainData = Chonse2Extensions.getAllPawnChainsOnBoard(previousState);
+                            const attackSquaresForPawnChain = whiteToMove ? pawnChainData.whiteAttackSquares : pawnChainData.blackAttackSquares;
+                            const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
+
+                            const didPlayerAttackPawnChain = (movedPiece == pawnPiece && attackSquaresForPawnChain.includes(move.toCoord));
+
+                            if (didPlayerAttackPawnChain)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.ATTACKED_PAWN_CHAIN_SENTENCES, colorThatMovedText);
+                            }
+                        }
+
+                    }
                 }
             
                 //=======Good - Development
