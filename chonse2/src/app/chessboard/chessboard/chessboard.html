@@ -272,7 +272,7 @@
 </div>  
 
 <!-- <div class="testingPurposes">
-    @let isolated = Chonse2Extensions.getAllIsolatedPawns(this.boardState().getCurrentState());
+    @let pc = Chonse2Extensions.getAllPawnChainsOnBoard(this.boardState().getCurrentState());
 
-    {{isolated.white}} ----     {{isolated.black}}
+    Chains: {{pc.white}} / Attackers: {{pc.whiteAttackSquares}} ----  {{pc.black}} / {{pc.blackAttackSquares}}
 </div> -->

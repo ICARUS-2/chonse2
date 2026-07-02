@@ -280,7 +280,10 @@ export class CoachDisplay {
       return this.translate.instant('chessboard.coachDisplay.missButton.showMissedCapture');
     }
 
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.CapturedPieceWithWrongAttacker) || move.coachMoveFlags.includes(CoachMoveFlagType.WrongDevelopment))
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.CapturedPieceWithWrongAttacker) || 
+        move.coachMoveFlags.includes(CoachMoveFlagType.WrongDevelopment) ||
+        move.coachMoveFlags.includes(CoachMoveFlagType.WrongPawnChainAttack)
+    )
     {
       return this.translate.instant('chessboard.coachDisplay.missButton.showAlternative');
     }

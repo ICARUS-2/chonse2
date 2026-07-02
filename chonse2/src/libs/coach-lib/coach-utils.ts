@@ -1015,6 +1015,37 @@ export class CoachUtils
                         }
 
                     }
+
+                    //Case: Player should have attacked a pawn chain
+                    {
+                        if (previousState && previousBestMove)
+                        {
+                            const movedPiece = state.findPieceAtCoordinate(move.toCoord);
+                            const bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
+
+                            const pawnChainData = Chonse2Extensions.getAllPawnChainsOnBoard(previousState);
+                            const attackSquaresForPawnChain = whiteToMove ? pawnChainData.whiteAttackSquares : pawnChainData.blackAttackSquares;
+                            const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
+
+                            const didPlayerAttackPawnChain = (movedPiece == pawnPiece && attackSquaresForPawnChain.includes(move.toCoord));
+                            const wasBestMoveToAttackPawnChain = (bestPieceToMove == pawnPiece && attackSquaresForPawnChain.includes(previousBestMove.toSquare))
+
+                            //if the player outright missed the chance to attack a pawn chain.
+                            if (!didPlayerAttackPawnChain && wasBestMoveToAttackPawnChain)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_PAWN_CHAIN_ATTACK_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.MissedPawnChainAttack);
+                            }
+
+                            //if the player had a better way to attack a pawn chain.
+                            if (didPlayerAttackPawnChain && wasBestMoveToAttackPawnChain)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.WRONG_PAWN_CHAIN_ATTACK_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.WrongPawnChainAttack);
+                            }
+
+                        }
+                    }
                 }
 
                 //=======Good
@@ -1390,6 +1421,26 @@ export class CoachUtils
                                 move.coachIdeas.set(CoachIdeaFlagType.IsolatedPawnIdea, idea);
                             }
                         }
+                    }
+
+                    //Case: Player attacked a pawn chain
+                    {
+                        if (previousState)
+                        {
+                            const movedPiece = state.findPieceAtCoordinate(move.toCoord);
+
+                            const pawnChainData = Chonse2Extensions.getAllPawnChainsOnBoard(previousState);
+                            const attackSquaresForPawnChain = whiteToMove ? pawnChainData.whiteAttackSquares : pawnChainData.blackAttackSquares;
+                            const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
+
+                            const didPlayerAttackPawnChain = (movedPiece == pawnPiece && attackSquaresForPawnChain.includes(move.toCoord));
+
+                            if (didPlayerAttackPawnChain)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.ATTACKED_PAWN_CHAIN_SENTENCES, colorThatMovedText);
+                            }
+                        }
+
                     }
                 }
             

@@ -315,6 +315,22 @@ export default class CoachText
         `That pawn move undermines the safety of ${CoachText.TURN_PLACEHOLDER}'s king, as it can potentially allow infiltration. `,
         `That pawn move can weaken the safety of a castled king. `
     ]
+
+    //Missed attacking pawn chain.
+    public static readonly MISSED_PAWN_CHAIN_ATTACK_SENTENCES: Array<string> = 
+    [
+        `A better option was to attack a pawn chain. `,
+        `A better bet here was to apply pressure to the opponent's pawn chain. `,
+        `A better bet here was to force open the position by attacking a pawn chain. `,
+    ]
+
+    //Was a better way to attack a pawn chain
+    public static readonly WRONG_PAWN_CHAIN_ATTACK_SENTENCES: Array<string> = 
+    [
+        `${CoachText.TURN_PLACEHOLDER} correctly identified the need to interfere with the opponent's pawn structure, but had a better option to do so. `,
+        `They had a better way to apply pressure to a pawn chain. `,
+        `There was a better way to attack a pawn chain here. `
+    ]
     //#endregion
 
     //#region Good============
@@ -436,6 +452,15 @@ export default class CoachText
         `Cool idea, that passed pawn cannot promote as long as that ${CoachText.PIECE_PLACEHOLDER} is chilling there. `,
         `That passed pawn won't be promoting with ${CoachText.TURN_PLACEHOLDER}'s ${CoachText.PIECE_PLACEHOLDER} sitting on its promotion square. `
     ]
+
+    //Player accurately attacked a pawn chain
+    public static readonly ATTACKED_PAWN_CHAIN_SENTENCES: Array<string> = 
+    [
+        `This applies pressure to the opponent's pawn chain, undermining their overall structure. `,
+        `This move attacks a pawn chain. `,
+        `Solid, this is applying pressure to that pawn chain. `,
+        `Attacking the pawn chain is a good way to open up the position. `
+    ]
     //#endregion
     
     //#region Good (development)
@@ -491,6 +516,7 @@ export default class CoachText
         `This forces the opponent to have an isolated pawn, which has no existing adjacent ones to help defend it. `,
         `This creates an isolated pawn for the opponent, breaking the backbone of their structure. `
     ]
+
     //#endregion 
 
     //#endregion

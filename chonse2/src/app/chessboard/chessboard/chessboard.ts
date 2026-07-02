@@ -65,7 +65,7 @@ import { TranslateService } from '@ngx-translate/core';
 ],
   templateUrl: './chessboard.html',
   styleUrl: './chessboard.css',
-  changeDetection: ChangeDetectionStrategy.Eager
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   pieceType = PieceType;
