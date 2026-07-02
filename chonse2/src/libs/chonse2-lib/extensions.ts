@@ -1144,8 +1144,6 @@ export default class Chonse2Extensions
 
                 const pieceInPromotionSquare = board.findPieceAtCoordinate(promotionSquare);
 
-                console.log(promotionSquare + " " + pieceInPromotionSquare)
-
                 if (pieceInPromotionSquare)
                 {
                     if (pieceInPromotionSquare.startsWith(PieceColor.WHITE))
@@ -1231,6 +1229,105 @@ export default class Chonse2Extensions
 
         return returnObj;
     }
+    //#endregion
+    
+    //#region Pawn chain
+    public static getAllPawnChainsOnBoard(board: Chonse2): { white: Array<Array<string>>, black: Array<Array<string>> }
+    {
+        const returnObj = { white: [] as Array<Array<string>>, black: [] as Array<Array<string>> };
+        const allPawns = Chonse2Extensions.getAllPieceCoordsOfType(board, PieceType.PAWN);
+
+        const vectorX = Chonse2._BISHOP_VECTOR_X;
+        const vectorY = Chonse2._BISHOP_VECTOR_Y;
+
+        const MIN_PAWN_CHAIN_SIZE = 3;
+
+        [
+            {
+                pawns: allPawns.white,
+                pawnType: PieceType.WHITE_PAWN,
+                output: returnObj.white,
+                trackingArr: [] as Array<string>
+            },
+            {
+                pawns: allPawns.black,
+                pawnType: PieceType.BLACK_PAWN,
+                output: returnObj.black,
+                trackingArr: [] as Array<string>
+            }
+        ].forEach(({ pawns, pawnType, output, trackingArr }) =>
+        {
+            //For each pawn.
+            for(let i = 0; i < pawns.length; i++)
+            {
+                const currentPawnCoord = pawns[i];
+                const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(currentPawnCoord);
+                const currentPawnChain: Array<string> = [];
+                currentPawnChain.push(currentPawnCoord);
+                if (trackingArr.includes(currentPawnCoord))
+                {
+                    continue;
+                }
+
+                //For each vector branch
+                for(let offsetIndex = 0; offsetIndex < vectorX.length; offsetIndex++)
+                {
+                    //change in x and y coordinates that will be applied as offsets.
+                    let dx = vectorX[offsetIndex];
+                    let dy = vectorY[offsetIndex];
+
+                    //Ensures it can't run longer than the board.
+                    let runCount = 0;
+
+                    //For each element in that vector branch
+                    for(
+                        let currentXOffset = dx, currentYOffset = dy; 
+                        runCount < Chonse2.SIZE;
+                        currentXOffset += dx, currentYOffset += dy, runCount++
+                    )
+                    {
+                        //the row the current square is in.
+                        const rowInQuestion = board.pieceState[rowIndex + currentXOffset];
+
+                        if (rowInQuestion)
+                        {
+                            //the content of the current square.
+                            const squareInQuestionPiece = rowInQuestion[colIndex + currentYOffset];
+
+                            if (squareInQuestionPiece != undefined)
+                            {
+                                if (squareInQuestionPiece == pawnType)
+                                {
+                                    const c = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                                    console.log(currentPawnCoord + " has pawn chain candidate at " + c)
+                                    currentPawnChain.push(c);
+                                }
+                                else 
+                                {
+                                    break;
+                                }
+                            }
+                            else 
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                console.log(currentPawnChain);
+
+                if (currentPawnChain.length >= MIN_PAWN_CHAIN_SIZE)
+                {
+                    trackingArr.push(...currentPawnChain)
+                    output.push(currentPawnChain);
+                }
+            }
+
+        })
+        return returnObj;
+    }
+
     //#region General board state
     //Gets all pieces that attack/defend a given square.
     public static getPiecesThatHitSquare(board: Chonse2, square: string): {white: Array<string>, black: Array<string>} {
