@@ -315,6 +315,22 @@ export default class CoachText
         `That pawn move undermines the safety of ${CoachText.TURN_PLACEHOLDER}'s king, as it can potentially allow infiltration. `,
         `That pawn move can weaken the safety of a castled king. `
     ]
+
+    //Missed attacking pawn chain.
+    public static readonly MISSED_PAWN_CHAIN_ATTACK_SENTENCES: Array<string> = 
+    [
+        `A better option was to attack a pawn chain. `,
+        `A better bet here was to apply pressure to the opponent's pawn chain. `,
+        `A better bet here was to force open the position by attacking a pawn chain. `,
+    ]
+
+    //Was a better way to attack a pawn chain
+    public static readonly WRONG_PAWN_CHAIN_ATTACK_SENTENCES: Array<string> = 
+    [
+        `${CoachText.TURN_PLACEHOLDER} correctly identified the need to interfere with the opponent's pawn structure, but had a better option to do so. `,
+        `They had a better way to apply pressure to a pawn chain. `,
+        `There was a better way to attack a pawn chain here. `
+    ]
     //#endregion
 
     //#region Good============
@@ -491,6 +507,7 @@ export default class CoachText
         `This forces the opponent to have an isolated pawn, which has no existing adjacent ones to help defend it. `,
         `This creates an isolated pawn for the opponent, breaking the backbone of their structure. `
     ]
+
     //#endregion 
 
     //#endregion

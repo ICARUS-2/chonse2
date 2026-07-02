@@ -33,6 +33,8 @@ export enum CoachMoveFlagType
     WrongDevelopment,
     MissedRookOpenFile,
     MissedForcedPawnDoubling,
+    MissedPawnChainAttack,
+    WrongPawnChainAttack,
 
     //Good (show follow up)
     OpportunityToCheckmate,
