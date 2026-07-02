@@ -1232,9 +1232,16 @@ export default class Chonse2Extensions
     //#endregion
     
     //#region Pawn chain
-    public static getAllPawnChainsOnBoard(board: Chonse2): { white: Array<Array<string>>, black: Array<Array<string>> }
+    public static getAllPawnChainsOnBoard(board: Chonse2): { white: Array<Array<string>>, black: Array<Array<string>>, whiteAttackSquares: Array<string>,  blackAttackSquares: Array<string> }
     {
-        const returnObj = { white: [] as Array<Array<string>>, black: [] as Array<Array<string>> };
+        const returnObj = 
+        { 
+            white: [] as Array<Array<string>>, 
+            black: [] as Array<Array<string>>,
+            whiteAttackSquares: [] as Array<string>,
+            blackAttackSquares: [] as Array<string> 
+        };
+
         const allPawns = Chonse2Extensions.getAllPieceCoordsOfType(board, PieceType.PAWN);
 
         const vectorX = Chonse2._BISHOP_VECTOR_X;
@@ -1247,15 +1254,17 @@ export default class Chonse2Extensions
                 pawns: allPawns.white,
                 pawnType: PieceType.WHITE_PAWN,
                 output: returnObj.white,
+                outputAttack: returnObj.whiteAttackSquares,
                 trackingArr: [] as Array<string>
             },
             {
                 pawns: allPawns.black,
                 pawnType: PieceType.BLACK_PAWN,
                 output: returnObj.black,
+                outputAttack: returnObj.blackAttackSquares,
                 trackingArr: [] as Array<string>
             }
-        ].forEach(({ pawns, pawnType, output, trackingArr }) =>
+        ].forEach(({ pawns, pawnType, output, outputAttack, trackingArr }) =>
         {
             //For each pawn.
             for(let i = 0; i < pawns.length; i++)
@@ -1264,6 +1273,7 @@ export default class Chonse2Extensions
                 const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(currentPawnCoord);
                 const currentPawnChain: Array<string> = [];
                 currentPawnChain.push(currentPawnCoord);
+
                 if (trackingArr.includes(currentPawnCoord))
                 {
                     continue;
@@ -1298,9 +1308,15 @@ export default class Chonse2Extensions
                             {
                                 if (squareInQuestionPiece == pawnType)
                                 {
-                                    const c = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
-                                    console.log(currentPawnCoord + " has pawn chain candidate at " + c)
-                                    currentPawnChain.push(c);
+                                    const appliedRowIdx = rowIndex + currentXOffset;
+                                    const appliedColIdx = colIndex + currentYOffset;
+
+                                    const c = Chonse2.COORDS[appliedRowIdx][appliedColIdx];
+                                    
+                                    if (!currentPawnChain.includes(c))
+                                    {
+                                        currentPawnChain.push(c);
+                                    }
                                 }
                                 else 
                                 {
@@ -1315,12 +1331,66 @@ export default class Chonse2Extensions
                     }
                 }
 
-                console.log(currentPawnChain);
-
+                //We don't need to worry about a pawn chain that's too small.
                 if (currentPawnChain.length >= MIN_PAWN_CHAIN_SIZE)
                 {
-                    trackingArr.push(...currentPawnChain)
+                    //Now, compute the squares where a pawn could hit it.
+                    const currentAttackSquares: Array<string> = [];
+                    currentPawnChain.forEach( coord => 
+                        {
+                            const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
+
+                            let attackLeftRowIndex = -1;
+                            let attackLeftColIndex = -1; 
+                            let attackRightRowIndex = -1;
+                            let attackRightColIndex = -1;
+
+                            //Compute the indeces of squares where the pawn threatens the structure of the chain.
+                            if (pawnType == PieceType.WHITE_PAWN)
+                            {
+                                attackLeftRowIndex = rowIndex - 1;
+                                attackLeftColIndex = colIndex - 1;
+                                attackRightRowIndex = rowIndex - 1;
+                                attackRightColIndex = colIndex + 1;
+                            }
+                            else 
+                            {
+                                attackLeftRowIndex = rowIndex + 1;
+                                attackLeftColIndex = colIndex - 1;
+                                attackRightRowIndex = rowIndex + 1;
+                                attackRightColIndex = colIndex + 1;
+                            }
+
+                            //Get the actual squares themselves.
+                            let leftAttackSquare = board.pieceState[attackLeftRowIndex][attackLeftColIndex];
+                            let rightAttackSquare = board.pieceState[attackRightRowIndex][attackRightColIndex];
+
+                            //If the square is outside or has a piece already in it, don't push anything.
+                            if (leftAttackSquare != undefined)
+                            {
+                                //An attacking square is only valid if it's in the board (obviously) and there's nothing in it.
+                                if (leftAttackSquare == PieceType.NONE)
+                                {
+                                    currentAttackSquares.push(Chonse2.COORDS[attackLeftRowIndex][attackLeftColIndex]);
+                                }
+                            }
+
+                            if (rightAttackSquare != undefined)
+                            {
+                                if (rightAttackSquare == PieceType.NONE)
+                                {
+                                    currentAttackSquares.push(Chonse2.COORDS[attackRightRowIndex][attackRightColIndex]);
+                                }    
+                            }
+                        }
+                    )
+                    
+                    //If there's already been a pawn checked, push it so we don't check it again.
+                    trackingArr.push(...currentPawnChain);
+
+                    //Register the chain and the squares where pawns can attack it.
                     output.push(currentPawnChain);
+                    outputAttack.push(...currentAttackSquares);
                 }
             }
 
