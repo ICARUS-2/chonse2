@@ -119,6 +119,34 @@ export default class CoachText
         ]
     )
 
+    //#region Game end
+
+    //Player checkmated the king
+    public static readonly CHECKMATE_SENTENCES: Array<string> = 
+    [
+        `${CoachText.TURN_PLACEHOLDER} did it! Nice checkmate! `,
+        `Checkmate and the game is over! `,
+        `Checkmate is always the best move! `,
+        `Always feels luminous to win! 🩵 `
+    ]
+    
+    //Game ends in stalemate.
+    public static readonly STALEMATE_SENTENCES: Array<string> = 
+    [
+        `Snatching a stalemate from the jaws of defeat! `,
+        `Stalemate, a fitting end to this intense game. `,
+        `The king had no legal moves, but was not in check. The game ends in a stalemate. `,
+    ]
+
+    //Game ends in a draw.
+    public static readonly DRAW_SENTENCES: Array<string> = 
+    [
+        `As they say, perfect chess is always a draw. `,
+        `And the game ends in a draw. `,
+        `Draw, the game is over. `
+    ]
+    //#endregion
+
     //#region Bad=============
     //If the player just hung a piece.
     public static readonly PIECE_HANG_SENTENCES: Array<string> = 
@@ -525,6 +553,25 @@ export default class CoachText
         `Pawns excel at defending each other when pushing to the other side, and isolating that pawn will make that much harder for the opponent. `,
         `This forces the opponent to have an isolated pawn, which has no existing adjacent ones to help defend it. `,
         `This creates an isolated pawn for the opponent, breaking the backbone of their structure. `
+    ]
+
+    //Defended a hanging piece
+    public static readonly DEFENDED_HANGING_PIECE_SENTENCES: Array<string> = 
+    [
+        `This defends a piece that was previously under attack. `,
+        `${CoachText.TURN_PLACEHOLDER} defends their hanging piece. `,
+        `They protected a piece that was under attack. `,
+        `They are correctly providing protection for a piece that was under attack. `,
+        `That piece is no longer hanging, and is now defended. `
+    ]
+
+    //Stepped a hanging piece out of trouble
+    public static readonly MOVED_HANGING_PIECE_SENTENCES: Array<string> = 
+    [
+        `The ${CoachText.PIECE_PLACEHOLDER} moves away as ${CoachText.TURN_PLACEHOLDER} avoids material loss. `,
+        `They moved their ${CoachText.PIECE_PLACEHOLDER} to safety. `,
+        `They stepped their ${CoachText.PIECE_PLACEHOLDER} out of the way before it could be captured. `,
+        `This moves the previously hanging ${CoachText.PIECE_PLACEHOLDER} to a safer square. `
     ]
 
     //#endregion 

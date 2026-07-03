@@ -75,7 +75,6 @@
             "depth": "Depth",
             "cloud": "CLOUD",
             "is": "is",
-            "checkmateAlwaysBest": "Checkmate is always the best move!",
             "hideSequence": "Hide Sequence",
             "continue": "Continue",
             "hideIdea": "Hide Idea",

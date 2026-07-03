@@ -75,7 +75,6 @@
             "depth": "Profondeur",
             "cloud": "NUAGE",
             "is": "est",
-            "checkmateAlwaysBest": "Checkmate est toujours le meilleur coup!",
             "hideSequence": "Cacher la séquence",
             "continue": "Continuer",
             "hideIdea": "Cacher l'idée",
