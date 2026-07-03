@@ -12,6 +12,7 @@ import CoachText from "./coach-text";
 import {BLOCKED_BISHOPS, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "./coach-types";
 import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
+import { GameOverReason } from "../chonse2-lib/game-state";
 export class CoachUtils
 {
     static readonly COACH_MOVE_DELIMITER = "*";
@@ -42,12 +43,33 @@ export class CoachUtils
             const previousState = states[stateStackPointer - 1];
             const previousPosEval = evals[evalStackPointer - 1];
 
-            // if (isDivergenceStack)
-            // {
-            //     console.log(states);
-            //     console.log(evals);
-            //     console.log(moves);
-            // }
+            //Verifying game end conditions first. 
+            if (move && state && !move.coachComment.includes(CoachUtils.COACH_MOVE_DELIMITER))
+            {
+                const whiteToMove = state.turn;
+                const colorThatMovedText = whiteToMove ? "Black" : "White";
+
+                //Case: Player checkmated the king.
+                if (state.gameState.reason == GameOverReason.Checkmate)
+                {
+                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.CHECKMATE_SENTENCES, colorThatMovedText);
+                    break;
+                }
+
+                if (state.gameState.reason == GameOverReason.Stalemate)
+                {
+                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.STALEMATE_SENTENCES, colorThatMovedText);
+                    break;
+                }
+
+                if (state.gameState.reason == GameOverReason.InsufficientMaterial || 
+                    state.gameState.reason == GameOverReason.ThreefoldRepetition || 
+                    state.gameState.reason == GameOverReason.FiftyMoveNoPawnMovementsOrCaptures)
+                {
+                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.DRAW_SENTENCES, colorThatMovedText);
+                    break;
+                }
+            }
 
             //Can only do analysis if all of the necessary components exist.
             if (state && move && posEval && posEval.bestMove)
@@ -56,6 +78,7 @@ export class CoachUtils
                 const nextBestMove = CoachMiscHelpers.convertUciToChonse2Move(posEval.bestMove);
                 const nextBestState = state.getFullDeepCopy();
                 nextBestState.completeMove(nextBestMove.fromSquare, nextBestMove.toSquare, nextBestMove.promotion);
+                
 
                 //play out the engine line
                 const currentFollowUp: Array<Chonse2> = CoachMiscHelpers.getEngineLineStates(state, posEval.lines[0]);
@@ -83,6 +106,12 @@ export class CoachUtils
 
                 //misc stuff that can be reused
                 const allHangingPieceCoords = Chonse2Extensions.getHangingPieces(state);
+
+                let allPreviousHangingPieceCoords:{ white: Array<string>; black: Array<string>;} | undefined = undefined
+                if (previousState)
+                {
+                    allPreviousHangingPieceCoords = Chonse2Extensions.getHangingPieces(previousState)
+                }
 
                 //=======Exclusively opening
                 if (posEval.moveClassification == MoveClassification.Opening)
@@ -427,11 +456,10 @@ export class CoachUtils
 
                     //Case: Player missed the opportunity to capture a hanging piece 
                     {
-                        if (previousState && previousPosEval)
+                        if (previousState && previousPosEval && allPreviousHangingPieceCoords != undefined)
                         {
                             if (previousPosEval.bestMove)
                             {
-                                const allPreviousHangingPieceCoords = Chonse2Extensions.getHangingPieces(previousState)
                                 const previousHangingPiecesArrToCheck = whiteToMove ? allPreviousHangingPieceCoords.white : allPreviousHangingPieceCoords.black;
                                 
                                 const previousBestMove = CoachMiscHelpers.convertUciToChonse2Move(previousPosEval.bestMove);
@@ -1073,7 +1101,7 @@ export class CoachUtils
                     posEval.moveClassification == MoveClassification.Perfect ||
                     posEval.moveClassification == MoveClassification.Okay
                 )
-                {
+                {   
                     //Case: Player accurately captured a piece 
                     {
                         if (move.notation.includes(AlgebraicNotationMaker.CAPTURE))
@@ -1460,6 +1488,45 @@ export class CoachUtils
                             }
                         }
 
+                    }
+
+                    //Case: Player stepped in to defend a hanging piece 
+                    {
+                        if (previousState && allPreviousHangingPieceCoords && !move.notation.includes(AlgebraicNotationMaker.CAPTURE))
+                        {
+                            const hanging = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
+                            const prevHanging = whiteToMove ? allPreviousHangingPieceCoords.black : allPreviousHangingPieceCoords.white;
+
+                            if (hanging.length < prevHanging.length)
+                            {
+                                let didPlayerMoveHangingPiece = false;
+                                
+                                for(let i = 0; i < prevHanging.length; i++)
+                                {
+                                    const hpCoord = prevHanging[i];
+
+                                    if (hpCoord == move.fromCoord)
+                                    {
+                                        didPlayerMoveHangingPiece = true;
+                                        break;
+                                    }
+                                }
+
+                                //if player did not move a hanging piece, but there were less hanging pieces, the only logical explanation is that they moved a piece to defend it.
+                                if (!didPlayerMoveHangingPiece)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.DEFENDED_HANGING_PIECE_SENTENCES, colorThatMovedText);
+                                }
+                                else 
+                                {
+                                    const pc = previousState.findPieceAtCoordinate(move.fromCoord);
+                                    if (pc != PieceType.WHITE_KING && pc != PieceType.BLACK_KING)
+                                    {
+                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.MOVED_HANGING_PIECE_SENTENCES, colorThatMovedText, pc);   
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             
