@@ -115,3 +115,18 @@ export const PAWN_PUSH_KING_WEAKNESSES =
     blackKingside: "g7",
     blackQueenside: "b7"
 }
+
+export const CENTER_STRIKE_MOVEMENTS =
+{
+    white: 
+    [
+        {from: "e2", to: "e4"},
+        {from: "d2", to: "d4"}
+    ],
+
+    black: 
+    [
+        {from: "e7", to: "e5"},
+        {from: "d7", to: "d5"}
+    ]
+}
