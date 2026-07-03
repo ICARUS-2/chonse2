@@ -299,7 +299,8 @@
         {
             "heading": "Échiquier",
             "clickToMove": "Cliquer pour déplacer",
-            "pieceAnimation": "Animation des pièces"
+            "pieceAnimation": "Animation des pièces",
+            "chessPieces" : "Pièces d'échecs"
         },
         "appearance": 
         {

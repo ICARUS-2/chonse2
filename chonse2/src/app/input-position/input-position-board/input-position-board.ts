@@ -20,6 +20,7 @@ import { ToastrService } from 'ngx-toastr';
 import { IconButton } from "../../ui/icon-button/icon-button";
 import GameLinkHelper from '../../chessboard/chessboard/game-link-helper';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import ChessboardHelper from '../../chessboard/helpers';
 
 @Component({
   selector: 'app-input-position-board',
@@ -33,6 +34,7 @@ export class InputPositionBoard {
   pieceType = PieceType;
   PieceColor = PieceColor;
   GameOverReason = GameOverReason;
+  ChessboardHelper = ChessboardHelper;
   Object = Object;
   MoveClassification = MoveClassification;
   Math = Math;

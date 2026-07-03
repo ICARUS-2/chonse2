@@ -9,7 +9,7 @@
             <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'settings.board.heading' | translate }}</h2>
 
             <!--Click to move and piece animation-->
-            <div class="d-flex justify-content-between boardSection">
+            <div class="d-flex justify-content-between boardSection flex-wrap">
                 <!--Click to move-->
                 <div>
                     <h4 class="">{{ 'settings.board.clickToMove' | translate }}</h4>
@@ -43,6 +43,21 @@
                     />
                     </div>
                 </div>
+
+                <div>
+                    <h4 class="">{{ 'settings.board.chessPieces' | translate }}</h4>
+                    <select [formField]="form.chessPieces" class="form-select" (change)="handlePieceDropdownSelectionChanged()">
+                        @for(set of ChessboardHelper.PIECE_SETS; track $index)
+                        {
+                            <option [value]="set">{{set}}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!--Chess pieces and other (future?)-->
+            <div class="d-flex justify-content-between boardSection">
+
             </div>
         </div>
 

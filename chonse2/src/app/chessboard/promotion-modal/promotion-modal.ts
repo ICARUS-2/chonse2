@@ -4,6 +4,7 @@ import ThemeService from '../../themes/theme-service';
 import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
 import { PieceType } from '../../../libs/chonse2-lib/piece-type';
 import { TranslatePipe } from '@ngx-translate/core';
+import ChessboardHelper from '../helpers';
 
 @Component({
   selector: 'app-promotion-modal',
@@ -87,7 +88,7 @@ export class PromotionModal {
 
   getSrc(piece: string)
   {
-    return `piece/merida/${piece}.svg`;
+    return ChessboardHelper.getIconSourceForPiece(piece);
   }
 
 

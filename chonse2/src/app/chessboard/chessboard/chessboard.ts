@@ -78,6 +78,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   pieceType = PieceType;
   PieceColor = PieceColor;
   GameOverReason = GameOverReason;
+  ChessboardHelper = ChessboardHelper;
   LocalStorageHelper = LocalStorageHelper;
   EngineName = EngineName;
   EngineInformation = EngineInformation;
@@ -548,7 +549,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     const piece: string = this.boardState().getCurrentState().pieceState[idx.rowIndex][idx.colIndex];
 
-    return `piece/merida/${piece}.svg`;
+    return ChessboardHelper.getIconSourceForPiece(piece);
   }) 
 
   //#endregion
