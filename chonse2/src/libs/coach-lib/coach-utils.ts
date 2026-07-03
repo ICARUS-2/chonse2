@@ -9,7 +9,7 @@ import { openings } from "../engine-lib/data/openings";
 import { MoveClassification } from "../engine-lib/types/enums";
 import { LineEval, PositionEval } from "../engine-lib/types/eval";
 import CoachText from "./coach-text";
-import {BLOCKED_BISHOPS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
+import {BLOCKED_BISHOPS, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "./coach-types";
 import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
 export class CoachUtils
@@ -1044,6 +1044,25 @@ export class CoachUtils
                                 move.coachMoveFlags.push(CoachMoveFlagType.WrongPawnChainAttack);
                             }
 
+                        }
+                    }
+
+                    //Case: Player should have struck in the center with a pawn
+                    {
+                        if (previousBestMove)
+                        {
+                            const movedPiece = state.findPieceAtCoordinate(move.toCoord);
+                            const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
+                            const bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
+                            const centerMovements = whiteToMove ? CENTER_STRIKE_MOVEMENTS.black : CENTER_STRIKE_MOVEMENTS.white;
+
+                            const didAttackCenter = movedPiece == pawnPiece && centerMovements.some(cm => move.fromCoord == cm.from && move.toCoord == cm.to);
+                            const wasBestMoveToAttackCenter = bestPieceToMove == pawnPiece && centerMovements.some(cm => previousBestMove.fromSquare == cm.from && previousBestMove.toSquare == cm.to);
+                        
+                            if (wasBestMoveToAttackCenter && !didAttackCenter)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_CENTER_STRIKE_SENTENCES, colorThatMovedText);
+                            }
                         }
                     }
                 }

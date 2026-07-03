@@ -331,6 +331,16 @@ export default class CoachText
         `They had a better way to apply pressure to a pawn chain. `,
         `There was a better way to attack a pawn chain here. `
     ]
+
+    //Should have struck in the center with a pawn. 
+    public static readonly MISSED_CENTER_STRIKE_SENTENCES: Array<string> = 
+    [
+        `A better option here was to strike in the center with a pawn. `,
+        `${CoachText.PIECE_PLACEHOLDER} should have taken center space with a pawn. `,
+        `This misses an opportunity to take center space with a pawn. `,
+        `They really should have taken the chance to bust open the center with a double pawn move. `,
+        `A better option was to increase center control with a pawn. `
+    ]
     //#endregion
 
     //#region Good============
