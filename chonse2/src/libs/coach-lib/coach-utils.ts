@@ -1093,6 +1093,67 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Player missed a better way to move a piece to safety
+                    {
+                        if (previousState && 
+                            allPreviousHangingPieceCoords && 
+                            missedState && 
+                            !move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging) && //don't care about this if they straight up hung a piece.
+                            previousBestMove && //Need to know what the previous best move was.
+                            !move.notation.includes(AlgebraicNotationMaker.CAPTURE) &&//The played move being a capture isn't really moving a piece to safety.
+                            previousState.findPieceAtCoordinate(previousBestMove.toSquare) == "" //Same goes for prev best move.
+                        )
+                        {
+                            const hanging = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
+                            const prevHanging = whiteToMove ? allPreviousHangingPieceCoords.black : allPreviousHangingPieceCoords.white;
+                            const missedHanging = whiteToMove ? Chonse2Extensions.getHangingPieces(missedState).black : Chonse2Extensions.getHangingPieces(missedState).white
+
+                            let didPlayerMoveHangingPiece = false;
+                            let didPlayerDefendHangingPiece = false;
+                            let shouldPlayerHaveMovedHangingPiece = false;
+                            let shouldPlayerHaveDefendedHangingPiece = false;
+
+                            //If the amount of hanging pieces changed in this position, check it.
+                            if (hanging.length < prevHanging.length && missedHanging.length < prevHanging.length)
+                            {
+                                for(let i = 0; i < prevHanging.length; i++)
+                                {
+                                    const hpCoord = prevHanging[i];
+
+                                    if (hpCoord == move.fromCoord)
+                                    {
+                                        didPlayerMoveHangingPiece = true;
+
+                                        if (hpCoord == previousBestMove.fromSquare)
+                                        {
+                                            shouldPlayerHaveMovedHangingPiece = true;
+                                        }
+                                    }
+                                }
+
+                                if (!didPlayerMoveHangingPiece)
+                                {
+                                    didPlayerDefendHangingPiece = true;
+                                }
+
+                                if (!shouldPlayerHaveMovedHangingPiece)
+                                {
+                                    shouldPlayerHaveDefendedHangingPiece = true;
+                                }
+                            }
+
+                            if (didPlayerMoveHangingPiece && shouldPlayerHaveMovedHangingPiece)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.BETTER_SAFETY_MOVE_SENTENCES, colorThatMovedText, previousState.findPieceAtCoordinate(move.fromCoord));
+                            }
+
+                            if (didPlayerDefendHangingPiece && shouldPlayerHaveDefendedHangingPiece)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.BETTER_DEFEND_MOVE_SENTENCES, colorThatMovedText);
+                            }
+                        }
+                    }
                 }
 
                 //=======Good
