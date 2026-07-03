@@ -282,7 +282,9 @@ export class CoachDisplay {
 
     if (move.coachMoveFlags.includes(CoachMoveFlagType.CapturedPieceWithWrongAttacker) || 
         move.coachMoveFlags.includes(CoachMoveFlagType.WrongDevelopment) ||
-        move.coachMoveFlags.includes(CoachMoveFlagType.WrongPawnChainAttack)
+        move.coachMoveFlags.includes(CoachMoveFlagType.WrongPawnChainAttack) ||
+        move.coachMoveFlags.includes(CoachMoveFlagType.WrongHangingPieceMove) ||
+        move.coachMoveFlags.includes(CoachMoveFlagType.WrongHangingPieceDefence)
     )
     {
       return this.translate.instant('chessboard.coachDisplay.missButton.showAlternative');

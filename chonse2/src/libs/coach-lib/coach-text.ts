@@ -369,6 +369,21 @@ export default class CoachText
         `They really should have taken the chance to bust open the center with a double pawn move. `,
         `A better option was to increase center control with a pawn. `
     ]
+
+    //Should have moved a piece to safety in a different way.
+    public static readonly BETTER_SAFETY_MOVE_SENTENCES: Array<string> = 
+    [
+        `There was a better way to move a ${CoachText.PIECE_PLACEHOLDER} to safety. `,
+        `They missed a better way to move a ${CoachText.PIECE_PLACEHOLDER} to safety. `,
+        `They was a better way to safely secure their ${CoachText.PIECE_PLACEHOLDER}. `
+    ]
+
+    //Should have defended a piece with a different piece.
+    public static readonly BETTER_DEFEND_MOVE_SENTENCES: Array<string> = 
+    [
+        `They missed a better option to defend a piece that was under attack. `,
+        `There was a better way to defend a hanging piece here. `,
+    ]
     //#endregion
 
     //#region Good============
