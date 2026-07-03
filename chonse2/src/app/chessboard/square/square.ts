@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, EventEmitter, input, Inpu
 import ThemeService from '../../themes/theme-service';
 import { PieceType } from '../../../libs/chonse2-lib/piece-type';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
+import ChessboardHelper from '../helpers';
 
 @Component({
   selector: 'app-square',
@@ -14,6 +15,7 @@ import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 export class Square {
 
   MoveClassification = MoveClassification;
+  ChessboardHelper = ChessboardHelper;
 
   // SIGNAL INPUTS
   coordinate = input<string>("");

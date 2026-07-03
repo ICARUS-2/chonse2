@@ -296,7 +296,8 @@
         {
             "heading": "Board",
             "clickToMove": "Click to move",
-            "pieceAnimation": "Piece Animation"
+            "pieceAnimation": "Piece Animation",
+            "chessPieces" : "Chess Pieces"
         },
         "appearance": 
         {

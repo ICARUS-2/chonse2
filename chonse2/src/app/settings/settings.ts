@@ -4,12 +4,13 @@ import LocalStorageHelper from '../../libs/local-storage-helper';
 import { Themes } from '../themes/themes';
 import ThemeService from '../themes/theme-service';
 import { CommonModule } from '@angular/common';
-import { disabled, form, FormField, max, min } from '@angular/forms/signals';
+import { form, FormField, max, min } from '@angular/forms/signals';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { EngineName, EngineInformation } from '../../libs/engine-lib/types/enums';
 import { UciEngine } from '../../libs/engine-lib/uciEngine';
 import { DEFAULT_LANG, Languages } from '../../globals/globals';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import ChessboardHelper from '../chessboard/helpers';
 
 @Component({
   selector: 'app-settings',
@@ -20,6 +21,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 })
 export class Settings {
   LocalStorageHelper = LocalStorageHelper;
+  ChessboardHelper = ChessboardHelper;
   EngineName = EngineName;
   EngineInformation = EngineInformation;
   Object = Object;
@@ -30,6 +32,7 @@ export class Settings {
   {
     clickToMove:  LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, false),
     animatedPieces: LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true),
+    chessPieces: LocalStorageHelper.getString(LocalStorageHelper.CHESS_PIECES, ChessboardHelper.DEFAULT_PIECE_SET),
     selectedEngine: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName,
     engineDepth:  LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
     cloudHybridMode: LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, false),
@@ -62,9 +65,16 @@ export class Settings {
     LocalStorageHelper.setBoolean(LocalStorageHelper.CLICK_TO_MOVE, val);
   }
   
+  //Animation
   handlePieceAnimationSwitchPressed(val: boolean)
   {
     LocalStorageHelper.setBoolean(LocalStorageHelper.PIECE_ANIMATIONS, val);
+  }
+
+  //Piece
+  handlePieceDropdownSelectionChanged()
+  {
+    LocalStorageHelper.setString(LocalStorageHelper.CHESS_PIECES, this.form.chessPieces().value());
   }
 
   //Pick engine setting
@@ -125,6 +135,7 @@ interface FormModel
 {
   clickToMove: boolean;
   animatedPieces: boolean;
+  chessPieces: string;
   selectedEngine: EngineName;
   engineDepth: number;
   cloudHybridMode: boolean;

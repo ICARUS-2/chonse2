@@ -4,6 +4,7 @@ import ThemeService from '../../themes/theme-service';
 import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
 import { PgnComments } from '../chessboard/pgn-misc';
 import { CommonModule } from '@angular/common';
+import ChessboardHelper from '../helpers';
 
 @Component({
   selector: 'app-board-player-info',
@@ -13,6 +14,8 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BoardPlayerInfo {
+  ChessboardHelper = ChessboardHelper;
+
   CLOCK = PgnComments.CLOCK;
 
   for = input<string>('');
