@@ -955,6 +955,12 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       const toSquare = event.coordinate;
 
       this.completeMove(fromSquare(), toSquare);
+
+      //If no piece was held, the global pointerup listener was never attached. Clear the state here to prevent dangling coordinates.
+      if (this.currentlyHeldPiece() === "") 
+      {
+        this.resetMoveState();
+      }
     }
 
     if (event.mouse.button == 2)
@@ -1267,13 +1273,27 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   showPieceForCoord = computed(() => {
     const animCoord = this.animatedPieceCoord();
     const fromSq = this.fromSquare();
+    const heldPiece = this.currentlyHeldPiece(); // Track this signal
     const clickToMove = LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE);
 
     return (coord: string): boolean => {
+      // 1. If an animation is running, hide its origin square
       if (animCoord) {
         return coord !== animCoord;
       }
-      return clickToMove ? true : coord !== fromSq;
+      
+      // 2. If click-to-move is on, we never hide pieces visually
+      if (clickToMove) {
+        return true;
+      }
+
+      // 3. THE FIX: In drag-and-drop mode, ONLY hide the fromSquare 
+      // if a piece is actively being dragged.
+      if (heldPiece !== "") {
+        return coord !== fromSq;
+      }
+
+      return true; 
     };
   });
   //#endregion
