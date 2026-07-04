@@ -35,7 +35,7 @@
                   'text-primary': $index == boardState().mainStackPointer() - 1 && boardState().divergenceStateStack().length == 0,
                   'text-danger':  $index == boardState().mainStackPointer() - 1 && boardState().divergenceStateStack().length != 0
                 }">
-                {{ item.notation }}
+                {{ ChessboardHelper.getNotation(item) }}
               </div>
             </td>
 
@@ -54,7 +54,7 @@
                   'text-primary': $index == boardState().mainStackPointer() - 2 && boardState().divergenceStateStack().length == 0,
                   'text-danger':  $index == boardState().mainStackPointer() - 2 && boardState().divergenceStateStack().length != 0
                 }">
-                {{ boardState().mainMoveStack()[$index + 1] == null ? '-' : boardState().mainMoveStack()[$index + 1].notation }}
+                {{ boardState().mainMoveStack()[$index + 1] == null ? '-' : ChessboardHelper.getNotation(boardState().mainMoveStack()[$index + 1]) }}
               </div>
             </td>
           </tr>

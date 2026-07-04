@@ -33,6 +33,7 @@ export class Settings {
     clickToMove:  LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, false),
     animatedPieces: LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true),
     chessPieces: LocalStorageHelper.getString(LocalStorageHelper.CHESS_PIECES, ChessboardHelper.DEFAULT_PIECE_SET),
+    verboseNotation: LocalStorageHelper.getBoolean(LocalStorageHelper.VERBOSE_NOTATION, false),
     selectedEngine: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName,
     engineDepth:  LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
     cloudHybridMode: LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, false),
@@ -75,6 +76,12 @@ export class Settings {
   handlePieceDropdownSelectionChanged()
   {
     LocalStorageHelper.setString(LocalStorageHelper.CHESS_PIECES, this.form.chessPieces().value());
+  }
+
+  //Verbose mode
+  handleVerboseNotationChanged(val: boolean)
+  {
+    LocalStorageHelper.setBoolean(LocalStorageHelper.VERBOSE_NOTATION, val);
   }
 
   //Pick engine setting
@@ -136,6 +143,7 @@ interface FormModel
   clickToMove: boolean;
   animatedPieces: boolean;
   chessPieces: string;
+  verboseNotation: boolean;
   selectedEngine: EngineName;
   engineDepth: number;
   cloudHybridMode: boolean;

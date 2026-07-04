@@ -6,6 +6,7 @@ export default class MoveResult implements IMoveResult
 {
     result: boolean = false;
     notation: string = "";
+    notationMinimal: string = "";
     fromCoord: string = "";
     toCoord: string = "";
     piece: string = PieceType.NONE;
@@ -24,6 +25,7 @@ export default class MoveResult implements IMoveResult
 
         val.result = obj.result;
         val.notation = obj.notation;
+        val.notationMinimal = obj.notationMinimal;
         val.fromCoord = obj.fromCoord;
         val.toCoord = obj.toCoord;
         val.piece = obj.piece;

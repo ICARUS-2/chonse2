@@ -56,7 +56,7 @@ export default class Chonse2Extensions
         }
 
         const pieceInSquareColor = pieceInSquare[0] == "w" ? PieceColor.WHITE : PieceColor.BLACK;
-        const hits = Chonse2Extensions.getPiecesThatHitSquare(board, squareCoord);
+        const hits = board.getPiecesThatHitSquare(squareCoord);
 
         const attackers = pieceInSquareColor == PieceColor.WHITE ? hits.black : hits.white;
         const defenders = pieceInSquareColor == PieceColor.WHITE ? hits.white : hits.black;
@@ -120,7 +120,7 @@ export default class Chonse2Extensions
         {
             const currentPieceCoordinate = piecesAndCoords.coords[i];
 
-            const squareHits = this.getPiecesThatHitSquare(boardCopy, currentPieceCoordinate);
+            const squareHits = boardCopy.getPiecesThatHitSquare(currentPieceCoordinate);
             const squareHitsToCheck = attackerColor == PieceColor.WHITE ? squareHits.black : squareHits.white;
 
             if (squareHitsToCheck.length > 0)
@@ -276,7 +276,7 @@ export default class Chonse2Extensions
                             boardCopy.turn = !boardCopy.turn;
 
                             //Get the pieces that defend the forked square.
-                            const piecesThatHitForkedPieceSquare = Chonse2Extensions.getPiecesThatHitSquare(boardCopy, nonKingPieceCoordinate);
+                            const piecesThatHitForkedPieceSquare = boardCopy.getPiecesThatHitSquare(nonKingPieceCoordinate);
                             boardCopy.undoMostRecentMove();
                             const piecesDefendingForkedPieceSquare = attackerColor == PieceColor.WHITE ? piecesThatHitForkedPieceSquare.black : piecesThatHitForkedPieceSquare.white;
 
@@ -931,7 +931,7 @@ export default class Chonse2Extensions
                 const currentRookCoord = rookCoords[i];
 
                 //every piece that can see it.
-                const piecesThatHitSquare = color == PieceColor.WHITE ? this.getPiecesThatHitSquare(board, currentRookCoord).white : this.getPiecesThatHitSquare(board, currentRookCoord).black;
+                const piecesThatHitSquare = color == PieceColor.WHITE ? board.getPiecesThatHitSquare(currentRookCoord).white : board.getPiecesThatHitSquare(currentRookCoord).black;
 
                 //Loop through every piece that can see this rook and check if another rook (same color) can see it.
                 for(let j = 0; j < piecesThatHitSquare.length; j++)
@@ -1399,71 +1399,6 @@ export default class Chonse2Extensions
     }
 
     //#region General board state
-    //Gets all pieces that attack/defend a given square.
-    public static getPiecesThatHitSquare(board: Chonse2, square: string): {white: Array<string>, black: Array<string>} {
-        const boardCopy = board.getFullDeepCopy();
-        const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(square);
-        const o: { white: string[], black: string[] } = { white: [], black: [] };
-
-        const colors = [PieceColor.WHITE, PieceColor.BLACK]; 
-
-        for (const currentColor of colors) {
-            boardCopy.turn = currentColor == PieceColor.WHITE;
-            
-            //Enemy ghost pawn to simulate "capturing"
-            boardCopy.pieceState[rowIndex][colIndex] = (currentColor === PieceColor.WHITE) ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
-
-            //Loop through every single piece.
-            for (let i = 0; i < Chonse2.SIZE; i++) 
-            {
-                for (let j = 0; j < Chonse2.SIZE; j++) 
-                {
-                    //The current piece we are checking
-                    const piece = boardCopy.pieceState[i][j];
-                    
-                    //If there is no piece there, it has no legal moves.
-                    if (piece === PieceType.NONE) 
-                    {
-                        continue
-                    };
-
-                    //Ensures only the right color is checked.
-                    if (piece[0] !== currentColor) continue;
-
-                    //Gets the coordinate for the given square.
-                    const coord = Chonse2.COORDS[i][j];
-
-                    let legalMoves: Array<string> = [];
-
-                    //Need to check legal moves to see what squares it hits.
-                    if (piece != PieceType.WHITE_KING && piece != PieceType.BLACK_KING)
-                    {
-                        //legalMoves = boardCopy.getLegalMoves(coord);
-                        legalMoves = boardCopy._getPotentiallyLegalMoves(coord);
-                    }
-                    else 
-                    {
-                        //Circumvents the fact that the king cannot put himself in check because he could be the last defender of a piece.
-                        legalMoves = boardCopy._getPotentiallyLegalKingMoves(coord, piece[0]);
-                    }
-
-                    //If the piece has the square in question as a legal move, push it.                
-                    if (legalMoves.includes(square)) 
-                    {
-                        if (currentColor === PieceColor.WHITE) 
-                        {
-                            o.white.push(piece);
-                        } 
-                        else 
-                        {
-                            o.black.push(piece);
-                        }
-                    }
-                }
-            }
-        }
-        return o;
-    }
 
     //All open files on a given board
     public static getAllOpenFiles(board: Chonse2): Array<string>
