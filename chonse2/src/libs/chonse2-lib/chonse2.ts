@@ -914,6 +914,73 @@ export default class Chonse2
     return copy;
   }
 
+  //Gets all pieces that attack/defend a given square.
+  public getPiecesThatHitSquare(square: string): {white: Array<string>, black: Array<string>} 
+  {
+      const boardCopy = this.getFullDeepCopy();
+      const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(square);
+      const o: { white: string[], black: string[] } = { white: [], black: [] };
+
+      const colors = [PieceColor.WHITE, PieceColor.BLACK]; 
+
+      for (const currentColor of colors) {
+          boardCopy.turn = currentColor == PieceColor.WHITE;
+          
+          //Enemy ghost pawn to simulate "capturing"
+          boardCopy.pieceState[rowIndex][colIndex] = (currentColor === PieceColor.WHITE) ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
+
+          //Loop through every single piece.
+          for (let i = 0; i < Chonse2.SIZE; i++) 
+          {
+              for (let j = 0; j < Chonse2.SIZE; j++) 
+              {
+                  //The current piece we are checking
+                  const piece = boardCopy.pieceState[i][j];
+                  
+                  //If there is no piece there, it has no legal moves.
+                  if (piece === PieceType.NONE) 
+                  {
+                      continue
+                  };
+
+                  //Ensures only the right color is checked.
+                  if (piece[0] !== currentColor) continue;
+
+                  //Gets the coordinate for the given square.
+                  const coord = Chonse2.COORDS[i][j];
+
+                  let legalMoves: Array<string> = [];
+
+                  //Need to check legal moves to see what squares it hits.
+                  if (piece != PieceType.WHITE_KING && piece != PieceType.BLACK_KING)
+                  {
+                      //legalMoves = boardCopy.getLegalMoves(coord);
+                      legalMoves = boardCopy._getPotentiallyLegalMoves(coord);
+                  }
+                  else 
+                  {
+                      //Circumvents the fact that the king cannot put himself in check because he could be the last defender of a piece.
+                      legalMoves = boardCopy._getPotentiallyLegalKingMoves(coord, piece[0]);
+                  }
+
+                  //If the piece has the square in question as a legal move, push it.                
+                  if (legalMoves.includes(square)) 
+                  {
+                      if (currentColor === PieceColor.WHITE) 
+                      {
+                          o.white.push(piece);
+                      } 
+                      else 
+                      {
+                          o.black.push(piece);
+                      }
+                  }
+              }
+          }
+      }
+      return o;
+  }
+
   //#region Inner legal move helper functions
 
   public _getPotentiallyLegalMoves(coordinate: string): Array<string>
