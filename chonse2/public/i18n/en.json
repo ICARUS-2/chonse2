@@ -296,7 +296,8 @@
             "heading": "Board",
             "clickToMove": "Click to move",
             "pieceAnimation": "Piece Animation",
-            "chessPieces" : "Chess Pieces"
+            "chessPieces" : "Chess Pieces",
+            "verboseNotation": "Verbose Notation"
         },
         "appearance": 
         {

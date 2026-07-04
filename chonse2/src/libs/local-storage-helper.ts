@@ -4,6 +4,7 @@ export default class LocalStorageHelper
     static readonly CLICK_TO_MOVE = "Chonse2_ClickToMove";
     static readonly PIECE_ANIMATIONS = "Chonse2_PieceAnimations";
     static readonly CHESS_PIECES = "Chonse2_ChessPieces";
+    static readonly VERBOSE_NOTATION = "Chonse2_VerboseNotation";
     static readonly SAVED_USERNAMES = "Chonse2_SavedUsernames";
     static readonly SAVED_LICHESS_USERNAMES = "Chonse2_SavedLichessUsernames";
     static readonly SELECTED_ENGINE = "Chonse2_SelectedEngine";

@@ -1146,11 +1146,13 @@ export class CoachUtils
                             if (didPlayerMoveHangingPiece && shouldPlayerHaveMovedHangingPiece)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.BETTER_SAFETY_MOVE_SENTENCES, colorThatMovedText, previousState.findPieceAtCoordinate(move.fromCoord));
+                                move.coachMoveFlags.push(CoachMoveFlagType.WrongHangingPieceMove)
                             }
 
                             if (didPlayerDefendHangingPiece && shouldPlayerHaveDefendedHangingPiece)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.BETTER_DEFEND_MOVE_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.WrongHangingPieceDefence)
                             }
                         }
                     }

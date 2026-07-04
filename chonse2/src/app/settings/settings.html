@@ -3,66 +3,84 @@
     <hr>
 
     <!--Board and appearance settings-->
-    <div class="d-flex justify-content-between">
+    <div class="d-flex justify-content-between user-select-none">
         <!--Board Settings-->
         <div class="p-4 w-50 me-2" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
             <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'settings.board.heading' | translate }}</h2>
 
-            <!--Click to move and piece animation-->
+            <!--Board settings inner-->
             <div class="d-flex justify-content-between boardSection flex-wrap">
-                <!--Click to move-->
+                <!--Click to move & verbose-->
                 <div>
-                    <h4 class="">{{ 'settings.board.clickToMove' | translate }}</h4>
+                    <!--Click to move-->
+                    <div class="mb-4">
+                        <h4 class="">{{ 'settings.board.clickToMove' | translate }}</h4>
 
-                    <div
-                    class="form-check form-switch"
-                    [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
-                    >
-                    <input
-                        class="form-check-input custom-switch"
-                        type="checkbox"
-                        [formField]="form.clickToMove"
-                        (change)="handleClickToMoveSwitchPressed($event.target.checked)"
-                    />
+                        <div
+                        class="form-check form-switch"
+                        [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+                        >
+                        <input
+                            class="form-check-input custom-switch"
+                            type="checkbox"
+                            [formField]="form.clickToMove"
+                            (change)="handleClickToMoveSwitchPressed($event.target.checked)"
+                        />
+                        </div>
+                    </div>
+
+                    <!--verbose -->
+                    <div class="">
+                        <h4 class="">{{ 'settings.board.verboseNotation' | translate }}</h4>
+                        <div
+                        class="form-check form-switch"
+                        [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+                        >
+                        <input
+                            class="form-check-input custom-switch"
+                            type="checkbox"
+                            [formField]="form.verboseNotation"
+                            (change)="handleVerboseNotationChanged($event.target.checked)"
+                        />
+                        </div>
+                    </div>  
+                </div>
+
+                <!--Piece Animation & pieces-->
+                <div>
+                    <!--Piece animation-->
+                    <div class="mb-4">
+                        <h4 class="">{{ 'settings.board.pieceAnimation' | translate }}</h4>
+
+                        <div
+                        class="form-check form-switch"
+                        [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+                        >
+                        <input
+                            class="form-check-input custom-switch"
+                            type="checkbox"
+                            [formField]="form.animatedPieces"
+                            (change)="handlePieceAnimationSwitchPressed($event.target.checked)"
+                        />
+                        </div>
+                    </div>
+
+                    <!--Chess pieces-->
+                    <div>
+                        <h4 class="">{{ 'settings.board.chessPieces' | translate }}</h4>
+                        <select [formField]="form.chessPieces" class="form-select" (change)="handlePieceDropdownSelectionChanged()">
+                            @for(set of ChessboardHelper.PIECE_SETS; track $index)
+                            {
+                                <option [value]="set">{{set}}</option>
+                            }
+                        </select>
                     </div>
                 </div>
-
-                <!--Piece Animation-->
-                <div>
-                    <h4 class="">{{ 'settings.board.pieceAnimation' | translate }}</h4>
-
-                    <div
-                    class="form-check form-switch"
-                    [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
-                    >
-                    <input
-                        class="form-check-input custom-switch"
-                        type="checkbox"
-                        [formField]="form.animatedPieces"
-                        (change)="handlePieceAnimationSwitchPressed($event.target.checked)"
-                    />
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="">{{ 'settings.board.chessPieces' | translate }}</h4>
-                    <select [formField]="form.chessPieces" class="form-select" (change)="handlePieceDropdownSelectionChanged()">
-                        @for(set of ChessboardHelper.PIECE_SETS; track $index)
-                        {
-                            <option [value]="set">{{set}}</option>
-                        }
-                    </select>
-                </div>
-            </div>
-
-            <!--Chess pieces and other (future?)-->
-            <div class="d-flex justify-content-between boardSection">
-
             </div>
         </div>
 
         <!--Appearance Settings-->
-        <div class="p-4 w-50 ms-2" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
+        <div class="p-4 w-50 ms-2 user-select-none" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
             <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'settings.appearance.heading' | translate }}</h2>
 
             <!--Theme and Language-->
@@ -98,7 +116,7 @@
     <hr>
 
     <!--Engine Settings-->
-    <div class="p-4" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
+    <div class="p-4 user-select-none" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
 
         <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'settings.engine.heading' | translate }}</h2>
 
