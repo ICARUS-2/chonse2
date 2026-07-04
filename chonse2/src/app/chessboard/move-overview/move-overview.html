@@ -27,7 +27,7 @@
                 <div>
                     <img class="engineLineDisplayIcon" 
                          [src]="ChessboardHelper.getIconSourceForMoveClassification(mostRecentEval.moveClassification ?? MoveClassification.None)()" />
-                    {{notation}}
+                    {{ChessboardHelper.getNotation(boardState().getMostRecentMove())}}
 
                     @if (!(
                         mostRecentEval.moveClassification == MoveClassification.Opening ||

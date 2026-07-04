@@ -42,4 +42,16 @@ export default class ChessboardHelper
 
         return `piece/${selectedType}/${p}.svg`
     }
+
+    static getNotation(moveResult: IMoveResult): string
+    {
+        const isVerbose = LocalStorageHelper.getBoolean(LocalStorageHelper.VERBOSE_NOTATION, false);
+
+        if (isVerbose)
+        {
+            return moveResult.notation;
+        }
+
+        return moveResult.notationMinimal;
+    }
 }

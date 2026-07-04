@@ -234,7 +234,7 @@ export default class Chonse2
   {
     if (this.gameState.isGameOver || fromCoordinate == toCoordinate)
     {
-      return {result: false, notation: "", fromCoord: fromCoordinate, toCoord: toCoordinate, piece: "", pgnComment: ""};
+      return {result: false, notation: "", notationMinimal: "" , fromCoord: fromCoordinate, toCoord: toCoordinate, piece: "", pgnComment: ""};
     }
 
     //In piece state, where the current piece is moving to.
@@ -251,7 +251,7 @@ export default class Chonse2
 
     if (!legalMoves.includes(toCoordinate))
     {
-      return {result: false, notation: "", fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: ""};
+      return {result: false, notation: "", notationMinimal: "" , fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: ""};
     }
 
     //Cache the current state in case this object is needed for undoing the most recent move.
@@ -507,7 +507,7 @@ export default class Chonse2
     }
 
     //The move was successful if we got this far.
-    return {result: true, notation: notation.get(), fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: ""};
+    return {result: true, notation: notation.get(), notationMinimal: notation.getMinimal(this, toCoordinate, piece) ,fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: ""};
   }
 
   //Verifies if a king of a particular color is in check.
@@ -940,7 +940,7 @@ export default class Chonse2
                   //If there is no piece there, it has no legal moves.
                   if (piece === PieceType.NONE) 
                   {
-                      continue
+                    continue;
                   };
 
                   //Ensures only the right color is checked.
@@ -968,11 +968,11 @@ export default class Chonse2
                   {
                       if (currentColor === PieceColor.WHITE) 
                       {
-                          o.white.push(piece);
+                        o.white.push(piece);
                       } 
                       else 
                       {
-                          o.black.push(piece);
+                        o.black.push(piece);
                       }
                   }
               }

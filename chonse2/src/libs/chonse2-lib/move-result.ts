@@ -2,6 +2,7 @@ interface IMoveResult
 {
     result: boolean,
     notation: string,
+    notationMinimal: string,
     fromCoord: string,
     toCoord: string,
     piece: string,
