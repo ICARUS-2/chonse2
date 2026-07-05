@@ -1596,40 +1596,10 @@ export class CoachUtils
                     {
                         if (nextBestState && nextBestMove)
                         {
-                            const doesOpponentHaveCastlingRights = whiteToMove ? 
-                                (state.whiteCastlingRights.kingSide || state.whiteCastlingRights.queenSide) : 
-                                (state.blackCastlingRights.kingSide || state.blackCastlingRights.queenSide);
-
-                            const willOpponentHaveCastlingRights = whiteToMove ? 
-                                (nextBestState.whiteCastlingRights.kingSide || nextBestState.whiteCastlingRights.queenSide) :
-                                (nextBestState.blackCastlingRights.kingSide || nextBestState.blackCastlingRights.queenSide);
-
-
-                            //If the opponent will not have castling rights after that move, make sure it wasn't cause they castled.
-                            if (doesOpponentHaveCastlingRights && !willOpponentHaveCastlingRights )
+                            if (CoachMiscHelpers.didForceLossOfCastlingRights(state, nextBestState, whiteToMove, nextBestMove))
                             {
-                                const bestPieceToMove = state.findPieceAtCoordinate(nextBestMove.fromSquare);
-                                const shouldMoveKing = bestPieceToMove == PieceType.WHITE_KING || bestPieceToMove == PieceType.BLACK_KING;
-
-                                //If the player should indeed move their king here.
-                                if (shouldMoveKing)
-                                {
-                                    //the actual castling moves. 
-                                    const kingside = whiteToMove ? CASTLING_MOVES.whiteKingside : CASTLING_MOVES.blackKingside;
-                                    const queenside = whiteToMove ? CASTLING_MOVES.whiteQueenside : CASTLING_MOVES.blackQueenside;
-
-                                    //Need to check if the next best move is for the opponent to castle. 
-                                    const shouldOpponentCastleKingside = nextBestMove.fromSquare == kingside.fromSquare && nextBestMove.toSquare == kingside.toSquare;
-                                    const shouldOpponentCastleQueenside = nextBestMove.fromSquare == queenside.fromSquare && nextBestMove.toSquare == queenside.toSquare;
-
-                                    //If the next best move is not to castle, but in the next best state the player does not have castling rights,
-                                    //the only implication is that they lost the right to castle.  
-                                    if (!shouldOpponentCastleKingside && !shouldOpponentCastleQueenside)
-                                    {
-                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES, colorThatMovedText);
-                                        move.coachMoveFlags.push(CoachMoveFlagType.ForcedLossOfCastlingRights);
-                                    }
-                                }
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.ForcedLossOfCastlingRights);
                             }
                         }
                     }
