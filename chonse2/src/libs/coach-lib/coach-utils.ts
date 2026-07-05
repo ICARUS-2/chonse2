@@ -9,7 +9,7 @@ import { openings } from "../engine-lib/data/openings";
 import { MoveClassification } from "../engine-lib/types/enums";
 import { LineEval, PositionEval } from "../engine-lib/types/eval";
 import CoachText from "./coach-text";
-import {BLOCKED_BISHOPS, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
+import {BLOCKED_BISHOPS, CASTLING_MOVES, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "./coach-types";
 import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
 import { GameOverReason } from "../chonse2-lib/game-state";
@@ -1586,6 +1586,48 @@ export class CoachUtils
                                     if (pc != PieceType.WHITE_KING && pc != PieceType.BLACK_KING)
                                     {
                                         move.coachComment += CoachText.selectAndFormatSentence(CoachText.MOVED_HANGING_PIECE_SENTENCES, colorThatMovedText, pc);   
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    //Case: Player forced the loss of castling rights
+                    {
+                        if (nextBestState && nextBestMove)
+                        {
+                            const doesOpponentHaveCastlingRights = whiteToMove ? 
+                                (state.whiteCastlingRights.kingSide || state.whiteCastlingRights.queenSide) : 
+                                (state.blackCastlingRights.kingSide || state.blackCastlingRights.queenSide);
+
+                            const willOpponentHaveCastlingRights = whiteToMove ? 
+                                (nextBestState.whiteCastlingRights.kingSide || nextBestState.whiteCastlingRights.queenSide) :
+                                (nextBestState.blackCastlingRights.kingSide || nextBestState.blackCastlingRights.queenSide);
+
+
+                            //If the opponent will not have castling rights after that move, make sure it wasn't cause they castled.
+                            if (doesOpponentHaveCastlingRights && !willOpponentHaveCastlingRights )
+                            {
+                                const bestPieceToMove = state.findPieceAtCoordinate(nextBestMove.fromSquare);
+                                const shouldMoveKing = bestPieceToMove == PieceType.WHITE_KING || bestPieceToMove == PieceType.BLACK_KING;
+
+                                //If the player should indeed move their king here.
+                                if (shouldMoveKing)
+                                {
+                                    //the actual castling moves. 
+                                    const kingside = whiteToMove ? CASTLING_MOVES.whiteKingside : CASTLING_MOVES.blackKingside;
+                                    const queenside = whiteToMove ? CASTLING_MOVES.whiteQueenside : CASTLING_MOVES.blackQueenside;
+
+                                    //Need to check if the next best move is for the opponent to castle. 
+                                    const shouldOpponentCastleKingside = nextBestMove.fromSquare == kingside.fromSquare && nextBestMove.toSquare == kingside.toSquare;
+                                    const shouldOpponentCastleQueenside = nextBestMove.fromSquare == queenside.fromSquare && nextBestMove.toSquare == queenside.toSquare;
+
+                                    //If the next best move is not to castle, but in the next best state the player does not have castling rights,
+                                    //the only implication is that they lost the right to castle.  
+                                    if (!shouldOpponentCastleKingside && !shouldOpponentCastleQueenside)
+                                    {
+                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES, colorThatMovedText);
+                                        move.coachMoveFlags.push(CoachMoveFlagType.ForcedLossOfCastlingRights);
                                     }
                                 }
                             }

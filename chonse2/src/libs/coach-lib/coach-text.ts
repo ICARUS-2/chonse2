@@ -384,6 +384,14 @@ export default class CoachText
         `They missed a better option to defend a piece that was under attack. `,
         `There was a better way to defend a hanging piece here. `,
     ]
+
+    //Player should have forced the loss of castling rights. 
+    public static readonly MISSED_FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES: Array<string> = 
+    [
+        `A better move in this position was to force the loss of castling rights. `,
+        `This misses an opportunity to force the loss of castling rights. `,
+        `There was a chance to force the loss of castling rights, and by extension, king safety, but ${CoachText.TURN_PLACEHOLDER} overlooked it. `
+    ]
     //#endregion
 
     //#region Good============
@@ -513,6 +521,14 @@ export default class CoachText
         `This move attacks a pawn chain. `,
         `Solid, this is applying pressure to that pawn chain. `,
         `Attacking the pawn chain is a good way to open up the position. `
+    ]
+
+    //Player forced the loss of castling rights.
+    public static readonly FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES: Array<string> = 
+    [
+        `Nice, now the best move is for the opponent to lose castling rights. `,
+        `The best move for the opponent in this position is to completely lose the right to castle. `,
+        `Now the opponent has to lose castling rights to maintain the best possible position. `
     ]
     //#endregion
     

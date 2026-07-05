@@ -130,3 +130,30 @@ export const CENTER_STRIKE_MOVEMENTS =
         {from: "d7", to: "d5"}
     ]
 }
+
+export const CASTLING_MOVES =
+{
+    whiteKingside:
+    {
+        fromSquare: Chonse2.WHITE_KING_SQUARE,
+        toSquare: Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE,
+    },
+
+    whiteQueenside:
+    {
+        fromSquare: Chonse2.WHITE_KING_SQUARE,
+        toSquare: Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE,
+    },
+
+    blackKingside:
+    {
+        fromSquare: Chonse2.BLACK_KING_SQUARE,
+        toSquare: Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE,
+    },
+
+    blackQueenside:
+    {
+        fromSquare: Chonse2.BLACK_KING_SQUARE,
+        toSquare: Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE,
+    },
+};
