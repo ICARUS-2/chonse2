@@ -38,6 +38,9 @@ export enum CoachMoveFlagType
     WrongHangingPieceMove,
     WrongHangingPieceDefence,
     MissedForcedLossOfCastlingRights,
+    MissedDiscoveredCheck,
+    MissedDoubleCheck,
+    WrongDiscoveredCheck,
 
     //Good (show follow up)
     OpportunityToCheckmate,
@@ -45,7 +48,9 @@ export enum CoachMoveFlagType
     OpportunityToFork,
     Castled,
     ClearedWayToCastle,
-    ForcedLossOfCastlingRights
+    ForcedLossOfCastlingRights,
+    UsedDiscoveredCheck,
+    UsedDoubleCheck
 }
 
 export enum CoachIdeaFlagType

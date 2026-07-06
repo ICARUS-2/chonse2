@@ -103,7 +103,7 @@ export default class AlgebraicNotationMaker
                 if (!isPawn)
                 {
                     //Need to check all the pieces that can hit the to square.
-                    const piecesThatHitSquare = piece.startsWith(PieceColor.WHITE) ? board.getPiecesThatHitSquare(toCoord).white : board.getPiecesThatHitSquare(toCoord).black ;
+                    const piecesThatHitSquare = piece.startsWith(PieceColor.WHITE) ? board.getPiecesThatHitSquare(toCoord).whitePieces : board.getPiecesThatHitSquare(toCoord).blackPieces ;
 
                     //If there is at least one other piece, append the fromsquare.
                     for(let i = 0; i < piecesThatHitSquare.length; i++)

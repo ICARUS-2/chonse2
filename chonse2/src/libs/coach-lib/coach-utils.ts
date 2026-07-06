@@ -1,7 +1,7 @@
 import { Arrow, ArrowColors, ArrowContext, createArrow } from "../../app/chessboard/chessboard/arrow";
 import MoveResult from "../../app/chessboard/chessboard/move-result";
 import Chonse2 from "../chonse2-lib/chonse2";
-import Chonse2Extensions, { Fork, Pin, Skewer } from "../chonse2-lib/extensions";
+import Chonse2Extensions, { DiscoveredCheckType, Fork, Pin, Skewer } from "../chonse2-lib/extensions";
 import { PieceColor } from "../chonse2-lib/piece-color";
 import PieceMaterial from "../chonse2-lib/piece-material";
 import { PieceType } from "../chonse2-lib/piece-type";
@@ -1191,6 +1191,36 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Player missed a chance to use a discovered/double check
+                    {
+                        if (missedState && previousBestMove)
+                        {
+                            const discoveredCheckStatus = Chonse2Extensions.wasMoveDiscoveredCheck(state, {from: move.fromCoord, to: move.toCoord, promotion: PieceType.QUEEN});
+                            const didBestMoveInvolveDiscoveredCheck = Chonse2Extensions.wasMoveDiscoveredCheck(missedState, {from: previousBestMove.fromSquare, to: previousBestMove.toSquare, promotion: previousBestMove.promotion} );
+
+                            if (discoveredCheckStatus == DiscoveredCheckType.None && didBestMoveInvolveDiscoveredCheck != DiscoveredCheckType.None)
+                            {
+                                if (didBestMoveInvolveDiscoveredCheck == DiscoveredCheckType.DoubleCheck)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_DOUBLE_CHECK_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedDoubleCheck);
+                                }
+
+                                if (didBestMoveInvolveDiscoveredCheck == DiscoveredCheckType.SingleCheck)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_DISCOVERED_CHECK_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedDiscoveredCheck);
+                                }
+                            }
+
+                            if (discoveredCheckStatus != DiscoveredCheckType.None && didBestMoveInvolveDiscoveredCheck != DiscoveredCheckType.None)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.BETTER_DISCOVERED_CHECK_OPTION_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.WrongDiscoveredCheck);
+                            }
+                        }
+                    }
                 }
 
                 //=======Good
@@ -1636,6 +1666,22 @@ export class CoachUtils
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.ForcedLossOfCastlingRights);
                             }
+                        }
+                    }
+
+                    //Case: Player used a discovered or double check
+                    {
+                        const discoveredCheckStatus = Chonse2Extensions.wasMoveDiscoveredCheck(state, {from: move.fromCoord, to: move.toCoord, promotion: PieceType.QUEEN});
+                        
+                        if (discoveredCheckStatus == DiscoveredCheckType.DoubleCheck)
+                        {
+                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.DOUBLE_CHECK_SENTENCES, colorThatMovedText);
+                            move.coachMoveFlags.push(CoachMoveFlagType.UsedDoubleCheck);
+                        }
+                        else if (discoveredCheckStatus == DiscoveredCheckType.SingleCheck)
+                        {
+                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.DISCOVERED_CHECK_SENTENCES, colorThatMovedText);
+                            move.coachMoveFlags.push(CoachMoveFlagType.UsedDiscoveredCheck);
                         }
                     }
                 }

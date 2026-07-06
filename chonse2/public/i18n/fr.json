@@ -99,6 +99,8 @@
                 "showMissedCastle": "Montrer: Roque manqué",
                 "showMissedDevelopment" : "Montrer: Développement manqué",
                 "showMissedDoubling": "Montrer: Doublement de pions manqué",
+                "showMissedDoubleCheck": "Montrer: Double échec manqué",
+                "showMissedDiscoveredCheck": "Montrer: Échec découvert manqué",
                 "showMiss": "Montrer le coup manqué"
             },
             "ideaButton": 
