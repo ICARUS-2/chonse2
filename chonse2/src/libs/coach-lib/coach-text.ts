@@ -393,6 +393,27 @@ export default class CoachText
         `There was a chance to force the loss of castling rights, and by extension, king safety, but ${CoachText.TURN_PLACEHOLDER} overlooked it. `
     ]
 
+    //Player should have discovered checked the opponent
+    public static readonly MISSED_DISCOVERED_CHECK_SENTENCES: Array<string> = 
+    [
+        `A better option was to launch a discovered check. `,
+        `The best option here was to launch a discovered check on the enemy king. `,
+        `The better course of action here was to discovered-check the king. `
+    ]
+
+    //Player should have double checked the opponent. 
+    public static readonly MISSED_DOUBLE_CHECK_SENTENCES: Array<string> = 
+    [
+        `The best option here was to hit the enemy king with a double check. `,
+        `This overlooks a chance to use the most powerful tactic in chess: A double check. `
+    ]
+
+    //Player had a better option to discovered check
+    public static readonly BETTER_DISCOVERED_CHECK_OPTION_SENTENCES: Array<string>=
+    [
+        `There was a better way to launch a discovered check on the enemy king. `,
+        `They had a better option to launch a discovered attack on the king. `
+    ]
 
     //#endregion
 

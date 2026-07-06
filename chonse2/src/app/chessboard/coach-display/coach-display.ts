@@ -284,7 +284,8 @@ export class CoachDisplay {
         move.coachMoveFlags.includes(CoachMoveFlagType.WrongDevelopment) ||
         move.coachMoveFlags.includes(CoachMoveFlagType.WrongPawnChainAttack) ||
         move.coachMoveFlags.includes(CoachMoveFlagType.WrongHangingPieceMove) ||
-        move.coachMoveFlags.includes(CoachMoveFlagType.WrongHangingPieceDefence)
+        move.coachMoveFlags.includes(CoachMoveFlagType.WrongHangingPieceDefence) ||
+        move.coachMoveFlags.includes(CoachMoveFlagType.WrongDiscoveredCheck)
     )
     {
       return this.translate.instant('chessboard.coachDisplay.missButton.showAlternative');
@@ -313,6 +314,16 @@ export class CoachDisplay {
     if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedForcedPawnDoubling))
     {
       return this.translate.instant('chessboard.coachDisplay.missButton.showMissedDoubling');
+    }
+
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedDoubleCheck))
+    {
+      return this.translate.instant('chessboard.coachDisplay.missButton.showMissedDoubleCheck');
+    }
+
+    if (move.coachMoveFlags.includes(CoachMoveFlagType.MissedDiscoveredCheck))
+    {
+      return this.translate.instant('chessboard.coachDisplay.missButton.showMissedDiscoveredCheck');
     }
 
     return this.translate.instant('chessboard.coachDisplay.missButton.showMiss');

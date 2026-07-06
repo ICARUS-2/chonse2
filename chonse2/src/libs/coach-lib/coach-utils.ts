@@ -1191,6 +1191,36 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Player missed a chance to use a discovered/double check
+                    {
+                        if (missedState && previousBestMove)
+                        {
+                            const discoveredCheckStatus = Chonse2Extensions.wasMoveDiscoveredCheck(state, {from: move.fromCoord, to: move.toCoord, promotion: PieceType.QUEEN});
+                            const didBestMoveInvolveDiscoveredCheck = Chonse2Extensions.wasMoveDiscoveredCheck(missedState, {from: previousBestMove.fromSquare, to: previousBestMove.toSquare, promotion: previousBestMove.promotion} );
+
+                            if (discoveredCheckStatus == DiscoveredCheckType.None && didBestMoveInvolveDiscoveredCheck != DiscoveredCheckType.None)
+                            {
+                                if (didBestMoveInvolveDiscoveredCheck == DiscoveredCheckType.DoubleCheck)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_DOUBLE_CHECK_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedDoubleCheck);
+                                }
+
+                                if (didBestMoveInvolveDiscoveredCheck == DiscoveredCheckType.SingleCheck)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_DISCOVERED_CHECK_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedDiscoveredCheck);
+                                }
+                            }
+
+                            if (discoveredCheckStatus != DiscoveredCheckType.None && didBestMoveInvolveDiscoveredCheck != DiscoveredCheckType.None)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.BETTER_DISCOVERED_CHECK_OPTION_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.WrongDiscoveredCheck);
+                            }
+                        }
+                    }
                 }
 
                 //=======Good
@@ -1653,8 +1683,6 @@ export class CoachUtils
                             move.coachComment += CoachText.selectAndFormatSentence(CoachText.DISCOVERED_CHECK_SENTENCES, colorThatMovedText);
                             move.coachMoveFlags.push(CoachMoveFlagType.UsedDiscoveredCheck);
                         }
-
-                        console.log(discoveredCheckStatus);
                     }
                 }
             
