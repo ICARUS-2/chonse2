@@ -468,6 +468,7 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Castling
+    //places where the king can be considered "castled"
     public static readonly WHITE_KINGSIDE_CASTLE_SQUARES = ["g1", "h1"];
     public static readonly WHITE_QUEENSIDE_CASTLE_SQUARES = ["a1", "b1", "c1"];
     public static readonly BLACK_KINGSIDE_CASTLE_SQUARES = ["h8", "g8"];
@@ -497,6 +498,7 @@ export default class Chonse2Extensions
         kingTo: "c8",
     };
 
+    //Checks if the kings are in or around the castling position.
     public static didPlayersLikelyCastle(board:Chonse2): {
         whiteKingside: boolean, 
         whiteQueenside: boolean,
@@ -538,6 +540,7 @@ export default class Chonse2Extensions
         return returnObj;
     }
 
+    //If the player has castling rights, check that the squares are clear.
     public static areSquaresClearForCastlingProvidedRightsAreThere(board: Chonse2): {whiteKingside: boolean, whiteQueenside: boolean, blackKingside: boolean, blackQueenside: boolean}
     {
         const returnObj = 
@@ -586,6 +589,69 @@ export default class Chonse2Extensions
             const b8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE) === "";
             
             returnObj.blackQueenside = d8Clear && c8Clear && b8Clear;
+        }
+
+        return returnObj;
+    }
+
+    // Checks if any enemy piece is preventing the king from castling.
+    // Assumes the castling path is already clear of pieces.
+    public static isEnemyPieceBlockingCastlingPath(
+        board: Chonse2
+    ): {
+        whiteKingside: boolean,
+        whiteQueenside: boolean,
+        blackKingside: boolean,
+        blackQueenside: boolean
+    }
+    {
+        const clear = Chonse2Extensions.areSquaresClearForCastlingProvidedRightsAreThere(board);
+
+        const returnObj = {
+            whiteKingside: false,
+            whiteQueenside: false,
+            blackKingside: false,
+            blackQueenside: false
+        };
+
+        if (clear.whiteKingside)
+        {
+            const f1Hits = board.getPiecesThatHitSquare(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE);
+            const g1Hits = board.getPiecesThatHitSquare(Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE);
+
+            returnObj.whiteKingside =
+                f1Hits.blackCoords.length > 0 ||
+                g1Hits.blackCoords.length > 0;
+        }
+
+        if (clear.whiteQueenside)
+        {
+            const d1Hits = board.getPiecesThatHitSquare(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE);
+            const c1Hits = board.getPiecesThatHitSquare(Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE);
+
+            returnObj.whiteQueenside =
+                d1Hits.blackCoords.length > 0 ||
+                c1Hits.blackCoords.length > 0;
+        }
+
+        if (clear.blackKingside)
+        {
+            const f8Hits = board.getPiecesThatHitSquare(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
+            const g8Hits = board.getPiecesThatHitSquare(Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
+
+            returnObj.blackKingside =
+                f8Hits.whiteCoords.length > 0 ||
+                g8Hits.whiteCoords.length > 0;
+        }
+
+        if (clear.blackQueenside)
+        {
+            const d8Hits = board.getPiecesThatHitSquare(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
+            const c8Hits = board.getPiecesThatHitSquare(Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE);
+
+            returnObj.blackQueenside =
+                d8Hits.whiteCoords.length > 0 ||
+                c8Hits.whiteCoords.length > 0;
         }
 
         return returnObj;

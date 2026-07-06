@@ -646,9 +646,15 @@ export default class CoachText
         `This moves the previously hanging ${CoachText.PIECE_PLACEHOLDER} to a safer square. `
     ]
 
-    //#endregion 
+    //Blocked opponent's castling with a piece
+    public static readonly BLOCKING_CASTLING_SENTENCES: Array<string> = 
+    [
+        `This now prevents the opponent from castling ${CoachText.PIECE_PLACEHOLDER}side. `,
+        `The opponent's ability to castle ${CoachText.PIECE_PLACEHOLDER}side is now on hold since a piece is targeting the square it must pass through. `,
+        `The opponent cannot castle ${CoachText.PIECE_PLACEHOLDER}side as long as that piece is blocking its path. `
+    ]
 
-    //#endregion
+    //#endregion 
 
     //#region Text helper functions
     public static getBaseSentence(moveClassification: MoveClassification): string
@@ -665,13 +671,7 @@ export default class CoachText
     }
 
 
-    //#region Helper functions
     //Gets a random index given the length of an array.
-    private static getRandomIndex(length: number)
-    {
-        return Math.floor(Math.random() * length);
-    }
-
     public static convertPieceToText(piece: string): string
     {
         //Pawn
@@ -727,6 +727,11 @@ export default class CoachText
         newSentence = this._formatCoachStringWithPlaceholders(newSentence, playerColor, CoachText.convertPieceToText(piece), CoachText.convertPieceToText(secondaryPiece));
 
         return newSentence;
+    }
+
+    private static getRandomIndex(length: number)
+    {
+        return Math.floor(Math.random() * length);
     }
     //#endregion
 }

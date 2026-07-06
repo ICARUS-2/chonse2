@@ -271,8 +271,8 @@
     }
 </div>  
 
-<!-- <div class="testingPurposes">
-    @let pc = Chonse2Extensions.getAllPawnChainsOnBoard(this.boardState().getCurrentState());
+<div class="testingPurposes">
+    @let p = Chonse2Extensions.isEnemyPieceBlockingCastlingPath(boardState().getCurrentState());
 
-    Chains: {{pc.white}} / Attackers: {{pc.whiteAttackSquares}} ----  {{pc.black}} / {{pc.blackAttackSquares}}
-</div> -->
+    K {{p.whiteKingside}} Q {{p.whiteQueenside}} / K {{p.blackKingside}}  Q {{p.blackQueenside}}
+</div>

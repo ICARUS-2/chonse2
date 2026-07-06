@@ -1684,6 +1684,31 @@ export class CoachUtils
                             move.coachMoveFlags.push(CoachMoveFlagType.UsedDiscoveredCheck);
                         }
                     }
+
+                    //Case: Player prevented castling with a piece
+                    {
+                        if (previousState)
+                        {
+                            const castlingPreventions = Chonse2Extensions.isEnemyPieceBlockingCastlingPath(state);
+                            const prevCastlingPreventions = Chonse2Extensions.isEnemyPieceBlockingCastlingPath(previousState);
+
+                            const currentKingside = whiteToMove ? castlingPreventions.whiteKingside : castlingPreventions.blackKingside;
+                            const currentQueenside = whiteToMove ? castlingPreventions.whiteQueenside : castlingPreventions.blackQueenside;
+
+                            const prevKingside = whiteToMove ? prevCastlingPreventions.whiteKingside : prevCastlingPreventions.blackKingside;
+                            const prevQueenside = whiteToMove ? prevCastlingPreventions.whiteQueenside : prevCastlingPreventions.blackQueenside;
+
+                            if (currentKingside && !prevKingside)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.BLOCKING_CASTLING_SENTENCES, colorThatMovedText, PieceType.WHITE_KING);
+                            }
+
+                            if (currentQueenside && !prevQueenside)
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.BLOCKING_CASTLING_SENTENCES, colorThatMovedText, PieceType.WHITE_QUEEN);
+                            }
+                        }
+                    }
                 }
             
                 //=======Good - Development
