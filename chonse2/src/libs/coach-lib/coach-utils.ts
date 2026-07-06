@@ -13,6 +13,7 @@ import {BLOCKED_BISHOPS, CASTLING_MOVES, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpe
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "./coach-types";
 import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
 import { GameOverReason } from "../chonse2-lib/game-state";
+import { uciMoveParams2 } from "../engine-lib/helpers/chessHelper";
 export class CoachUtils
 {
     static readonly COACH_MOVE_DELIMITER = "*";
@@ -1153,6 +1154,40 @@ export class CoachUtils
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.BETTER_DEFEND_MOVE_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.WrongHangingPieceDefence)
+                            }
+                        }
+                    }
+
+                    //Case: Player missed a chance to force the loss of castling rights
+                    {
+                        if (previousState && missedState && previousBestMove && previousPosEval)
+                        {
+                            //Need to make sure they didn't force the loss of castling rights already and give them crap for not doing so.
+                            const didForceLossOfCastlingRights = CoachMiscHelpers.didForceLossOfCastlingRights(state, nextBestState, whiteToMove, nextBestMove);
+                            
+                            if (!didForceLossOfCastlingRights)
+                            {
+                                //need to check the previous engine line to see what was wanted.
+                                const prevLine = previousPosEval.lines[0];
+                                if (prevLine)
+                                {
+                                    //need to check: what the best move after the best move was played, and the state of the castling rights after the move is made.
+                                    const bestMoveInMissedState = prevLine.pv[1];
+                                    const previousLineTwoMovesDeepState = previousFollowUp[2]
+                                    if (bestMoveInMissedState)
+                                    {
+                                        const formattedMove = uciMoveParams2(bestMoveInMissedState, whiteToMove ? "w" : "b");
+
+                                        const wasBestMoveToForceLossOfCastlingRights = CoachMiscHelpers.didForceLossOfCastlingRights(missedState, previousLineTwoMovesDeepState , whiteToMove, {fromSquare: formattedMove.from, toSquare: formattedMove.to, promotion: "q"});
+
+                                        //If we got to this point, we don't have to check the previous boolean because it's already confirmed castling rights weren't erroneously lost.
+                                        //If the best move involved forcing the loss of castling rights, flag it. 
+                                        if (wasBestMoveToForceLossOfCastlingRights)
+                                        {
+                                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES, colorThatMovedText);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
