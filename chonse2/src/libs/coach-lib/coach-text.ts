@@ -392,6 +392,8 @@ export default class CoachText
         `This misses an opportunity to force the loss of castling rights. `,
         `There was a chance to force the loss of castling rights, and by extension, king safety, but ${CoachText.TURN_PLACEHOLDER} overlooked it. `
     ]
+
+
     //#endregion
 
     //#region Good============
@@ -529,6 +531,24 @@ export default class CoachText
         `Nice, now the best move is for the opponent to lose castling rights. `,
         `The best move for the opponent in this position is to completely lose the right to castle. `,
         `Now the opponent has to lose castling rights to maintain the best possible position. `
+    ]
+
+    //Player set up a discovered check
+    public static readonly DISCOVERED_CHECK_SENTENCES: Array<string> = 
+    [
+        `That move just hit the king with a discovered check. `,
+        `A discovered check was used in order to pressure both the king and other pieces at the same time. `,
+        `Discovered checks like that are always scary. `,
+        `The opponent's king just got hit with a discovered check tactic. `
+    ]
+
+    //Player used a double check
+    public static readonly DOUBLE_CHECK_SENTENCES: Array<string> = 
+    [
+        `The most badass and scary tactic in chess, the double check. This forces the opponent to move the king. `,
+        `That double check will force the opponent to move their king. `,
+        `That double check puts a ton of pressure on the enemy king. `,
+        `Even the laziest king flees wildly in the face of a double check.`
     ]
     //#endregion
     

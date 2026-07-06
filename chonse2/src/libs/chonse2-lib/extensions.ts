@@ -58,8 +58,8 @@ export default class Chonse2Extensions
         const pieceInSquareColor = pieceInSquare[0] == "w" ? PieceColor.WHITE : PieceColor.BLACK;
         const hits = board.getPiecesThatHitSquare(squareCoord);
 
-        const attackers = pieceInSquareColor == PieceColor.WHITE ? hits.black : hits.white;
-        const defenders = pieceInSquareColor == PieceColor.WHITE ? hits.white : hits.black;
+        const attackers = pieceInSquareColor == PieceColor.WHITE ? hits.blackPieces : hits.whitePieces;
+        const defenders = pieceInSquareColor == PieceColor.WHITE ? hits.whitePieces : hits.blackPieces;
 
         //A piece that isn't attacked isn't hanging.
         if (attackers.length == 0)
@@ -121,7 +121,7 @@ export default class Chonse2Extensions
             const currentPieceCoordinate = piecesAndCoords.coords[i];
 
             const squareHits = boardCopy.getPiecesThatHitSquare(currentPieceCoordinate);
-            const squareHitsToCheck = attackerColor == PieceColor.WHITE ? squareHits.black : squareHits.white;
+            const squareHitsToCheck = attackerColor == PieceColor.WHITE ? squareHits.blackPieces : squareHits.whitePieces;
 
             if (squareHitsToCheck.length > 0)
             {
@@ -278,7 +278,7 @@ export default class Chonse2Extensions
                             //Get the pieces that defend the forked square.
                             const piecesThatHitForkedPieceSquare = boardCopy.getPiecesThatHitSquare(nonKingPieceCoordinate);
                             boardCopy.undoMostRecentMove();
-                            const piecesDefendingForkedPieceSquare = attackerColor == PieceColor.WHITE ? piecesThatHitForkedPieceSquare.black : piecesThatHitForkedPieceSquare.white;
+                            const piecesDefendingForkedPieceSquare = attackerColor == PieceColor.WHITE ? piecesThatHitForkedPieceSquare.blackPieces : piecesThatHitForkedPieceSquare.whitePieces;
 
                             //If the moved piece defends the forked square, it's not a fork.                            
                             if (piecesDefendingForkedPieceSquare.length > 0)
@@ -931,7 +931,7 @@ export default class Chonse2Extensions
                 const currentRookCoord = rookCoords[i];
 
                 //every piece that can see it.
-                const piecesThatHitSquare = color == PieceColor.WHITE ? board.getPiecesThatHitSquare(currentRookCoord).white : board.getPiecesThatHitSquare(currentRookCoord).black;
+                const piecesThatHitSquare = color == PieceColor.WHITE ? board.getPiecesThatHitSquare(currentRookCoord).whitePieces : board.getPiecesThatHitSquare(currentRookCoord).blackPieces;
 
                 //Loop through every piece that can see this rook and check if another rook (same color) can see it.
                 for(let j = 0; j < piecesThatHitSquare.length; j++)
@@ -1397,6 +1397,53 @@ export default class Chonse2Extensions
         })
         return returnObj;
     }
+    //#endregion
+
+    //#region Discovered check
+    public static wasMoveDiscoveredCheck(afterState: Chonse2, move: {from: string, to: string, promotion: string}): DiscoveredCheckType
+    {
+        const pieceInToSquare = afterState.findPieceAtCoordinate(move.to);
+
+        //If there's no piece here... then why the hell did you call this function.
+        if (!pieceInToSquare)
+        {
+            return DiscoveredCheckType.None;
+        }
+
+        //Will need to verify that the king is indeed in check
+        const colorToVerifyIsInCheck: string = afterState.turn ? PieceColor.WHITE : PieceColor.BLACK;
+        const isKingInCheck: boolean = afterState.isInCheck(colorToVerifyIsInCheck);
+        if (!isKingInCheck)
+        {
+            return DiscoveredCheckType.None;
+        }
+
+        //If we got this far, the move was a check. Verify what pieces are actually hitting it. 
+        const kingCoord: string = afterState.getKingCoordinate(colorToVerifyIsInCheck);
+        const checkingData = afterState.getPiecesThatHitSquare(kingCoord);
+        const checkingPieces = colorToVerifyIsInCheck == PieceColor.WHITE ? checkingData.blackPieces : checkingData.whitePieces;
+
+        //If there is more than one piece checking the king, issa double check. 
+        if (checkingPieces.length > 1)
+        {
+            return DiscoveredCheckType.DoubleCheck;
+        }
+
+        //There cannot be any other case than a double check or a single check.
+        const checkingPieceCoords = colorToVerifyIsInCheck == PieceColor.WHITE ? checkingData.blackCoords : checkingData.whiteCoords;
+        const cpc = checkingPieceCoords[0];
+
+        //If the piece that moved was not the piece that caused the check, it's a discovered check.
+        if (cpc != move.to)
+        {
+            return DiscoveredCheckType.SingleCheck;
+        }
+
+        //checkingPieces.length > 1;
+
+        return DiscoveredCheckType.None;
+    }
+    //#endregion
 
     //#region General board state
 
@@ -1539,4 +1586,11 @@ export class Skewer
     attackerCoordinate: string = "";
     highValuePieceCoordinate: string = "";
     lowValuePieceBehindCoordinate: string = "";
+}
+
+export enum DiscoveredCheckType
+{
+    None,
+    SingleCheck,
+    DoubleCheck
 }

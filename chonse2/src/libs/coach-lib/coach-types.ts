@@ -45,7 +45,9 @@ export enum CoachMoveFlagType
     OpportunityToFork,
     Castled,
     ClearedWayToCastle,
-    ForcedLossOfCastlingRights
+    ForcedLossOfCastlingRights,
+    UsedDiscoveredCheck,
+    UsedDoubleCheck
 }
 
 export enum CoachIdeaFlagType

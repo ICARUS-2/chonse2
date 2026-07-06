@@ -915,11 +915,11 @@ export default class Chonse2
   }
 
   //Gets all pieces that attack/defend a given square.
-  public getPiecesThatHitSquare(square: string): {white: Array<string>, black: Array<string>} 
+  public getPiecesThatHitSquare(square: string): {whiteCoords: Array<string>, whitePieces: Array<string>, blackCoords: Array<string>, blackPieces: Array<string>} 
   {
       const boardCopy = this.getFullDeepCopy();
       const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(square);
-      const o: { white: string[], black: string[] } = { white: [], black: [] };
+      const o: { whiteCoords: string[], whitePieces: string[], blackCoords: string[], blackPieces: string[] } = { whiteCoords: [], whitePieces: [], blackCoords: [], blackPieces: [] };
 
       const colors = [PieceColor.WHITE, PieceColor.BLACK]; 
 
@@ -968,11 +968,13 @@ export default class Chonse2
                   {
                       if (currentColor === PieceColor.WHITE) 
                       {
-                        o.white.push(piece);
+                        o.whiteCoords.push(coord);
+                        o.whitePieces.push(piece);
                       } 
                       else 
                       {
-                        o.black.push(piece);
+                        o.blackCoords.push(coord)
+                        o.blackPieces.push(piece);
                       }
                   }
               }
