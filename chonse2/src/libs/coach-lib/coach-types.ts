@@ -37,13 +37,15 @@ export enum CoachMoveFlagType
     WrongPawnChainAttack,
     WrongHangingPieceMove,
     WrongHangingPieceDefence,
+    MissedForcedLossOfCastlingRights,
 
     //Good (show follow up)
     OpportunityToCheckmate,
     OpportunityToSkewer,
     OpportunityToFork,
     Castled,
-    ClearedWayToCastle
+    ClearedWayToCastle,
+    ForcedLossOfCastlingRights
 }
 
 export enum CoachIdeaFlagType

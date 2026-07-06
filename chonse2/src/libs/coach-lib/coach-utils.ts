@@ -9,10 +9,11 @@ import { openings } from "../engine-lib/data/openings";
 import { MoveClassification } from "../engine-lib/types/enums";
 import { LineEval, PositionEval } from "../engine-lib/types/eval";
 import CoachText from "./coach-text";
-import {BLOCKED_BISHOPS, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
+import {BLOCKED_BISHOPS, CASTLING_MOVES, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "./coach-types";
 import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
 import { GameOverReason } from "../chonse2-lib/game-state";
+import { uciMoveParams2 } from "../engine-lib/helpers/chessHelper";
 export class CoachUtils
 {
     static readonly COACH_MOVE_DELIMITER = "*";
@@ -1156,6 +1157,40 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Player missed a chance to force the loss of castling rights
+                    {
+                        if (previousState && missedState && previousBestMove && previousPosEval)
+                        {
+                            //Need to make sure they didn't force the loss of castling rights already and give them crap for not doing so.
+                            const didForceLossOfCastlingRights = CoachMiscHelpers.didForceLossOfCastlingRights(state, nextBestState, whiteToMove, nextBestMove);
+                            
+                            if (!didForceLossOfCastlingRights)
+                            {
+                                //need to check the previous engine line to see what was wanted.
+                                const prevLine = previousPosEval.lines[0];
+                                if (prevLine)
+                                {
+                                    //need to check: what the best move after the best move was played, and the state of the castling rights after the move is made.
+                                    const bestMoveInMissedState = prevLine.pv[1];
+                                    const previousLineTwoMovesDeepState = previousFollowUp[2]
+                                    if (bestMoveInMissedState)
+                                    {
+                                        const formattedMove = uciMoveParams2(bestMoveInMissedState, whiteToMove ? "w" : "b");
+
+                                        const wasBestMoveToForceLossOfCastlingRights = CoachMiscHelpers.didForceLossOfCastlingRights(missedState, previousLineTwoMovesDeepState , whiteToMove, {fromSquare: formattedMove.from, toSquare: formattedMove.to, promotion: "q"});
+
+                                        //If we got to this point, we don't have to check the previous boolean because it's already confirmed castling rights weren't erroneously lost.
+                                        //If the best move involved forcing the loss of castling rights, flag it. 
+                                        if (wasBestMoveToForceLossOfCastlingRights)
+                                        {
+                                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES, colorThatMovedText);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 //=======Good
@@ -1588,6 +1623,18 @@ export class CoachUtils
                                         move.coachComment += CoachText.selectAndFormatSentence(CoachText.MOVED_HANGING_PIECE_SENTENCES, colorThatMovedText, pc);   
                                     }
                                 }
+                            }
+                        }
+                    }
+
+                    //Case: Player forced the loss of castling rights
+                    {
+                        if (nextBestState && nextBestMove)
+                        {
+                            if (CoachMiscHelpers.didForceLossOfCastlingRights(state, nextBestState, whiteToMove, nextBestMove))
+                            {
+                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.ForcedLossOfCastlingRights);
                             }
                         }
                     }

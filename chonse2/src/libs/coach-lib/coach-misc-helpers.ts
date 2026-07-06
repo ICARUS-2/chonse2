@@ -1,6 +1,8 @@
 import Chonse2 from "../chonse2-lib/chonse2";
 import { PieceType } from "../chonse2-lib/piece-type";
 import { LineEval } from "../engine-lib/types/eval";
+import CoachText from "./coach-text";
+import { CoachMoveFlagType } from "./coach-types";
 
 export class CoachMiscHelpers 
 {
@@ -64,6 +66,48 @@ export class CoachMiscHelpers
         )
 
         return followUp;
+    }
+
+    public static didForceLossOfCastlingRights(
+        state: Chonse2, 
+        nextBestState: Chonse2, 
+        whiteToMove: boolean, 
+        nextBestMove: { fromSquare: string; toSquare: string; promotion: string;}
+    ) : boolean
+    {
+        const doesOpponentHaveCastlingRights = whiteToMove ? 
+            (state.whiteCastlingRights.kingSide || state.whiteCastlingRights.queenSide) : 
+            (state.blackCastlingRights.kingSide || state.blackCastlingRights.queenSide);
+
+        const willOpponentHaveCastlingRights = whiteToMove ? 
+            (nextBestState.whiteCastlingRights.kingSide || nextBestState.whiteCastlingRights.queenSide) :
+            (nextBestState.blackCastlingRights.kingSide || nextBestState.blackCastlingRights.queenSide);
+
+
+        //If the opponent will not have castling rights after that move, make sure it wasn't cause they castled.
+        if (doesOpponentHaveCastlingRights && !willOpponentHaveCastlingRights )
+        {
+            const bestPieceToMove = state.findPieceAtCoordinate(nextBestMove.fromSquare);
+            const shouldMoveKing = bestPieceToMove == PieceType.WHITE_KING || bestPieceToMove == PieceType.BLACK_KING;
+
+            //If the player should indeed move their king here.
+            if (shouldMoveKing)
+            {
+                //the actual castling moves. 
+                const kingside = whiteToMove ? CASTLING_MOVES.whiteKingside : CASTLING_MOVES.blackKingside;
+                const queenside = whiteToMove ? CASTLING_MOVES.whiteQueenside : CASTLING_MOVES.blackQueenside;
+
+                //Need to check if the next best move is for the opponent to castle. 
+                const shouldOpponentCastleKingside = nextBestMove.fromSquare == kingside.fromSquare && nextBestMove.toSquare == kingside.toSquare;
+                const shouldOpponentCastleQueenside = nextBestMove.fromSquare == queenside.fromSquare && nextBestMove.toSquare == queenside.toSquare;
+
+                //If the next best move is not to castle, but in the next best state the player does not have castling rights,
+                //the only implication is that they lost the right to castle.  
+                return (!shouldOpponentCastleKingside && !shouldOpponentCastleQueenside);
+            }
+        }
+
+        return false;
     }
 
     //Converts a UCI move to the format in which it can be used to move in the Chonse2 library.
@@ -130,3 +174,30 @@ export const CENTER_STRIKE_MOVEMENTS =
         {from: "d7", to: "d5"}
     ]
 }
+
+export const CASTLING_MOVES =
+{
+    whiteKingside:
+    {
+        fromSquare: Chonse2.WHITE_KING_SQUARE,
+        toSquare: Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE,
+    },
+
+    whiteQueenside:
+    {
+        fromSquare: Chonse2.WHITE_KING_SQUARE,
+        toSquare: Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE,
+    },
+
+    blackKingside:
+    {
+        fromSquare: Chonse2.BLACK_KING_SQUARE,
+        toSquare: Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE,
+    },
+
+    blackQueenside:
+    {
+        fromSquare: Chonse2.BLACK_KING_SQUARE,
+        toSquare: Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE,
+    },
+};
