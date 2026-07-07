@@ -654,6 +654,15 @@ export default class CoachText
         `The opponent cannot castle ${CoachText.PIECE_PLACEHOLDER}side as long as that piece is blocking its path. `
     ]
 
+    //Kicked a piece with a pawn
+    public static readonly KICKED_PIECE_WITH_PAWN_SENTENCES: Array<string> = 
+    [
+        `This kicks a ${CoachText.PIECE_PLACEHOLDER} with a pawn, forcing it to move or be captured. `,
+        `This threatens a ${CoachText.PIECE_PLACEHOLDER} with a pawn. `,
+        `That pawn move attacks a ${CoachText.PIECE_PLACEHOLDER}, pushing it out of its current position. `,
+        `Kicking the ${CoachText.PIECE_PLACEHOLDER} with a pawn. `
+    ]
+
     //#endregion 
 
     //#region Text helper functions

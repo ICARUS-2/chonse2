@@ -89,11 +89,6 @@ export class CoachDisplay {
       return this.translate.instant('chessboard.coachDisplay.followUpButton.showHangingPiece');
     }
 
-    if (move.coachMoveFlags.includes(CoachMoveFlagType.OpportunityToFork))
-    {
-      return this.translate.instant('chessboard.coachDisplay.followUpButton.showFork');
-    }
-
     if (move.coachMoveFlags.includes(CoachMoveFlagType.CausedMaterialLoss))
     {
       return this.translate.instant('chessboard.coachDisplay.followUpButton.showMaterialLoss');
