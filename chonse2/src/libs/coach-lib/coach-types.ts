@@ -41,6 +41,15 @@ export enum CoachMoveFlagType
     MissedDiscoveredCheck,
     MissedDoubleCheck,
     WrongDiscoveredCheck,
+    MissedOutpost,
+    WrongOutpost,
+    MissedStrikeInCenterWithPawn,
+    WeakenedKingWithPawnMove,
+    CreatedPassedPawnForOpponent,
+    BlockedBishop,
+    DisconnectedRooks,
+    MissedConnectedRooks,
+
 
     //Good (show follow up)
     OpportunityToCheckmate,
@@ -52,6 +61,21 @@ export enum CoachMoveFlagType
     UsedDiscoveredCheck,
     UsedDoubleCheck,
     KickedPieceWithPawn,
+    TookOutpostWithKnight,
+    BlockingCastling,
+    MovedHangingPiece,
+    DefendedHangingPiece,
+    AttackedPawnChain,
+    IsolatedOpponentPawn,
+    SatPieceOnPromotionSquare,
+    CreatedPassedPawnForThemselves,
+    ForcedDoublingOfPawns,
+    TookOpenFileWithRook,
+    ConnectedRooks,
+    FoundPin,
+    FoundMate,
+    OnRoadToCheckmate
+
 }
 
 export enum CoachIdeaFlagType
