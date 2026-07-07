@@ -663,6 +663,13 @@ export default class CoachText
         `Kicking the ${CoachText.PIECE_PLACEHOLDER} with a pawn. `
     ]
 
+    //Took an outpost with a knight
+    public static readonly TOOK_OUTPOST_WITH_KNIGHT_SENTENCES: Array<string> = 
+    [
+        `Their knight took an outpost square, making it unattackable by pawns and difficult to fight with pieces. `,
+        `This takes an outpost with a knight, giving it a strong presence inside enemy lines. `,
+        `That is a comfy outpost square for the knight`
+    ]
     //#endregion 
 
     //#region Text helper functions
