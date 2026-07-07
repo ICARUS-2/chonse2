@@ -45,12 +45,13 @@ export enum CoachMoveFlagType
     //Good (show follow up)
     OpportunityToCheckmate,
     OpportunityToSkewer,
-    OpportunityToFork,
+    ForkedPiece,
     Castled,
     ClearedWayToCastle,
     ForcedLossOfCastlingRights,
     UsedDiscoveredCheck,
-    UsedDoubleCheck
+    UsedDoubleCheck,
+    KickedPieceWithPawn,
 }
 
 export enum CoachIdeaFlagType

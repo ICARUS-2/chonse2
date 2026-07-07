@@ -107,7 +107,7 @@ export class CoachUtils
 
                 //misc stuff that can be reused
                 const allHangingPieceCoords = Chonse2Extensions.getHangingPieces(state);
-
+                const movedPiece = state.findPieceAtCoordinate(move.toCoord);
                 let allPreviousHangingPieceCoords:{ white: Array<string>; black: Array<string>;} | undefined = undefined
                 if (previousState)
                 {
@@ -845,7 +845,6 @@ export class CoachUtils
                             //need to check if the best thing was for the person to move their rook.
                             const rookPiece = whiteToMove ? PieceType.BLACK_ROOK : PieceType.WHITE_ROOK;
                             const bestMovePiece = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
-                            const movedPiece = state.findPieceAtCoordinate(move.toCoord);
 
                             //if the best bet was to indeed move the rook, check if it was to place it on an open file.
                             if (bestMovePiece == rookPiece)
@@ -1005,7 +1004,6 @@ export class CoachUtils
                         let didPawnPushWeakenKing = false;
 
                         //Need to establish whether the player moved a pawn.
-                        const movedPiece = state.findPieceAtCoordinate(move.toCoord);
                         const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
 
                         //If so, check if they weakened the king.
@@ -1049,7 +1047,6 @@ export class CoachUtils
                     {
                         if (previousState && previousBestMove)
                         {
-                            const movedPiece = state.findPieceAtCoordinate(move.toCoord);
                             const bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
 
                             const pawnChainData = Chonse2Extensions.getAllPawnChainsOnBoard(previousState);
@@ -1080,7 +1077,6 @@ export class CoachUtils
                     {
                         if (previousBestMove)
                         {
-                            const movedPiece = state.findPieceAtCoordinate(move.toCoord);
                             const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
                             const bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
                             const centerMovements = whiteToMove ? CENTER_STRIKE_MOVEMENTS.black : CENTER_STRIKE_MOVEMENTS.white;
@@ -1327,6 +1323,7 @@ export class CoachUtils
 
                             move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_FORK_SENTENCES, colorThatMovedText, displayPiece)
                             move.coachIdeas.set( CoachIdeaFlagType.ForkIdea, coachIdea );
+                            move.coachMoveFlags.push(CoachMoveFlagType.ForkedPiece);
                         }
                     }
 
@@ -1602,8 +1599,6 @@ export class CoachUtils
                     {
                         if (previousState)
                         {
-                            const movedPiece = state.findPieceAtCoordinate(move.toCoord);
-
                             const pawnChainData = Chonse2Extensions.getAllPawnChainsOnBoard(previousState);
                             const attackSquaresForPawnChain = whiteToMove ? pawnChainData.whiteAttackSquares : pawnChainData.blackAttackSquares;
                             const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
@@ -1706,6 +1701,72 @@ export class CoachUtils
                             if (currentQueenside && !prevQueenside)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.BLOCKING_CASTLING_SENTENCES, colorThatMovedText, PieceType.WHITE_QUEEN);
+                            }
+                        }
+                    }
+
+                    //Case: Player attacked a piece with a pawn
+                    {
+                        if (previousState && !move.coachMoveFlags.includes(CoachMoveFlagType.ForkedPiece))
+                        {
+                            //the color of the pawn that would be moved.
+                            const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
+
+                            //if the player moved their pawn.
+                            if (movedPiece == pawnPiece)
+                            {
+                                const hanging = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
+                                
+                                //we don't care if they attacked something with a pawn if the pawn itself just got hung.
+                                if (!hanging.includes(move.toCoord))
+                                {
+                                    const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(move.toCoord);
+        
+                                    let attackLeftRowIndex = -1;
+                                    let attackLeftColIndex = -1; 
+                                    let attackRightRowIndex = -1;
+                                    let attackRightColIndex = -1;
+        
+                                    //Compute the indeces of squares where the pawn threatens the structure of the chain.
+                                    if (pawnPiece == PieceType.WHITE_PAWN)
+                                    {
+                                        attackLeftRowIndex = rowIndex - 1;
+                                        attackLeftColIndex = colIndex - 1;
+                                        attackRightRowIndex = rowIndex - 1;
+                                        attackRightColIndex = colIndex + 1;
+                                    }
+                                    else 
+                                    {
+                                        attackLeftRowIndex = rowIndex + 1;
+                                        attackLeftColIndex = colIndex - 1;
+                                        attackRightRowIndex = rowIndex + 1;
+                                        attackRightColIndex = colIndex + 1;
+                                    }
+        
+                                    const piecesThatCanBeAttacked = whiteToMove ? 
+                                        [PieceType.WHITE_KNIGHT, PieceType.WHITE_BISHOP, PieceType.WHITE_ROOK, PieceType.WHITE_QUEEN] : 
+                                        [PieceType.BLACK_KNIGHT, PieceType.BLACK_BISHOP, PieceType.BLACK_ROOK, PieceType.BLACK_QUEEN];
+
+                                    //Get the actual squares themselves.
+                                    let leftAttackSquare = state.pieceState[attackLeftRowIndex][attackLeftColIndex];
+                                    let rightAttackSquare = state.pieceState[attackRightRowIndex][attackRightColIndex];
+                                    
+                                    let kickedPiece = PieceType.NONE;
+                                    if (piecesThatCanBeAttacked.includes(leftAttackSquare))
+                                    {
+                                        kickedPiece = leftAttackSquare;
+                                    }
+                                    else if(piecesThatCanBeAttacked.includes(rightAttackSquare))
+                                    {
+                                        kickedPiece = rightAttackSquare;
+                                    }
+
+                                    if (kickedPiece)
+                                    {
+                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.KICKED_PIECE_WITH_PAWN_SENTENCES, colorThatMovedText, kickedPiece);
+                                        move.coachMoveFlags.push(CoachMoveFlagType.KickedPieceWithPawn);
+                                    }
+                                }
                             }
                         }
                     }
