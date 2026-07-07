@@ -1511,6 +1511,96 @@ export default class Chonse2Extensions
     }
     //#endregion
 
+    //#region Knight outpost
+    public static getAllOutpostKnights(board: Chonse2): { white: string[]; black: string[] }
+    {
+        const knights = Chonse2Extensions.getAllPieceCoordsOfType(board, PieceType.KNIGHT);
+
+        return {
+            white: knights.white.filter(coord => this.isOutpostKnight(board, coord, true)),
+            black: knights.black.filter(coord => this.isOutpostKnight(board, coord, false))
+        };
+    }
+
+    private static isOutpostKnight(board: Chonse2, coord: string, isWhite: boolean): boolean
+    {
+        const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coord);
+
+        if (!this._isInEnemyTerritory(rowIndex, isWhite))
+            return false;
+
+        if (!this._isDefendedByPawn(board, rowIndex, colIndex, isWhite))
+            return false;
+
+        if (this._canEnemyPawnAttack(board, rowIndex, colIndex, isWhite))
+            return false;
+
+        return true;
+    }
+
+    private static _isInEnemyTerritory(rowIndex: number, isWhite: boolean): boolean
+    {
+        return isWhite
+            ? rowIndex <= 3   //White must be on ranks 5-8
+            : rowIndex >= 4;  //Black must be on ranks 1-4
+    }
+
+    private static _isDefendedByPawn
+    (
+        board: Chonse2,
+        row: number,
+        col: number,
+        isWhite: boolean
+    ): boolean
+    {
+        const pawn = isWhite ? PieceType.WHITE_PAWN : PieceType.BLACK_PAWN;
+        const pawnRow = isWhite ? row + 1 : row - 1;
+
+        if (pawnRow < 0 || pawnRow > 7)
+            return false;
+
+        return (
+            (col > 0 && board.pieceState[pawnRow][col - 1] === pawn) ||
+            (col < 7 && board.pieceState[pawnRow][col + 1] === pawn)
+        );
+    }
+
+    private static _canEnemyPawnAttack
+    (
+        board: Chonse2,
+        row: number,
+        col: number,
+        isWhite: boolean
+    ): boolean
+    {
+        const enemyPawn = isWhite ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
+
+        for (const attackCol of [col - 1, col + 1])
+        {
+            if (attackCol < 0 || attackCol > 7)
+                continue;
+
+            if (isWhite)
+            {
+                for (let r = 0; r < row; r++)
+                {
+                    if (board.pieceState[r][attackCol] === enemyPawn)
+                        return true;
+                }
+            }
+            else
+            {
+                for (let r = 7; r > row; r--)
+                {
+                    if (board.pieceState[r][attackCol] === enemyPawn)
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     //#region General board state
 
     //All open files on a given board
@@ -1607,7 +1697,7 @@ export default class Chonse2Extensions
         {
             const p = allWhitePieces.pieces[idx];
             
-            if (p == PieceType.WHITE_PAWN)
+            if (p == desiredWhitePiece)
             {
                 returnObj.white.push(coord);
             }
@@ -1617,7 +1707,7 @@ export default class Chonse2Extensions
         {
             const p = allBlackPieces.pieces[idx];
             
-            if (p == PieceType.BLACK_PAWN)
+            if (p == desiredBlackPiece)
             {
                 returnObj.black.push(coord);
             }
