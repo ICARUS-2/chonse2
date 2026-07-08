@@ -48,4 +48,7 @@ Run dev server
 ng serve --host=0.0.0.0
 ```
 
-Open [http://localhost:4200/chonse2/](http://localhost:4200/) in the browser.
+Open [http://localhost:4200/](http://localhost:4200/) in the browser.
+
+## Growing thanks to you <3
+<img width="303" height="123" alt="visits" src="https://github.com/user-attachments/assets/0d1f138f-18c1-4270-a3d0-08159736d0ed" />
