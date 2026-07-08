@@ -1851,6 +1851,7 @@ export class CoachUtils
                                 {
                                     move.coachComment += CoachText.selectAndFormatSentence(CoachText.TOOK_OUTPOST_WITH_KNIGHT_SENTENCES, colorThatMovedText);
                                     move.coachMoveFlags.push(CoachMoveFlagType.TookOutpostWithKnight);
+                                    move.coachResources.set(CoachResourceFlagType.Outpost, CoachResourceLinks.OUTPOST_LINK);
                                 }
                             }
                         }

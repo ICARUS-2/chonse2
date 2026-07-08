@@ -94,5 +94,6 @@ export enum CoachResourceFlagType
 {
     Opening,
     Skewer,
-    Pin
+    Pin,
+    Outpost
 }

@@ -14,6 +14,7 @@ import { UciEngine } from "../../../libs/engine-lib/uciEngine";
 import MoveResult from "./move-result";
 import { CoachUtils } from "../../../libs/coach-lib/coach-utils";
 import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
+import { isWasmSupported } from "../../../libs/engine-lib/helpers/shared";
 
 export default class BoardState
 {
@@ -834,7 +835,7 @@ export default class BoardState
             //Gets the engine type saved as per the user setting.
             const engineType: EngineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName;
             
-            const cloudHybridMode: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, false);
+            const cloudHybridMode: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, true);
 
             //Instantiate the engine with the factory.
             const engine: UciEngine = await UciEngine.getEngine(engineType);

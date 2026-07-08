@@ -120,6 +120,7 @@
                 "openingLearnMore": "Ouverture : En savoir plus",
                 "skewerLearnMore": "Brochettes: En savoir plus",
                 "pinLearnMore": "Pièce clouée: En savoir plus",
+                "outpostLearnMore": "Avant-poste : En savoir plus",
                 "unknownResource": "Ressource inconnue"
             },
             "moveClassifications": 
@@ -321,7 +322,8 @@
                 "tooltip": "Déléguez les évaluations au cloud Lichess dès que possible. Cela peut permettre d'augmenter la profondeur, d'accélérer les évaluations et de réduire l'utilisation du processeur. Conçu pour les appareils qui ne peuvent pas tirer parti du multithreading."
             },
             "engineDepth": "Profondeur du moteur",
-            "threadCount": "Nombre de threads"
+            "threadCount": "Nombre de threads",
+            "legacyFallbackWarning": "WASM non disponible. Passage au moteur hérité."
         },
         "credits": 
         {

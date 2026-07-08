@@ -125,7 +125,8 @@ export class CoachMiscHelpers
 export class CoachResourceLinks 
 {
     public static readonly SKEWER_LINK = "https://www.chess.com/terms/skewer-chess";
-    public static readonly PIN_LINK = "https://www.chess.com/terms/pin-chess"
+    public static readonly PIN_LINK = "https://www.chess.com/terms/pin-chess";
+    public static readonly OUTPOST_LINK = "https://www.chess.com/terms/outpost-chess";
 }
 
 export const BLOCKED_BISHOPS = 

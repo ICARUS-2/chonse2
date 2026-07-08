@@ -20,11 +20,17 @@ import { Stockfish11 } from "./engines/stockfish11";
 import { Stockfish18 } from "./engines/stockfish18";
 import { LichessAPI } from "../server-api-lib/lichess-api";
 import MoveResult from "../../app/chessboard/chessboard/move-result";
+import { isWasmSupported } from "./helpers/shared";
 
 
 export class UciEngine {
   static getEngine(engineName: EngineName)
   {
+    if (!isWasmSupported())
+    {
+      return Stockfish11.create();
+    }
+
     switch (engineName) 
     {
       case EngineName.Stockfish18:

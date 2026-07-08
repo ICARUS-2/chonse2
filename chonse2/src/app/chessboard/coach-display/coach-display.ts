@@ -438,6 +438,11 @@ export class CoachDisplay {
       return this.translate.instant('chessboard.coachDisplay.resourceButton.pinLearnMore');
     }
 
+    if (flag == CoachResourceFlagType.Outpost)
+    {
+      return this.translate.instant('chessboard.coachDisplay.resourceButton.outpostLearnMore');
+    }
+
     return this.translate.instant('chessboard.coachDisplay.resourceButton.unknownResource');
   }
 
