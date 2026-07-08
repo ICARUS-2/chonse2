@@ -119,6 +119,7 @@
                 "openingLearnMore": "Opening: Learn More",
                 "skewerLearnMore": "Skewers: Learn More",
                 "pinLearnMore": "Pin: Learn More",
+                "outpostLearnMore": "Outpost: Learn More",
                 "unknownResource": "Unknown resource"
             },
             "moveClassifications": 
@@ -318,7 +319,8 @@
                 "tooltip": "Delegate evaluations to Lichess cloud eval wherever possible. Can yield increased depth, faster evaluations and less CPU usage. Intended for devices that cannot take advantage of multithreading."
             },
             "engineDepth": "Engine Depth",
-            "threadCount": "Thread Count"
+            "threadCount": "Thread Count",
+            "legacyFallbackWarning": "WASM not available. Switching to legacy engine."
         },
         "credits": 
         {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import LocalStorageHelper from '../../libs/local-storage-helper';
 import { Themes } from '../themes/themes';
@@ -11,6 +11,8 @@ import { UciEngine } from '../../libs/engine-lib/uciEngine';
 import { DEFAULT_LANG, Languages } from '../../globals/globals';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import ChessboardHelper from '../chessboard/helpers';
+import { isWasmSupported } from '../../libs/engine-lib/helpers/shared';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-settings',
@@ -19,7 +21,7 @@ import ChessboardHelper from '../chessboard/helpers';
   styleUrl: './settings.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Settings {
+export class Settings implements OnInit{
   LocalStorageHelper = LocalStorageHelper;
   ChessboardHelper = ChessboardHelper;
   EngineName = EngineName;
@@ -36,7 +38,7 @@ export class Settings {
     verboseNotation: LocalStorageHelper.getBoolean(LocalStorageHelper.VERBOSE_NOTATION, false),
     selectedEngine: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName,
     engineDepth:  LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
-    cloudHybridMode: LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, false),
+    cloudHybridMode: LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, true),
     engineThreadCount: LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1),
     selectedTheme: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_THEME, ThemeService.DEFAULT_THEME) as Themes,
     language: LocalStorageHelper.getString(LocalStorageHelper.LANGUAGE, DEFAULT_LANG) as Languages
@@ -55,9 +57,19 @@ export class Settings {
 
   private translate = inject(TranslateService);
 
-  constructor(public themeService: ThemeService)
+  constructor(public themeService: ThemeService, private toastr: ToastrService)
   {
 
+  }
+
+  ngOnInit()
+  {
+    if (this.form.selectedEngine().value() != EngineName.Stockfish11 && !isWasmSupported())
+    {
+      this.form.selectedEngine().value.set(EngineName.Stockfish11);
+      this.handleEngineDropdownSelectionChanged();
+      this.toastr.warning(this.translate.instant("settings.engine.legacyFallbackWarning"));
+    }
   }
 
   //Click to move.
