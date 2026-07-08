@@ -415,6 +415,23 @@ export default class CoachText
         `They had a better option to launch a discovered attack on the king. `
     ]
 
+    //Player missed an opportunity to take an outpost with a knight.
+    public static readonly MISSED_OUTPOST_SENTENCES: Array<string> = 
+    [
+        `They had a chance to take an outpost with a knight to make its presence stronger but missed it. `,
+        `This missed a chance to take an outpost with a knight. `,
+        `They should have taken an outpost with a knight here. `,
+        `Taking an outpost with a knight would have made the thing a lot harder to kill. `
+    ]
+
+    //Player took wrong outpost with a knight.
+    public static WRONG_OUTPOST_SENTENCES: Array<string> = 
+    [
+        `There was a better way to take an outpost with a knight. `,
+        `There was a better way an outpost could have been achieved with the knight. `,
+        `There was a more powerful outpost square for that knight. `
+    ]
+
     //#endregion
 
     //#region Good============

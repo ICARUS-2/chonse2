@@ -74,7 +74,7 @@ export enum CoachMoveFlagType
     ConnectedRooks,
     FoundPin,
     FoundMate,
-    OnRoadToCheckmate
+    OnRoadToCheckmate,
 
 }
 

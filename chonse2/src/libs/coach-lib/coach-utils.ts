@@ -144,6 +144,7 @@ export class CoachUtils
                 {
                     let previousBestMove: { fromSquare: string; toSquare: string; promotion: string} | null = null;
                     let missedState: Chonse2 | null = null;
+                    let bestPieceToMove: string | null = null;
 
                     if (previousPosEval.bestMove && previousState)
                     {
@@ -151,6 +152,7 @@ export class CoachUtils
                         const previousStateCopy = previousState.getFullDeepCopy();
                         previousStateCopy.completeMove(previousBestMove.fromSquare, previousBestMove.toSquare, previousBestMove.promotion);  
                         missedState = previousStateCopy;
+                        bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
                     }
                     
                     //Case: Player leaves a piece hanging.
@@ -601,28 +603,32 @@ export class CoachUtils
                         {
                             //Must check if the best move in this position included pinning something
                             const missedStatePins = Chonse2Extensions.getPinsOnBoard(missedState, true);
+                            const currentPins = Chonse2Extensions.getPinsOnBoard(state, true);
 
-                            let bestMoveWasToPinPiece = false;
-                            let correspondingPin: Pin | null = null;
+                            if (missedStatePins.length != currentPins.length)
+                            {              
+                                let bestMoveWasToPinPiece = false;
+                                let correspondingPin: Pin | null = null;
 
-                            //Need to check over all of the pins that existed.
-                            for(const pin of missedStatePins)
-                            {
-                                //If the best move in that position was to pin a piece, show it.
-                                if (previousBestMove.toSquare == pin.attackerCoordinate)
+                                //Need to check over all of the pins that existed.
+                                for(const pin of missedStatePins)
                                 {
-                                    bestMoveWasToPinPiece = true;
-                                    correspondingPin = pin;
+                                    //If the best move in that position was to pin a piece, show it.
+                                    if (previousBestMove.toSquare == pin.attackerCoordinate)
+                                    {
+                                        bestMoveWasToPinPiece = true;
+                                        correspondingPin = pin;
+                                    }
                                 }
-                            }
 
-                            if (bestMoveWasToPinPiece && correspondingPin != null)
-                            {
-                                const pinnedPiece = missedState.findPieceAtCoordinate(correspondingPin.pinnedPieceCoordinate);
-                                const highValuePiece = missedState.findPieceAtCoordinate(correspondingPin.highValuePieceCoordinate);
+                                if (bestMoveWasToPinPiece && correspondingPin != null)
+                                {
+                                    const pinnedPiece = missedState.findPieceAtCoordinate(correspondingPin.pinnedPieceCoordinate);
+                                    const highValuePiece = missedState.findPieceAtCoordinate(correspondingPin.highValuePieceCoordinate);
 
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
-                                move.coachMoveFlags.push(CoachMoveFlagType.MissedPin);
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedPin);
+                                }
                             }
                         }
                     }
@@ -1054,8 +1060,6 @@ export class CoachUtils
                     {
                         if (previousState && previousBestMove)
                         {
-                            const bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
-
                             const pawnChainData = Chonse2Extensions.getAllPawnChainsOnBoard(previousState);
                             const attackSquaresForPawnChain = whiteToMove ? pawnChainData.whiteAttackSquares : pawnChainData.blackAttackSquares;
                             const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
@@ -1085,7 +1089,6 @@ export class CoachUtils
                         if (previousBestMove)
                         {
                             const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
-                            const bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
                             const centerMovements = whiteToMove ? CENTER_STRIKE_MOVEMENTS.black : CENTER_STRIKE_MOVEMENTS.white;
 
                             const didAttackCenter = movedPiece == pawnPiece && centerMovements.some(cm => move.fromCoord == cm.from && move.toCoord == cm.to);
@@ -1226,6 +1229,36 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Player missed an opportunity to take an outpost with a knight/did it wrong
+                    {
+                        if (previousState && missedState)
+                        {
+                            const knightPiece = whiteToMove ? PieceType.BLACK_KNIGHT : PieceType.WHITE_KNIGHT;
+                            const outpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(state).black : Chonse2Extensions.getAllOutpostKnights(state).white;
+                            const prevOutpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(previousState).black : Chonse2Extensions.getAllOutpostKnights(previousState).white;
+                            const missedStateOutpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(missedState).black : Chonse2Extensions.getAllOutpostKnights(missedState).white;
+
+                            if (bestPieceToMove == knightPiece)
+                            {
+                                //Checks if they missed an outpost entirely.
+                                if (missedStateOutpostKnights.length > outpostKnights.length)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_OUTPOST_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedOutpost);
+                                } //Checks if they took an outpost but on the wrong square.
+                                else if (
+                                    missedStateOutpostKnights.length == outpostKnights.length && 
+                                    prevOutpostKnights.length < outpostKnights.length
+                                    && movedPiece == knightPiece
+                                )
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.WRONG_OUTPOST_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.WrongOutpost);
+                                }
+                            }
+                        }
+                    }
                 }
 
                 //=======Good
@@ -1341,39 +1374,46 @@ export class CoachUtils
 
                     //Case: Player accurately pinned a piece.
                     {
-                        const pins = Chonse2Extensions.getPinsOnBoard(state, true);
-
-                        let initiatedPin = null;
-
-                        //Check through all of the pins on the board and if the player moved a piece to where the current attacker is, it's the pin we're dealing with.
-                        for(const pin of pins)
+                        if (previousState)
                         {
-                            if (pin.attackerCoordinate == move.toCoord)
+                            const pins = Chonse2Extensions.getPinsOnBoard(state, true);
+                            const prevPins = Chonse2Extensions.getPinsOnBoard(previousState, true);
+
+                            if (prevPins.length != pins.length)
                             {
-                                initiatedPin = pin;
+                                let initiatedPin = null;
+
+                                //Check through all of the pins on the board and if the player moved a piece to where the current attacker is, it's the pin we're dealing with.
+                                for(const pin of pins)
+                                {
+                                    if (pin.attackerCoordinate == move.toCoord)
+                                    {
+                                        initiatedPin = pin;
+                                    }
+                                }
+
+                                //If this is the pin the player initiated it, add it.
+                                if (initiatedPin)
+                                {
+                                    const pinnedPiece = previousState.findPieceAtCoordinate(initiatedPin.pinnedPieceCoordinate);
+                                    const highValuePiece = previousState.findPieceAtCoordinate(initiatedPin.highValuePieceCoordinate);
+
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
+
+                                    const idea = new CoachIdea();
+                                    const arrow = createArrow(initiatedPin.attackerCoordinate, initiatedPin.highValuePieceCoordinate, ArrowColors.IDEA, ArrowContext.Coach);
+                                    if (arrow)
+                                    {
+                                        idea.arrows.push(arrow);
+                                    }
+                                    idea.highlightedSquares.push(initiatedPin.highValuePieceCoordinate);
+                                    idea.highlightedSquares.push(initiatedPin.pinnedPieceCoordinate);
+
+                                    move.coachMoveFlags.push(CoachMoveFlagType.FoundPin);
+                                    move.coachIdeas.set(CoachIdeaFlagType.PinIdea, idea);
+                                    move.coachResources.set(CoachResourceFlagType.Pin, CoachResourceLinks.PIN_LINK);
+                                }
                             }
-                        }
-
-                        //If this is the pin the player initiated it, add it.
-                        if (initiatedPin)
-                        {
-                            const pinnedPiece = previousState.findPieceAtCoordinate(initiatedPin.pinnedPieceCoordinate);
-                            const highValuePiece = previousState.findPieceAtCoordinate(initiatedPin.highValuePieceCoordinate);
-
-                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
-
-                            const idea = new CoachIdea();
-                            const arrow = createArrow(initiatedPin.attackerCoordinate, initiatedPin.highValuePieceCoordinate, ArrowColors.IDEA, ArrowContext.Coach);
-                            if (arrow)
-                            {
-                                idea.arrows.push(arrow);
-                            }
-                            idea.highlightedSquares.push(initiatedPin.highValuePieceCoordinate);
-                            idea.highlightedSquares.push(initiatedPin.pinnedPieceCoordinate);
-
-                            move.coachMoveFlags.push(CoachMoveFlagType.FoundPin);
-                            move.coachIdeas.set(CoachIdeaFlagType.PinIdea, idea);
-                            move.coachResources.set(CoachResourceFlagType.Pin, CoachResourceLinks.PIN_LINK);
                         }
                     }
 
@@ -1800,13 +1840,18 @@ export class CoachUtils
                     {
                         if (previousState)
                         {
-                            const outpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(state).black : Chonse2Extensions.getAllOutpostKnights(state).white;
-                            const prevOutpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(previousState).black : Chonse2Extensions.getAllOutpostKnights(previousState).white;
+                            const knightPiece = whiteToMove ? PieceType.BLACK_KNIGHT : PieceType.WHITE_KNIGHT;
 
-                            if (outpostKnights.length > prevOutpostKnights.length)
+                            if (movedPiece == knightPiece)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.TOOK_OUTPOST_WITH_KNIGHT_SENTENCES, colorThatMovedText);
-                                move.coachMoveFlags.push(CoachMoveFlagType.TookOutpostWithKnight);
+                                const outpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(state).black : Chonse2Extensions.getAllOutpostKnights(state).white;
+                                const prevOutpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(previousState).black : Chonse2Extensions.getAllOutpostKnights(previousState).white;
+
+                                if (outpostKnights.length > prevOutpostKnights.length)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.TOOK_OUTPOST_WITH_KNIGHT_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.TookOutpostWithKnight);
+                                }
                             }
                         }
                     }
