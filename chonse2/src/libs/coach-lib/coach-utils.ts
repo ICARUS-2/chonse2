@@ -144,6 +144,7 @@ export class CoachUtils
                 {
                     let previousBestMove: { fromSquare: string; toSquare: string; promotion: string} | null = null;
                     let missedState: Chonse2 | null = null;
+                    let bestPieceToMove: string | null = null;
 
                     if (previousPosEval.bestMove && previousState)
                     {
@@ -151,6 +152,7 @@ export class CoachUtils
                         const previousStateCopy = previousState.getFullDeepCopy();
                         previousStateCopy.completeMove(previousBestMove.fromSquare, previousBestMove.toSquare, previousBestMove.promotion);  
                         missedState = previousStateCopy;
+                        bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
                     }
                     
                     //Case: Player leaves a piece hanging.
@@ -601,28 +603,32 @@ export class CoachUtils
                         {
                             //Must check if the best move in this position included pinning something
                             const missedStatePins = Chonse2Extensions.getPinsOnBoard(missedState, true);
+                            const currentPins = Chonse2Extensions.getPinsOnBoard(state, true);
 
-                            let bestMoveWasToPinPiece = false;
-                            let correspondingPin: Pin | null = null;
+                            if (missedStatePins.length != currentPins.length)
+                            {              
+                                let bestMoveWasToPinPiece = false;
+                                let correspondingPin: Pin | null = null;
 
-                            //Need to check over all of the pins that existed.
-                            for(const pin of missedStatePins)
-                            {
-                                //If the best move in that position was to pin a piece, show it.
-                                if (previousBestMove.toSquare == pin.attackerCoordinate)
+                                //Need to check over all of the pins that existed.
+                                for(const pin of missedStatePins)
                                 {
-                                    bestMoveWasToPinPiece = true;
-                                    correspondingPin = pin;
+                                    //If the best move in that position was to pin a piece, show it.
+                                    if (previousBestMove.toSquare == pin.attackerCoordinate)
+                                    {
+                                        bestMoveWasToPinPiece = true;
+                                        correspondingPin = pin;
+                                    }
                                 }
-                            }
 
-                            if (bestMoveWasToPinPiece && correspondingPin != null)
-                            {
-                                const pinnedPiece = missedState.findPieceAtCoordinate(correspondingPin.pinnedPieceCoordinate);
-                                const highValuePiece = missedState.findPieceAtCoordinate(correspondingPin.highValuePieceCoordinate);
+                                if (bestMoveWasToPinPiece && correspondingPin != null)
+                                {
+                                    const pinnedPiece = missedState.findPieceAtCoordinate(correspondingPin.pinnedPieceCoordinate);
+                                    const highValuePiece = missedState.findPieceAtCoordinate(correspondingPin.highValuePieceCoordinate);
 
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
-                                move.coachMoveFlags.push(CoachMoveFlagType.MissedPin);
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedPin);
+                                }
                             }
                         }
                     }
@@ -659,7 +665,8 @@ export class CoachUtils
                                     const highValuePiece = previousState.findPieceAtCoordinate(ignoredPin.highValuePieceCoordinate);
 
 
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.IGNORED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece)
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.IGNORED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.IgnoredPin);
                                 }
                             }
                         }
@@ -708,6 +715,7 @@ export class CoachUtils
                             if (!areRooksCurrentlyConnected && !wereRooksPreviouslyConnected && wasBestMoveToConnectRooks)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_ROOK_CONNECTION_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.MissedConnectedRooks);
                             }
                         }
                     }
@@ -728,6 +736,7 @@ export class CoachUtils
                             if (!areRooksCurrentlyConnected && wereRooksPreviouslyConnected && didBestMoveInvolveKeepingRooksConnected)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.DISCONNECTED_ROOKS, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.DisconnectedRooks);
                             }
                         }
                     }
@@ -872,6 +881,7 @@ export class CoachUtils
                                 if (!wasRookMovedToOpenFile && !wasRookPreviouslyOnBestOpenFile && wasBestMoveToPlaceRookOnOpenFile)
                                 {
                                     move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_ROOK_OPEN_FILE_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedRookOpenFile);
                                 }
                             }
                         }
@@ -950,6 +960,7 @@ export class CoachUtils
                         if (blockedBishop)
                         {
                             move.coachComment += CoachText.selectAndFormatSentence(CoachText.BLOCKED_BISHOP_SENTENCES, colorThatMovedText, blockedBishop);
+                            move.coachMoveFlags.push(CoachMoveFlagType.BlockedBishop)
                         }
                     }
 
@@ -967,6 +978,7 @@ export class CoachUtils
                             if (playerCreatedPassedPawnForOpponent && bestMoveDidNotCreatePassedPawnForOpponent)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.CREATED_PASSED_PAWN_FOR_OPPONENT_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.CreatedPassedPawnForOpponent);
                                 const idea = new CoachIdea();
                                 idea.highlightedSquares = currentPassedPawns;
                                 move.coachIdeas.set(CoachIdeaFlagType.PassedPawnIdea, idea);
@@ -1038,6 +1050,7 @@ export class CoachUtils
                             if (didPawnPushWeakenKing)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.WEAKENED_KING_WITH_PAWN_MOVE_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.WeakenedKingWithPawnMove);
                             }
                         }
 
@@ -1047,8 +1060,6 @@ export class CoachUtils
                     {
                         if (previousState && previousBestMove)
                         {
-                            const bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
-
                             const pawnChainData = Chonse2Extensions.getAllPawnChainsOnBoard(previousState);
                             const attackSquaresForPawnChain = whiteToMove ? pawnChainData.whiteAttackSquares : pawnChainData.blackAttackSquares;
                             const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
@@ -1078,7 +1089,6 @@ export class CoachUtils
                         if (previousBestMove)
                         {
                             const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
-                            const bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
                             const centerMovements = whiteToMove ? CENTER_STRIKE_MOVEMENTS.black : CENTER_STRIKE_MOVEMENTS.white;
 
                             const didAttackCenter = movedPiece == pawnPiece && centerMovements.some(cm => move.fromCoord == cm.from && move.toCoord == cm.to);
@@ -1087,6 +1097,7 @@ export class CoachUtils
                             if (wasBestMoveToAttackCenter && !didAttackCenter)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_CENTER_STRIKE_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.MissedStrikeInCenterWithPawn);
                             }
                         }
                     }
@@ -1181,6 +1192,7 @@ export class CoachUtils
                                         if (wasBestMoveToForceLossOfCastlingRights)
                                         {
                                             move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES, colorThatMovedText);
+                                            move.coachMoveFlags.push(CoachMoveFlagType.MissedForcedLossOfCastlingRights);
                                         }
                                     }
                                 }
@@ -1217,6 +1229,36 @@ export class CoachUtils
                             }
                         }
                     }
+
+                    //Case: Player missed an opportunity to take an outpost with a knight/did it wrong
+                    {
+                        if (previousState && missedState)
+                        {
+                            const knightPiece = whiteToMove ? PieceType.BLACK_KNIGHT : PieceType.WHITE_KNIGHT;
+                            const outpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(state).black : Chonse2Extensions.getAllOutpostKnights(state).white;
+                            const prevOutpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(previousState).black : Chonse2Extensions.getAllOutpostKnights(previousState).white;
+                            const missedStateOutpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(missedState).black : Chonse2Extensions.getAllOutpostKnights(missedState).white;
+
+                            if (bestPieceToMove == knightPiece)
+                            {
+                                //Checks if they missed an outpost entirely.
+                                if (missedStateOutpostKnights.length > outpostKnights.length)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_OUTPOST_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.MissedOutpost);
+                                } //Checks if they took an outpost but on the wrong square.
+                                else if (
+                                    missedStateOutpostKnights.length == outpostKnights.length && 
+                                    prevOutpostKnights.length < outpostKnights.length
+                                    && movedPiece == knightPiece
+                                )
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.WRONG_OUTPOST_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.WrongOutpost);
+                                }
+                            }
+                        }
+                    }
                 }
 
                 //=======Good
@@ -1249,10 +1291,12 @@ export class CoachUtils
                                     if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
                                     {
                                         move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_MATE_SENTENCES, colorThatMovedText, "");
+                                        move.coachMoveFlags.push(CoachMoveFlagType.FoundMate);
                                     }
                                     else 
                                     {
                                         move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_MATE_SENTENCES, oppositeColorText, "");
+                                        move.coachMoveFlags.push(CoachMoveFlagType.FoundMate);
                                     }
                                 }   
 
@@ -1262,6 +1306,7 @@ export class CoachUtils
                                     if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
                                     {
                                         move.coachComment += CoachText.selectAndFormatSentence(CoachText.ON_ROAD_TO_CHECKMATE_SENTENCES, colorThatMovedText, "");
+                                        move.coachMoveFlags.push(CoachMoveFlagType.OnRoadToCheckmate);
                                     }
                                 }
                             }
@@ -1329,38 +1374,46 @@ export class CoachUtils
 
                     //Case: Player accurately pinned a piece.
                     {
-                        const pins = Chonse2Extensions.getPinsOnBoard(state, true);
-
-                        let initiatedPin = null;
-
-                        //Check through all of the pins on the board and if the player moved a piece to where the current attacker is, it's the pin we're dealing with.
-                        for(const pin of pins)
+                        if (previousState)
                         {
-                            if (pin.attackerCoordinate == move.toCoord)
+                            const pins = Chonse2Extensions.getPinsOnBoard(state, true);
+                            const prevPins = Chonse2Extensions.getPinsOnBoard(previousState, true);
+
+                            if (prevPins.length != pins.length)
                             {
-                                initiatedPin = pin;
+                                let initiatedPin = null;
+
+                                //Check through all of the pins on the board and if the player moved a piece to where the current attacker is, it's the pin we're dealing with.
+                                for(const pin of pins)
+                                {
+                                    if (pin.attackerCoordinate == move.toCoord)
+                                    {
+                                        initiatedPin = pin;
+                                    }
+                                }
+
+                                //If this is the pin the player initiated it, add it.
+                                if (initiatedPin)
+                                {
+                                    const pinnedPiece = previousState.findPieceAtCoordinate(initiatedPin.pinnedPieceCoordinate);
+                                    const highValuePiece = previousState.findPieceAtCoordinate(initiatedPin.highValuePieceCoordinate);
+
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
+
+                                    const idea = new CoachIdea();
+                                    const arrow = createArrow(initiatedPin.attackerCoordinate, initiatedPin.highValuePieceCoordinate, ArrowColors.IDEA, ArrowContext.Coach);
+                                    if (arrow)
+                                    {
+                                        idea.arrows.push(arrow);
+                                    }
+                                    idea.highlightedSquares.push(initiatedPin.highValuePieceCoordinate);
+                                    idea.highlightedSquares.push(initiatedPin.pinnedPieceCoordinate);
+
+                                    move.coachMoveFlags.push(CoachMoveFlagType.FoundPin);
+                                    move.coachIdeas.set(CoachIdeaFlagType.PinIdea, idea);
+                                    move.coachResources.set(CoachResourceFlagType.Pin, CoachResourceLinks.PIN_LINK);
+                                }
                             }
-                        }
-
-                        //If this is the pin the player initiated it, add it.
-                        if (initiatedPin)
-                        {
-                            const pinnedPiece = previousState.findPieceAtCoordinate(initiatedPin.pinnedPieceCoordinate);
-                            const highValuePiece = previousState.findPieceAtCoordinate(initiatedPin.highValuePieceCoordinate);
-
-                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
-
-                            const idea = new CoachIdea();
-                            const arrow = createArrow(initiatedPin.attackerCoordinate, initiatedPin.highValuePieceCoordinate, ArrowColors.IDEA, ArrowContext.Coach);
-                            if (arrow)
-                            {
-                                idea.arrows.push(arrow);
-                            }
-                            idea.highlightedSquares.push(initiatedPin.highValuePieceCoordinate);
-                            idea.highlightedSquares.push(initiatedPin.pinnedPieceCoordinate);
-
-                            move.coachIdeas.set(CoachIdeaFlagType.PinIdea, idea);
-                            move.coachResources.set(CoachResourceFlagType.Pin, CoachResourceLinks.PIN_LINK);
                         }
                     }
 
@@ -1398,6 +1451,7 @@ export class CoachUtils
 
                             move.coachIdeas.set(CoachIdeaFlagType.SkewerIdea, idea);
                             move.coachResources.set(CoachResourceFlagType.Skewer, CoachResourceLinks.SKEWER_LINK);
+                            move.coachMoveFlags.push(CoachMoveFlagType.OpportunityToSkewer);
                         }
                     }
 
@@ -1475,6 +1529,7 @@ export class CoachUtils
                             if (!wereRooksPreviouslyConnected && areRooksCurrentlyConnected)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.CONNECTED_ROOKS_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.ConnectedRooks);
                             }
                         }
                     }
@@ -1509,6 +1564,7 @@ export class CoachUtils
                                         if (rookOpenFilesControlledByColor.length > prevRookOpenFilesControlledByColor.length)
                                         {
                                             move.coachComment += CoachText.selectAndFormatSentence(CoachText.TOOK_OPEN_FILE_WITH_ROOK, colorThatMovedText);
+                                            move.coachMoveFlags.push(CoachMoveFlagType.TookOpenFileWithRook);
                                         }
                                     }
                                 }
@@ -1532,6 +1588,7 @@ export class CoachUtils
                                 if (opponentNextDoubledPawnsAmount > opponentDoubledPawnsAmount)
                                 {
                                     move.coachComment += CoachText.selectAndFormatSentence(CoachText.FORCED_DOUBLING_OF_PAWNS_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.ForcedDoublingOfPawns);
                                 }
                             }
                         }
@@ -1547,6 +1604,7 @@ export class CoachUtils
                             if (currentPassedPawns.length > previousPassedPawns.length)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.CREATED_PASSED_PAWN_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.CreatedPassedPawnForThemselves);
                                 const idea = new CoachIdea();
                                 idea.highlightedSquares = currentPassedPawns;
                                 move.coachIdeas.set(CoachIdeaFlagType.PassedPawnIdea, idea);
@@ -1565,6 +1623,7 @@ export class CoachUtils
                             if (passedPawnStoppers.length > previousPassedPawnStoppers.length)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.SAT_PIECE_ON_PROMOTION_SQUARE_SENTENCES, colorThatMovedText, toCoordPiece);
+                                move.coachMoveFlags.push(CoachMoveFlagType.SatPieceOnPromotionSquare);
                             }
                         }
                     }
@@ -1587,6 +1646,7 @@ export class CoachUtils
                                 (colorThatJustPlayedIsolatedPawns.length <= colorThatJustPlayedPrevIsolatedPawns.length)) //AND the player that just moved is NOT.
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.ISOLATED_OPPONENT_PAWN_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.IsolatedOpponentPawn);
                                 
                                 const idea = new CoachIdea();
                                 idea.highlightedSquares = opponentCurrentIsolatedPawns;
@@ -1608,6 +1668,7 @@ export class CoachUtils
                             if (didPlayerAttackPawnChain)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.ATTACKED_PAWN_CHAIN_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.AttackedPawnChain);
                             }
                         }
 
@@ -1639,6 +1700,7 @@ export class CoachUtils
                                 if (!didPlayerMoveHangingPiece)
                                 {
                                     move.coachComment += CoachText.selectAndFormatSentence(CoachText.DEFENDED_HANGING_PIECE_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.DefendedHangingPiece);
                                 }
                                 else 
                                 {
@@ -1646,6 +1708,7 @@ export class CoachUtils
                                     if (pc != PieceType.WHITE_KING && pc != PieceType.BLACK_KING)
                                     {
                                         move.coachComment += CoachText.selectAndFormatSentence(CoachText.MOVED_HANGING_PIECE_SENTENCES, colorThatMovedText, pc);   
+                                        move.coachMoveFlags.push(CoachMoveFlagType.MovedHangingPiece);
                                     }
                                 }
                             }
@@ -1696,11 +1759,13 @@ export class CoachUtils
                             if (currentKingside && !prevKingside)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.BLOCKING_CASTLING_SENTENCES, colorThatMovedText, PieceType.WHITE_KING);
+                                move.coachMoveFlags.push(CoachMoveFlagType.BlockingCastling);
                             }
 
                             if (currentQueenside && !prevQueenside)
                             {
                                 move.coachComment += CoachText.selectAndFormatSentence(CoachText.BLOCKING_CASTLING_SENTENCES, colorThatMovedText, PieceType.WHITE_QUEEN);
+                                move.coachMoveFlags.push(CoachMoveFlagType.BlockingCastling);
                             }
                         }
                     }
@@ -1766,6 +1831,26 @@ export class CoachUtils
                                         move.coachComment += CoachText.selectAndFormatSentence(CoachText.KICKED_PIECE_WITH_PAWN_SENTENCES, colorThatMovedText, kickedPiece);
                                         move.coachMoveFlags.push(CoachMoveFlagType.KickedPieceWithPawn);
                                     }
+                                }
+                            }
+                        }
+                    }
+
+                    //Case: Player took an outpost with a knight
+                    {
+                        if (previousState)
+                        {
+                            const knightPiece = whiteToMove ? PieceType.BLACK_KNIGHT : PieceType.WHITE_KNIGHT;
+
+                            if (movedPiece == knightPiece)
+                            {
+                                const outpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(state).black : Chonse2Extensions.getAllOutpostKnights(state).white;
+                                const prevOutpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(previousState).black : Chonse2Extensions.getAllOutpostKnights(previousState).white;
+
+                                if (outpostKnights.length > prevOutpostKnights.length)
+                                {
+                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.TOOK_OUTPOST_WITH_KNIGHT_SENTENCES, colorThatMovedText);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.TookOutpostWithKnight);
                                 }
                             }
                         }
