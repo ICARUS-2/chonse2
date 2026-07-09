@@ -274,18 +274,7 @@ export class UciEngine {
       new Array(workersNbToCreate).fill(0).map(() => this.addNewWorker())
     );
   }
-
-  public async evaluateMove(beforeFen: string, afterFen: string, move: MoveResult, depth=UciEngine.DEFAULT_DEPTH): Promise<PositionEval>
-  {
-    //const workersNb = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1);
-
-    const evalResult = await this.evaluateGame({fens: [beforeFen, afterFen], uciMoves: [move.notation], depth});
-
-    const positionResult = evalResult.positions[1];
-    
-    return positionResult;
-  }
-
+  
   public async evaluateGame({
     fens,
     uciMoves,

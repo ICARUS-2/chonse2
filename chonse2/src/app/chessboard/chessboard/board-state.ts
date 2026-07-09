@@ -333,6 +333,21 @@ export default class BoardState
                     //Put the fields in the newobject while keeping its reference the same (accounting for multiple additions to the stack).
                     this.copyPosEvalFields(positionEval, newEval);
 
+                    //Want to have it show the best thing to do so far.
+                    const bestLineSoFar = newEval.lines[0];
+                    if (bestLineSoFar)
+                    {
+                        const pv = bestLineSoFar.pv;
+
+                        if (pv)
+                        {
+                            if (pv.length > 0)
+                            {
+                                newEval.bestMove = pv[0];
+                            }
+                        }
+                    }
+
                     //trigger cd
                     this.divergenceEvalStack.update(stack => [...stack]);
                 },
@@ -369,14 +384,16 @@ export default class BoardState
                 }
             }
 
-            const evalTask = async () => {
+            //wrap the thing in a task
+            const evalTask = async () => 
+            {
                 await eng.evaluatePositionWithUpdate(params);
             };
 
-            // 2. Push it to the queue
+            //stick it in da queue
             this.evaluationQueue.push(evalTask);
 
-            // 3. Kickstart the queue processor (it handles its own locking)
+            //process da queue
             this.processEvaluationQueue();
         }
     }
