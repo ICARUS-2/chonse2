@@ -14,7 +14,6 @@ import { UciEngine } from "../../../libs/engine-lib/uciEngine";
 import MoveResult from "./move-result";
 import { CoachUtils } from "../../../libs/coach-lib/coach-utils";
 import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
-import { isWasmSupported } from "../../../libs/engine-lib/helpers/shared";
 
 export default class BoardState
 {
@@ -37,9 +36,6 @@ export default class BoardState
     engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
-    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: MoveResult, previousEval: PositionEval | undefined ,session: number, overrideForCoachEvals: boolean}>> = signal([]);
-    private isEvaluating: WritableSignal<boolean> = signal(false);
-    evaluationSessionId: number = 0; //Designed to prevent in-progress evals from causing desyncrhonization when going back.
 
     //Coach stuff
     coachButtonsDisabled: WritableSignal<boolean> = signal(false);
@@ -108,22 +104,14 @@ export default class BoardState
 
             if (this.engine() && this.doEvaluateGame())
             {
-                this.enqueueEvaluation(previousState, state, move, previousEval, isCoachMove);
+                this.performDivergenceEvaluation(previousState, state, move, previousEval, isCoachMove);
             }
         }
         else //If the pointer is at the top of the stack, continue to add to it.
         {
-            let previousState: Chonse2 = this.mainStateStack()[this.mainStackPointer()];
-
-            //this.mainStateStack.push(state);
             this.mainStateStack.update( stack => [...stack, state] );
             this.mainMoveStack.update( stack => [...stack, move] );
             this.mainStackPointer.update( ptr => ptr + 1 );
-
-            if (this.engine() && this.doEvaluateGame())
-            {
-                this.enqueueEvaluation(previousState, state, move, previousEval);
-            }
         }
     }
 
@@ -283,80 +271,9 @@ export default class BoardState
     }
     
     //Override for coach evals simply tells it to evaluate it at a lower depth (so the eval bar has a value), and make it best move no matter what (since the coach will always play the best move anyway)
-    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
+    private performDivergenceEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
     {
-        const session = this.evaluationSessionId;
-
-        this.evalQueue.update( q => [...q, {previousState, state, move, previousEval, session, overrideForCoachEvals: overrideForCoachEvals}] );
-
-        this.processEvaluationQueue();
-    }
-
-    private async processEvaluationQueue()
-    {
-        if (!this.engine() || this.isEvaluating() || this.evalQueue().length == 0)
-        {
-            return;
-        }
-
-        this.isEvaluating.set(true);
-
-        const { previousState, state, move, previousEval ,session, overrideForCoachEvals } = this.evalQueue().shift()!;
-
-        try
-        {
-            const engine = this.engine();
-
-            if (engine)
-            {
-                const depth = overrideForCoachEvals? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
-
-                const resultOfEval = await engine.evaluateMove
-                (
-                    previousState.getFEN(),
-                    state.getFEN(),
-                    move,
-                    depth
-                );
-
-                CoachUtils.performCoachAnalysis([previousState, state], [move], previousEval ? [previousEval, resultOfEval] : [resultOfEval], true);
-                
-                if (overrideForCoachEvals)
-                {
-                    if (resultOfEval.moveClassification != MoveClassification.Opening)
-                    {
-                        resultOfEval.moveClassification = MoveClassification.Best;
-                    }
-                }
-
-                // If session changed, abandon immediately
-                if (session !== this.evaluationSessionId || this.divergenceEvalStack().length == this.divergenceStateStack().length)
-                {
-                    this.isEvaluating.set(false);
-                    this.processEvaluationQueue();
-                    return;
-                }
-
-                if (this.mainStackPointer() != this.mainStateStack().length - 1 || this.isReadOnly())
-                {
-                    this.divergenceEvalStack.update( stack => [...stack, resultOfEval] );
-                }
-                else
-                {
-                    const ev = this.eval();
-
-                    if (ev)
-                    {
-                        ev.positions.push(resultOfEval);
-                    }
-                }
-            }
-        }
-        finally
-        {
-            this.isEvaluating.set(false);
-            this.processEvaluationQueue(); //Process next item in the queue.
-        }
+        console.log("enqueue");
     }
 
     //#endregion
@@ -364,14 +281,11 @@ export default class BoardState
     //#region STACK TRAVERSAL
     goBackToStart()
     {
-        this.evaluationSessionId++;
-
         //Simply back up to the first move.
         this.mainStackPointer.set(0);
         this.divergenceStateStack.set([]);
         this.divergenceMoveStack.set([]);
         this.divergenceEvalStack.set([]);
-        this.evalQueue.set([]);
     }
 
     goBack()
@@ -390,7 +304,6 @@ export default class BoardState
         }
         else //If we are diverging, just get rid of the state entirely.
         {
-            this.evaluationSessionId++;
             if (this.eval())
             {
                 if (this.divergenceEvalStack().length >= this.divergenceMoveStack().length)

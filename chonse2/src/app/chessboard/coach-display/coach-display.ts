@@ -250,7 +250,6 @@ export class CoachDisplay {
     }
 
     //Sets flag so that the board can be used again.
-    this.boardState().evaluationSessionId++;
     this.boardState().isCoachMoveShowing.set(false);
     this.boardState().isCoachMoveFinished.set(false);
     this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.None);
