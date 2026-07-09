@@ -3,6 +3,7 @@ import ThemeService from '../../themes/theme-service';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { PositionEval } from '../../../libs/engine-lib/types/eval';
 import MoveResult from '../chessboard/move-result';
+import ChessboardHelper from '../helpers';
 
 @Component({
   selector: 'tr[app-divergence-table-entry]',
@@ -25,6 +26,6 @@ export class DivergenceTableEntry {
 
   getIconSourceForMoveClassification = (classification: MoveClassification) => computed( () => 
   {
-    return "icons/" + classification + ".png";
+    ChessboardHelper.getIconSourceForMoveClassification(classification);
   })
 }

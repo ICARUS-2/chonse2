@@ -1,6 +1,6 @@
 <div class="componentContainer pt-1">
     
-    @if (boardState().evalProgress() > 0 && boardState().evalProgress() < 97.1) 
+    @if (boardState().isGameEvaluationInProgress()) 
     {
         <app-progress-toast [boardState]="boardState()"></app-progress-toast>
     }

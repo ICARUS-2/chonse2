@@ -46,6 +46,7 @@ export interface EvaluatePositionWithUpdateParams {
   depth?: number;
   multiPv?: number;
   setPartialEval?: (positionEval: PositionEval) => void;
+  setCompletedEval?: (positionEval: PositionEval) => void;
 }
 
 export interface CurrentPosition {
