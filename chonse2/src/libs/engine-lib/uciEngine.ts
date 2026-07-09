@@ -56,8 +56,8 @@ export class UciEngine {
   private customEngineInit?:
     | ((worker: EngineWorker) => Promise<void>)
     | undefined = undefined;
-  private multiPv = 3;
   private elo: number | undefined = undefined;
+  public multiPv = 3;
 
   //Lichess cloud eval
   private lastCloudEvalRequest = 0;
@@ -274,18 +274,7 @@ export class UciEngine {
       new Array(workersNbToCreate).fill(0).map(() => this.addNewWorker())
     );
   }
-
-  public async evaluateMove(beforeFen: string, afterFen: string, move: MoveResult, depth=UciEngine.DEFAULT_DEPTH): Promise<PositionEval>
-  {
-    //const workersNb = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1);
-
-    const evalResult = await this.evaluateGame({fens: [beforeFen, afterFen], uciMoves: [move.notation], depth});
-
-    const positionResult = evalResult.positions[1];
-    
-    return positionResult;
-  }
-
+  
   public async evaluateGame({
     fens,
     uciMoves,
@@ -460,6 +449,7 @@ export class UciEngine {
     depth = UciEngine.DEFAULT_DEPTH,
     multiPv = this.multiPv,
     setPartialEval,
+    setCompletedEval,
   }: EvaluatePositionWithUpdateParams): Promise<PositionEval> {
     this.throwErrorIfNotReady();
 
@@ -480,7 +470,14 @@ export class UciEngine {
       onNewMessage
     );
 
-    return parseEvaluationResults(results, fen);
+    const completeEval = parseEvaluationResults(results, fen);
+    
+    if (setCompletedEval)
+    {
+      setCompletedEval(completeEval);
+    }
+
+    return completeEval;
   }
 
   public async getEngineNextMove(

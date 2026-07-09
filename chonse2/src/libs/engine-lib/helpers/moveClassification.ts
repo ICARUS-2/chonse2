@@ -1,4 +1,4 @@
-//Modified engine code adapted from https://github.com/GuillaumeSD/Chesskit/pull/93
+//Simplified move classification code adapted from https://github.com/GuillaumeSD/Chesskit/pull/93
 
 import { openings } from "../data/openings";
 import { MoveClassification } from "../types/enums";
@@ -45,9 +45,6 @@ export const getMovesClassification = (
     const prevPosition = rawPositions[index - 1];
     const alternativeLine = prevPosition.lines.find((line) => line.pv[0] !== playedMove);
     
-    
-    
-
     //Forced move: only one legal response available
     if (!alternativeLine) {
       return {
@@ -63,7 +60,7 @@ export const getMovesClassification = (
     const alternativeWinPct = getLineWinPercentage(alternativeLine);
     const alternativeWinPctChange = (alternativeWinPct - lastWinPct) * (isWhiteMove ? 1 : -1);
 
-    // Miss: You could have picked up a hanging piece but failed to do so
+    //Miss: You could have picked up a hanging piece but failed to do so
     if (isHangingPieceCapture(fens[index - 1], alternativeLine.pv[0]) && winPctChange < MISTAKE_THRESHOLD) {
       return {
         ...rawPosition,

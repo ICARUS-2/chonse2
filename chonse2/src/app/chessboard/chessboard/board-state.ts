@@ -1,4 +1,4 @@
-import { signal, WritableSignal } from "@angular/core";
+import { computed, signal, WritableSignal } from "@angular/core";
 import { Arrow } from "./arrow";
 import LocalStorageHelper from "../../../libs/local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
@@ -9,12 +9,12 @@ import { GameScore } from "../../../libs/chonse2-lib/game-state";
 import { PieceColor } from "../../../libs/chonse2-lib/piece-color";
 import { PieceType } from "../../../libs/chonse2-lib/piece-type";
 import { MoveClassification, EngineName } from "../../../libs/engine-lib/types/enums";
-import { PositionEval, GameEval, EvaluateGameParams } from "../../../libs/engine-lib/types/eval";
+import { PositionEval, GameEval, EvaluateGameParams, EvalSource, LineEval, EvaluatePositionWithUpdateParams } from "../../../libs/engine-lib/types/eval";
 import { UciEngine } from "../../../libs/engine-lib/uciEngine";
 import MoveResult from "./move-result";
 import { CoachUtils } from "../../../libs/coach-lib/coach-utils";
 import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
-import { isWasmSupported } from "../../../libs/engine-lib/helpers/shared";
+import { getMovesClassification } from "../../../libs/engine-lib/helpers/moveClassification";
 
 export default class BoardState
 {
@@ -37,9 +37,8 @@ export default class BoardState
     engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
-    private evalQueue: WritableSignal<Array<{previousState: Chonse2, state: Chonse2, move: MoveResult, previousEval: PositionEval | undefined ,session: number, overrideForCoachEvals: boolean}>> = signal([]);
-    private isEvaluating: WritableSignal<boolean> = signal(false);
-    evaluationSessionId: number = 0; //Designed to prevent in-progress evals from causing desyncrhonization when going back.
+    evaluationQueue: (() => Promise<void>)[] = [];
+    isProcessingQueue: boolean = false;
 
     //Coach stuff
     coachButtonsDisabled: WritableSignal<boolean> = signal(false);
@@ -108,22 +107,14 @@ export default class BoardState
 
             if (this.engine() && this.doEvaluateGame())
             {
-                this.enqueueEvaluation(previousState, state, move, previousEval, isCoachMove);
+                this.performDivergenceEvaluation(previousState, state, move, previousEval, isCoachMove);
             }
         }
         else //If the pointer is at the top of the stack, continue to add to it.
         {
-            let previousState: Chonse2 = this.mainStateStack()[this.mainStackPointer()];
-
-            //this.mainStateStack.push(state);
             this.mainStateStack.update( stack => [...stack, state] );
             this.mainMoveStack.update( stack => [...stack, move] );
             this.mainStackPointer.update( ptr => ptr + 1 );
-
-            if (this.engine() && this.doEvaluateGame())
-            {
-                this.enqueueEvaluation(previousState, state, move, previousEval);
-            }
         }
     }
 
@@ -281,97 +272,156 @@ export default class BoardState
 
         return undefined
     }
-    
-    //Override for coach evals simply tells it to evaluate it at a lower depth (so the eval bar has a value), and make it best move no matter what (since the coach will always play the best move anyway)
-    private enqueueEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
+
+    private async processEvaluationQueue() 
     {
-        const session = this.evaluationSessionId;
-
-        this.evalQueue.update( q => [...q, {previousState, state, move, previousEval, session, overrideForCoachEvals: overrideForCoachEvals}] );
-
-        this.processEvaluationQueue();
-    }
-
-    private async processEvaluationQueue()
-    {
-        if (!this.engine() || this.isEvaluating() || this.evalQueue().length == 0)
+        //do nothing if the engine is still processing.
+        if (this.isProcessingQueue || this.evaluationQueue.length === 0) 
         {
             return;
         }
 
-        this.isEvaluating.set(true);
+        this.isProcessingQueue = true;
 
-        const { previousState, state, move, previousEval ,session, overrideForCoachEvals } = this.evalQueue().shift()!;
-
-        try
+        while (this.evaluationQueue.length > 0) 
         {
-            const engine = this.engine();
-
-            if (engine)
-            {
-                const depth = overrideForCoachEvals? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
-
-                const resultOfEval = await engine.evaluateMove
-                (
-                    previousState.getFEN(),
-                    state.getFEN(),
-                    move,
-                    depth
-                );
-
-                CoachUtils.performCoachAnalysis([previousState, state], [move], previousEval ? [previousEval, resultOfEval] : [resultOfEval], true);
-                
-                if (overrideForCoachEvals)
+            //get handle on the next task
+            const nextEvalTask = this.evaluationQueue.shift();
+            
+            if (nextEvalTask) {
+                try 
                 {
-                    if (resultOfEval.moveClassification != MoveClassification.Opening)
-                    {
-                        resultOfEval.moveClassification = MoveClassification.Best;
-                    }
-                }
-
-                // If session changed, abandon immediately
-                if (session !== this.evaluationSessionId || this.divergenceEvalStack().length == this.divergenceStateStack().length)
+                    await nextEvalTask(); 
+                } catch (error) 
                 {
-                    this.isEvaluating.set(false);
-                    this.processEvaluationQueue();
-                    return;
-                }
-
-                if (this.mainStackPointer() != this.mainStateStack().length - 1 || this.isReadOnly())
-                {
-                    this.divergenceEvalStack.update( stack => [...stack, resultOfEval] );
-                }
-                else
-                {
-                    const ev = this.eval();
-
-                    if (ev)
-                    {
-                        ev.positions.push(resultOfEval);
-                    }
+                    //console.error("Stockfish evaluation encountered an error:", error);
                 }
             }
         }
-        finally
+
+        //queue empty, release lock.
+        this.isProcessingQueue = false;
+    }
+    
+    //Override for coach evals simply tells it to evaluate it at a lower depth (so the eval bar has a value), and make it best move no matter what (since the coach will always play the best move anyway)
+    private async performDivergenceEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
+    {
+        const eng = this.engine();
+        if (eng != undefined)
         {
-            this.isEvaluating.set(false);
-            this.processEvaluationQueue(); //Process next item in the queue.
+            //Creates a new eval object where the fields will be set.
+            const newEval: PositionEval = { bestMove: "", moveClassification: MoveClassification.None, opening: "", lines: [ {pv: [""], cp: 0} as LineEval ], source: EvalSource.Local };
+            
+            //Register change detection.
+            this.divergenceEvalStack.update( d => [...d, newEval] );
+
+            //Define what will be used to evaluate the position.
+            const params: EvaluatePositionWithUpdateParams = 
+            {
+                //current fen
+                fen: state.getFEN(),
+
+                //if overriding for coach move, go min depth. otherwise, saved depth.
+                depth: overrideForCoachEvals ? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.MIN_DEPTH),
+                
+                //default pv
+                multiPv: eng.multiPv,
+
+                //mid-evaluation, move classification can be updated before it gets to the real depth.
+                setPartialEval: ( positionEval: PositionEval ) => 
+                {
+                    //Put the fields in the newobject while keeping its reference the same (accounting for multiple additions to the stack).
+                    this.copyPosEvalFields(positionEval, newEval);
+
+                    //Want to have it show the best thing to do so far.
+                    const bestLineSoFar = newEval.lines[0];
+                    if (bestLineSoFar)
+                    {
+                        const pv = bestLineSoFar.pv;
+
+                        if (pv)
+                        {
+                            if (pv.length > 0)
+                            {
+                                newEval.bestMove = pv[0];
+                            }
+                        }
+                    }
+
+                    //trigger cd
+                    this.divergenceEvalStack.update(stack => [...stack]);
+                },
+
+                //once eval is complete, get move classification and everything.
+                setCompletedEval: ( positionEval: PositionEval ) => 
+                {
+                    const prevEval = this.getPreviousMostRecentEval();
+
+                    if (prevEval)
+                    {
+                        //only once the full eval is done should we get the move classification for that move.
+                        const classificationEval = getMovesClassification(
+                            [prevEval, positionEval], //pos 
+                            [move.notation], //move 
+                            [previousState.getFEN(), state.getFEN()] //fens
+                        )
+
+                        //if it succeeds, copy its fields.
+                        if (classificationEval[1])
+                        {
+                            //copy fields first
+                            this.copyPosEvalFields(classificationEval[1], newEval);
+                            
+                            if (previousEval)
+                            {
+                                CoachUtils.performCoachAnalysis([previousState, state], [move], [previousEval, newEval]);
+                            }
+
+                            //then trigger cd
+                            this.divergenceEvalStack.update(stack => [...stack]);
+                        }
+                    }
+                }
+            }
+
+            //wrap the thing in a task
+            const evalTask = async () => 
+            {
+                await eng.evaluatePositionWithUpdate(params);
+            };
+
+            //stick it in da queue
+            this.evaluationQueue.push(evalTask);
+
+            //process da queue
+            this.processEvaluationQueue();
         }
     }
+
+    private copyPosEvalFields(fromPosEval: PositionEval, toPosEval: PositionEval)
+    {
+        toPosEval.bestMove = fromPosEval.bestMove;
+        toPosEval.opening = fromPosEval.opening;
+        toPosEval.lines = fromPosEval.lines;
+        toPosEval.moveClassification = fromPosEval.moveClassification;
+    }
+
+    public isGameEvaluationInProgress = computed( () => 
+    {
+        const progress = this.evalProgress();
+        return progress > 0 && progress < 97.1;
+    } )
 
     //#endregion
 
     //#region STACK TRAVERSAL
     goBackToStart()
     {
-        this.evaluationSessionId++;
-
         //Simply back up to the first move.
         this.mainStackPointer.set(0);
         this.divergenceStateStack.set([]);
         this.divergenceMoveStack.set([]);
         this.divergenceEvalStack.set([]);
-        this.evalQueue.set([]);
     }
 
     goBack()
@@ -390,7 +440,6 @@ export default class BoardState
         }
         else //If we are diverging, just get rid of the state entirely.
         {
-            this.evaluationSessionId++;
             if (this.eval())
             {
                 if (this.divergenceEvalStack().length >= this.divergenceMoveStack().length)
