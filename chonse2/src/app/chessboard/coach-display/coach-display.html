@@ -44,7 +44,10 @@
             {{engineMetadata()?.displayNameSmall}} -
             @if (mostRecentEval(); as evalData)
             {
-              {{ 'chessboard.coachDisplay.depth' | translate }} {{ evalData.lines[0].depth }}
+              @if(evalData.lines[0]; as line)
+              {
+              {{ 'chessboard.coachDisplay.depth' | translate }} {{ line.depth }}
+              }  
             }
           </div>
         </div>

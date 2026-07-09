@@ -88,9 +88,14 @@ export const getEvaluationBarValue2 = (
   {
     return {whiteBarPercentage: 50, label: GameScore.DRAW};
   }
+  
+  const bestLine = position.lines[0];
+  if (!bestLine)
+  {
+    return { whiteBarPercentage: 50, label: "0.0" }
+  }
 
   const whiteBarPercentage = getPositionWinPercentage(position);
-  const bestLine = position.lines[0];
 
   if (bestLine.mate) 
   {

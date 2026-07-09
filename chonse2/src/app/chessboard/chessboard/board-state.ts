@@ -325,6 +325,11 @@ export default class BoardState
                             //copy fields first
                             this.copyPosEvalFields(classificationEval[1], newEval);
                             
+                            if (previousEval)
+                            {
+                                CoachUtils.performCoachAnalysis([previousState, state], [move], [previousEval, newEval]);
+                            }
+
                             //then trigger cd
                             this.divergenceEvalStack.update(stack => [...stack]);
                         }

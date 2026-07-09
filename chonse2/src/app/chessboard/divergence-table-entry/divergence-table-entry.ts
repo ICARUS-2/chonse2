@@ -15,6 +15,7 @@ import ChessboardHelper from '../helpers';
 export class DivergenceTableEntry {
 
   MoveClassification = MoveClassification;
+  ChessboardHelper = ChessboardHelper;
 
   moveStack = input<Array<MoveResult>>([]);
   evalStack = input<Array<PositionEval | undefined>>([]);
@@ -23,9 +24,4 @@ export class DivergenceTableEntry {
   {
 
   }
-
-  getIconSourceForMoveClassification = (classification: MoveClassification) => computed( () => 
-  {
-    ChessboardHelper.getIconSourceForMoveClassification(classification);
-  })
 }

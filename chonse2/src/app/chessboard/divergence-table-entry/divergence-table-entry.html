@@ -20,11 +20,11 @@
                                     {
                                         @if (evalItem.moveClassification)
                                         {
-                                            <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(evalItem.moveClassification)()">
+                                            <img class="inlineMoveIcon" [src]="ChessboardHelper.getIconSourceForMoveClassification(evalItem.moveClassification)()">
                                         }
                                     }
                                 }
-                                <div class="d-inline">{{item.notation}}</div>
+                                <div class="d-inline">{{ChessboardHelper.getNotation(item)}}</div>
                             </td>
 
                             <td>
@@ -34,11 +34,11 @@
                                     {
                                         @if (evalItem.moveClassification)
                                         {
-                                            <img class="inlineMoveIcon" [src]="getIconSourceForMoveClassification(evalItem.moveClassification)()">
+                                            <img class="inlineMoveIcon" [src]="ChessboardHelper.getIconSourceForMoveClassification(evalItem.moveClassification)()">
                                         }
                                     }
                                 }
-                                <div class="d-inline">{{moveStack()[$index + 1] == null ? "-" : moveStack()[$index + 1].notation}}</div>
+                                <div class="d-inline">{{moveStack()[$index + 1] == null ? "-" : ChessboardHelper.getNotation(moveStack()[$index + 1])}}</div>
                             </td>
                         </tr>
                     }
