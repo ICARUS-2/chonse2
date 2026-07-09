@@ -37,6 +37,8 @@ export default class BoardState
     engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
+    evaluationQueue: (() => Promise<void>)[] = [];
+    isProcessingQueue: boolean = false;
 
     //Coach stuff
     coachButtonsDisabled: WritableSignal<boolean> = signal(false);
@@ -270,6 +272,36 @@ export default class BoardState
 
         return undefined
     }
+
+    private async processEvaluationQueue() 
+    {
+        //do nothing if the engine is still processing.
+        if (this.isProcessingQueue || this.evaluationQueue.length === 0) 
+        {
+            return;
+        }
+
+        this.isProcessingQueue = true;
+
+        while (this.evaluationQueue.length > 0) 
+        {
+            //get handle on the next task
+            const nextEvalTask = this.evaluationQueue.shift();
+            
+            if (nextEvalTask) {
+                try 
+                {
+                    await nextEvalTask(); 
+                } catch (error) 
+                {
+                    //console.error("Stockfish evaluation encountered an error:", error);
+                }
+            }
+        }
+
+        //queue empty, release lock.
+        this.isProcessingQueue = false;
+    }
     
     //Override for coach evals simply tells it to evaluate it at a lower depth (so the eval bar has a value), and make it best move no matter what (since the coach will always play the best move anyway)
     private async performDivergenceEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
@@ -337,8 +369,15 @@ export default class BoardState
                 }
             }
 
-            //perform eval.
-            eng.evaluatePositionWithUpdate(params)
+            const evalTask = async () => {
+                await eng.evaluatePositionWithUpdate(params);
+            };
+
+            // 2. Push it to the queue
+            this.evaluationQueue.push(evalTask);
+
+            // 3. Kickstart the queue processor (it handles its own locking)
+            this.processEvaluationQueue();
         }
     }
 
