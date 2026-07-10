@@ -6,47 +6,55 @@
     @if (shouldShowEngineInfo()) {
       @if (engine(); as engineData) {
         <!-- Engine Info -->
-        <div class="small d-flex justify-content-between">
-          <div>
-            <span><i class="bi bi-info-circle me-2"></i>{{ 'chessboard.coachDisplay.luminousInsights' | translate }}</span>
+        <div class="small d-flex justify-content-between align-items-center engineData">
+          
+          <div class="d-flex align-items-center">
+            <i class="bi bi-info-circle me-2"></i>
+            <span class="me-3">{{ 'chessboard.coachDisplay.luminousInsights' | translate }}</span>
+          
+            @let audioEnabled = LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true);
+
+            @if (audioEnabled) {
+              <i (click)="handleAudioClicked()" class="bi bi-volume-up-fill volumeIcon"></i>
+            } @else {
+              <i (click)="handleAudioClicked()" class="bi bi-volume-mute-fill volumeIcon"></i>
+            }
           </div>
 
           <div class="desktopEngineData">
-          {{ engineMetadata()?.displayName }}
-          <span class="badge" 
-                [ngClass]="{ 
-                  'bg-success': engineMetadata()?.type === EngineType.NNUE, 
-                  'bg-danger': engineMetadata()?.type === EngineType.HCE 
-                }">
-            {{ engineMetadata()?.type }}
-          </span>
+            {{ engineMetadata()?.displayName }}
+            <span class="badge" 
+                  [ngClass]="{ 
+                    'bg-success': engineMetadata()?.type === EngineType.NNUE, 
+                    'bg-danger': engineMetadata()?.type === EngineType.HCE 
+                  }">
+              {{ engineMetadata()?.type }}
+            </span>
 
-          @if (engineData.isCloudHybridMode) {
-            <span class="badge bg-info ms-1 text-secondary">{{ 'chessboard.coachDisplay.cloudHybrid' | translate }}</span>
-          }
-
-          -
-
-          @if (mostRecentEval(); as evalData) {
-            @if (evalData.lines[0]) {
-              <span>
-                {{ 'chessboard.coachDisplay.depth' | translate }} {{ evalData.lines[0].depth }}
-
-                @if (evalData.source === EvalSource.Cloud) {
-                  <span class="badge bg-info ms-1 text-secondary">{{ 'chessboard.coachDisplay.cloud' | translate }}</span>
-                }
-              </span>
+            @if (engineData.isCloudHybridMode) {
+              <span class="badge bg-info ms-1 text-secondary">{{ 'chessboard.coachDisplay.cloudHybrid' | translate }}</span>
             }
-          }
+
+            -
+
+            @if (mostRecentEval(); as evalData) {
+              @if (evalData.lines[0]) {
+                <span>
+                  {{ 'chessboard.coachDisplay.depth' | translate }} {{ evalData.lines[0].depth }}
+
+                  @if (evalData.source === EvalSource.Cloud) {
+                    <span class="badge bg-info ms-1 text-secondary">{{ 'chessboard.coachDisplay.cloud' | translate }}</span>
+                  }
+                </span>
+              }
+            }
           </div>
 
           <div class="mobileEngineData small">
             {{engineMetadata()?.displayNameSmall}} -
-            @if (mostRecentEval(); as evalData)
-            {
-              @if(evalData.lines[0]; as line)
-              {
-              {{ 'chessboard.coachDisplay.depth' | translate }} {{ line.depth }}
+            @if (mostRecentEval(); as evalData) {
+              @if(evalData.lines[0]; as line) {
+                {{ 'chessboard.coachDisplay.depth' | translate }} {{ line.depth }}
               }  
             }
           </div>

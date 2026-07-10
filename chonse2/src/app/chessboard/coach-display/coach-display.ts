@@ -27,6 +27,7 @@ import { CoachUtils } from '../../../libs/coach-lib/coach-utils';
 export class CoachDisplay {
   protected readonly MoveClassification = MoveClassification;
   ChessboardHelper = ChessboardHelper;
+  LocalStorageHelper = LocalStorageHelper;
   moveClassificationLabels = moveClassificationLabels;
 
   // --- Required Signal Inputs ---
@@ -515,6 +516,15 @@ export class CoachDisplay {
 
         return copy;
     });
+  }
+  //#endregion
+
+  //#region Settings 
+  handleAudioClicked()
+  {
+    const audioEnabled = LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true);
+  
+    LocalStorageHelper.setBoolean(LocalStorageHelper.INSIGHTS_AUDIO, !audioEnabled);
   }
   //#endregion
 }
