@@ -195,7 +195,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: 4vmin;
+  width: 5vmin;
   z-index: 10;
   pointer-events: none;
   transform: translate(35%, -35%);
@@ -280,5 +280,10 @@
   {
     width: 100% !important;
     margin-left: 0 !important;
+  }
+
+  .moveClassificationIcon
+  {
+    width: 6.5vmin;
   }
 }

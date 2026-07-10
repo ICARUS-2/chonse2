@@ -47,6 +47,8 @@
         }
     </div>
 
+    <div class="m-2"></div>
+
     <!-- Move Classification Table -->
     <table class="moveClassificationsList user-select-none">
         <tbody>
@@ -57,7 +59,7 @@
                             {{boardState().whiteMoveClassificationList().getFromString(item).length}}
                         </td>
                         <td>
-                            <img class="moveClassificationListIcon" [src]="'icons/' + item + '.png'">
+                            <img class="moveClassificationListIcon" [src]="ChessboardHelper.getIconSourceForMoveClassification(item)()">
                         </td>
                         <td class="text-start">
                             @if (MoveClassificationDisplayName[item]; as displayName)

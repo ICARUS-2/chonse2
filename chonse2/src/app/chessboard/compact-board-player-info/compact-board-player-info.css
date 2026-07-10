@@ -8,5 +8,12 @@
     .compactBoardPlayerInfoContainer
     {
         display: block;
+        width: 88vmin;
+    }
+
+    .cbpiInner
+    {
+        display: flex;
+        justify-content: space-between;
     }
 }

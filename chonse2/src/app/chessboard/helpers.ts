@@ -12,7 +12,7 @@ export default class ChessboardHelper
             return "";
         }
 
-        return "icons/" + classification + ".png";
+        return "icons/" + classification + ".webp";
     })
 
     static capitalizeFirstLetter(val: string) : string 

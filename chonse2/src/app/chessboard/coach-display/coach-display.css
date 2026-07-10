@@ -5,7 +5,7 @@
 
 .coachClassificationIcon
 {
-  height: 2vmin;
+  height: 4vmin;
 }
 
 .desktopEngineData
@@ -20,6 +20,12 @@
 
 @media screen and (max-width: 1200px)
 {
+  .coachClassificationIcon
+  {
+    height: 7vmin;
+  }
+
+
   .coachDisplay
   {
     height: 200px;
