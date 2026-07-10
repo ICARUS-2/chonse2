@@ -2,7 +2,7 @@ import AlgebraicNotationMaker from "../../../libs/chonse2-lib/algebraic-notation
 
 export default class Sound 
 {
-    static readonly BASE_PATH = "sounds/"
+    static readonly BASE_PATH = "sounds/board/"
     static readonly CAPTURE = this.BASE_PATH + "capture.mp3";
     static readonly CHECK = this.BASE_PATH + "check.mp3";
     static readonly CHECKMATE = this.BASE_PATH + "checkmate.mp3"; //https://freesound.org/people/Timbre/sounds/232210/

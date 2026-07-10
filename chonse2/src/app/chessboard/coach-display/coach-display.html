@@ -84,7 +84,10 @@
               </div>
 
               <div class="small">
-                {{ rootData.move.coachComment }}
+                @for(sentence of rootData.move.coachSentences; track $index) 
+                {
+                  {{sentence.text }}
+                }
               </div>
             </div>
 

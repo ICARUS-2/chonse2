@@ -10,7 +10,7 @@ import { MoveClassification } from "../engine-lib/types/enums";
 import { LineEval, PositionEval } from "../engine-lib/types/eval";
 import CoachText from "./coach-text";
 import {BLOCKED_BISHOPS, CASTLING_MOVES, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
-import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "./coach-types";
+import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType, CoachSentence } from "./coach-types";
 import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
 import { GameOverReason } from "../chonse2-lib/game-state";
 import { uciMoveParams2 } from "../engine-lib/helpers/chessHelper";
@@ -45,7 +45,7 @@ export class CoachUtils
             const previousPosEval = evals[evalStackPointer - 1];
 
             //Verifying game end conditions first. 
-            if (move && state && !move.coachComment.includes(CoachUtils.COACH_MOVE_DELIMITER))
+            if (move && state && move.coachSentences.length === 0)
             {
                 const whiteToMove = state.turn;
                 const colorThatMovedText = whiteToMove ? "Black" : "White";
@@ -53,13 +53,13 @@ export class CoachUtils
                 //Case: Player checkmated the king.
                 if (state.gameState.reason == GameOverReason.Checkmate)
                 {
-                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.CHECKMATE_SENTENCES, colorThatMovedText);
+                    CoachText.addCoachSentence(move, CoachText.CHECKMATE_SENTENCES, colorThatMovedText);
                     break;
                 }
 
                 if (state.gameState.reason == GameOverReason.Stalemate)
                 {
-                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.STALEMATE_SENTENCES, colorThatMovedText);
+                    CoachText.addCoachSentence(move, CoachText.STALEMATE_SENTENCES, colorThatMovedText);
                     break;
                 }
 
@@ -67,7 +67,7 @@ export class CoachUtils
                     state.gameState.reason == GameOverReason.ThreefoldRepetition || 
                     state.gameState.reason == GameOverReason.FiftyMoveNoPawnMovementsOrCaptures)
                 {
-                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.DRAW_SENTENCES, colorThatMovedText);
+                    CoachText.addCoachSentence(move, CoachText.DRAW_SENTENCES, colorThatMovedText);
                     break;
                 }
             }
@@ -95,9 +95,12 @@ export class CoachUtils
                 }
 
                 //If this is a move the coach played (like a follow up), it doesn't need an evaluation since it is already the best move.
-                if (move.coachComment == CoachUtils.COACH_MOVE_DELIMITER)
+                if (move.coachSentences.length > 0)
                 {
-                    continue;
+                    if (move.coachSentences[0].text == CoachUtils.COACH_MOVE_DELIMITER)
+                    {
+                        continue;
+                    }
                 }
 
                 const whiteToMove = state.turn;
@@ -125,13 +128,13 @@ export class CoachUtils
                         if (openingObj.link != "")
                         {
                             move.coachResources.set( CoachResourceFlagType.Opening, openingObj.link );
-                            move.coachComment+= openingObj.name + ". ";
+                            CoachText.addCoachSentence(move, [new CoachSentence(openingObj.name + ". ", "")], "");
                         }
 
-                        if (openingObj.name.includes("Wayward Queen Attack"))
-                        {
-                            move.coachComment += "Developing the queen this early is potentially dangerous, as the queen can easily become a target by other minor pieces. "
-                        }
+                        // if (openingObj.name.includes("Wayward Queen Attack"))
+                        // {
+                        //     move.coachComment += "Developing the queen this early is potentially dangerous, as the queen can easily become a target by other minor pieces. "
+                        // }
                     }
                 }
             
@@ -194,11 +197,11 @@ export class CoachUtils
                                     //if player REALLY screwed up and blundered their queen.
                                     if (pieceToTake == PieceType.WHITE_QUEEN || pieceToTake == PieceType.BLACK_QUEEN)
                                     {
-                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.QUEEN_BLUNDER_SENTENCES, colorThatMovedText, pieceToTake);
+                                        CoachText.addCoachSentence(move, CoachText.QUEEN_BLUNDER_SENTENCES, colorThatMovedText, pieceToTake);
                                     }
                                     else 
                                     {
-                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.PIECE_HANG_SENTENCES, colorThatMovedText, pieceToTake);
+                                        CoachText.addCoachSentence(move, CoachText.PIECE_HANG_SENTENCES, colorThatMovedText, pieceToTake);
                                     }
 
                                     move.coachMoveFlags.push(CoachMoveFlagType.LeftPieceHanging);
@@ -252,7 +255,7 @@ export class CoachUtils
 
                                 if (bestSkewer != null)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.ALLOWED_SKEWER_SENTENCES, colorThatMovedText, nextBestState.findPieceAtCoordinate(bestSkewer.lowValuePieceBehindCoordinate));
+                                    CoachText.addCoachSentence(move, CoachText.ALLOWED_SKEWER_SENTENCES, colorThatMovedText, nextBestState.findPieceAtCoordinate(bestSkewer.lowValuePieceBehindCoordinate));
                                     move.coachMoveFlags.push(CoachMoveFlagType.AllowedSkewer);
 
                                     const idea = new CoachIdea();
@@ -338,7 +341,7 @@ export class CoachUtils
 
                             if (allowedFork)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.ALLOWED_FORK_SENTENCES, colorThatMovedText, "");
+                                CoachText.addCoachSentence(move, CoachText.ALLOWED_FORK_SENTENCES, colorThatMovedText, "");
                                 move.coachMoveFlags.push(CoachMoveFlagType.AllowedFork);
                             }
                         }
@@ -449,7 +452,7 @@ export class CoachUtils
                                             }
                                         }
 
-                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.PIECE_LOSS_SENTENCES, colorThatMovedText, highestValueUncompensatedPiece);
+                                        CoachText.addCoachSentence(move, CoachText.PIECE_LOSS_SENTENCES, colorThatMovedText, highestValueUncompensatedPiece);
                                         move.coachMoveFlags.push(CoachMoveFlagType.CausedMaterialLoss);
                                     }
                                 } 
@@ -478,12 +481,12 @@ export class CoachUtils
                                         //Subcase 1: If they correctly captured the piece but did so with the wrong attacker.
                                         if (previousBestMove.toSquare === move.toCoord)
                                         {
-                                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.CAPTURED_WITH_WRONG_PIECE_SENTENCES, colorThatMovedText, pieceToCapture);
+                                            CoachText.addCoachSentence(move, CoachText.CAPTURED_WITH_WRONG_PIECE_SENTENCES, colorThatMovedText, pieceToCapture);
                                             move.coachMoveFlags.push(CoachMoveFlagType.CapturedPieceWithWrongAttacker);
                                         }
                                         else //Subcase 2: If they missed the capture altogether.
                                         {
-                                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_HANGING_PIECE_SENTENCES, colorThatMovedText, pieceToCapture);
+                                            CoachText.addCoachSentence(move, CoachText.MISSED_HANGING_PIECE_SENTENCES, colorThatMovedText, pieceToCapture);
                                             move.coachMoveFlags.push(CoachMoveFlagType.MissedHangingPiece);
                                         }
                                     }
@@ -504,7 +507,7 @@ export class CoachUtils
                             {
                                 if (previousEngineLine.mate && !currentEngineLine.mate)
                                 {   
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_CHECKMATE_SENTENCES, colorThatMovedText, "");
+                                    CoachText.addCoachSentence(move, CoachText.MISSED_CHECKMATE_SENTENCES, colorThatMovedText, "");
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedCheckmate);
                                 }
                             }
@@ -523,7 +526,7 @@ export class CoachUtils
                             {
                                 if (!previousEngineLine.mate && currentEngineLine.mate)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.ALLOWED_CHECKMATE_SENTENCES, colorThatMovedText, "");
+                                    CoachText.addCoachSentence(move, CoachText.ALLOWED_CHECKMATE_SENTENCES, colorThatMovedText, "");
                                     move.coachMoveFlags.push(CoachMoveFlagType.AllowedCheckmate);
                                 }
                             }
@@ -559,7 +562,7 @@ export class CoachUtils
 
                             if (didMissFork)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_FORK_SENTENCES, colorThatMovedText, "");
+                                CoachText.addCoachSentence(move, CoachText.MISSED_FORK_SENTENCES, colorThatMovedText, "");
                                 move.coachMoveFlags.push(CoachMoveFlagType.MissedFork)
                             }
                         }
@@ -591,7 +594,7 @@ export class CoachUtils
                             {
                                 const lowValueSkewerPiece = missedState.findPieceAtCoordinate(correspondingSkewer.lowValuePieceBehindCoordinate);
                                 
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_SKEWER_SENTENCES, colorThatMovedText, lowValueSkewerPiece);
+                                CoachText.addCoachSentence(move, CoachText.MISSED_SKEWER_SENTENCES, colorThatMovedText, lowValueSkewerPiece);
                                 move.coachMoveFlags.push(CoachMoveFlagType.MissedSkewer);
                             }
                         }
@@ -626,7 +629,7 @@ export class CoachUtils
                                     const pinnedPiece = missedState.findPieceAtCoordinate(correspondingPin.pinnedPieceCoordinate);
                                     const highValuePiece = missedState.findPieceAtCoordinate(correspondingPin.highValuePieceCoordinate);
 
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
+                                    CoachText.addCoachSentence(move, CoachText.MISSED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedPin);
                                 }
                             }
@@ -665,7 +668,7 @@ export class CoachUtils
                                     const highValuePiece = previousState.findPieceAtCoordinate(ignoredPin.highValuePieceCoordinate);
 
 
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.IGNORED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
+                                    CoachText.addCoachSentence(move, CoachText.IGNORED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
                                     move.coachMoveFlags.push(CoachMoveFlagType.IgnoredPin);
                                 }
                             }
@@ -686,15 +689,15 @@ export class CoachUtils
 
                                 if (previousBestMove.fromSquare == kingsideCastle.kingFrom && previousBestMove.toSquare == kingsideCastle.kingTo)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_CASTLING_KINGSIDE, colorThatMovedText);
+                                    CoachText.addCoachSentence(move, CoachText.MISSED_CASTLING_KINGSIDE, colorThatMovedText);
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedCastle);
                                 }
 
                                 if (previousBestMove.fromSquare == queensideCastle.kingFrom && previousBestMove.toSquare == queensideCastle.kingTo)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_CASTLING_QUEENSIDE, colorThatMovedText);
+                                    CoachText.addCoachSentence(move, CoachText.MISSED_CASTLING_QUEENSIDE, colorThatMovedText);
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedCastle);
-                                }
+                                }               
                             }
                         }
                     }
@@ -714,7 +717,7 @@ export class CoachUtils
                             //If the rooks are not currently connected but the best move involved connecting them, tell the player.
                             if (!areRooksCurrentlyConnected && !wereRooksPreviouslyConnected && wasBestMoveToConnectRooks)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_ROOK_CONNECTION_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.MISSED_ROOK_CONNECTION_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.MissedConnectedRooks);
                             }
                         }
@@ -735,7 +738,7 @@ export class CoachUtils
                             //If the rooks are disconnected when they previously were not, and the best move did not involve disconnecting them, flag this.
                             if (!areRooksCurrentlyConnected && wereRooksPreviouslyConnected && didBestMoveInvolveKeepingRooksConnected)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.DISCONNECTED_ROOKS, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.DISCONNECTED_ROOKS, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.DisconnectedRooks);
                             }
                         }
@@ -835,12 +838,12 @@ export class CoachUtils
                             {
                                 if (didPlayerMissDevelopment)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_DEVELOPMENT, colorThatMovedText, developmentPieceInQuestion);
+                                    CoachText.addCoachSentence(move, CoachText.MISSED_DEVELOPMENT, colorThatMovedText, developmentPieceInQuestion);
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedDevelopment);
                                 }
                                 else 
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.INCORRECT_DEVELOPMENT, colorThatMovedText, developmentPieceInQuestion);
+                                    CoachText.addCoachSentence(move, CoachText.INCORRECT_DEVELOPMENT, colorThatMovedText, developmentPieceInQuestion);
                                     move.coachMoveFlags.push(CoachMoveFlagType.WrongDevelopment);
                                 }
                             }
@@ -880,7 +883,7 @@ export class CoachUtils
 
                                 if (!wasRookMovedToOpenFile && !wasRookPreviouslyOnBestOpenFile && wasBestMoveToPlaceRookOnOpenFile)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_ROOK_OPEN_FILE_SENTENCES, colorThatMovedText);
+                                    CoachText.addCoachSentence(move, CoachText.MISSED_ROOK_OPEN_FILE_SENTENCES, colorThatMovedText);
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedRookOpenFile);
                                 }
                             }
@@ -905,7 +908,7 @@ export class CoachUtils
                                 //If the previously best engine line doubled the opponent's pawns but does not anymore, flag it.
                                 if (missDoubledPawnInstances > laterDoubledPawnInstances)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_FORCED_DOUBLED_PAWNS, colorThatMovedText);
+                                    CoachText.addCoachSentence(move, CoachText.MISSED_FORCED_DOUBLED_PAWNS, colorThatMovedText);
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedForcedPawnDoubling);
                                 }
                             }
@@ -959,7 +962,7 @@ export class CoachUtils
 
                         if (blockedBishop)
                         {
-                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.BLOCKED_BISHOP_SENTENCES, colorThatMovedText, blockedBishop);
+                            CoachText.addCoachSentence(move, CoachText.BLOCKED_BISHOP_SENTENCES, colorThatMovedText, blockedBishop);
                             move.coachMoveFlags.push(CoachMoveFlagType.BlockedBishop)
                         }
                     }
@@ -977,7 +980,7 @@ export class CoachUtils
                         
                             if (playerCreatedPassedPawnForOpponent && bestMoveDidNotCreatePassedPawnForOpponent)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CREATED_PASSED_PAWN_FOR_OPPONENT_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.CREATED_PASSED_PAWN_FOR_OPPONENT_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.CreatedPassedPawnForOpponent);
                                 const idea = new CoachIdea();
                                 idea.highlightedSquares = currentPassedPawns;
@@ -999,7 +1002,7 @@ export class CoachUtils
 
                             if (didPlayerIsolateOwnPawn && !didBestMoveInvolveIsolatingOwnPawn)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.ISOLATED_OWN_PAWN_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.ISOLATED_OWN_PAWN_SENTENCES, colorThatMovedText);
                                 const idea = new CoachIdea();
                                 idea.highlightedSquares = currentIsolatedPawns;
                                 move.coachIdeas.set(CoachIdeaFlagType.IsolatedPawnIdea, idea);
@@ -1049,7 +1052,7 @@ export class CoachUtils
                             //If they did indeed weaken the king, flag it.
                             if (didPawnPushWeakenKing)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.WEAKENED_KING_WITH_PAWN_MOVE_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.WEAKENED_KING_WITH_PAWN_MOVE_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.WeakenedKingWithPawnMove);
                             }
                         }
@@ -1070,14 +1073,14 @@ export class CoachUtils
                             //if the player outright missed the chance to attack a pawn chain.
                             if (!didPlayerAttackPawnChain && wasBestMoveToAttackPawnChain)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_PAWN_CHAIN_ATTACK_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.MISSED_PAWN_CHAIN_ATTACK_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.MissedPawnChainAttack);
                             }
 
                             //if the player had a better way to attack a pawn chain.
                             if (didPlayerAttackPawnChain && wasBestMoveToAttackPawnChain)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.WRONG_PAWN_CHAIN_ATTACK_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.WRONG_PAWN_CHAIN_ATTACK_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.WrongPawnChainAttack);
                             }
 
@@ -1096,7 +1099,7 @@ export class CoachUtils
                         
                             if (wasBestMoveToAttackCenter && !didAttackCenter)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_CENTER_STRIKE_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.MISSED_CENTER_STRIKE_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.MissedStrikeInCenterWithPawn);
                             }
                         }
@@ -1153,14 +1156,14 @@ export class CoachUtils
 
                             if (didPlayerMoveHangingPiece && shouldPlayerHaveMovedHangingPiece)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.BETTER_SAFETY_MOVE_SENTENCES, colorThatMovedText, previousState.findPieceAtCoordinate(move.fromCoord));
-                                move.coachMoveFlags.push(CoachMoveFlagType.WrongHangingPieceMove)
+                                CoachText.addCoachSentence(move, CoachText.BETTER_SAFETY_MOVE_SENTENCES, colorThatMovedText, previousState.findPieceAtCoordinate(move.fromCoord));
+                                move.coachMoveFlags.push(CoachMoveFlagType.WrongHangingPieceMove);
                             }
 
                             if (didPlayerDefendHangingPiece && shouldPlayerHaveDefendedHangingPiece)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.BETTER_DEFEND_MOVE_SENTENCES, colorThatMovedText);
-                                move.coachMoveFlags.push(CoachMoveFlagType.WrongHangingPieceDefence)
+                                CoachText.addCoachSentence(move, CoachText.BETTER_DEFEND_MOVE_SENTENCES, colorThatMovedText);
+                                move.coachMoveFlags.push(CoachMoveFlagType.WrongHangingPieceDefence);
                             }
                         }
                     }
@@ -1191,7 +1194,7 @@ export class CoachUtils
                                         //If the best move involved forcing the loss of castling rights, flag it. 
                                         if (wasBestMoveToForceLossOfCastlingRights)
                                         {
-                                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES, colorThatMovedText);
+                                            CoachText.addCoachSentence(move, CoachText.MISSED_FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES, colorThatMovedText);
                                             move.coachMoveFlags.push(CoachMoveFlagType.MissedForcedLossOfCastlingRights);
                                         }
                                     }
@@ -1211,20 +1214,20 @@ export class CoachUtils
                             {
                                 if (didBestMoveInvolveDiscoveredCheck == DiscoveredCheckType.DoubleCheck)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_DOUBLE_CHECK_SENTENCES, colorThatMovedText);
+                                    CoachText.addCoachSentence(move, CoachText.MISSED_DOUBLE_CHECK_SENTENCES, colorThatMovedText);
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedDoubleCheck);
                                 }
 
                                 if (didBestMoveInvolveDiscoveredCheck == DiscoveredCheckType.SingleCheck)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_DISCOVERED_CHECK_SENTENCES, colorThatMovedText);
+                                    CoachText.addCoachSentence(move, CoachText.MISSED_DISCOVERED_CHECK_SENTENCES, colorThatMovedText);
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedDiscoveredCheck);
                                 }
                             }
 
                             if (discoveredCheckStatus != DiscoveredCheckType.None && didBestMoveInvolveDiscoveredCheck != DiscoveredCheckType.None)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.BETTER_DISCOVERED_CHECK_OPTION_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.BETTER_DISCOVERED_CHECK_OPTION_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.WrongDiscoveredCheck);
                             }
                         }
@@ -1244,7 +1247,7 @@ export class CoachUtils
                                 //Checks if they missed an outpost entirely.
                                 if (missedStateOutpostKnights.length > outpostKnights.length)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.MISSED_OUTPOST_SENTENCES, colorThatMovedText);
+                                    CoachText.addCoachSentence(move, CoachText.MISSED_OUTPOST_SENTENCES, colorThatMovedText);
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedOutpost);
                                 } //Checks if they took an outpost but on the wrong square.
                                 else if (
@@ -1253,7 +1256,7 @@ export class CoachUtils
                                     && movedPiece == knightPiece
                                 )
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.WRONG_OUTPOST_SENTENCES, colorThatMovedText);
+                                    CoachText.addCoachSentence(move, CoachText.WRONG_OUTPOST_SENTENCES, colorThatMovedText);
                                     move.coachMoveFlags.push(CoachMoveFlagType.WrongOutpost);
                                 }
                             }
@@ -1272,7 +1275,7 @@ export class CoachUtils
                     {
                         if (move.notation.includes(AlgebraicNotationMaker.CAPTURE))
                         {
-                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.CAPTURE_SENTENCES, colorThatMovedText);
+                            CoachText.addCoachSentence(move, CoachText.CAPTURE_SENTENCES, colorThatMovedText);
                         }
                     }
 
@@ -1290,12 +1293,12 @@ export class CoachUtils
                                 {
                                     if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
                                     {
-                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_MATE_SENTENCES, colorThatMovedText, "");
+                                        CoachText.addCoachSentence(move, CoachText.FOUND_MATE_SENTENCES, colorThatMovedText, "");
                                         move.coachMoveFlags.push(CoachMoveFlagType.FoundMate);
                                     }
                                     else 
                                     {
-                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_MATE_SENTENCES, oppositeColorText, "");
+                                        CoachText.addCoachSentence(move, CoachText.FOUND_MATE_SENTENCES, oppositeColorText, "");
                                         move.coachMoveFlags.push(CoachMoveFlagType.FoundMate);
                                     }
                                 }   
@@ -1305,7 +1308,7 @@ export class CoachUtils
                                 {
                                     if ((whiteToMove && currentEngineLine.mate < 0) || (!whiteToMove && currentEngineLine.mate > 0 ))
                                     {
-                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.ON_ROAD_TO_CHECKMATE_SENTENCES, colorThatMovedText, "");
+                                        CoachText.addCoachSentence(move, CoachText.ON_ROAD_TO_CHECKMATE_SENTENCES, colorThatMovedText, "");
                                         move.coachMoveFlags.push(CoachMoveFlagType.OnRoadToCheckmate);
                                     }
                                 }
@@ -1366,7 +1369,7 @@ export class CoachUtils
                             const coachIdea = new CoachIdea();
                             coachIdea.arrows = arrows;
 
-                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_FORK_SENTENCES, colorThatMovedText, displayPiece)
+                            CoachText.addCoachSentence(move, CoachText.FOUND_FORK_SENTENCES, colorThatMovedText, displayPiece);
                             move.coachIdeas.set( CoachIdeaFlagType.ForkIdea, coachIdea );
                             move.coachMoveFlags.push(CoachMoveFlagType.ForkedPiece);
                         }
@@ -1398,7 +1401,7 @@ export class CoachUtils
                                     const pinnedPiece = previousState.findPieceAtCoordinate(initiatedPin.pinnedPieceCoordinate);
                                     const highValuePiece = previousState.findPieceAtCoordinate(initiatedPin.highValuePieceCoordinate);
 
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
+                                    CoachText.addCoachSentence(move, CoachText.FOUND_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
 
                                     const idea = new CoachIdea();
                                     const arrow = createArrow(initiatedPin.attackerCoordinate, initiatedPin.highValuePieceCoordinate, ArrowColors.IDEA, ArrowContext.Coach);
@@ -1435,7 +1438,7 @@ export class CoachUtils
                         {
                             const lowValuePiece = state.findPieceAtCoordinate(initiatedSkewer.lowValuePieceBehindCoordinate);
                             
-                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.FOUND_SKEWER_SENTENCES, colorThatMovedText, lowValuePiece);
+                            CoachText.addCoachSentence(move, CoachText.FOUND_SKEWER_SENTENCES, colorThatMovedText, lowValuePiece);
                         
                             const idea = new CoachIdea();
 
@@ -1469,13 +1472,13 @@ export class CoachUtils
                         
                             if (currentKingside && !previousKingside)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CLEARED_CASTLING_WAY_SENTENCES, colorThatMovedText, PieceType.WHITE_KING);
+                                CoachText.addCoachSentence(move, CoachText.CLEARED_CASTLING_WAY_SENTENCES, colorThatMovedText, PieceType.WHITE_KING);
                                 move.coachMoveFlags.push(CoachMoveFlagType.ClearedWayToCastle);
                             }
                             
                             if (currentQueenside && !previousQueenside)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CLEARED_CASTLING_WAY_SENTENCES, colorThatMovedText, PieceType.WHITE_QUEEN);
+                                CoachText.addCoachSentence(move, CoachText.CLEARED_CASTLING_WAY_SENTENCES, colorThatMovedText, PieceType.WHITE_QUEEN);
                                 move.coachMoveFlags.push(CoachMoveFlagType.ClearedWayToCastle);
                             }
                         }
@@ -1494,21 +1497,21 @@ export class CoachUtils
                             //player just castled queenside
                             if (move.notation.includes(AlgebraicNotationMaker.QUEENSIDE_CASTLE))
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CASTLED_QUEENSIDE_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.CASTLED_QUEENSIDE_SENTENCES, colorThatMovedText);
 
                                 opponentCastledOpposite = whiteToMove ? castleStatus.whiteKingside : castleStatus.blackKingside
                             }
                             else //player just castled kingside
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CASTLED_KINGSIDE_SENTENCES, colorThatMovedText);
-                            
+                                CoachText.addCoachSentence(move, CoachText.CASTLED_KINGSIDE_SENTENCES, colorThatMovedText);
+
                                 opponentCastledOpposite = whiteToMove ? castleStatus.whiteQueenside : castleStatus.blackQueenside;
                             }
 
                             //additional comment if they castled opposite sides.
                             if (opponentCastledOpposite)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.OPPOSITE_SIDE_CASTLING_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.OPPOSITE_SIDE_CASTLING_SENTENCES, colorThatMovedText);
                             }
 
                             move.coachMoveFlags.push(CoachMoveFlagType.Castled);
@@ -1528,7 +1531,7 @@ export class CoachUtils
 
                             if (!wereRooksPreviouslyConnected && areRooksCurrentlyConnected)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CONNECTED_ROOKS_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.CONNECTED_ROOKS_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.ConnectedRooks);
                             }
                         }
@@ -1563,7 +1566,7 @@ export class CoachUtils
                                         //Additional check to make rook endgames not show the message too much
                                         if (rookOpenFilesControlledByColor.length > prevRookOpenFilesControlledByColor.length)
                                         {
-                                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.TOOK_OPEN_FILE_WITH_ROOK, colorThatMovedText);
+                                            CoachText.addCoachSentence(move, CoachText.TOOK_OPEN_FILE_WITH_ROOK, colorThatMovedText);
                                             move.coachMoveFlags.push(CoachMoveFlagType.TookOpenFileWithRook);
                                         }
                                     }
@@ -1587,7 +1590,7 @@ export class CoachUtils
 
                                 if (opponentNextDoubledPawnsAmount > opponentDoubledPawnsAmount)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.FORCED_DOUBLING_OF_PAWNS_SENTENCES, colorThatMovedText);
+                                    CoachText.addCoachSentence(move, CoachText.FORCED_DOUBLING_OF_PAWNS_SENTENCES, colorThatMovedText);
                                     move.coachMoveFlags.push(CoachMoveFlagType.ForcedDoublingOfPawns);
                                 }
                             }
@@ -1603,7 +1606,7 @@ export class CoachUtils
 
                             if (currentPassedPawns.length > previousPassedPawns.length)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.CREATED_PASSED_PAWN_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.CREATED_PASSED_PAWN_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.CreatedPassedPawnForThemselves);
                                 const idea = new CoachIdea();
                                 idea.highlightedSquares = currentPassedPawns;
@@ -1622,7 +1625,7 @@ export class CoachUtils
 
                             if (passedPawnStoppers.length > previousPassedPawnStoppers.length)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.SAT_PIECE_ON_PROMOTION_SQUARE_SENTENCES, colorThatMovedText, toCoordPiece);
+                                CoachText.addCoachSentence(move, CoachText.SAT_PIECE_ON_PROMOTION_SQUARE_SENTENCES, colorThatMovedText, toCoordPiece);
                                 move.coachMoveFlags.push(CoachMoveFlagType.SatPieceOnPromotionSquare);
                             }
                         }
@@ -1645,7 +1648,7 @@ export class CoachUtils
                                 (opponentCurrentIsolatedPawns.length > opponentPrevIsolatedPawns.length) && //if the opponent is forced to isolate
                                 (colorThatJustPlayedIsolatedPawns.length <= colorThatJustPlayedPrevIsolatedPawns.length)) //AND the player that just moved is NOT.
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.ISOLATED_OPPONENT_PAWN_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.ISOLATED_OPPONENT_PAWN_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.IsolatedOpponentPawn);
                                 
                                 const idea = new CoachIdea();
@@ -1667,7 +1670,7 @@ export class CoachUtils
 
                             if (didPlayerAttackPawnChain)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.ATTACKED_PAWN_CHAIN_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.ATTACKED_PAWN_CHAIN_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.AttackedPawnChain);
                             }
                         }
@@ -1699,7 +1702,7 @@ export class CoachUtils
                                 //if player did not move a hanging piece, but there were less hanging pieces, the only logical explanation is that they moved a piece to defend it.
                                 if (!didPlayerMoveHangingPiece)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.DEFENDED_HANGING_PIECE_SENTENCES, colorThatMovedText);
+                                    CoachText.addCoachSentence(move, CoachText.DEFENDED_HANGING_PIECE_SENTENCES, colorThatMovedText);
                                     move.coachMoveFlags.push(CoachMoveFlagType.DefendedHangingPiece);
                                 }
                                 else 
@@ -1707,7 +1710,7 @@ export class CoachUtils
                                     const pc = previousState.findPieceAtCoordinate(move.fromCoord);
                                     if (pc != PieceType.WHITE_KING && pc != PieceType.BLACK_KING)
                                     {
-                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.MOVED_HANGING_PIECE_SENTENCES, colorThatMovedText, pc);   
+                                        CoachText.addCoachSentence(move, CoachText.MOVED_HANGING_PIECE_SENTENCES, colorThatMovedText, pc);   
                                         move.coachMoveFlags.push(CoachMoveFlagType.MovedHangingPiece);
                                     }
                                 }
@@ -1721,7 +1724,7 @@ export class CoachUtils
                         {
                             if (CoachMiscHelpers.didForceLossOfCastlingRights(state, nextBestState, whiteToMove, nextBestMove))
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES, colorThatMovedText);
+                                CoachText.addCoachSentence(move, CoachText.FORCED_LOSS_OF_CASTLING_RIGHTS_SENTENCES, colorThatMovedText);
                                 move.coachMoveFlags.push(CoachMoveFlagType.ForcedLossOfCastlingRights);
                             }
                         }
@@ -1733,12 +1736,12 @@ export class CoachUtils
                         
                         if (discoveredCheckStatus == DiscoveredCheckType.DoubleCheck)
                         {
-                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.DOUBLE_CHECK_SENTENCES, colorThatMovedText);
+                            CoachText.addCoachSentence(move, CoachText.DOUBLE_CHECK_SENTENCES, colorThatMovedText);
                             move.coachMoveFlags.push(CoachMoveFlagType.UsedDoubleCheck);
                         }
                         else if (discoveredCheckStatus == DiscoveredCheckType.SingleCheck)
                         {
-                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.DISCOVERED_CHECK_SENTENCES, colorThatMovedText);
+                            CoachText.addCoachSentence(move, CoachText.DISCOVERED_CHECK_SENTENCES, colorThatMovedText);
                             move.coachMoveFlags.push(CoachMoveFlagType.UsedDiscoveredCheck);
                         }
                     }
@@ -1758,13 +1761,13 @@ export class CoachUtils
 
                             if (currentKingside && !prevKingside)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.BLOCKING_CASTLING_SENTENCES, colorThatMovedText, PieceType.WHITE_KING);
+                                CoachText.addCoachSentence(move, CoachText.BLOCKING_CASTLING_SENTENCES, colorThatMovedText, PieceType.WHITE_KING);
                                 move.coachMoveFlags.push(CoachMoveFlagType.BlockingCastling);
                             }
 
                             if (currentQueenside && !prevQueenside)
                             {
-                                move.coachComment += CoachText.selectAndFormatSentence(CoachText.BLOCKING_CASTLING_SENTENCES, colorThatMovedText, PieceType.WHITE_QUEEN);
+                                CoachText.addCoachSentence(move, CoachText.BLOCKING_CASTLING_SENTENCES, colorThatMovedText, PieceType.WHITE_QUEEN);
                                 move.coachMoveFlags.push(CoachMoveFlagType.BlockingCastling);
                             }
                         }
@@ -1828,7 +1831,7 @@ export class CoachUtils
 
                                     if (kickedPiece)
                                     {
-                                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.KICKED_PIECE_WITH_PAWN_SENTENCES, colorThatMovedText, kickedPiece);
+                                        CoachText.addCoachSentence(move, CoachText.KICKED_PIECE_WITH_PAWN_SENTENCES, colorThatMovedText, kickedPiece);
                                         move.coachMoveFlags.push(CoachMoveFlagType.KickedPieceWithPawn);
                                     }
                                 }
@@ -1849,7 +1852,7 @@ export class CoachUtils
 
                                 if (outpostKnights.length > prevOutpostKnights.length)
                                 {
-                                    move.coachComment += CoachText.selectAndFormatSentence(CoachText.TOOK_OUTPOST_WITH_KNIGHT_SENTENCES, colorThatMovedText);
+                                    CoachText.addCoachSentence(move, CoachText.TOOK_OUTPOST_WITH_KNIGHT_SENTENCES, colorThatMovedText);
                                     move.coachMoveFlags.push(CoachMoveFlagType.TookOutpostWithKnight);
                                     move.coachResources.set(CoachResourceFlagType.Outpost, CoachResourceLinks.OUTPOST_LINK);
                                 }
@@ -1874,7 +1877,7 @@ export class CoachUtils
                         (move.fromCoord == Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "d7" || move.toCoord == "c6"))
                     )
                     {
-                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES, "");
+                        CoachText.addCoachSentence(move, CoachText.KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES, "");
 
                         //To evaluate central squares hit by the knight, check if the knight can move to one of them.
                         const potentiallyLegalKnightMoves = CoachMiscHelpers.getKnightSquareHits(state, move.toCoord);
@@ -1941,7 +1944,7 @@ export class CoachUtils
                     )
                     {
                         //Add the comment saying they can develop the bishop.
-                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.PREPARES_BISHOP_FOR_DEVELOPMENT_SENTENCES, colorThatMovedText);
+                        CoachText.addCoachSentence(move, CoachText.PREPARES_BISHOP_FOR_DEVELOPMENT_SENTENCES, colorThatMovedText);
 
                         //Clones the board to check the legal moves.
                         const boardCopy = state.getFullDeepCopy();
@@ -2048,7 +2051,7 @@ export class CoachUtils
                         )
                     )
                     {
-                        move.coachComment += CoachText.selectAndFormatSentence(CoachText.PREPARES_BISHOP_FOR_FIANCHETTO_DEVELOPMENT_SENTENCES, "")
+                        CoachText.addCoachSentence(move, CoachText.PREPARES_BISHOP_FOR_FIANCHETTO_DEVELOPMENT_SENTENCES, "");
 
                         //Determine where the fianchetto square & bishop coord is
                         let fianchettoSquare = "";
@@ -2101,44 +2104,51 @@ export class CoachUtils
                     {
                         if (CoachMiscHelpers.FIANCHETTOS.includes(move.toCoord))
                         {
-                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.BISHOP_FIANCHETTOED_SENTENCES, colorThatMovedText);
+                            CoachText.addCoachSentence(move, CoachText.BISHOP_FIANCHETTOED_SENTENCES, colorThatMovedText);
                         }
                         else 
                         {
-                            move.coachComment += CoachText.selectAndFormatSentence(CoachText.BISHOP_DEVELOPED_SENTENCES, colorThatMovedText);
+                            CoachText.addCoachSentence(move, CoachText.BISHOP_DEVELOPED_SENTENCES, colorThatMovedText);
                         }
                     }
                 }
 
+                 //=======Luminous
 
-                //=======Luminous
                 if (posEval.moveClassification == MoveClassification.Luminous)
                 {
                     const hungPiece = state.findPieceAtCoordinate(move.toCoord);
                     const luminousSentences = CoachText.BASE_SENTENCES.get(MoveClassification.Luminous);
 
+
                     if (luminousSentences)
                     {
-                        let sentence = CoachText.selectAndFormatSentence(luminousSentences, colorThatMovedText, hungPiece);
+                        let sentence = CoachText.getAndFormatRandomSentence(luminousSentences, colorThatMovedText, hungPiece);
 
-                        if (sentence.includes("And"))
+                        if (sentence.text.includes("And"))
                         {
-                            sentence = sentence.replace("rook", "ROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK");
+                            sentence.text = sentence.text.replace("rook", "ROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK");
                         }
 
-                        move.coachComment += sentence;
+                        move.coachSentences.push(sentence);
                     }
                 }
 
-                if (move.coachComment == "")
+
+
+                //get base sentence if nothing is present.
+                if (move.coachSentences.length == 0)
                 {
-                    move.coachComment = CoachText.getBaseSentence(posEval.moveClassification ?? MoveClassification.None).replace(CoachText.TURN_PLACEHOLDER, colorThatMovedText);
+                    const sentences = CoachText.BASE_SENTENCES.get(posEval.moveClassification ?? MoveClassification.None);
+
+                    if (sentences)
+                    {
+                        CoachText.addCoachSentence(move, sentences, colorThatMovedText);
+                    }
                 }
             }
         }
     }
-
-
 }
 
 

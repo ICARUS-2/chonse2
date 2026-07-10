@@ -193,11 +193,14 @@ export default class BoardState
                 const move = this.divergenceMoveStack()[i];
 
                 //Return the first non coach move
-                if (move.coachComment != CoachUtils.COACH_MOVE_DELIMITER)
+                if (move.coachSentences.length > 0)
                 {
-                    returnMove = move;
-                    returnEval = this.divergenceEvalStack()[i];
-                    break;
+                    if (move.coachSentences[0].text != CoachUtils.COACH_MOVE_DELIMITER)
+                    {
+                        returnMove = move;
+                        returnEval = this.divergenceEvalStack()[i];
+                        break;
+                    }
                 }
             }
         }
