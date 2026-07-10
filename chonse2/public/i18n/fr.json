@@ -297,6 +297,13 @@
     "settings": 
     {
         "title": "Paramètres",
+
+        "insights": 
+        {
+            "heading": "Perspectives",
+            "coachAudio": "Audio du Coach"
+        },
+
         "board": 
         {
             "heading": "Échiquier",

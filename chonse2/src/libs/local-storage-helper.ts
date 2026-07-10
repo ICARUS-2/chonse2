@@ -1,6 +1,7 @@
 export default class LocalStorageHelper
 {
     //Settings
+    static readonly INSIGHTS_AUDIO = "Chonse2_InsightsAudio";
     static readonly CLICK_TO_MOVE = "Chonse2_ClickToMove";
     static readonly PIECE_ANIMATIONS = "Chonse2_PieceAnimations";
     static readonly CHESS_PIECES = "Chonse2_ChessPieces";

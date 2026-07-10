@@ -1,11 +1,38 @@
 <div class="container" [style.color]="themeService.getThemeInstance().getTextColor()">
-    <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()" class="p-4" [class]="themeService.getThemeInstance().getGlassPanelTheme()">{{ 'settings.title' | translate }}</h1>
+    
+    <!--Heading and insights-->
+    <div class="d-flex justify-content-between user-select-none gap-3">
+        <div class="w-50 p-4" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
+            <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()" class="">{{ 'settings.title' | translate }}</h1>
+        </div>
+
+        <div class="w-50 p-4" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
+            <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()" class="">{{ 'settings.insights.heading' | translate }}</h2>
+
+            <!--Coach audio-->
+            <div class="mb-4">
+                <h4 class="">{{ 'settings.insights.coachAudio' | translate }}</h4>
+
+                <div
+                class="form-check form-switch"
+                [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+                >
+                <input
+                    class="form-check-input custom-switch"
+                    type="checkbox"
+                    [formField]="form.insightsAudio"
+                    (change)="coachSoundSwitchPressed($event.target.checked)"
+                />
+                </div>
+            </div>
+        </div>
+    </div>
     <hr>
 
     <!--Board and appearance settings-->
-    <div class="d-flex justify-content-between user-select-none">
+    <div class="d-flex justify-content-between user-select-none gap-3">
         <!--Board Settings-->
-        <div class="p-4 w-50 me-2" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
+        <div class="p-4 w-50" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
             <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'settings.board.heading' | translate }}</h2>
 
             <!--Board settings inner-->
@@ -80,7 +107,7 @@
         </div>
 
         <!--Appearance Settings-->
-        <div class="p-4 w-50 ms-2 user-select-none" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
+        <div class="p-4 w-50 user-select-none" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
             <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'settings.appearance.heading' | translate }}</h2>
 
             <!--Theme and Language-->
