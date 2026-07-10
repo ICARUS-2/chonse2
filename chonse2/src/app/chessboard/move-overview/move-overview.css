@@ -7,24 +7,14 @@
   height: 35vmin;
 }
 
-.engineMoveInfoText
-{
-  min-height: 3vmin;
-}
-
-.engineMoveInfoText img
-{
-  height: 2vmin;
-}
-
 .engineLineDisplayIcon
 {
-  height: 3vmin;
+  height: 4vmin;
 }
 
 .moveClassificationListIcon
 {
-  width: 3.7vmin;
+  width: 5vmin;
 }
 
 
@@ -41,4 +31,16 @@
   {
     height: 70vmin;
   }
+
+  .engineLineDisplayIcon
+  {
+    height: 7vmin;
+  }
+
+
+  .moveClassificationListIcon
+  {
+    width: 10vmin;
+  }
+
 }
