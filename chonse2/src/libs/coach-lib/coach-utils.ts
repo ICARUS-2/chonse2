@@ -16,9 +16,6 @@ import { GameOverReason } from "../chonse2-lib/game-state";
 import { uciMoveParams2 } from "../engine-lib/helpers/chessHelper";
 export class CoachUtils
 {
-    static readonly COACH_MOVE_DELIMITER = "*";
-
-
     public static performCoachAnalysis(states: Array<Chonse2>, moves: Array<MoveResult>, evals: Array<PositionEval>, isDivergenceStack: boolean = false)
     {
         //Main state and eval stacks are always the same length, with main move stack always being one shorter.
@@ -95,12 +92,9 @@ export class CoachUtils
                 }
 
                 //If this is a move the coach played (like a follow up), it doesn't need an evaluation since it is already the best move.
-                if (move.coachSentences.length > 0)
+                if (move.isCoachMove)
                 {
-                    if (move.coachSentences[0].text == CoachUtils.COACH_MOVE_DELIMITER)
-                    {
-                        continue;
-                    }
+                    continue;
                 }
 
                 const whiteToMove = state.turn;

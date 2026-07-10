@@ -111,34 +111,13 @@ export class CoachDisplay {
   {
     //Changes every single one of the coach moves to remove the delimiter (and thus they become regular moves)
     this.boardState().divergenceMoveStack.update(stack =>
-      stack.map(mv => ({
-        ...mv,
-        coachSentences: this.removeCoachDelimiter(mv)
-        // coachComment:
-        //   mv.coachSentences[0].text === CoachUtils.COACH_MOVE_DELIMITER ?
-        //     this.translate.instant('chessboard.coachDisplay.comments.topMove')
-        //     : mv.coachComment
-      }))
+      stack.map(mv => ({...mv, isCoachMove: false}))
     );
 
     this.boardState().isLocked.set(false);
     this.boardState().isCoachMoveShowing.set(false);
     this.boardState().isCoachMoveFinished.set(false);
     this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.None);
-  }
-
-  removeCoachDelimiter(mv: MoveResult): Array<FormattedCoachSentence>
-  {
-    if (mv.coachSentences.length > 0)
-    {
-      if (mv.coachSentences[0].text == CoachUtils.COACH_MOVE_DELIMITER)
-      {
-        mv.coachSentences[0].text = this.translate.instant('chessboard.coachDisplay.comments.topMove');
-      }
-
-    }
-
-    return mv.coachSentences;
   }
 
   async doCoachMoveSequence(isMissedOpportunity: boolean = false)
@@ -210,7 +189,8 @@ export class CoachDisplay {
 
             //Then play the move.
             const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
-            moveResult.coachSentences.push(this.getCoachDelimiter());
+            moveResult.isCoachMove = true;
+            moveResult.coachSentences.push({text: this.translate.instant('chessboard.coachDisplay.comments.topMove'), audioPath: ""});
 
             //Then add it.
             this.boardState().pushState(stateCopy, moveResult, true);
@@ -259,7 +239,7 @@ export class CoachDisplay {
     let mostRecentMove = this.boardState().getMostRecentMove();
     
     //Pops every single thing that is a coach-played move.
-    while(mostRecentMove.coachSentences[0].text == CoachUtils.COACH_MOVE_DELIMITER)
+    while(mostRecentMove.isCoachMove)
     {
       this.boardState().goBack();
       mostRecentMove = this.boardState().getMostRecentMove();
@@ -350,8 +330,8 @@ export class CoachDisplay {
     const previousState = this.boardState().getPreviousMostRecentState().getFullDeepCopy();
     const previousEval = structuredClone(this.boardState().getPreviousMostRecentEval());
     const dummyResult = new MoveResult();
-    dummyResult.notation = "-"
-    dummyResult.coachSentences = [this.getCoachDelimiter()];
+    dummyResult.notation = "-";
+    dummyResult.isCoachMove = true;
 
     //If they exist, push to divergence stack temporarily (creating a fake rollback)
     if (previousEval && previousState)
@@ -542,14 +522,6 @@ export class CoachDisplay {
     LocalStorageHelper.setBoolean(LocalStorageHelper.INSIGHTS_AUDIO, !audioEnabled);
   }
   //#endregion
-
-  //#region
-  getCoachDelimiter(): FormattedCoachSentence
-  {
-    return {text: CoachUtils.COACH_MOVE_DELIMITER, audioPath: ""} as FormattedCoachSentence
-  }
-  //#endregion
-  
 }
 
 export const moveClassificationLabels: Record<MoveClassification, string> = {

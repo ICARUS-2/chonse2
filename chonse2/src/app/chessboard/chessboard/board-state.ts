@@ -192,15 +192,12 @@ export default class BoardState
             {
                 const move = this.divergenceMoveStack()[i];
 
-                //Return the first non coach move
-                if (move.coachSentences.length > 0)
+
+                if (!move.isCoachMove)
                 {
-                    if (move.coachSentences[0].text != CoachUtils.COACH_MOVE_DELIMITER)
-                    {
-                        returnMove = move;
-                        returnEval = this.divergenceEvalStack()[i];
-                        break;
-                    }
+                    returnMove = move;
+                    returnEval = this.divergenceEvalStack()[i];
+                    break;
                 }
             }
         }
@@ -372,10 +369,18 @@ export default class BoardState
                         //if it succeeds, copy its fields.
                         if (classificationEval[1])
                         {
+                            //we are using a lower depth value for the coach evals since they are always the best move.
+                            if (overrideForCoachEvals)
+                            {
+                                if (classificationEval[1].moveClassification != MoveClassification.Opening)
+                                {
+                                    classificationEval[1].moveClassification = MoveClassification.Best;
+                                }
+                            }
                             //copy fields first
                             this.copyPosEvalFields(classificationEval[1], newEval);
                             
-                            if (previousEval)
+                            if (previousEval && !overrideForCoachEvals)
                             {
                                 CoachUtils.performCoachAnalysis([previousState, state], [move], [previousEval, newEval]);
                             }

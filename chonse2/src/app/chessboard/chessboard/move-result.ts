@@ -16,6 +16,7 @@ export default class MoveResult implements IMoveResult
     coachMoveFlags: Array<CoachMoveFlagType> = [];
     coachIdeas: Map<CoachIdeaFlagType, CoachIdea> = new Map<CoachIdeaFlagType, CoachIdea>();
     coachResources: Map<CoachResourceFlagType, string> = new Map<CoachResourceFlagType, string>();
+    isCoachMove: boolean = false;
 
     //Exists because the Chonse2 library alone should not be returning anything more complex than the base IMoveResult, 
     //but the chessboard needs something a bit more complex for coach interactions and whatnot.
