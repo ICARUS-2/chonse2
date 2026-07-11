@@ -36,7 +36,7 @@ export class CoachAudio
 
         if (path == CoachAudio.BASE_AUDIO_PATH)
         {
-            this.playFrom(sentences, index + 1, playbackId);
+            return;
         }
 
         const audio = new Audio(path);
