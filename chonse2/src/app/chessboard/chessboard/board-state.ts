@@ -15,6 +15,8 @@ import MoveResult from "./move-result";
 import { CoachUtils } from "../../../libs/coach-lib/coach-utils";
 import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
 import { getMovesClassification } from "../../../libs/engine-lib/helpers/moveClassification";
+import { AppInjector } from "../../app-injector";
+import { CoachAudio } from "../coach-audio";
 
 export default class BoardState
 {
@@ -45,7 +47,8 @@ export default class BoardState
     isCoachMoveShowing: WritableSignal<boolean> = signal(false);
     isCoachMoveFinished: WritableSignal<boolean> = signal(false);
     isCoachIdeaShowing: WritableSignal<boolean> = signal(false);
-    coachMoveSequenceType: WritableSignal<CoachMoveSequenceType> = signal(CoachMoveSequenceType.None)
+    coachMoveSequenceType: WritableSignal<CoachMoveSequenceType> = signal(CoachMoveSequenceType.None);
+    audioService = AppInjector.injector.get(CoachAudio);
 
     //Vs ai stuff
     isVsAi: WritableSignal<boolean> = signal(false);
@@ -383,6 +386,7 @@ export default class BoardState
                             if (previousEval && !overrideForCoachEvals)
                             {
                                 CoachUtils.performCoachAnalysis([previousState, state], [move], [previousEval, newEval]);
+                                this.audioService.playSentences(move.coachSentences);
                             }
 
                             //then trigger cd
