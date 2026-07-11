@@ -307,6 +307,7 @@ export class UciEngine {
       for (let i = 0; i < fens.length; i++) {
         const fen = fens[i];
 
+        //TODO: See if the lack of this is what is causing the endgame eval not to work.
         const whoIsCheckmated = getWhoIsCheckmated(fen);
         if (whoIsCheckmated) {
           updateEval(i, {

@@ -310,6 +310,7 @@ export default class BoardState
     private async performDivergenceEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
     {
         const eng = this.engine();
+
         if (eng != undefined)
         {
             //Creates a new eval object where the fields will be set.
@@ -359,7 +360,7 @@ export default class BoardState
                 setCompletedEval: ( positionEval: PositionEval ) => 
                 {
                     const prevEval = this.getPreviousMostRecentEval();
-
+                    console.log(positionEval);
                     if (prevEval)
                     {
                         //only once the full eval is done should we get the move classification for that move.

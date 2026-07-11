@@ -227,8 +227,8 @@ export default class CoachText
     //Ignored a relative pin
     public static readonly IGNORED_PIN_SENTENCES: Array<CoachSentence> =
     [
-        new CoachSentence(`${CoachText.TURN_PLACEHOLDER} completely ignored the pin of their ${CoachText.PIECE_PLACEHOLDER}, and now their ${CoachText.SECONDARY_PIECE_PLACEHOLDER} is lost.`, `ignored-pin-sentences/0/audio_${CoachText.TURN_PLACEHOLDER}_${CoachText.PIECE_PLACEHOLDER}_${CoachText.SECONDARY_PIECE_PLACEHOLDER}.mp3`),
-        new CoachSentence(`${CoachText.TURN_PLACEHOLDER} didn't notice their ${CoachText.PIECE_PLACEHOLDER} was pinned, exposing the ${CoachText.SECONDARY_PIECE_PLACEHOLDER} behind it.`, `ignored-pin-sentences/1/audio_${CoachText.TURN_PLACEHOLDER}_${CoachText.PIECE_PLACEHOLDER}_${CoachText.SECONDARY_PIECE_PLACEHOLDER}.mp3`)
+        new CoachSentence(`${CoachText.TURN_PLACEHOLDER} completely ignored the pin of their ${CoachText.PIECE_PLACEHOLDER}, and now their ${CoachText.SECONDARY_PIECE_PLACEHOLDER} is lost.`, `ignored-pin-sentences/0/audio_${CoachText.PIECE_PLACEHOLDER}_${CoachText.SECONDARY_PIECE_PLACEHOLDER}.mp3`),
+        new CoachSentence(`${CoachText.TURN_PLACEHOLDER} didn't notice their ${CoachText.PIECE_PLACEHOLDER} was pinned, exposing the ${CoachText.SECONDARY_PIECE_PLACEHOLDER} behind it.`, `ignored-pin-sentences/1/audio_${CoachText.PIECE_PLACEHOLDER}_${CoachText.SECONDARY_PIECE_PLACEHOLDER}.mp3`)
     ]
 
     //missed a skewer
