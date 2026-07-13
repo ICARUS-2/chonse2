@@ -51,6 +51,9 @@ export enum CoachMoveFlagType
     DisconnectedRooks,
     MissedConnectedRooks,
 
+    //Neutral
+    //Flag used to prevent false positives in material losses. Say, if someone moved their king to safety the wrong way in a queen fork, don't give them shit for blundering their queen.
+    InevitablyHungPiece, 
 
     //Good (show follow up)
     OpportunityToCheckmate,

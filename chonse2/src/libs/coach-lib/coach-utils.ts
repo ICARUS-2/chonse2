@@ -190,6 +190,7 @@ export class CoachUtils
                                     const bestMoveAlsoInvolvedHangingThisPiece = Chonse2Extensions.doesSquareHaveHangingPiece(missedState, hangingPieceCoord);
                                     if (bestMoveAlsoInvolvedHangingThisPiece)
                                     {
+                                        move.coachMoveFlags.push(CoachMoveFlagType.InevitablyHungPiece);
                                         break;
                                     }
 
@@ -392,7 +393,8 @@ export class CoachUtils
                         if (!move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging) && 
                             !move.coachMoveFlags.includes(CoachMoveFlagType.AllowedSkewer) && 
                             !move.coachMoveFlags.includes(CoachMoveFlagType.AllowedFork) &&
-                            !move.coachMoveFlags.includes(CoachMoveFlagType.IgnoredPin))
+                            !move.coachMoveFlags.includes(CoachMoveFlagType.IgnoredPin) &&
+                            !move.coachMoveFlags.includes(CoachMoveFlagType.InevitablyHungPiece)) //queen and king forked but king moved to the wrong square -> don't scold them for losing the queen.
                         {
                             //what white already had before the engine line
                             const whiteCapturedBefore = currentFollowUp[0].piecesWhiteCaptured;
