@@ -16,6 +16,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CoachMiscHelpers } from '../../../libs/coach-lib/coach-misc-helpers';
 import { CoachMoveFlagType, CoachMoveSequenceType, CoachIdeaFlagType, CoachIdea, CoachResourceFlagType, FormattedCoachSentence } from '../../../libs/coach-lib/coach-types';
 import { CoachUtils } from '../../../libs/coach-lib/coach-utils';
+import { CoachAudio } from '../coach-audio';
 
 @Component({
   selector: 'app-coach-display',
@@ -66,7 +67,7 @@ export class CoachDisplay {
 
   private translate = inject(TranslateService);
 
-  constructor(public themeService: ThemeService)
+  constructor(public themeService: ThemeService, public coachAudio: CoachAudio)
   {
     
   }
@@ -518,6 +519,11 @@ export class CoachDisplay {
   handleAudioClicked()
   {
     const audioEnabled = LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true);
+
+    if (audioEnabled)
+    {
+      this.coachAudio.stop();
+    }
   
     LocalStorageHelper.setBoolean(LocalStorageHelper.INSIGHTS_AUDIO, !audioEnabled);
   }

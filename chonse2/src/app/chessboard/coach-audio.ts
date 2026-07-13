@@ -1,5 +1,6 @@
 import { Service } from '@angular/core';
 import { FormattedCoachSentence } from '../../libs/coach-lib/coach-types';
+import LocalStorageHelper from '../../libs/local-storage-helper';
 
 @Service()
 export class CoachAudio 
@@ -12,6 +13,11 @@ export class CoachAudio
     //it's stopped immediately and this new one starts right away.
     public playSentences(sentences: Array<FormattedCoachSentence>): void
     {
+        if (!LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true))
+        {
+            return;
+        }
+
         const playbackId = ++this.currentPlaybackId;
         this.stopCurrentAudio();
         this.playFrom(sentences, 0, playbackId);
