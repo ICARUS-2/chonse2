@@ -1468,10 +1468,28 @@ export default class Chonse2Extensions
     //#region Discovered check
     public static wasMoveDiscoveredCheck(afterState: Chonse2, move: {from: string, to: string, promotion: string}): DiscoveredCheckType
     {
+        //check if move was castling move, if so return false.
+
         const pieceInToSquare = afterState.findPieceAtCoordinate(move.to);
 
         //If there's no piece here... then why the hell did you call this function.
         if (!pieceInToSquare)
+        {
+            return DiscoveredCheckType.None;
+        }
+
+        //Castling is not a discovered check. The rook may be the checking piece, but that is a consequence of castling rather than a discovered check.
+        if (
+            (pieceInToSquare === PieceType.WHITE_KING || pieceInToSquare === PieceType.BLACK_KING) &&
+            (
+                (move.from === Chonse2.WHITE_KING_SQUARE &&
+                    (move.to === Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE ||
+                    move.to === Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE)) ||
+                (move.from === Chonse2.BLACK_KING_SQUARE &&
+                    (move.to === Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE ||
+                    move.to === Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE))
+            )
+        )
         {
             return DiscoveredCheckType.None;
         }

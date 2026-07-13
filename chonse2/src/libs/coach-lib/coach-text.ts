@@ -275,7 +275,7 @@ export default class CoachText
     [
         new CoachSentence(`Better option here was for ${CoachText.TURN_PLACEHOLDER} to perform a queenside castle, both securing their king and getting a rook extremely active.`, `missed-castling-queenside/0/audio_${CoachText.TURN_PLACEHOLDER}.mp3`),
         new CoachSentence(`Castling queenside was a better option here, for both king safety and piece activity.`, `missed-castling-queenside/1/audio.mp3`),
-        new CoachSentence(`Castling queenside was the more active option here, giving your rook faster access to central play. while providing good king safety.`, `missed-castling-queenside/2/audio.mp3`),
+        new CoachSentence(`Castling queenside was the more active option here, giving your rook faster access to central play, while providing good king safety.`, `missed-castling-queenside/2/audio.mp3`),
         new CoachSentence(`This position favored castling queenside, and delaying it often means missing your best chance to seize the initiative in controlling open files with the corresponding rook.`, `missed-castling-queenside/3/audio.mp3`)
     ]
 
