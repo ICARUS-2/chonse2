@@ -1629,7 +1629,10 @@ export class CoachUtils
                             const previousPassedPawnStoppers = whiteToMove ? Chonse2Extensions.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(previousState).black : Chonse2Extensions.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(previousState).white;
                             const toCoordPiece = state.findPieceAtCoordinate(move.toCoord);
 
-                            if (passedPawnStoppers.length > previousPassedPawnStoppers.length)
+                            console.log(passedPawnStoppers);
+                            console.log(previousPassedPawnStoppers);
+
+                            if (passedPawnStoppers.length > previousPassedPawnStoppers.length && !toCoordPiece.endsWith(PieceType.PAWN))
                             {
                                 CoachText.addCoachSentence(move, CoachText.SAT_PIECE_ON_PROMOTION_SQUARE_SENTENCES, colorThatMovedText, toCoordPiece);
                                 move.coachMoveFlags.push(CoachMoveFlagType.SatPieceOnPromotionSquare);

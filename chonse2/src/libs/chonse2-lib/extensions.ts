@@ -1193,9 +1193,9 @@ export default class Chonse2Extensions
                 {
                     if (pieceInPromotionSquare.startsWith(PieceColor.BLACK))
                     {
-                        if (!returnObj.black.includes(wppCoord))
+                        if (!returnObj.black.includes(promotionSquare))
                         {
-                            returnObj.black.push(wppCoord);
+                            returnObj.black.push(promotionSquare);
                         }
                     }
                 }
@@ -1214,15 +1214,16 @@ export default class Chonse2Extensions
                 {
                     if (pieceInPromotionSquare.startsWith(PieceColor.WHITE))
                     {
-                        if (!returnObj.white.includes(bpp))
+                        if (!returnObj.white.includes(promotionSquare))
                         {
-                            returnObj.white.push(bpp);
+                            returnObj.white.push(promotionSquare);
                         }
                     }
                 }
             }
         )
 
+        console.log(returnObj);
         return returnObj;
     }
     //#endregion
