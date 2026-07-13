@@ -360,7 +360,6 @@ export default class BoardState
                 setCompletedEval: ( positionEval: PositionEval ) => 
                 {
                     const prevEval = this.getPreviousMostRecentEval();
-                    console.log(positionEval);
                     if (prevEval)
                     {
                         //only once the full eval is done should we get the move classification for that move.
