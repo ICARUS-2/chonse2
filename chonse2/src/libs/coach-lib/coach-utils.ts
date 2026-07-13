@@ -160,7 +160,7 @@ export class CoachUtils
                         let pieceToTake = PieceType.NONE;
 
                         //If there is any hanging pieces, find if the best move is to take, otherwise move on.
-                        if (hangingPiecesArrToCheck.length > 0)
+                        if (hangingPiecesArrToCheck.length > 0 && missedState)
                         {
                             for(let i = 0; i < hangingPiecesArrToCheck.length; i++)
                             {
@@ -186,6 +186,13 @@ export class CoachUtils
                                 //If the best move in this position is to capture the vulnerable piece, have the coach say this.
                                 if (bestMove.toSquare == hangingPieceCoord)
                                 {
+                                    //In case of someone getting, say, their queen/king forked by a knight, don't tell them they blundered the queen if they moved the king to an inaccurate spot.
+                                    const bestMoveAlsoInvolvedHangingThisPiece = Chonse2Extensions.doesSquareHaveHangingPiece(missedState, hangingPieceCoord);
+                                    if (bestMoveAlsoInvolvedHangingThisPiece)
+                                    {
+                                        break;
+                                    }
+
                                     pieceToTake = hangingPiece;
 
                                     //if player REALLY screwed up and blundered their queen.
