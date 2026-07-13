@@ -1468,8 +1468,6 @@ export default class Chonse2Extensions
     //#region Discovered check
     public static wasMoveDiscoveredCheck(afterState: Chonse2, move: {from: string, to: string, promotion: string}): DiscoveredCheckType
     {
-        //check if move was castling move, if so return false.
-
         const pieceInToSquare = afterState.findPieceAtCoordinate(move.to);
 
         //If there's no piece here... then why the hell did you call this function.
