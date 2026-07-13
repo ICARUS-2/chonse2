@@ -341,9 +341,51 @@ export class CoachUtils
                         }
                     }
 
+                    //Case: Ignored a pin on a piece and lost what was behind it
+                    {
+                        if (previousState)
+                        {
+                            //Need to check that the piece was indeed pinned before it moved.
+                            const previousStatePins = Chonse2Extensions.getPinsOnBoard(previousState);
+
+                            let ignoredPin: Pin | null = null;
+                            let playerDidMovePinnedPiece = false;
+
+                            //If the player moved a pinned piece, register it.
+                            for(const pin of previousStatePins)
+                            {
+                                if (move.fromCoord == pin.pinnedPieceCoordinate)
+                                {
+                                    ignoredPin = pin;
+                                    playerDidMovePinnedPiece = true;
+                                }
+                            }
+
+                            //If the player indeed fucked up and ignored the pin, check that the piece is actually hanging.
+                            if (ignoredPin != null && playerDidMovePinnedPiece)
+                            {
+                                const hangingPiecesToCheck = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
+
+                                //If the piece is hanging, then it's considered an inaccurately ignored pin.
+                                if (hangingPiecesToCheck.includes(ignoredPin.highValuePieceCoordinate))
+                                {
+                                    const pinnedPiece = previousState.findPieceAtCoordinate(ignoredPin.pinnedPieceCoordinate);
+                                    const highValuePiece = previousState.findPieceAtCoordinate(ignoredPin.highValuePieceCoordinate);
+
+
+                                    CoachText.addCoachSentence(move, CoachText.IGNORED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
+                                    move.coachMoveFlags.push(CoachMoveFlagType.IgnoredPin);
+                                }
+                            }
+                        }
+                    }
+
                     //Case: Player allowed material loss but not necessarily hanging something 
                     {
-                        if (!move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging) && !move.coachMoveFlags.includes(CoachMoveFlagType.AllowedSkewer) && !move.coachMoveFlags.includes(CoachMoveFlagType.AllowedFork))
+                        if (!move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging) && 
+                            !move.coachMoveFlags.includes(CoachMoveFlagType.AllowedSkewer) && 
+                            !move.coachMoveFlags.includes(CoachMoveFlagType.AllowedFork) &&
+                            !move.coachMoveFlags.includes(CoachMoveFlagType.IgnoredPin))
                         {
                             //what white already had before the engine line
                             const whiteCapturedBefore = currentFollowUp[0].piecesWhiteCaptured;
@@ -625,45 +667,6 @@ export class CoachUtils
 
                                     CoachText.addCoachSentence(move, CoachText.MISSED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedPin);
-                                }
-                            }
-                        }
-                    }
-
-                    //Case: Ignored a pin on a piece and lost what was behind it
-                    {
-                        if (previousState)
-                        {
-                            //Need to check that the piece was indeed pinned before it moved.
-                            const previousStatePins = Chonse2Extensions.getPinsOnBoard(previousState);
-
-                            let ignoredPin: Pin | null = null;
-                            let playerDidMovePinnedPiece = false;
-
-                            //If the player moved a pinned piece, register it.
-                            for(const pin of previousStatePins)
-                            {
-                                if (move.fromCoord == pin.pinnedPieceCoordinate)
-                                {
-                                    ignoredPin = pin;
-                                    playerDidMovePinnedPiece = true;
-                                }
-                            }
-
-                            //If the player indeed fucked up and ignored the pin, check that the piece is actually hanging.
-                            if (ignoredPin != null && playerDidMovePinnedPiece)
-                            {
-                                const hangingPiecesToCheck = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
-
-                                //If the piece is hanging, then it's considered an inaccurately ignored pin.
-                                if (hangingPiecesToCheck.includes(ignoredPin.highValuePieceCoordinate))
-                                {
-                                    const pinnedPiece = previousState.findPieceAtCoordinate(ignoredPin.pinnedPieceCoordinate);
-                                    const highValuePiece = previousState.findPieceAtCoordinate(ignoredPin.highValuePieceCoordinate);
-
-
-                                    CoachText.addCoachSentence(move, CoachText.IGNORED_PIN_SENTENCES, colorThatMovedText, pinnedPiece, highValuePiece);
-                                    move.coachMoveFlags.push(CoachMoveFlagType.IgnoredPin);
                                 }
                             }
                         }
