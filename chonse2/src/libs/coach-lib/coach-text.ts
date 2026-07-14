@@ -331,9 +331,9 @@ export default class CoachText
     //Player isolated their own pawn
     public static readonly ISOLATED_OWN_PAWN_SENTENCES: Array<CoachSentence> =
     [
-        new CoachSentence(`This isolates ${CoachText.TURN_PLACEHOLDER}'s pawn, giving it no defence from other ones. `, `isolated-own-pawn-sentences/0/audio_${CoachText.TURN_PLACEHOLDER}.mp3`),
-        new CoachSentence(`Now ${CoachText.TURN_PLACEHOLDER} has an isolated pawn. `, `isolated-own-pawn-sentences/1/audio_${CoachText.TURN_PLACEHOLDER}.mp3`),
-        new CoachSentence(`Being stuck with an isolated pawn may make it harder to advance long-term. `, `isolated-own-pawn-sentences/2/audio.mp3`)
+        new CoachSentence(`This isolates ${CoachText.TURN_PLACEHOLDER}'s pawn, giving it no defence from other ones.`, `isolated-own-pawn-sentences/0/audio_${CoachText.TURN_PLACEHOLDER}.mp3`),
+        new CoachSentence(`Now ${CoachText.TURN_PLACEHOLDER} has an isolated pawn.`, `isolated-own-pawn-sentences/1/audio_${CoachText.TURN_PLACEHOLDER}.mp3`),
+        new CoachSentence(`Being stuck with an isolated pawn may make it harder to advance long-term.`, `isolated-own-pawn-sentences/2/audio.mp3`)
     ]
 
     //Player weakened their castled king with a b or g pawn push
@@ -692,7 +692,6 @@ export default class CoachText
 
     //#region Text helper functions
 
-    //Gets a random index given the length of an array.
     public static convertPieceToText(piece: string): string
     {
         //Pawn
