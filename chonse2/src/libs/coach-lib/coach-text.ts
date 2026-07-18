@@ -376,7 +376,7 @@ export default class CoachText
     [
         new CoachSentence(`There was a better way to move a ${CoachText.PIECE_PLACEHOLDER} to safety.`, `better-safety-move-sentences/0/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
         new CoachSentence(`They missed a better way to move a ${CoachText.PIECE_PLACEHOLDER} to safety.`, `better-safety-move-sentences/1/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
-        new CoachSentence(`They was a better way to safely secure their ${CoachText.PIECE_PLACEHOLDER}.`, `better-safety-move-sentences/2/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`)
+        new CoachSentence(`There was a better way to safely secure their ${CoachText.PIECE_PLACEHOLDER}.`, `better-safety-move-sentences/2/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`)
     ]
 
     //Should have defended a piece with a different piece.
@@ -397,9 +397,9 @@ export default class CoachText
     //Player should have discovered checked the opponent
     public static readonly MISSED_DISCOVERED_CHECK_SENTENCES: Array<CoachSentence> =
     [
-        new CoachSentence(`A better option was to launch a discovered check. `, `missed-discovered-check-sentences/0/audio.mp3`),
-        new CoachSentence(`The best option here was to launch a discovered check on the enemy king. `, `missed-discovered-check-sentences/1/audio.mp3`),
-        new CoachSentence(`The better course of action here was to discovered-check the king. `, `missed-discovered-check-sentences/2/audio.mp3`)
+        new CoachSentence(`A better option was to launch a discovered check.`, `missed-discovered-check-sentences/0/audio.mp3`),
+        new CoachSentence(`The best option here was to launch a discovered check on the enemy king.`, `missed-discovered-check-sentences/1/audio.mp3`),
+        new CoachSentence(`The better course of action here was to discovered-check the king.`, `missed-discovered-check-sentences/2/audio.mp3`)
     ]
 
     //Player should have double checked the opponent.
