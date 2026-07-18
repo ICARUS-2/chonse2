@@ -206,8 +206,6 @@ export default class LuminousDetector
             }
         }
 
-        console.log(recaptureLine.mate);
-
         //If this top or near-top line involved recapturing the hanging piece but mate is still on the board, it's luminous.
         return !recaptureLine.mate;
     }

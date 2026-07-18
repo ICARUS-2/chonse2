@@ -1222,8 +1222,7 @@ export default class Chonse2Extensions
                 }
             }
         )
-
-        console.log(returnObj);
+        
         return returnObj;
     }
     //#endregion

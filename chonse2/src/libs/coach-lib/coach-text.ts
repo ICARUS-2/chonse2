@@ -365,7 +365,7 @@ export default class CoachText
     public static readonly MISSED_CENTER_STRIKE_SENTENCES: Array<CoachSentence> =
     [
         new CoachSentence(`A better option here was to strike in the center with a pawn.`, `missed-center-strike-sentences/0/audio.mp3`),
-        new CoachSentence(`${CoachText.PIECE_PLACEHOLDER} should have taken center space with a pawn.`, `missed-center-strike-sentences/1/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
+        new CoachSentence(`${CoachText.TURN_PLACEHOLDER} should have taken center space with a pawn.`, `missed-center-strike-sentences/1/audio_${CoachText.TURN_PLACEHOLDER}.mp3`),
         new CoachSentence(`This misses an opportunity to take center space with a pawn.`, `missed-center-strike-sentences/2/audio.mp3`),
         new CoachSentence(`They really should have taken the chance to bust open the center with a double pawn move.`, `missed-center-strike-sentences/3/audio.mp3`),
         new CoachSentence(`A better option was to increase center control with a pawn.`, `missed-center-strike-sentences/4/audio.mp3`)
@@ -507,7 +507,7 @@ export default class CoachText
     //player cleared the necessary squares to castle on a side
     public static readonly CLEARED_CASTLING_WAY_SENTENCES: Array<CoachSentence> =
     [
-        new CoachSentence(`This development prepares a safe ${CoachText.PIECE_PLACEHOLDER}side castle for ${CoachText.TURN_PLACEHOLDER}'s king.`, `cleared-castling-way-sentences/0/audio_${CoachText.PIECE_PLACEHOLDER}_${CoachText.TURN_PLACEHOLDER}.mp3`),
+        new CoachSentence(`This development prepares a safe ${CoachText.PIECE_PLACEHOLDER}side castle for ${CoachText.TURN_PLACEHOLDER}'s king.`, `cleared-castling-way-sentences/0/audio_${CoachText.TURN_PLACEHOLDER}_${CoachText.PIECE_PLACEHOLDER}.mp3`),
         new CoachSentence(`Good development here will allow for ${CoachText.PIECE_PLACEHOLDER}side castling as early as next move.`, `cleared-castling-way-sentences/1/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
         new CoachSentence(`${CoachText.TURN_PLACEHOLDER} is preparing to potentially castle ${CoachText.PIECE_PLACEHOLDER}side with this move.`, `cleared-castling-way-sentences/2/audio_${CoachText.TURN_PLACEHOLDER}_${CoachText.PIECE_PLACEHOLDER}.mp3`)
     ]
@@ -530,7 +530,7 @@ export default class CoachText
         new CoachSentence(`Good, now they have to double pawns in order to maintain the best position possible in their circumstances.`, `forced-doubling-of-pawns-sentences/3/audio.mp3`)
     ]
 
-    //Player recaptured a piece.
+    //Player captured a piece.
     public static readonly CAPTURE_SENTENCES: Array<CoachSentence> =
     [
         new CoachSentence(`A straightforward capture.`, `capture-sentences/0/audio.mp3`),
