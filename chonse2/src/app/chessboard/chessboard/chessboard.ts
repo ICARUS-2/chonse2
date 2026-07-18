@@ -371,7 +371,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         catch(ex)
         {
           console.log(ex)
-          this.toastr.error(this.translate.instant("chessboard.toastr.success"));
+          this.toastr.error(this.translate.instant("chessboard.toastr.error"));
         }
       }
     )
