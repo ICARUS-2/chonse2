@@ -7,7 +7,8 @@ export class CoachAudio
 {
     private currentAudio: HTMLAudioElement | null = null;
     private currentPlaybackId = 0;
-    static readonly BASE_AUDIO_PATH = "sounds/coach/"
+    static readonly BASE_AUDIO_PATH = "sounds/coach/";
+    static readonly SKIP = "pass";
 
     //Plays the given sentences back to back. If a sequence is already playing,
     //it's stopped immediately and this new one starts right away.
@@ -35,6 +36,12 @@ export class CoachAudio
         //A newer call to playSentences() or stop() has already superseded this run.
         if (playbackId !== this.currentPlaybackId || index >= sentences.length)
         {
+            return;
+        }
+
+        if (sentences[index].audioPath == CoachAudio.SKIP)
+        {
+            this.playFrom(sentences, index + 1, playbackId);
             return;
         }
 

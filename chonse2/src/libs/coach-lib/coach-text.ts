@@ -673,9 +673,9 @@ export default class CoachText
     //moved the bishop out on the main diag.
     public static readonly BISHOP_FIANCHETTOED_SENTENCES: Array<CoachSentence> =
     [
-        new CoachSentence(`They fianchettoed their bishop in order to snipe enemy pieces from a distance. `, `bishop-fianchettoed-sentences/0/audio.mp3`),
-        new CoachSentence(`This fianchettos the bishop on the long diagonal, prioritizing long-range effectiveness. `, `bishop-fianchettoed-sentences/1/audio.mp3`),
-        new CoachSentence(`Fianchettoing their bishop, putting pressure on the main diagonal. `, `bishop-fianchettoed-sentences/2/audio.mp3`)
+        new CoachSentence(`They fianchettoed their bishop in order to snipe enemy pieces from a distance.`, `bishop-fianchettoed-sentences/0/audio.mp3`),
+        new CoachSentence(`This fianchettoes the bishop on the long diagonal, prioritizing long-range effectiveness.`, `bishop-fianchettoed-sentences/1/audio.mp3`),
+        new CoachSentence(`Fianchettoing their bishop, putting pressure on the main diagonal.`, `bishop-fianchettoed-sentences/2/audio.mp3`)
     ]
 
     //developed the knight and attacked the center.

@@ -9,11 +9,12 @@ import { openings } from "../engine-lib/data/openings";
 import { MoveClassification } from "../engine-lib/types/enums";
 import { LineEval, PositionEval } from "../engine-lib/types/eval";
 import CoachText from "./coach-text";
-import {BLOCKED_BISHOPS, CASTLING_MOVES, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
+import {BLOCKED_BISHOPS, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType, CoachSentence } from "./coach-types";
 import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
 import { GameOverReason } from "../chonse2-lib/game-state";
 import { uciMoveParams2 } from "../engine-lib/helpers/chessHelper";
+import { CoachAudio } from "../../app/chessboard/coach-audio";
 export class CoachUtils
 {
     public static performCoachAnalysis(states: Array<Chonse2>, moves: Array<MoveResult>, evals: Array<PositionEval>, isDivergenceStack: boolean = false)
@@ -122,7 +123,7 @@ export class CoachUtils
                         if (openingObj.link != "")
                         {
                             move.coachResources.set( CoachResourceFlagType.Opening, openingObj.link );
-                            CoachText.addCoachSentence(move, [new CoachSentence(openingObj.name + ". ", "")], "");
+                            CoachText.addCoachSentence(move, [new CoachSentence(openingObj.name + ". ", CoachAudio.SKIP)], "");
                         }
 
                         // if (openingObj.name.includes("Wayward Queen Attack"))
