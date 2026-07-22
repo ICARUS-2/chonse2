@@ -551,8 +551,8 @@ export default class CoachText
     //Player sat a piece on the promotion square of a passed pawn preventing it from queening.
     public static readonly SAT_PIECE_ON_PROMOTION_SQUARE_SENTENCES: Array<CoachSentence> =
     [
-        new CoachSentence(`Cool idea, that passed pawn cannot promote as long as that ${CoachText.PIECE_PLACEHOLDER} is chilling there. `, `sat-piece-on-promotion-square-sentences/0/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
-        new CoachSentence(`That passed pawn won't be promoting with that ${CoachText.PIECE_PLACEHOLDER} sitting on its promotion square. `, `sat-piece-on-promotion-square-sentences/1/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`)
+        new CoachSentence(`Cool idea, that passed pawn cannot promote as long as that ${CoachText.PIECE_PLACEHOLDER} is chilling there.`, `sat-piece-on-promotion-square-sentences/0/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
+        new CoachSentence(`That passed pawn won't be promoting with that ${CoachText.PIECE_PLACEHOLDER} sitting on its promotion square.`, `sat-piece-on-promotion-square-sentences/1/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`)
     ]
 
     //Player accurately attacked a pawn chain
@@ -588,6 +588,60 @@ export default class CoachText
         new CoachSentence(`That double check will force the opponent to move their king.`, `double-check-sentences/1/audio.mp3`),
         new CoachSentence(`That double check puts a ton of pressure on the enemy king.`, `double-check-sentences/2/audio.mp3`),
         new CoachSentence(`Even the laziest king flees wildly in the face of a double check.`, `double-check-sentences/3/audio.mp3`)
+    ];
+
+    //forced an isolated pawn for the opponent.
+    public static readonly ISOLATED_OPPONENT_PAWN_SENTENCES: Array<CoachSentence> =
+    [
+        new CoachSentence(`Now the opponent has an isolated pawn.`, `isolated-opponent-pawn-sentences/0/audio.mp3`),
+        new CoachSentence(`Now the opponent is stuck with an isolated pawn which has no help from others.`, `isolated-opponent-pawn-sentences/1/audio.mp3`),
+        new CoachSentence(`Pawns excel at defending each other when pushing to the other side, and isolating that pawn will make that much harder for the opponent.`, `isolated-opponent-pawn-sentences/2/audio.mp3`),
+        new CoachSentence(`This forces the opponent to have an isolated pawn, which has no existing adjacent ones to help defend it.`, `isolated-opponent-pawn-sentences/3/audio.mp3`),
+        new CoachSentence(`This creates an isolated pawn for the opponent, breaking the backbone of their structure.`, `isolated-opponent-pawn-sentences/4/audio.mp3`)
+    ]
+
+    //Defended a hanging piece
+    public static readonly DEFENDED_HANGING_PIECE_SENTENCES: Array<CoachSentence> =
+    [
+        new CoachSentence(`This defends a piece that was previously under attack.`, `defended-hanging-piece-sentences/0/audio.mp3`),
+        new CoachSentence(`This defends their hanging piece.`, `defended-hanging-piece-sentences/1/audio.mp3`),
+        new CoachSentence(`They protected a piece that was under attack.`, `defended-hanging-piece-sentences/2/audio.mp3`),
+        new CoachSentence(`They are correctly providing protection for a piece that was under attack.`, `defended-hanging-piece-sentences/3/audio.mp3`),
+        new CoachSentence(`That piece is no longer hanging, and is now defended.`, `defended-hanging-piece-sentences/4/audio.mp3`)
+    ]
+
+    //Stepped a hanging piece out of trouble
+    public static readonly MOVED_HANGING_PIECE_SENTENCES: Array<CoachSentence> =
+    [
+        new CoachSentence(`The ${CoachText.PIECE_PLACEHOLDER} moves away as they avoid material loss.`, `moved-hanging-piece-sentences/0/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
+        new CoachSentence(`They moved their ${CoachText.PIECE_PLACEHOLDER} to safety.`, `moved-hanging-piece-sentences/1/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
+        new CoachSentence(`They stepped their ${CoachText.PIECE_PLACEHOLDER} out of the way before it could be captured.`, `moved-hanging-piece-sentences/2/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
+        new CoachSentence(`This moves the previously hanging ${CoachText.PIECE_PLACEHOLDER} to a safer square.`, `moved-hanging-piece-sentences/3/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`)
+    ]
+
+    //Blocked opponent's castling with a piece
+    public static readonly BLOCKING_CASTLING_SENTENCES: Array<CoachSentence> =
+    [
+        new CoachSentence(`This now prevents the opponent from castling ${CoachText.PIECE_PLACEHOLDER}side.`, `blocking-castling-sentences/0/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
+        new CoachSentence(`The opponent's ability to castle ${CoachText.PIECE_PLACEHOLDER}side is now on hold since a piece is targeting the square it must pass through.`, `blocking-castling-sentences/1/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
+        new CoachSentence(`The opponent cannot castle ${CoachText.PIECE_PLACEHOLDER}side as long as that piece is blocking its path.`, `blocking-castling-sentences/2/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`)
+    ]
+
+    //Kicked a piece with a pawn
+    public static readonly KICKED_PIECE_WITH_PAWN_SENTENCES: Array<CoachSentence> =
+    [
+        new CoachSentence(`This kicks a ${CoachText.PIECE_PLACEHOLDER} with a pawn, forcing it to move or be captured.`, `kicked-piece-with-pawn-sentences/0/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
+        new CoachSentence(`This threatens a ${CoachText.PIECE_PLACEHOLDER} with a pawn.`, `kicked-piece-with-pawn-sentences/1/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
+        new CoachSentence(`That pawn move attacks a ${CoachText.PIECE_PLACEHOLDER}, pushing it out of its current position.`, `kicked-piece-with-pawn-sentences/2/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
+        new CoachSentence(`Kicking the ${CoachText.PIECE_PLACEHOLDER} with a pawn.`, `kicked-piece-with-pawn-sentences/3/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`)
+    ]
+
+    //Took an outpost with a knight
+    public static readonly TOOK_OUTPOST_WITH_KNIGHT_SENTENCES: Array<CoachSentence> =
+    [
+        new CoachSentence(`Their knight took an outpost square, making it unattackable by pawns and difficult to fight with pieces.`, `took-outpost-with-knight-sentences/0/audio.mp3`),
+        new CoachSentence(`This takes an outpost with a knight, giving it a strong presence inside enemy lines.`, `took-outpost-with-knight-sentences/1/audio.mp3`),
+        new CoachSentence(`That is a comfy outpost square for the knight.`, `took-outpost-with-knight-sentences/2/audio.mp3`)
     ]
     //#endregion
 
@@ -633,60 +687,6 @@ export default class CoachText
         new CoachSentence("This aims to control central space with the knight.", `knight-development-center-control-sentences/3/audio.mp3`),
         new CoachSentence("The knight is moved to an active square, strengthening control over the center.", `knight-development-center-control-sentences/4/audio.mp3`),
         new CoachSentence("Develops the knight and attacks the center.", `knight-development-center-control-sentences/5/audio.mp3`)
-    ]
-
-    //forced an isolated pawn for the opponent.
-    public static readonly ISOLATED_OPPONENT_PAWN_SENTENCES: Array<CoachSentence> =
-    [
-        new CoachSentence(`Now the opponent has an isolated pawn.`, `isolated-opponent-pawn-sentences/0/audio.mp3`),
-        new CoachSentence(`Now the opponent is stuck with an isolated pawn which has no help from others.`, `isolated-opponent-pawn-sentences/1/audio.mp3`),
-        new CoachSentence(`Pawns excel at defending each other when pushing to the other side, and isolating that pawn will make that much harder for the opponent.`, `isolated-opponent-pawn-sentences/2/audio.mp3`),
-        new CoachSentence(`This forces the opponent to have an isolated pawn, which has no existing adjacent ones to help defend it.`, `isolated-opponent-pawn-sentences/3/audio.mp3`),
-        new CoachSentence(`This creates an isolated pawn for the opponent, breaking the backbone of their structure.`, `isolated-opponent-pawn-sentences/4/audio.mp3`)
-    ]
-
-    //Defended a hanging piece
-    public static readonly DEFENDED_HANGING_PIECE_SENTENCES: Array<CoachSentence> =
-    [
-        new CoachSentence(`This defends a piece that was previously under attack.`, `defended-hanging-piece-sentences/0/audio.mp3`),
-        new CoachSentence(`This defends their hanging piece.`, `defended-hanging-piece-sentences/1/audio.mp3`),
-        new CoachSentence(`They protected a piece that was under attack.`, `defended-hanging-piece-sentences/2/audio.mp3`),
-        new CoachSentence(`They are correctly providing protection for a piece that was under attack.`, `defended-hanging-piece-sentences/3/audio.mp3`),
-        new CoachSentence(`That piece is no longer hanging, and is now defended.`, `defended-hanging-piece-sentences/4/audio.mp3`)
-    ]
-
-    //Stepped a hanging piece out of trouble
-    public static readonly MOVED_HANGING_PIECE_SENTENCES: Array<CoachSentence> =
-    [
-        new CoachSentence(`The ${CoachText.PIECE_PLACEHOLDER} moves away as they avoid material loss.`, `moved-hanging-piece-sentences/0/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
-        new CoachSentence(`They moved their ${CoachText.PIECE_PLACEHOLDER} to safety.`, `moved-hanging-piece-sentences/1/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
-        new CoachSentence(`They stepped their ${CoachText.PIECE_PLACEHOLDER} out of the way before it could be captured.`, `moved-hanging-piece-sentences/2/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
-        new CoachSentence(`This moves the previously hanging ${CoachText.PIECE_PLACEHOLDER} to a safer square.`, `moved-hanging-piece-sentences/3/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`)
-    ]
-
-    //Blocked opponent's castling with a piece
-    public static readonly BLOCKING_CASTLING_SENTENCES: Array<CoachSentence> =
-    [
-        new CoachSentence(`This now prevents the opponent from castling ${CoachText.PIECE_PLACEHOLDER}side.`, `blocking-castling-sentences/0/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
-        new CoachSentence(`The opponent's ability to castle ${CoachText.PIECE_PLACEHOLDER}side is now on hold since a piece is targeting the square it must pass through. `, `blocking-castling-sentences/1/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
-        new CoachSentence(`The opponent cannot castle ${CoachText.PIECE_PLACEHOLDER}side as long as that piece is blocking its path.`, `blocking-castling-sentences/2/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`)
-    ]
-
-    //Kicked a piece with a pawn
-    public static readonly KICKED_PIECE_WITH_PAWN_SENTENCES: Array<CoachSentence> =
-    [
-        new CoachSentence(`This kicks a ${CoachText.PIECE_PLACEHOLDER} with a pawn, forcing it to move or be captured.`, `kicked-piece-with-pawn-sentences/0/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
-        new CoachSentence(`This threatens a ${CoachText.PIECE_PLACEHOLDER} with a pawn.`, `kicked-piece-with-pawn-sentences/1/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
-        new CoachSentence(`That pawn move attacks a ${CoachText.PIECE_PLACEHOLDER}, pushing it out of its current position.`, `kicked-piece-with-pawn-sentences/2/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
-        new CoachSentence(`Kicking the ${CoachText.PIECE_PLACEHOLDER} with a pawn.`, `kicked-piece-with-pawn-sentences/3/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`)
-    ]
-
-    //Took an outpost with a knight
-    public static readonly TOOK_OUTPOST_WITH_KNIGHT_SENTENCES: Array<CoachSentence> =
-    [
-        new CoachSentence(`Their knight took an outpost square, making it unattackable by pawns and difficult to fight with pieces.`, `took-outpost-with-knight-sentences/0/audio.mp3`),
-        new CoachSentence(`This takes an outpost with a knight, giving it a strong presence inside enemy lines.`, `took-outpost-with-knight-sentences/1/audio.mp3`),
-        new CoachSentence(`That is a comfy outpost square for the knight.`, `took-outpost-with-knight-sentences/2/audio.mp3`)
     ]
     //#endregion
 
