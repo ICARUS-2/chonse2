@@ -191,7 +191,7 @@ export class CoachDisplay {
             //Then play the move.
             const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
             moveResult.isCoachMove = true;
-            moveResult.coachSentences.push({text: this.translate.instant('chessboard.coachDisplay.comments.topMove'), audioPath: ""});
+            moveResult.coachSentences.push({text: this.translate.instant('chessboard.coachDisplay.comments.topMove'), audioPath: CoachAudio.SKIP});
 
             //Then add it.
             this.boardState().pushState(stateCopy, moveResult, true);

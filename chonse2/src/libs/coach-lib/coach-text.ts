@@ -1,11 +1,11 @@
 import MoveResult from "../../app/chessboard/chessboard/move-result";
+import { CoachAudio } from "../../app/chessboard/coach-audio";
 import { PieceType } from "../chonse2-lib/piece-type";
 import { MoveClassification } from "../engine-lib/types/enums";
 import { CoachSentence, FormattedCoachSentence } from "./coach-types";
 
 export default class CoachText 
 {
-//#region Static text data
     static readonly TURN_PLACEHOLDER = "{turn}";
     static readonly PIECE_PLACEHOLDER = "{piece}";
     static readonly SECONDARY_PIECE_PLACEHOLDER = "{piece2}";
@@ -13,22 +13,23 @@ export default class CoachText
     static readonly LIGHT_SQUARED = "light-squared";
     static readonly DARK_SQUARED = "dark-squared";
 
+    //#region Base sentences
     //At minimum one sentence should be displayed.
     public static readonly BASE_SENTENCES: Map<MoveClassification, CoachSentence[]> = new Map<MoveClassification, CoachSentence[]>(
         [
             //Luminous moves.
             [MoveClassification.Luminous,
                 [
-                    new CoachSentence(`Well done, a luminous sacrifice of the ${this.PIECE_PLACEHOLDER}!`, `base-sentences/luminous/0/audio_${this.PIECE_PLACEHOLDER}.mp3`),
-                    new CoachSentence(`A luminous sacrifice. Leaving that ${this.PIECE_PLACEHOLDER} hanging will improve the position. I see what ${this.TURN_PLACEHOLDER} is trying to do here.`, `base-sentences/luminous/1/audio_${this.PIECE_PLACEHOLDER}_${this.TURN_PLACEHOLDER}.mp3`),
-                    new CoachSentence(`And ${this.TURN_PLACEHOLDER} sacrifices........ the ${this.PIECE_PLACEHOLDER}!!!!!`, `base-sentences/luminous/2/audio_${this.TURN_PLACEHOLDER}_${this.PIECE_PLACEHOLDER}.mp3`)
+                    new CoachSentence(`Well done, a luminous sacrifice of the ${CoachText.PIECE_PLACEHOLDER}!`, `base-sentences/luminous/0/audio_${CoachText.PIECE_PLACEHOLDER}.mp3`),
+                    new CoachSentence(`A luminous sacrifice. Leaving that ${CoachText.PIECE_PLACEHOLDER} hanging will improve the position. I see what ${CoachText.TURN_PLACEHOLDER} is trying to do here.`, `base-sentences/luminous/1/audio_${CoachText.TURN_PLACEHOLDER}_${CoachText.PIECE_PLACEHOLDER}.mp3`),
+                    new CoachSentence(`And ${CoachText.TURN_PLACEHOLDER} sacrifices........ the ${CoachText.PIECE_PLACEHOLDER}!!!!!`, `base-sentences/luminous/2/audio_${CoachText.TURN_PLACEHOLDER}_${CoachText.PIECE_PLACEHOLDER}.mp3`)
                 ]
             ],
 
             //Perfect moves.
             [MoveClassification.Perfect,
                 [
-                    new CoachSentence(`There was one good move and ${this.TURN_PLACEHOLDER} found it!`, `base-sentences/perfect/0/audio_${this.TURN_PLACEHOLDER}.mp3`)
+                    new CoachSentence(`There was one good move and ${CoachText.TURN_PLACEHOLDER} found it!`, `base-sentences/perfect/0/audio_${CoachText.TURN_PLACEHOLDER}.mp3`)
                 ]
             ],
 
@@ -38,7 +39,7 @@ export default class CoachText
                 [
                     new CoachSentence("Right on target.", `base-sentences/best/0/audio.mp3`),
                     new CoachSentence("Best move!", `base-sentences/best/1/audio.mp3`),
-                    new CoachSentence(`${this.TURN_PLACEHOLDER} found the top move!`, `base-sentences/best/2/audio_${this.TURN_PLACEHOLDER}.mp3`)
+                    new CoachSentence(`${CoachText.TURN_PLACEHOLDER} found the top move!`, `base-sentences/best/2/audio_${CoachText.TURN_PLACEHOLDER}.mp3`)
                 ]
             ],
 
@@ -55,8 +56,9 @@ export default class CoachText
             [
                 MoveClassification.Okay,
                 [
-                    new CoachSentence(`Okay move, but ${this.TURN_PLACEHOLDER} had a better one.`, `base-sentences/okay/0/audio_${this.TURN_PLACEHOLDER}.mp3`),
-                    new CoachSentence(`This is decent, but not what I would have played.`, `base-sentences/okay/1/audio.mp3`)
+                    new CoachSentence(`Decent move, but ${CoachText.TURN_PLACEHOLDER} had a better one.`, `base-sentences/okay/0/audio_${CoachText.TURN_PLACEHOLDER}.mp3`),
+                    new CoachSentence(`This is decent, but not what I would have played.`, `base-sentences/okay/1/audio.mp3`),
+                    new CoachSentence(`Thats playable.`, `base-sentences/okay/2/audio.mp3`)
                 ]
             ],
 
@@ -64,8 +66,8 @@ export default class CoachText
             [
                 MoveClassification.Inaccuracy,
                 [
-                    new CoachSentence(`${this.TURN_PLACEHOLDER} had a chance to play something better.`, `base-sentences/inaccuracy/0/audio_${this.TURN_PLACEHOLDER}.mp3`),
-                    new CoachSentence(`${this.TURN_PLACEHOLDER} didn't find the right idea here.`, `base-sentences/inaccuracy/1/audio_${this.TURN_PLACEHOLDER}.mp3`)
+                    new CoachSentence(`${CoachText.TURN_PLACEHOLDER} had a chance to play something better.`, `base-sentences/inaccuracy/0/audio_${CoachText.TURN_PLACEHOLDER}.mp3`),
+                    new CoachSentence(`${CoachText.TURN_PLACEHOLDER} didn't find the right idea here.`, `base-sentences/inaccuracy/1/audio_${CoachText.TURN_PLACEHOLDER}.mp3`)
                 ]
             ],
 
@@ -74,7 +76,7 @@ export default class CoachText
                 MoveClassification.Mistake,
                 [
                     new CoachSentence(`Hmm, this seems like an error to me.`, `base-sentences/mistake/0/audio.mp3`),
-                    new CoachSentence(`Oh my god, ${this.TURN_PLACEHOLDER} made a mistake.`, `base-sentences/mistake/1/audio_${this.TURN_PLACEHOLDER}.mp3`)
+                    new CoachSentence(`Oh my god, ${CoachText.TURN_PLACEHOLDER} made a mistake.`, `base-sentences/mistake/1/audio_${CoachText.TURN_PLACEHOLDER}.mp3`)
                 ]
             ],
 
@@ -82,16 +84,16 @@ export default class CoachText
             [
                 MoveClassification.Blunder,
                 [
-                    new CoachSentence(`${this.TURN_PLACEHOLDER} just made a blunder.`, `base-sentences/blunder/0/audio_${this.TURN_PLACEHOLDER}.mp3`),
-                    new CoachSentence(`This move is going to cost ${this.TURN_PLACEHOLDER}.`, `base-sentences/blunder/1/audio_${this.TURN_PLACEHOLDER}.mp3`)
+                    new CoachSentence(`${CoachText.TURN_PLACEHOLDER} just made a blunder.`, `base-sentences/blunder/0/audio_${CoachText.TURN_PLACEHOLDER}.mp3`),
+                    new CoachSentence(`This move is going to cost ${CoachText.TURN_PLACEHOLDER}.`, `base-sentences/blunder/1/audio_${CoachText.TURN_PLACEHOLDER}.mp3`)
                 ]
             ],
 
             [
                 MoveClassification.Miss,
                 [
-                    new CoachSentence(`${this.TURN_PLACEHOLDER} missed the chance to capitalize on the opponent's hang, not taking enough time to spot it.`, `base-sentences/miss/0/audio_${this.TURN_PLACEHOLDER}.mp3`),
-                    new CoachSentence(`The opponent slipped up and hung a piece, but ${this.TURN_PLACEHOLDER} overlooked it.`, `base-sentences/miss/1/audio_${this.TURN_PLACEHOLDER}.mp3`)
+                    new CoachSentence(`${CoachText.TURN_PLACEHOLDER} missed the chance to capitalize on the opponent's hang, not taking enough time to spot it.`, `base-sentences/miss/0/audio_${this.TURN_PLACEHOLDER}.mp3`),
+                    new CoachSentence(`The opponent slipped up and hung a piece, but ${CoachText.TURN_PLACEHOLDER} overlooked it.`, `base-sentences/miss/1/audio_${CoachText.TURN_PLACEHOLDER}.mp3`)
                 ]
             ],
 
@@ -107,7 +109,7 @@ export default class CoachText
             [
                 MoveClassification.Opening,
                 [
-                    new CoachSentence("", `base-sentences/opening/0/audio.mp3`)
+                    new CoachSentence("", CoachAudio.SKIP)
                 ]
             ],
 
@@ -115,7 +117,7 @@ export default class CoachText
             [
                 MoveClassification.None,
                 [
-                    new CoachSentence("", `base-sentences/none/0/audio.mp3`)
+                    new CoachSentence("", CoachAudio.SKIP)
                 ]
             ]
         ]
