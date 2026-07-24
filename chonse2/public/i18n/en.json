@@ -294,6 +294,13 @@
     "settings": 
     {
         "title": "Settings",
+        
+        "insights": 
+        {
+            "heading": "Insights",
+            "coachAudio": "Coach Audio"
+        },
+
         "board": 
         {
             "heading": "Board",

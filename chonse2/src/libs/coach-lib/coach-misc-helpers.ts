@@ -1,8 +1,6 @@
 import Chonse2 from "../chonse2-lib/chonse2";
 import { PieceType } from "../chonse2-lib/piece-type";
 import { LineEval } from "../engine-lib/types/eval";
-import CoachText from "./coach-text";
-import { CoachMoveFlagType } from "./coach-types";
 
 export class CoachMiscHelpers 
 {

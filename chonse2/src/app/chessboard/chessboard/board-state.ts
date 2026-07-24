@@ -15,6 +15,8 @@ import MoveResult from "./move-result";
 import { CoachUtils } from "../../../libs/coach-lib/coach-utils";
 import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
 import { getMovesClassification } from "../../../libs/engine-lib/helpers/moveClassification";
+import { AppInjector } from "../../app-injector";
+import { CoachAudio } from "../coach-audio";
 
 export default class BoardState
 {
@@ -45,7 +47,8 @@ export default class BoardState
     isCoachMoveShowing: WritableSignal<boolean> = signal(false);
     isCoachMoveFinished: WritableSignal<boolean> = signal(false);
     isCoachIdeaShowing: WritableSignal<boolean> = signal(false);
-    coachMoveSequenceType: WritableSignal<CoachMoveSequenceType> = signal(CoachMoveSequenceType.None)
+    coachMoveSequenceType: WritableSignal<CoachMoveSequenceType> = signal(CoachMoveSequenceType.None);
+    audioService = AppInjector.injector.get(CoachAudio);
 
     //Vs ai stuff
     isVsAi: WritableSignal<boolean> = signal(false);
@@ -192,8 +195,8 @@ export default class BoardState
             {
                 const move = this.divergenceMoveStack()[i];
 
-                //Return the first non coach move
-                if (move.coachComment != CoachUtils.COACH_MOVE_DELIMITER)
+
+                if (!move.isCoachMove)
                 {
                     returnMove = move;
                     returnEval = this.divergenceEvalStack()[i];
@@ -307,6 +310,7 @@ export default class BoardState
     private async performDivergenceEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
     {
         const eng = this.engine();
+
         if (eng != undefined)
         {
             //Creates a new eval object where the fields will be set.
@@ -356,7 +360,6 @@ export default class BoardState
                 setCompletedEval: ( positionEval: PositionEval ) => 
                 {
                     const prevEval = this.getPreviousMostRecentEval();
-
                     if (prevEval)
                     {
                         //only once the full eval is done should we get the move classification for that move.
@@ -369,12 +372,21 @@ export default class BoardState
                         //if it succeeds, copy its fields.
                         if (classificationEval[1])
                         {
+                            //we are using a lower depth value for the coach evals since they are always the best move.
+                            if (overrideForCoachEvals)
+                            {
+                                if (classificationEval[1].moveClassification != MoveClassification.Opening)
+                                {
+                                    classificationEval[1].moveClassification = MoveClassification.Best;
+                                }
+                            }
                             //copy fields first
                             this.copyPosEvalFields(classificationEval[1], newEval);
                             
-                            if (previousEval)
+                            if (previousEval && !overrideForCoachEvals)
                             {
                                 CoachUtils.performCoachAnalysis([previousState, state], [move], [previousEval, newEval]);
+                                this.audioService.playSentences(move.coachSentences);
                             }
 
                             //then trigger cd

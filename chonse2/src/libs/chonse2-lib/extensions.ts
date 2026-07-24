@@ -1193,9 +1193,9 @@ export default class Chonse2Extensions
                 {
                     if (pieceInPromotionSquare.startsWith(PieceColor.BLACK))
                     {
-                        if (!returnObj.black.includes(wppCoord))
+                        if (!returnObj.black.includes(promotionSquare))
                         {
-                            returnObj.black.push(wppCoord);
+                            returnObj.black.push(promotionSquare);
                         }
                     }
                 }
@@ -1214,15 +1214,15 @@ export default class Chonse2Extensions
                 {
                     if (pieceInPromotionSquare.startsWith(PieceColor.WHITE))
                     {
-                        if (!returnObj.white.includes(bpp))
+                        if (!returnObj.white.includes(promotionSquare))
                         {
-                            returnObj.white.push(bpp);
+                            returnObj.white.push(promotionSquare);
                         }
                     }
                 }
             }
         )
-
+        
         return returnObj;
     }
     //#endregion
@@ -1472,6 +1472,22 @@ export default class Chonse2Extensions
 
         //If there's no piece here... then why the hell did you call this function.
         if (!pieceInToSquare)
+        {
+            return DiscoveredCheckType.None;
+        }
+
+        //Castling is not a discovered check. The rook may be the checking piece, but that is a consequence of castling rather than a discovered check.
+        if (
+            (pieceInToSquare === PieceType.WHITE_KING || pieceInToSquare === PieceType.BLACK_KING) &&
+            (
+                (move.from === Chonse2.WHITE_KING_SQUARE &&
+                    (move.to === Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE ||
+                    move.to === Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE)) ||
+                (move.from === Chonse2.BLACK_KING_SQUARE &&
+                    (move.to === Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE ||
+                    move.to === Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE))
+            )
+        )
         {
             return DiscoveredCheckType.None;
         }

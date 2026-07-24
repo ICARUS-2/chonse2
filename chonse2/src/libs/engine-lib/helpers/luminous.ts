@@ -66,7 +66,7 @@ export default class LuminousDetector
         }
 
         //Check if the opponent should recapture after player hung the piece (unless capturing the sacked piece simply prolongs mate)
-        const opponentShouldRecapture = LuminousDetector._shouldOpponentRecaptureIfMateNotForced(uciPlayedMove, currentLines);
+        const opponentShouldRecapture = LuminousDetector._shouldOpponentRecaptureIfMateNotForced(afterFen, uciPlayedMove, currentLines);
         if (opponentShouldRecapture)
         {
             return false;
@@ -163,7 +163,7 @@ export default class LuminousDetector
         return canPieceActuallyBeRecaptured;
     }
 
-    private static _shouldOpponentRecaptureIfMateNotForced(uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;}, currentLines: Array<LineEval>)
+    private static _shouldOpponentRecaptureIfMateNotForced(afterFen: string, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;}, currentLines: Array<LineEval>)
     {
         let recaptureIndex = -1;
 
@@ -186,8 +186,25 @@ export default class LuminousDetector
             return false;
         }
 
+
         //Get the line that involves the recapture of the sacrificed piece.
         const recaptureLine = currentLines[recaptureIndex];
+        
+        //If the line that involved recapturing has mate on the board, ensure that it's the person who sacked the piece that actually has mate here.
+        if (recaptureLine.mate)
+        {
+            const sideToMove = afterFen.split(" ")[1];
+            const isWhiteMove = sideToMove === "w";
+            if (isWhiteMove && recaptureLine.mate > 0)
+            {
+                return true;
+            }
+
+            if (!isWhiteMove && recaptureLine.mate < 0)
+            {
+                return true;
+            }
+        }
 
         //If this top or near-top line involved recapturing the hanging piece but mate is still on the board, it's luminous.
         return !recaptureLine.mate;

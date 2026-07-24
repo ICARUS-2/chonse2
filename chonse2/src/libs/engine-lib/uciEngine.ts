@@ -19,7 +19,6 @@ import { getEngineWorker, sendCommandsToWorker } from "./worker";
 import { Stockfish11 } from "./engines/stockfish11";
 import { Stockfish18 } from "./engines/stockfish18";
 import { LichessAPI } from "../server-api-lib/lichess-api";
-import MoveResult from "../../app/chessboard/chessboard/move-result";
 import { isWasmSupported } from "./helpers/shared";
 
 
@@ -307,35 +306,16 @@ export class UciEngine {
       for (let i = 0; i < fens.length; i++) {
         const fen = fens[i];
 
+        //TODO: See if the lack of this is what is causing the endgame eval not to work.
         const whoIsCheckmated = getWhoIsCheckmated(fen);
         if (whoIsCheckmated) {
-          updateEval(i, {
-            lines: [
-              {
-                pv: [],
-                depth: 0,
-                multiPv: 1,
-                mate: whoIsCheckmated === "w" ? -1 : 1,
-              },
-            ],
-            source: EvalSource.Local
-          });
+          updateEval(i, this.getEvalForCheckmate(whoIsCheckmated));
           continue;
         }
 
         const isStalemate = getIsStalemate(fen);
         if (isStalemate) {
-          updateEval(i, {
-            lines: [
-              {
-                pv: [],
-                depth: 0,
-                multiPv: 1,
-                cp: 0,
-              },
-            ],
-            source: EvalSource.Local
-          });
+          updateEval(i, this.getEvalForStalemate());
           continue;
         }
 
@@ -351,31 +331,13 @@ export class UciEngine {
         fens.map(async (fen, i) => {
           const whoIsCheckmated = getWhoIsCheckmated(fen);
           if (whoIsCheckmated) {
-            updateEval(i, {
-              lines: [
-                {
-                  pv: [],
-                  depth: 0,
-                  multiPv: 1,
-                  mate: whoIsCheckmated === "w" ? -1 : 1,
-                },
-              ],
-            });
+            updateEval(i, this.getEvalForCheckmate(whoIsCheckmated));
             return;
           }
 
           const isStalemate = getIsStalemate(fen);
           if (isStalemate) {
-            updateEval(i, {
-              lines: [
-                {
-                  pv: [],
-                  depth: 0,
-                  multiPv: 1,
-                  cp: 0,
-                },
-              ],
-            });
+            updateEval(i, this.getEvalForStalemate());
             return;
           }
 
@@ -456,6 +418,28 @@ export class UciEngine {
     await this.stopAllCurrentJobs();
     await this.setMultiPv(multiPv);
 
+    const whoIsCheckmated = getWhoIsCheckmated(fen);
+    if (whoIsCheckmated)
+    {
+      if (setCompletedEval)
+      {
+        setCompletedEval(this.getEvalForCheckmate(whoIsCheckmated));
+      }
+
+      return this.getEvalForCheckmate(whoIsCheckmated);
+    }
+
+    const isStalemate = getIsStalemate(fen)
+    if (isStalemate)
+    {
+      if (setCompletedEval)
+      {
+        setCompletedEval(this.getEvalForStalemate());
+      }
+
+      return this.getEvalForStalemate()
+    }
+
     const onNewMessage = (messages: string[]) => {
       if (!setPartialEval) return;
       const parsedResults = parseEvaluationResults(messages, fen);
@@ -504,5 +488,49 @@ export class UciEngine {
     }
 
     return move === "(none)" ? undefined : move;
+  }
+
+  getEvalForCheckmate(whoIsCheckmated: string): PositionEval
+  {
+    if (whoIsCheckmated)
+    {
+      return {
+        lines: [
+          {
+            pv: [],
+            depth: 0,
+            multiPv: 1,
+            mate: whoIsCheckmated === "w" ? -1 : 1,
+          },
+        ],
+        source: EvalSource.Local
+      }
+    }
+
+    return {
+      lines: [
+        {
+          pv: [],
+          depth: 0,
+          multiPv: 1,
+        },
+      ],
+      source: EvalSource.Local
+    }
+  }
+
+  getEvalForStalemate()
+  {
+    return{
+      lines: [
+        {
+          pv: [],
+          depth: 0,
+          multiPv: 1,
+          cp: 0,
+        },
+      ],
+      source: EvalSource.Local
+    }
   }
 }

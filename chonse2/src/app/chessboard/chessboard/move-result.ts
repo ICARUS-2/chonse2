@@ -1,5 +1,5 @@
 import { PieceType } from "../../../libs/chonse2-lib/piece-type";
-import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType } from "../../../libs/coach-lib/coach-types";
+import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType, FormattedCoachSentence } from "../../../libs/coach-lib/coach-types";
 
 //Object designed to hold move data as well as coach stuff.
 export default class MoveResult implements IMoveResult
@@ -12,10 +12,11 @@ export default class MoveResult implements IMoveResult
     piece: string = PieceType.NONE;
     pgnComment: string = "";
 
-    coachComment: string = "";
+    coachSentences: Array<FormattedCoachSentence> = [];
     coachMoveFlags: Array<CoachMoveFlagType> = [];
     coachIdeas: Map<CoachIdeaFlagType, CoachIdea> = new Map<CoachIdeaFlagType, CoachIdea>();
     coachResources: Map<CoachResourceFlagType, string> = new Map<CoachResourceFlagType, string>();
+    isCoachMove: boolean = false;
 
     //Exists because the Chonse2 library alone should not be returning anything more complex than the base IMoveResult, 
     //but the chessboard needs something a bit more complex for coach interactions and whatnot.

@@ -43,6 +43,7 @@ import { ProgressToast } from '../progress-toast/progress-toast';
 import GameLinkHelper from './game-link-helper';
 import { DatabaseModal } from '../database-modal/database-modal';
 import { TranslateService } from '@ngx-translate/core';
+import { CoachAudio } from '../coach-audio';
 
 interface PieceAnimationState {
   piece: string;
@@ -155,6 +156,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     private toastr: ToastrService,
     private router: Router,
     public themeService: ThemeService,
+    public coachAudio: CoachAudio,
     public cdr: ChangeDetectorRef)
   {
     //Board state stored in service to persist across routerlink changes.
@@ -369,7 +371,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         catch(ex)
         {
           console.log(ex)
-          this.toastr.error(this.translate.instant("chessboard.toastr.success"));
+          this.toastr.error(this.translate.instant("chessboard.toastr.error"));
         }
       }
     )
@@ -687,13 +689,14 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       {
         this.boardState().goBack();
         Sound.playSound(Sound.MOVE);
-
+        this.coachAudio.playSentences(this.boardState().getMostRecentMove().coachSentences);
       }, Chessboard.ANIMATION_DURATION_MS )
     }    
     else 
     {
       this.boardState().goBack();
       Sound.playSound(Sound.MOVE);
+      this.coachAudio.playSentences(this.boardState().getMostRecentMove().coachSentences);
     }
 
   }
@@ -709,7 +712,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       {
         this.boardState().goForward();
         Sound.playSoundForMove(mostRecentMove.notation);
-
+        this.coachAudio.playSentences(mostRecentMove.coachSentences);
       }, Chessboard.ANIMATION_DURATION_MS )
     }
     else 
@@ -724,6 +727,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     this.boardState().goForwardToEnd();
     Sound.playSound(Sound.CAPTURE);
+    this.coachAudio.playSentences(this.boardState().getMostRecentMove().coachSentences);
   }
 
   //Should the back buttons be enabled
@@ -788,6 +792,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     this.boardState().mainStackPointer.set(index);
     this.cdr.markForCheck();
+    this.coachAudio.playSentences(this.boardState().getMostRecentMove().coachSentences);
   }
 
   moveClassificationClicked(color: PieceColor, classification : MoveClassification)

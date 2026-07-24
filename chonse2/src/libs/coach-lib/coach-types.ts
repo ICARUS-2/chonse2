@@ -1,4 +1,5 @@
 import { Arrow } from "../../app/chessboard/chessboard/arrow";
+import CoachText from "./coach-text";
 
 export class CoachIdea 
 {
@@ -50,6 +51,9 @@ export enum CoachMoveFlagType
     DisconnectedRooks,
     MissedConnectedRooks,
 
+    //Neutral
+    //Flag used to prevent false positives in material losses. Say, if someone moved their king to safety the wrong way in a queen fork, don't give them shit for blundering their queen.
+    InevitablyHungPiece, 
 
     //Good (show follow up)
     OpportunityToCheckmate,
@@ -96,4 +100,41 @@ export enum CoachResourceFlagType
     Skewer,
     Pin,
     Outpost
+}
+
+export class CoachSentence {
+    public textTemplate: string;
+    public audioTemplate: string;
+
+    constructor(textTemplate: string, audioTemplate: string) {
+        this.textTemplate = textTemplate;
+        this.audioTemplate = audioTemplate;
+    }
+
+    public format(playerColor: string, pieceText: string, secondaryPieceText: string): FormattedCoachSentence 
+    {
+        //format text.
+        const formattedText = this.textTemplate
+            .replace(CoachText.TURN_PLACEHOLDER, playerColor)
+            .replace(CoachText.PIECE_PLACEHOLDER, pieceText)
+            .replace(CoachText.SECONDARY_PIECE_PLACEHOLDER, secondaryPieceText);
+
+        //format audio path
+        const safeColor = playerColor.toLowerCase();
+        const safePiece = pieceText.toLowerCase().replace(/\s+/g, '_');
+        const safeSecondaryPiece = secondaryPieceText.toLowerCase().replace(/\s+/g, '_');
+        
+        const formattedAudioPath = this.audioTemplate
+            .replace(CoachText.TURN_PLACEHOLDER, safeColor)
+            .replace(CoachText.PIECE_PLACEHOLDER, safePiece)
+            .replace(CoachText.SECONDARY_PIECE_PLACEHOLDER, safeSecondaryPiece);
+
+        return { text: formattedText, audioPath: formattedAudioPath };
+    }
+}
+
+export interface FormattedCoachSentence 
+{
+    text: string;
+    audioPath: string;
 }

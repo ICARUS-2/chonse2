@@ -23,7 +23,6 @@ export default class ChessboardHelper
     static PIECE_SETS = 
     [
         "cburnett",
-        "letter",
         "maestro",
         "merida",
         "staunty"

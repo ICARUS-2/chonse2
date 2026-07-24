@@ -32,16 +32,24 @@ export class Settings implements OnInit{
 
   formModel = signal<FormModel>(
   {
+    //board
     clickToMove:  LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, false),
     animatedPieces: LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true),
     chessPieces: LocalStorageHelper.getString(LocalStorageHelper.CHESS_PIECES, ChessboardHelper.DEFAULT_PIECE_SET),
     verboseNotation: LocalStorageHelper.getBoolean(LocalStorageHelper.VERBOSE_NOTATION, false),
+    
+    //engine
     selectedEngine: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName,
     engineDepth:  LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
     cloudHybridMode: LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, true),
     engineThreadCount: LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1),
+
+    //appearance
     selectedTheme: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_THEME, ThemeService.DEFAULT_THEME) as Themes,
-    language: LocalStorageHelper.getString(LocalStorageHelper.LANGUAGE, DEFAULT_LANG) as Languages
+    language: LocalStorageHelper.getString(LocalStorageHelper.LANGUAGE, DEFAULT_LANG) as Languages,
+
+    //coach
+    insightsAudio: LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true)
   })
 
   form = form(this.formModel, (schema) => 
@@ -70,6 +78,12 @@ export class Settings implements OnInit{
       this.handleEngineDropdownSelectionChanged();
       this.toastr.warning(this.translate.instant("settings.engine.legacyFallbackWarning"));
     }
+  }
+
+  //Coach sound
+  coachSoundSwitchPressed(val: boolean)
+  {
+    LocalStorageHelper.setBoolean(LocalStorageHelper.INSIGHTS_AUDIO, val);
   }
 
   //Click to move.
@@ -152,14 +166,22 @@ export class Settings implements OnInit{
 
 interface FormModel 
 {
+  //board
   clickToMove: boolean;
   animatedPieces: boolean;
   chessPieces: string;
   verboseNotation: boolean;
+
+  //engine
   selectedEngine: EngineName;
   engineDepth: number;
   cloudHybridMode: boolean;
   engineThreadCount: number;
+
+  //appearance
   selectedTheme: Themes;
   language: Languages;
+
+  //insights
+  insightsAudio: boolean;
 }
