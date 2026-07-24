@@ -92,8 +92,7 @@ export default class CoachText
             [
                 MoveClassification.Miss,
                 [
-                    new CoachSentence(`${CoachText.TURN_PLACEHOLDER} missed the chance to capitalize on the opponent's hang, not taking enough time to spot it.`, `base-sentences/miss/0/audio_${this.TURN_PLACEHOLDER}.mp3`),
-                    new CoachSentence(`The opponent slipped up and hung a piece, but ${CoachText.TURN_PLACEHOLDER} overlooked it.`, `base-sentences/miss/1/audio_${CoachText.TURN_PLACEHOLDER}.mp3`)
+                    new CoachSentence(`The opponent slipped up and hung a piece, but the corresponding capture was overlooked.`, `base-sentences/miss/0/audio.mp3`)
                 ]
             ],
 
