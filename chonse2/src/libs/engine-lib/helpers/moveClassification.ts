@@ -4,7 +4,7 @@ import { openings } from "../data/openings";
 import { MoveClassification } from "../types/enums";
 import { PositionEval } from "../types/eval";
 import { Square } from "./chess";
-import { getIsPieceSacrifice, isHangingPieceCapture, uciMoveParams2 } from "./chessHelper";
+import { getIsPieceSacrifice, isHangingPieceCapture, uciMoveParams } from "./chessHelper";
 import LuminousDetector from "./luminous";
 import { getLineWinPercentage, getPositionWinPercentage } from "./winPercentage";
 
@@ -40,8 +40,7 @@ export const getMovesClassification = (
 
     const sideToMove = fens[index - 1].split(" ")[1];
     const isWhiteMove = sideToMove === "w";
-    const uciParamsMove = uciMoveParams2(uciMoves[index - 1], isWhiteMove ? "w" : "b");
-    const playedMove = concatenateUciParams(uciParamsMove);
+    const playedMove = uciMoves[index - 1];
     const prevPosition = rawPositions[index - 1];
     const alternativeLine = prevPosition.lines.find((line) => line.pv[0] !== playedMove);
     
@@ -70,7 +69,7 @@ export const getMovesClassification = (
     }
 
     //Luminous: If move was a good sacrifice.
-    if (LuminousDetector.isMoveLuminousSacrifice(fens[index - 1], fens[index], prevPosition.lines, rawPosition.lines, lastWinPct, currentWinPct, uciParamsMove))
+    if (LuminousDetector.isMoveLuminousSacrifice(fens[index - 1], fens[index], prevPosition.lines, rawPosition.lines, lastWinPct, currentWinPct, uciMoveParams(playedMove)))
     {
       return {
       ...rawPosition,

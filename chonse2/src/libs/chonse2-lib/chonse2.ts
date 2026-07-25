@@ -237,6 +237,9 @@ export default class Chonse2
       return {result: false, notation: "", notationMinimal: "" , fromCoord: fromCoordinate, toCoord: toCoordinate, piece: "", pgnComment: "", promotion: ""};
     }
 
+    //Needed to record UCI (making sure that the promo doesn't just get appended to every move).
+    let isPromotion = false;
+
     //In piece state, where the current piece is moving to.
     const toSquareIndex = Chonse2.findIndexFromCoordinate(toCoordinate);
 
@@ -316,6 +319,7 @@ export default class Chonse2
     {
       //record it in the notation
       notation.addPromotion(promotionPiece);
+      isPromotion = true;
       switch(promotionPiece)
       {
           case PieceType.QUEEN:
@@ -507,7 +511,7 @@ export default class Chonse2
     }
 
     //The move was successful if we got this far.
-    return {result: true, notation: notation.get(), notationMinimal: notation.getMinimal(this, toCoordinate, piece) ,fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: "", promotion: promotionPiece};
+    return {result: true, notation: notation.get(), notationMinimal: notation.getMinimal(this, toCoordinate, piece) ,fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: "", promotion: isPromotion ? promotionPiece : ""};
   }
 
   //Verifies if a king of a particular color is in check.

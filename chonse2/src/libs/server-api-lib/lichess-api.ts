@@ -1,4 +1,5 @@
 import { GameScore, GameOverReason } from "../chonse2-lib/game-state";
+import { normalizeLichessMove } from "../engine-lib/helpers/chessHelper";
 import { PositionEval, LineEval, EvalSource } from "../engine-lib/types/eval";
 
 
@@ -77,11 +78,13 @@ export class LichessAPI
                 },),
                 source: EvalSource.Cloud
             };
+
             if (posEval.lines.length < 2)
             {
                 console.info("Cloud eval for " + fen + " successful, but insufficient lines found. Returning undefined");
                 return undefined;
             }
+            
             console.info("Cloud eval successful for position " + fen)
             return posEval;
         }
