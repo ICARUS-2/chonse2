@@ -14,7 +14,7 @@ import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType,
 import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
 import { GameOverReason } from "../chonse2-lib/game-state";
 import { uciMoveParams2 } from "../engine-lib/helpers/chessHelper";
-import { CoachAudio } from "../../app/chessboard/coach-audio";
+import { CoachAudio } from "./coach-audio";
 export class CoachUtils
 {
     public static performCoachAnalysis(states: Array<Chonse2>, moves: Array<MoveResult>, evals: Array<PositionEval>, isDivergenceStack: boolean = false)

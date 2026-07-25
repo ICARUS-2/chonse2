@@ -1,6 +1,6 @@
 import { Service } from '@angular/core';
-import { FormattedCoachSentence } from '../../../libs/coach-lib/coach-types';
-import LocalStorageHelper from '../../../libs/local-storage-helper';
+import { FormattedCoachSentence } from './coach-types';
+import LocalStorageHelper from '../local-storage-helper';
 
 @Service()
 export class CoachAudio 

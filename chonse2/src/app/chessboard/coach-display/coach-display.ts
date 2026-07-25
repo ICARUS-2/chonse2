@@ -14,9 +14,8 @@ import Sound from '../chessboard/sound';
 import { Chessboard } from '../chessboard/chessboard';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CoachMiscHelpers } from '../../../libs/coach-lib/coach-misc-helpers';
-import { CoachMoveFlagType, CoachMoveSequenceType, CoachIdeaFlagType, CoachIdea, CoachResourceFlagType, FormattedCoachSentence } from '../../../libs/coach-lib/coach-types';
-import { CoachUtils } from '../../../libs/coach-lib/coach-utils';
-import { CoachAudio } from '../coach-audio';
+import { CoachMoveFlagType, CoachMoveSequenceType, CoachIdeaFlagType, CoachIdea, CoachResourceFlagType } from '../../../libs/coach-lib/coach-types';
+import { CoachAudio } from '../../../libs/coach-lib/coach-audio';
 
 @Component({
   selector: 'app-coach-display',

@@ -16,7 +16,7 @@ import { CoachUtils } from "../../../libs/coach-lib/coach-utils";
 import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
 import { getMovesClassification } from "../../../libs/engine-lib/helpers/moveClassification";
 import { AppInjector } from "../../app-injector";
-import { CoachAudio } from "../coach-audio";
+import { CoachAudio } from "../../../libs/coach-lib/coach-audio";
 
 export default class BoardState
 {

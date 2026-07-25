@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, inject, input, Input, OnDestroy, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, inject, input, Input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Square } from '../square/square';
 import { BoardPlayerInfo } from "../board-player-info/board-player-info";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -43,7 +43,7 @@ import { ProgressToast } from '../progress-toast/progress-toast';
 import GameLinkHelper from './game-link-helper';
 import { DatabaseModal } from '../database-modal/database-modal';
 import { TranslateService } from '@ngx-translate/core';
-import { CoachAudio } from '../coach-audio';
+import { CoachAudio } from '../../../libs/coach-lib/coach-audio';
 
 interface PieceAnimationState {
   piece: string;
