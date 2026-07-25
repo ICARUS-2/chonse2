@@ -13,8 +13,8 @@ import {BLOCKED_BISHOPS, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpers, CoachResourc
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType, CoachSentence } from "./coach-types";
 import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
 import { GameOverReason } from "../chonse2-lib/game-state";
-import { uciMoveParams2 } from "../engine-lib/helpers/chessHelper";
-import { CoachAudio } from "../../app/chessboard/coach-audio";
+import { CoachAudio } from "./coach-audio";
+import { uciMoveParams } from "../engine-lib/helpers/chessHelper";
 export class CoachUtils
 {
     public static performCoachAnalysis(states: Array<Chonse2>, moves: Array<MoveResult>, evals: Array<PositionEval>, isDivergenceStack: boolean = false)
@@ -1193,7 +1193,7 @@ export class CoachUtils
                                     const previousLineTwoMovesDeepState = previousFollowUp[2]
                                     if (bestMoveInMissedState)
                                     {
-                                        const formattedMove = uciMoveParams2(bestMoveInMissedState, whiteToMove ? "w" : "b");
+                                        const formattedMove = uciMoveParams(bestMoveInMissedState);
 
                                         const wasBestMoveToForceLossOfCastlingRights = CoachMiscHelpers.didForceLossOfCastlingRights(missedState, previousLineTwoMovesDeepState , whiteToMove, {fromSquare: formattedMove.from, toSquare: formattedMove.to, promotion: "q"});
 

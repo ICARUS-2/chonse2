@@ -1,13 +1,7 @@
 import { EvaluateGameParams, LineEval, PositionEval } from "../types/eval";
-//import { Game, Player } from "@/types/game";
-import { BLACK, Chess, Color, PieceSymbol, Square, WHITE } from "../helpers/chess";
+import { Chess, PieceSymbol, Square } from "../helpers/chess";
 import { getPositionWinPercentage } from "../helpers/winPercentage";
 import { GameScore } from "../../chonse2-lib/game-state";
-import Chonse2 from "../../chonse2-lib/chonse2";
-import { PieceType } from "../../chonse2-lib/piece-type";
-//import { PieceColor } from "../../../../lib/piece-color";
-
-type Piece = "wP" | "wB" | "wN" | "wR" | "wQ" | "wK" | "bP" | "bB" | "bN" | "bR" | "bQ" | "bK";
 
 export const getEvaluateGameParams = (game: Chess): EvaluateGameParams => {
   const history = game.history({ verbose: true });
@@ -22,14 +16,6 @@ export const getEvaluateGameParams = (game: Chess): EvaluateGameParams => {
   return { fens, uciMoves };
 };
 
-/*
-export const getGameFromPgn = (pgn: string): Chess => {
-  const game = new Chess();
-  game.loadPgn(pgn);
-
-  return game;
-};
-*/
 export const moveLineUciToSan = (
   fen: string
 ): ((moveUci: string) => string) => {
@@ -92,7 +78,7 @@ export const getEvaluationBarValue2 = (
   const bestLine = position.lines[0];
   if (!bestLine)
   {
-    return { whiteBarPercentage: 50, label: "0.0" }
+    return { whiteBarPercentage: 40, label: "0.0" }
   }
 
   const whiteBarPercentage = getPositionWinPercentage(position);
@@ -139,105 +125,6 @@ export const uciMoveParams = (
   promotion: uciMove.slice(4, 5) || undefined,
 });
 
-//CUSTOM WRITTEN FOR CHONSE2 LIBRARY
-export const uciMoveParams2 = (uciMove: string, turn: Color): {from: Square; to: Square; promotion?: string | undefined;} => {
-
-  if (uciMove == "O-O" || uciMove == "O-O+" || uciMove == "O-O#")
-  {
-    return turn === WHITE? {from: Chonse2.WHITE_KING_SQUARE, to: Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE} 
-                : {from: Chonse2.BLACK_KING_SQUARE, to: Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE}
-  }
-
-  if (uciMove == "O-O-O" || uciMove == "O-O-O+" || uciMove == "O-O-O#")
-  {
-    return turn === WHITE? {from: Chonse2.WHITE_KING_SQUARE, to: Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE} 
-                : {from: Chonse2.BLACK_KING_SQUARE, to: Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE}
-  }
-  
-  if (uciMove.startsWith( PieceType.ROOK ) 
-    || uciMove.startsWith(PieceType.KNIGHT) 
-    || uciMove.startsWith(PieceType.BISHOP)
-    || uciMove.startsWith(PieceType.QUEEN)
-    || uciMove.startsWith(PieceType.KING))
-    {
-      uciMove = uciMove.slice(1);
-    }
-
-    if (uciMove.includes("x"))
-    {
-      uciMove = uciMove.replace("x", "");
-    }
-
-    if (uciMove.includes("+"))
-    {
-      uciMove = uciMove.replace("+", "");
-    }
-
-    if (uciMove.includes("#"))
-    {
-      uciMove = uciMove.replace("#", "");
-    }
-
-    const from = uciMove[0] + uciMove[1] as Square;
-    const to = uciMove[2] + uciMove[3] as Square;
-    let promotion = undefined;
-
-    if (uciMove.includes("="))
-    {
-      const splitToPromotion = uciMove.split("=");
-      promotion = splitToPromotion[1];
-    }
-
-    //Accounts for the difference in engine line move format vs Chonse2
-    const lastChar = uciMove[uciMove.length - 1];
-    if (lastChar == "q" || lastChar == "r" || lastChar == "b" || lastChar == "n")
-    {
-      promotion = lastChar;
-    }
-
-    if (promotion)
-    {
-      promotion = promotion.toLowerCase();
-    }
-
-    return {from, to, promotion};
-}
-
-export const isSimplePieceRecapture = (
-  fen: string,
-  uciMoves: [string, string]
-): boolean => {
-  const game = new Chess(fen);
-  let turn: Color = game.turn();
-
-  const moves: Array<{from: Square; to: Square; promotion?: string | undefined;}> = [];
-
-  uciMoves.forEach( m =>
-  {
-    moves.push(uciMoveParams2(m, turn))
-
-    if (turn == "w")
-    {
-      turn = "b";
-    }
-
-    if (turn == "b")
-    {
-      turn = "w";
-    }
-  }
-   )
-
-  //const moves = uciMoves.map((uciMove) => uciMoveParams2(uciMove));
-
-  if (moves[0].to !== moves[1].to) return false;
-
-  const piece = game.get(moves[0].to);
-  if (piece) return true;
-
-  return false;
-};
-
 export const getIsPieceSacrifice = (
   fen: string,
   playedMove: string,
@@ -265,7 +152,7 @@ export const getIsPieceSacrifice = (
 
       move = normalizeLichessMove(move, game);
 
-      const fullMove = game.move(uciMoveParams2(move, game.turn()));
+      const fullMove = game.move(uciMoveParams(move));
       if (fullMove.captured) {
         capturedPieces[fullMove.color].push(fullMove.captured);
         nonCapturingMovesTemp = 1;
@@ -339,61 +226,6 @@ export const isCheck = (fen: string): boolean => {
   return game.inCheck();
 };
 
-/*
-export const getCapturedPieces = (
-  fen: string,
-  color: PieceColor
-): {
-  piece: string;
-  count: number;
-}[] => {
-  const capturedPieces =
-    color === Color.White
-      ? [
-          { piece: "p", count: 8 },
-          { piece: "b", count: 2 },
-          { piece: "n", count: 2 },
-          { piece: "r", count: 2 },
-          { piece: "q", count: 1 },
-        ]
-      : [
-          { piece: "P", count: 8 },
-          { piece: "B", count: 2 },
-          { piece: "N", count: 2 },
-          { piece: "R", count: 2 },
-          { piece: "Q", count: 1 },
-        ];
-
-  const fenPiecePlacement = fen.split(" ")[0];
-
-  return capturedPieces.map(({ piece, count }) => {
-    const piecesLeftCount = fenPiecePlacement.match(
-      new RegExp(piece, "g")
-    )?.length;
-    const newPiece = pieceFenToSymbol[piece] ?? piece;
-
-    return {
-      piece: newPiece,
-      count: Math.max(0, count - (piecesLeftCount ?? 0)),
-    };
-  });
-};
-*/
-const pieceFenToSymbol: Record<string, Piece | undefined> = {
-  p: "bP",
-  b: "bB",
-  n: "bN",
-  r: "bR",
-  q: "bQ",
-  k: "bK",
-  P: "wP",
-  B: "wB",
-  N: "wN",
-  R: "wR",
-  Q: "wQ",
-  K: "wK",
-};
-
 export const getLineEvalLabel = (
   line: Pick<LineEval, "cp" | "mate">
 ): string => {
@@ -440,49 +272,31 @@ export const formatUciPv = (fen: string, uciMoves: string[]): string[] => {
 };
 
 
-function normalizeLichessMove(move: string, chess: Chess) {
-
-    if (move.includes("O-O"))
-    {
-      return move;
-    }
-
-    if (move.includes("x"))
-    {
-      move = move.replace("x", "");
-    }
-
-    if (move.includes("+"))
-    {
-      move = move.replace("+", "");
-    }
-
-    if (move.includes("#"))
-    {
-      move = move.replace("#", "");
-    }
-
+export function normalizeLichessMove(move: string, chess: Chess) {
     const from = move.slice(0, 2);
     const to = move.slice(2, 4);
-    const promotion = move.includes("=") ? ("=" + move.split("=")[1]) : move.length > 4 ? move[4] : "";
+    const promotion = move.length > 4 ? move[4] : "";
 
     const piece = chess.get(from as Square);
     const target = chess.get(to as Square);
+
+    if (!move.includes("e1h1") && !move.includes("e1a1") && !move.includes("e8h8") && !move.includes("e8a8"))
+    {
+      return from + to + promotion;
+    }
 
     if (
         piece?.type === "k" &&
         target?.type === "r" &&
         piece.color === target.color
     ) {
-        if (from === "e1" && to === "h1") return /*{ from: "e1", to: "g1" }*/ "O-O";
-        if (from === "e1" && to === "a1") return /*{ from: "e1", to: "c1" }*/ "O-O-O";
-        if (from === "e8" && to === "h8") return /*{ from: "e8", to: "g8" }*/ "O-O";
-        if (from === "e8" && to === "a8") return /*{ from: "e8", to: "c8" }*/ "O-O-O";
+        if (from === "e1" && to === "h1") return "e1g1"
+        if (from === "e1" && to === "a1") return "e1c1"
+        if (from === "e8" && to === "h8") return "e8g8"
+        if (from === "e8" && to === "a8") return "e8c8"
     }
 
-    const newMove = from+to+promotion;
-
-    return newMove;
+    return from+to+promotion;
 }
 
 // Also counting pieces of higher value that can be taken with a lower value piece as hanging
@@ -492,7 +306,7 @@ export const isHangingPieceCapture = (
   playedMove: string
 ): boolean => {
   const chess = new Chess(fen);
-  const move = chess.move(uciMoveParams(playedMove));
+  const move = chess.move(uciMoveParams(normalizeLichessMove(playedMove, chess)));
 
   if (!move.captured) return false;
 

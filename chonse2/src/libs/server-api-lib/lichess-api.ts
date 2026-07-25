@@ -77,11 +77,13 @@ export class LichessAPI
                 },),
                 source: EvalSource.Cloud
             };
+
             if (posEval.lines.length < 2)
             {
                 console.info("Cloud eval for " + fen + " successful, but insufficient lines found. Returning undefined");
                 return undefined;
             }
+
             console.info("Cloud eval successful for position " + fen)
             return posEval;
         }

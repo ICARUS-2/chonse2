@@ -16,7 +16,7 @@ import { CoachUtils } from "../../../libs/coach-lib/coach-utils";
 import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
 import { getMovesClassification } from "../../../libs/engine-lib/helpers/moveClassification";
 import { AppInjector } from "../../app-injector";
-import { CoachAudio } from "../coach-audio";
+import { CoachAudio } from "../../../libs/coach-lib/coach-audio";
 
 export default class BoardState
 {
@@ -365,7 +365,7 @@ export default class BoardState
                         //only once the full eval is done should we get the move classification for that move.
                         const classificationEval = getMovesClassification(
                             [prevEval, positionEval], //pos 
-                            [move.notation], //move 
+                            [move.getUci()], //move 
                             [previousState.getFEN(), state.getFEN()] //fens
                         )
 
@@ -927,7 +927,7 @@ export default class BoardState
     getEvaluateGameParams(): EvaluateGameParams
     {
         const fens: string[] = this.mainStateStack().map( c2 => c2.getFEN() );
-        const uciMoves: string[] = this.mainMoveStack().map(m => m.notation);
+        const uciMoves: string[] = this.mainMoveStack().map(m => m.getUci());
         const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
         const workersNb = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1);
 

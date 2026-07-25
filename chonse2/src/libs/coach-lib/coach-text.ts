@@ -1,7 +1,7 @@
 import MoveResult from "../../app/chessboard/chessboard/move-result";
-import { CoachAudio } from "../../app/chessboard/coach-audio";
 import { PieceType } from "../chonse2-lib/piece-type";
 import { MoveClassification } from "../engine-lib/types/enums";
+import { CoachAudio } from "./coach-audio";
 import { CoachSentence, FormattedCoachSentence } from "./coach-types";
 
 export default class CoachText 
