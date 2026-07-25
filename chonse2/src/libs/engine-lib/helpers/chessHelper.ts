@@ -1,13 +1,7 @@
 import { EvaluateGameParams, LineEval, PositionEval } from "../types/eval";
-//import { Game, Player } from "@/types/game";
-import { BLACK, Chess, Color, PieceSymbol, Square, WHITE } from "../helpers/chess";
+import { Chess, PieceSymbol, Square } from "../helpers/chess";
 import { getPositionWinPercentage } from "../helpers/winPercentage";
 import { GameScore } from "../../chonse2-lib/game-state";
-import Chonse2 from "../../chonse2-lib/chonse2";
-import { PieceType } from "../../chonse2-lib/piece-type";
-//import { PieceColor } from "../../../../lib/piece-color";
-
-type Piece = "wP" | "wB" | "wN" | "wR" | "wQ" | "wK" | "bP" | "bB" | "bN" | "bR" | "bQ" | "bK";
 
 export const getEvaluateGameParams = (game: Chess): EvaluateGameParams => {
   const history = game.history({ verbose: true });
@@ -22,14 +16,6 @@ export const getEvaluateGameParams = (game: Chess): EvaluateGameParams => {
   return { fens, uciMoves };
 };
 
-/*
-export const getGameFromPgn = (pgn: string): Chess => {
-  const game = new Chess();
-  game.loadPgn(pgn);
-
-  return game;
-};
-*/
 export const moveLineUciToSan = (
   fen: string
 ): ((moveUci: string) => string) => {
@@ -240,61 +226,6 @@ export const isCheck = (fen: string): boolean => {
   return game.inCheck();
 };
 
-/*
-export const getCapturedPieces = (
-  fen: string,
-  color: PieceColor
-): {
-  piece: string;
-  count: number;
-}[] => {
-  const capturedPieces =
-    color === Color.White
-      ? [
-          { piece: "p", count: 8 },
-          { piece: "b", count: 2 },
-          { piece: "n", count: 2 },
-          { piece: "r", count: 2 },
-          { piece: "q", count: 1 },
-        ]
-      : [
-          { piece: "P", count: 8 },
-          { piece: "B", count: 2 },
-          { piece: "N", count: 2 },
-          { piece: "R", count: 2 },
-          { piece: "Q", count: 1 },
-        ];
-
-  const fenPiecePlacement = fen.split(" ")[0];
-
-  return capturedPieces.map(({ piece, count }) => {
-    const piecesLeftCount = fenPiecePlacement.match(
-      new RegExp(piece, "g")
-    )?.length;
-    const newPiece = pieceFenToSymbol[piece] ?? piece;
-
-    return {
-      piece: newPiece,
-      count: Math.max(0, count - (piecesLeftCount ?? 0)),
-    };
-  });
-};
-*/
-const pieceFenToSymbol: Record<string, Piece | undefined> = {
-  p: "bP",
-  b: "bB",
-  n: "bN",
-  r: "bR",
-  q: "bQ",
-  k: "bK",
-  P: "wP",
-  B: "wB",
-  N: "wN",
-  R: "wR",
-  Q: "wQ",
-  K: "wK",
-};
-
 export const getLineEvalLabel = (
   line: Pick<LineEval, "cp" | "mate">
 ): string => {
@@ -375,7 +306,7 @@ export const isHangingPieceCapture = (
   playedMove: string
 ): boolean => {
   const chess = new Chess(fen);
-  const move = chess.move(uciMoveParams(playedMove));
+  const move = chess.move(uciMoveParams(normalizeLichessMove(playedMove, chess)));
 
   if (!move.captured) return false;
 
