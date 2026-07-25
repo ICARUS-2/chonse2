@@ -1,6 +1,6 @@
 import { Service } from '@angular/core';
-import { FormattedCoachSentence } from '../../libs/coach-lib/coach-types';
-import LocalStorageHelper from '../../libs/local-storage-helper';
+import { FormattedCoachSentence } from '../../../libs/coach-lib/coach-types';
+import LocalStorageHelper from '../../../libs/local-storage-helper';
 
 @Service()
 export class CoachAudio 
@@ -34,7 +34,7 @@ export class CoachAudio
     private playFrom(sentences: Array<FormattedCoachSentence>, index: number, playbackId: number): void
     {
         //A newer call to playSentences() or stop() has already superseded this run.
-        if (playbackId !== this.currentPlaybackId || index >= sentences.length)
+        if (playbackId !== this.currentPlaybackId || index >= sentences.length || !LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true))
         {
             return;
         }
