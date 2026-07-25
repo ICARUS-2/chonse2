@@ -9,6 +9,7 @@ export default class MoveResult implements IMoveResult
     notationMinimal: string = "";
     fromCoord: string = "";
     toCoord: string = "";
+    promotion: string = "";
     piece: string = PieceType.NONE;
     pgnComment: string = "";
 
@@ -29,9 +30,15 @@ export default class MoveResult implements IMoveResult
         val.notationMinimal = obj.notationMinimal;
         val.fromCoord = obj.fromCoord;
         val.toCoord = obj.toCoord;
+        val.promotion = obj.promotion;
         val.piece = obj.piece;
         val.pgnComment = obj.piece;
 
         return val;
+    }
+
+    getUci()
+    {
+        return this.fromCoord + this.toCoord + this.promotion.toLowerCase();
     }
 }

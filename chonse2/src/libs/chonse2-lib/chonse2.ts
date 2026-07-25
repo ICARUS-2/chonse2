@@ -234,7 +234,7 @@ export default class Chonse2
   {
     if (this.gameState.isGameOver || fromCoordinate == toCoordinate)
     {
-      return {result: false, notation: "", notationMinimal: "" , fromCoord: fromCoordinate, toCoord: toCoordinate, piece: "", pgnComment: ""};
+      return {result: false, notation: "", notationMinimal: "" , fromCoord: fromCoordinate, toCoord: toCoordinate, piece: "", pgnComment: "", promotion: ""};
     }
 
     //In piece state, where the current piece is moving to.
@@ -251,7 +251,7 @@ export default class Chonse2
 
     if (!legalMoves.includes(toCoordinate))
     {
-      return {result: false, notation: "", notationMinimal: "" , fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: ""};
+      return {result: false, notation: "", notationMinimal: "" , fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: "", promotion: ""};
     }
 
     //Cache the current state in case this object is needed for undoing the most recent move.
@@ -507,7 +507,7 @@ export default class Chonse2
     }
 
     //The move was successful if we got this far.
-    return {result: true, notation: notation.get(), notationMinimal: notation.getMinimal(this, toCoordinate, piece) ,fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: ""};
+    return {result: true, notation: notation.get(), notationMinimal: notation.getMinimal(this, toCoordinate, piece) ,fromCoord: fromCoordinate, toCoord: toCoordinate, piece: piece, pgnComment: "", promotion: promotionPiece};
   }
 
   //Verifies if a king of a particular color is in check.

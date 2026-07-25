@@ -5,6 +5,7 @@ interface IMoveResult
     notationMinimal: string,
     fromCoord: string,
     toCoord: string,
+    promotion: string,
     piece: string,
-    pgnComment: string
+    pgnComment: string,
 }

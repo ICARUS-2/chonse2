@@ -92,7 +92,7 @@ export const getEvaluationBarValue2 = (
   const bestLine = position.lines[0];
   if (!bestLine)
   {
-    return { whiteBarPercentage: 50, label: "0.0" }
+    return { whiteBarPercentage: 40, label: "0.0" }
   }
 
   const whiteBarPercentage = getPositionWinPercentage(position);

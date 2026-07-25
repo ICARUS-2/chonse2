@@ -111,7 +111,7 @@ export class CoachDisplay {
   {
     //Changes every single one of the coach moves to remove the delimiter (and thus they become regular moves)
     this.boardState().divergenceMoveStack.update(stack =>
-      stack.map(mv => ({...mv, isCoachMove: false}))
+      stack.map(mv => Object.assign(new MoveResult(), mv, { isCoachMove: false }))
     );
 
     this.boardState().isLocked.set(false);
