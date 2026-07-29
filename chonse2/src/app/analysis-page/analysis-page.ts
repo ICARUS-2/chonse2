@@ -31,7 +31,7 @@ export class AnalysisPage implements OnInit{
   gameId: string | undefined;
   
   //Import from board editor
-  inputtedPosition: Chonse2 | undefined;
+  inputtedPosition: string | undefined;
 
   //Import from PGN link
   pgnFromLink: string | undefined;
@@ -159,9 +159,9 @@ export class AnalysisPage implements OnInit{
     else if (this.inputtedPosition) //from board editor
     {
       //Reconstructs the passed data into a Chonse2 object and reinitializes the game state.
-      const restoredPosition = Object.assign(new Chonse2(), this.inputtedPosition);
-      restoredPosition.gameState = new GameState();
-      restoredPosition.stateCache = new PreviousStateCache();
+      const restoredPosition = Chonse2.instantiateFromFen(this.inputtedPosition);
+      //restoredPosition.gameState = new GameState();
+      //restoredPosition.stateCache = new PreviousStateCache();
 
       restoredPosition.checkIsGameOver();
 

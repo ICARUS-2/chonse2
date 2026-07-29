@@ -131,8 +131,8 @@ export default class Chonse2
   turn: boolean = true; 
     
   //Special cases (castling/en passant)
-  whiteCastlingRights: CastlingRights = new CastlingRights();
-  blackCastlingRights: CastlingRights = new CastlingRights();
+  whiteCastlingRights: CastlingRights;
+  blackCastlingRights: CastlingRights;
   enPassantSquare: string = "";
 
   //Move counters
@@ -143,7 +143,7 @@ export default class Chonse2
   private _previousPositionMap: Map<string, number> = new Map<string, number>();
 
   //Previous state cache for efficiently (compared to my previous shitty implementation that created a bunch of objects) undoing the last move.
-  stateCache: PreviousStateCache = new PreviousStateCache();
+  stateCache: PreviousStateCache;
 
   //Instantiates with either a passed game state or the default one.
   constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]))
@@ -163,6 +163,13 @@ export default class Chonse2
           throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
       }
     });
+
+    //Initialize castling rights
+    this.whiteCastlingRights = new CastlingRights();
+    this.blackCastlingRights = new CastlingRights();
+
+    //Initialize state cache
+    this.stateCache = new PreviousStateCache();
     
     //Starting position always counts towards the repetition.
     this._previousPositionMap.set(this._getPositionKey(), 1);
