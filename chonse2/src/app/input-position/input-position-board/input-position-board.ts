@@ -41,18 +41,6 @@ export class InputPositionBoard {
 
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
-  static readonly CLEARED_BOARD: ReadonlyArray<ReadonlyArray<string>> =   
-  [
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.BLACK_KING, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.WHITE_KING, PieceType.NONE, PieceType.NONE, PieceType.NONE]
-  ];
-
   //Game service ID
   stateId = input<string>('');
   //State
@@ -111,12 +99,10 @@ export class InputPositionBoard {
 
     if (this.fromSquare())
     {
-      const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
-      this.setPieceOnBoard(fromIdx.rowIndex, fromIdx.colIndex, "");
+      this.setPieceOnBoard(fromSquare, "");
     }
-    
-    const toIdx = Chonse2.findIndexFromCoordinate(toSquare);    
-    this.setPieceOnBoard(toIdx.rowIndex, toIdx.colIndex, piece);
+  
+    this.setPieceOnBoard(toSquare, piece);
 
     this.currentlyHeldPiece.set("");
     this.resetMoveState();
@@ -137,18 +123,13 @@ export class InputPositionBoard {
 
   handleResetClicked()
   {
-    this.model().game().pieceState = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]);
-    this.model().game().whiteCastlingRights.kingSide = true;
-    this.model().game().whiteCastlingRights.queenSide = true;
-    this.model().game().blackCastlingRights.kingSide = true;
-    this.model().game().blackCastlingRights.queenSide = true;
-    this.model().game().enPassantSquare = "";
+    this.model().game().reset();
     this._afterStateChanged();
   }
 
   handleClearClicked()
   {
-    this.model().game().pieceState = InputPositionBoard.CLEARED_BOARD.map(rank => [...rank]);
+    this.model().game().clear();
     this._afterStateChanged();
   }
 
@@ -359,11 +340,9 @@ export class InputPositionBoard {
 
   onPieceSelectorDeleteMouseUp()
   {
-    if (this.fromSquare)
+    if (this.fromSquare())
     {
-      const idx = Chonse2.findIndexFromCoordinate(this.fromSquare());
-
-      this.setPieceOnBoard(idx.rowIndex, idx.colIndex, "");
+      this.setPieceOnBoard(this.fromSquare(), "");
       this.resetMoveState();
     }
   }
@@ -384,8 +363,8 @@ export class InputPositionBoard {
     const previousRankIndex = this.model().game().turn ? 2 : 5;
 
     //The ranks where the pawn is located (two spaces) and the en passant rank beneath it.
-    const pawnRank = this.model().game().pieceState[rankIndex];
-    const enPassantSquareRank = this.model().game().pieceState[previousRankIndex];
+    const pawnRank = this.model().game().getPieceState()[rankIndex];
+    const enPassantSquareRank = this.model().game().getPieceState()[previousRankIndex];
 
     //Check every possible space for en passant.
     for(let i = 0; i < pawnRank.length; i++)
@@ -417,7 +396,7 @@ export class InputPositionBoard {
     {
       const rookCoord = isWhite ? (isKingside ? Chonse2.WHITE_KINGSIDE_ROOK_SQUARE : Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE) : (isKingside ? Chonse2.BLACK_KINGSIDE_ROOK_SQUARE : Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE);
       const rookSquareIndex = Chonse2.findIndexFromCoordinate(rookCoord);
-      const rookSquareContent = this.model().game().pieceState[rookSquareIndex.rowIndex][rookSquareIndex.colIndex];
+      const rookSquareContent = this.model().game().getPieceState()[rookSquareIndex.rowIndex][rookSquareIndex.colIndex];
       const rookPiece = isWhite ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
 
       //If there is no rook in that place, no castling rights can potentially exist there.
@@ -441,9 +420,9 @@ export class InputPositionBoard {
     return false;
   }
 
-  setPieceOnBoard(rowIndex: number, colIndex: number, piece: string)
+  setPieceOnBoard(coord: string, piece: string)
   {
-    this.model().game().pieceState[rowIndex][colIndex] = piece;
+    this.model().game().setPieceOnBoard(coord, piece);
     this._afterStateChanged();
   }
 
@@ -462,7 +441,7 @@ export class InputPositionBoard {
     const game = this.model().game;
 
     //One king per side.
-    const flattenedPieceState = game().pieceState.flat();
+    const flattenedPieceState = game().getPieceState().flat();
     const whiteKings = flattenedPieceState.filter((p: string) => p == PieceType.WHITE_KING);
     const blackKings = flattenedPieceState.filter((p: string) => p == PieceType.BLACK_KING);
 
@@ -478,7 +457,7 @@ export class InputPositionBoard {
     {
       const xComponent = InputPositionBoard.X_VECTOR[i] + whiteKingIdx.rowIndex;
       const yComponent = InputPositionBoard.Y_VECTOR[i] + whiteKingIdx.colIndex;
-      const rank = game().pieceState[xComponent]
+      const rank = game().getPieceState()[xComponent]
       
       if (rank)
       {
@@ -494,8 +473,8 @@ export class InputPositionBoard {
     }
 
     //Pawns are not on the first or eighth rank.
-    const firstRank = game().pieceState[0];
-    const lastRank = game().pieceState[game().pieceState.length - 1];
+    const firstRank = game().getPieceState()[0];
+    const lastRank = game().getPieceState()[game().getPieceState().length - 1];
 
     for(let i: number = 0; i < firstRank.length; i++)
     {

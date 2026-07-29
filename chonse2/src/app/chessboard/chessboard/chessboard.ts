@@ -232,7 +232,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     if (isClickToMove)
     {
       const idx = Chonse2.findIndexFromCoordinate(fromSquare);
-      piece = this.boardState().getCurrentState().pieceState[idx.rowIndex][idx.colIndex];
+      piece = this.boardState().getCurrentState().getPieceState()[idx.rowIndex][idx.colIndex];
     }
     else 
     {
@@ -549,7 +549,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const fromCoord: string = coord[0] + coord[1];
     const idx = Chonse2.findIndexFromCoordinate(fromCoord);
 
-    const piece: string = this.boardState().getCurrentState().pieceState[idx.rowIndex][idx.colIndex];
+    const piece: string = this.boardState().getCurrentState().getPieceState()[idx.rowIndex][idx.colIndex];
 
     return ChessboardHelper.getIconSourceForPiece(piece);
   }) 
@@ -598,7 +598,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
     
     const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
-    const pieceToAnimate = this.getMostCurrentMainState().pieceState[fromIdx.rowIndex][fromIdx.colIndex];
+    const pieceToAnimate = this.getMostCurrentMainState().getPieceState()[fromIdx.rowIndex][fromIdx.colIndex];
     
     if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
     {
@@ -1107,17 +1107,17 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   _isSquareCheckmatedKing = (rankIndex: number, fileIndex: number) => computed( (): boolean =>
   {
-    return (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.BLACK) || (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.WHITE) && this.boardState().getCurrentState().gameState.reason == GameOverReason.Checkmate;
+    return (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.BLACK) || (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.WHITE) && this.boardState().getCurrentState().gameState.reason == GameOverReason.Checkmate;
   })
 
   _isSquareWinningKing = (rankIndex: number, fileIndex: number) => computed( (): boolean => 
   {
-    return (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.WHITE) || (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.BLACK); 
+    return (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.WHITE) || (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.BLACK); 
   } )
 
   _isSquareKingInDraw = (rankIndex: number, fileIndex: number) => computed( (): boolean => 
   {
-    return this.boardState().getCurrentState().gameState.isDraw() && (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING || this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING);
+    return this.boardState().getCurrentState().gameState.isDraw() && (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING || this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING);
   })
 
   _getEndgameSquareBackgroundColor = (rankIndex: number, fileIndex: number) => computed( (): string => 

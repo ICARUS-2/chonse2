@@ -17,16 +17,16 @@ export default class Chonse2Extensions
         }
 
         //Check every piece in the board.
-        for(let i = 0; i < board.pieceState.length; i++)
+        for(let i = 0; i < board.getPieceState().length; i++)
         {
-            const currentRank = board.pieceState[i];
+            const currentRank = board.getPieceState()[i];
 
             for(let j = 0; j < currentRank.length; j++)
             {
                 const squareCoord = Chonse2.COORDS[i][j];
                 if(this.doesSquareHaveHangingPiece(board, squareCoord))
                 {
-                    const pieceColor = board.pieceState[i][j][0];
+                    const pieceColor = board.getPieceState()[i][j][0];
 
                     if (pieceColor == PieceColor.WHITE)
                     {
@@ -47,7 +47,7 @@ export default class Chonse2Extensions
     public static doesSquareHaveHangingPiece(board: Chonse2, squareCoord: string): boolean
     {        
         const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(squareCoord);
-        const pieceInSquare = board.pieceState[rowIndex][colIndex];
+        const pieceInSquare = board.getPieceState()[rowIndex][colIndex];
 
         //A square with no piece in it isn't hanging.
         if (pieceInSquare == PieceType.NONE)
@@ -398,7 +398,7 @@ export default class Chonse2Extensions
                     currentXOffset += dx, currentYOffset += dy, runCount++ //keep incrementing the offsets accordingly
                 )   
                 {
-                    const rowInQuestion = board.pieceState[rowIndex + currentXOffset];
+                    const rowInQuestion = board.getPieceState()[rowIndex + currentXOffset];
                     
                     if (rowInQuestion)
                     {
@@ -774,7 +774,7 @@ export default class Chonse2Extensions
                 )   
                 {
                     //The row that contains the square that is being checked.
-                    const rowInQuestion = board.pieceState[rowIndex + currentXOffset];
+                    const rowInQuestion = board.getPieceState()[rowIndex + currentXOffset];
                     
                     if (rowInQuestion)
                     {
@@ -909,17 +909,15 @@ export default class Chonse2Extensions
                 let isLowValuePieceHanging = false;
 
                 const highValuePiece = boardCopy.findPieceAtCoordinate(sk.highValuePieceCoordinate);
-
-                const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(sk.highValuePieceCoordinate);
-
+                
                 //Temporarily remove the piece.
-                boardCopy.pieceState[rowIndex][colIndex] = "";
+                boardCopy.setPieceOnBoard(sk.highValuePieceCoordinate, "");
 
                 //check if the piece is hanging.
                 isLowValuePieceHanging = Chonse2Extensions.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
                 
                 //Put the piece back after
-                boardCopy.pieceState[rowIndex][colIndex] = highValuePiece;
+                boardCopy.setPieceOnBoard(sk.highValuePieceCoordinate, highValuePiece);
 
                 //if the piece is hanging without the high value piece, it's a valid skewer.
                 return isLowValuePieceHanging;
@@ -1038,7 +1036,7 @@ export default class Chonse2Extensions
             //check through each square to see if a rook is controlling it.
             for (let rank = 0; rank < Chonse2.SIZE; rank++)
             {
-                const piece = board.pieceState[rank][fileIndex];
+                const piece = board.getPieceState()[rank][fileIndex];
 
                 if (piece === PieceType.WHITE_ROOK)
                 {
@@ -1073,7 +1071,7 @@ export default class Chonse2Extensions
             
             for(let rank = 0; rank < Chonse2.SIZE; rank++)
             {
-                const pieceInSquare = board.pieceState[rank][file];
+                const pieceInSquare = board.getPieceState()[rank][file];
                 
                 if (pieceInSquare == PieceType.WHITE_PAWN)
                 {
@@ -1127,7 +1125,7 @@ export default class Chonse2Extensions
                     {
                         if (c < 0 || c > 7) continue;
 
-                        if (board.pieceState[r][c] === PieceType.BLACK_PAWN)
+                        if (board.getPieceState()[r][c] === PieceType.BLACK_PAWN)
                         {
                             isPassed = false;
                             break;
@@ -1154,7 +1152,7 @@ export default class Chonse2Extensions
                     {
                         if (c < 0 || c > 7) continue;
 
-                        if (board.pieceState[r][c] === PieceType.WHITE_PAWN)
+                        if (board.getPieceState()[r][c] === PieceType.WHITE_PAWN)
                         {
                             isPassed = false;
                             break;
@@ -1271,7 +1269,7 @@ export default class Chonse2Extensions
                 {
                     for (let row = 0; row < Chonse2.SIZE; row++)
                     {
-                        if (board.pieceState[row][fileIdx] === pawnType)
+                        if (board.getPieceState()[row][fileIdx] === pawnType)
                         {
                             nearbyFileContainsFriendlyPawn = true;
                             break;
@@ -1363,7 +1361,7 @@ export default class Chonse2Extensions
                     )
                     {
                         //the row the current square is in.
-                        const rowInQuestion = board.pieceState[rowIndex + currentXOffset];
+                        const rowInQuestion = board.getPieceState()[rowIndex + currentXOffset];
 
                         if (rowInQuestion)
                         {
@@ -1428,8 +1426,8 @@ export default class Chonse2Extensions
                             }
 
                             //Get the actual squares themselves.
-                            let leftAttackSquare = board.pieceState[attackLeftRowIndex][attackLeftColIndex];
-                            let rightAttackSquare = board.pieceState[attackRightRowIndex][attackRightColIndex];
+                            let leftAttackSquare = board.getPieceState()[attackLeftRowIndex][attackLeftColIndex];
+                            let rightAttackSquare = board.getPieceState()[attackRightRowIndex][attackRightColIndex];
 
                             //If the square is outside or has a piece already in it, don't push anything.
                             if (leftAttackSquare != undefined)
@@ -1576,8 +1574,8 @@ export default class Chonse2Extensions
             return false;
 
         return (
-            (col > 0 && board.pieceState[pawnRow][col - 1] === pawn) ||
-            (col < 7 && board.pieceState[pawnRow][col + 1] === pawn)
+            (col > 0 && board.getPieceState()[pawnRow][col - 1] === pawn) ||
+            (col < 7 && board.getPieceState()[pawnRow][col + 1] === pawn)
         );
     }
 
@@ -1600,7 +1598,7 @@ export default class Chonse2Extensions
             {
                 for (let r = 0; r < row; r++)
                 {
-                    if (board.pieceState[r][attackCol] === enemyPawn)
+                    if (board.getPieceState()[r][attackCol] === enemyPawn)
                         return true;
                 }
             }
@@ -1608,7 +1606,7 @@ export default class Chonse2Extensions
             {
                 for (let r = 7; r > row; r--)
                 {
-                    if (board.pieceState[r][attackCol] === enemyPawn)
+                    if (board.getPieceState()[r][attackCol] === enemyPawn)
                         return true;
                 }
             }
@@ -1630,7 +1628,7 @@ export default class Chonse2Extensions
             let fileDoesContainPawn = false;
             for(let rank = 0; rank < Chonse2.SIZE; rank++)
             {
-                const pieceInSquare = board.pieceState[rank][file];
+                const pieceInSquare = board.getPieceState()[rank][file];
                 
                 //if the file contains a pawn, then it's not an open file.
                 if (pieceInSquare == PieceType.WHITE_PAWN || pieceInSquare == PieceType.BLACK_PAWN)

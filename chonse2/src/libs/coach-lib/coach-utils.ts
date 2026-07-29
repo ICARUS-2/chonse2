@@ -1823,8 +1823,8 @@ export class CoachUtils
                                         [PieceType.BLACK_KNIGHT, PieceType.BLACK_BISHOP, PieceType.BLACK_ROOK, PieceType.BLACK_QUEEN];
 
                                     //Get the actual squares themselves.
-                                    let leftAttackSquare = state.pieceState[attackLeftRowIndex][attackLeftColIndex];
-                                    let rightAttackSquare = state.pieceState[attackRightRowIndex][attackRightColIndex];
+                                    let leftAttackSquare = state.getPieceState()[attackLeftRowIndex][attackLeftColIndex];
+                                    let rightAttackSquare = state.getPieceState()[attackRightRowIndex][attackRightColIndex];
                                     
                                     let kickedPiece = PieceType.NONE;
                                     if (piecesThatCanBeAttacked.includes(leftAttackSquare))

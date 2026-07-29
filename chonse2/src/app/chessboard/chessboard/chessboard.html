@@ -101,7 +101,7 @@
                             </marker>
                         </defs>
                     </svg>
-                    @for( rank of boardState().getCurrentState().pieceState; let rankIndex = $index; track rankIndex)
+                    @for( rank of boardState().getCurrentState().getPieceState(); let rankIndex = $index; track rankIndex)
                     {
                         <ng-container>
                             @for ( piece of rank; let fileIndex = $index; track fileIndex; )
@@ -109,14 +109,14 @@
                                 <div style="position: relative; width: 100%; height: 100%;">
                                     <app-square 
                                         [coordinate]="this.COORDS[rankIndex][fileIndex]" 
-                                        [piece]="boardState().getCurrentState().pieceState[rankIndex][fileIndex]"
+                                        [piece]="boardState().getCurrentState().getPieceState()[rankIndex][fileIndex]"
                                         [isDark]="(rankIndex + fileIndex) % 2 == 1"
                                         [showFile]="rankIndex == rank.length - 1"
                                         [showRank]="fileIndex == 0"
                                         [showPiece]="showPieceForCoord()(this.COORDS[rankIndex][fileIndex])"
                                         [isFlipped]="boardState().isFlipped()"
                                         [isLegalMove]="currentLegalMoves().includes(this.COORDS[rankIndex][fileIndex])"
-                                        [isInCheck]="(boardState().getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState().getCurrentState().isInCheck(PieceColor.WHITE)) || (boardState().getCurrentState().pieceState[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState().getCurrentState().isInCheck(PieceColor.BLACK)) "
+                                        [isInCheck]="(boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == pieceType.WHITE_KING && boardState().getCurrentState().isInCheck(PieceColor.WHITE)) || (boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == pieceType.BLACK_KING && boardState().getCurrentState().isInCheck(PieceColor.BLACK)) "
                                         [isClicked]="getRightClickedStatusForSquare(this.COORDS[rankIndex][fileIndex])()"
                                         [moveClassification]="getMoveClassificationForSquare(this.COORDS[rankIndex][fileIndex])()"
                                         (mouseDown)="onSquareMouseDown($event)"

@@ -173,7 +173,7 @@ export class CoachDisplay {
 
             const currentState = this.boardState().getCurrentState();
             const rawPieceIndex = Chonse2.findIndexFromCoordinate(fromSquare);
-            const piece = currentState.pieceState[rawPieceIndex.rowIndex][rawPieceIndex.colIndex];
+            const piece = currentState.getPieceState()[rawPieceIndex.rowIndex][rawPieceIndex.colIndex];
 
             
             if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))

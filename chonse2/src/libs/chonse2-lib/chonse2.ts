@@ -11,14 +11,26 @@ export default class Chonse2
   //Standard chess starting position.
   static readonly DEFAULT_PIECE_STATE: ReadonlyArray<ReadonlyArray<string>> =
   [
-      [ PieceType.BLACK_ROOK, PieceType.BLACK_KNIGHT, PieceType.BLACK_BISHOP, PieceType.BLACK_QUEEN, PieceType.BLACK_KING, PieceType.BLACK_BISHOP,PieceType.BLACK_KNIGHT, PieceType.BLACK_ROOK],
-      [ PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN],
-      [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-      [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-      [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-      [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
-      [ PieceType.WHITE_PAWN, PieceType.WHITE_PAWN, PieceType.WHITE_PAWN, PieceType.WHITE_PAWN, PieceType.WHITE_PAWN, PieceType.WHITE_PAWN, PieceType.WHITE_PAWN, PieceType.WHITE_PAWN],
-      [ PieceType.WHITE_ROOK, PieceType.WHITE_KNIGHT, PieceType.WHITE_BISHOP, PieceType.WHITE_QUEEN, PieceType.WHITE_KING, PieceType.WHITE_BISHOP, PieceType.WHITE_KNIGHT, PieceType.WHITE_ROOK]
+    [ PieceType.BLACK_ROOK, PieceType.BLACK_KNIGHT, PieceType.BLACK_BISHOP, PieceType.BLACK_QUEEN, PieceType.BLACK_KING, PieceType.BLACK_BISHOP,PieceType.BLACK_KNIGHT, PieceType.BLACK_ROOK],
+    [ PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN, PieceType.BLACK_PAWN],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.WHITE_PAWN, PieceType.WHITE_PAWN, PieceType.WHITE_PAWN, PieceType.WHITE_PAWN, PieceType.WHITE_PAWN, PieceType.WHITE_PAWN, PieceType.WHITE_PAWN, PieceType.WHITE_PAWN],
+    [ PieceType.WHITE_ROOK, PieceType.WHITE_KNIGHT, PieceType.WHITE_BISHOP, PieceType.WHITE_QUEEN, PieceType.WHITE_KING, PieceType.WHITE_BISHOP, PieceType.WHITE_KNIGHT, PieceType.WHITE_ROOK]
+  ];
+
+  static readonly CLEARED_BOARD: ReadonlyArray<ReadonlyArray<string>> =   
+  [
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.BLACK_KING, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE],
+    [ PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.NONE, PieceType.WHITE_KING, PieceType.NONE, PieceType.NONE, PieceType.NONE]
   ];
 
   //Standard coordinates on a board.
@@ -124,7 +136,7 @@ export default class Chonse2
   piecesBlackCaptured: string[] = [];
 
   //Piece and board state.
-  pieceState: Array<Array<string>>;
+  _pieceState: Array<Array<string>>;
   gameState: GameState = new GameState();
 
   //True: White's turn, false: black's turn
@@ -143,20 +155,20 @@ export default class Chonse2
   private _previousPositionMap: Map<string, number> = new Map<string, number>();
 
   //Previous state cache for efficiently (compared to my previous shitty implementation that created a bunch of objects) undoing the last move.
-  stateCache: PreviousStateCache;
+  private _stateCache: PreviousStateCache;
 
   //Instantiates with either a passed game state or the default one.
   constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]))
   {
-    this.pieceState = passedState;
+    this._pieceState = passedState;
 
-    if (this.pieceState.length != Chonse2.SIZE)
+    if (this._pieceState.length != Chonse2.SIZE)
     {
         throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
     }
 
     //validates correct number of files per rank.
-    this.pieceState.forEach( rank => 
+    this._pieceState.forEach( rank => 
     {
       if (rank.length != Chonse2.SIZE)
       {
@@ -169,7 +181,7 @@ export default class Chonse2
     this.blackCastlingRights = new CastlingRights();
 
     //Initialize state cache
-    this.stateCache = new PreviousStateCache();
+    this._stateCache = new PreviousStateCache();
     
     //Starting position always counts towards the repetition.
     this._previousPositionMap.set(this._getPositionKey(), 1);
@@ -177,6 +189,11 @@ export default class Chonse2
 
   //#region Pieces + squares.
   //Gets the row and column indeces when a rank and file coordinate are passed in.
+  public getPieceState()
+  {
+    return this._pieceState;
+  }
+
   static findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
   {
       //Finds the row that includes this coordinate.
@@ -200,7 +217,7 @@ export default class Chonse2
   {
       const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
 
-      return this.pieceState[rowIndex][colIndex];
+      return this._pieceState[rowIndex][colIndex];
   }   
 
   //Gets the coordinate of the passed color's king
@@ -211,14 +228,14 @@ export default class Chonse2
       return "";
     }
 
-    const rIdx = this.pieceState.findIndex( row => row.includes( (kingColor == PieceColor.WHITE ? PieceType.WHITE_KING : PieceType.BLACK_KING) ) )
+    const rIdx = this._pieceState.findIndex( row => row.includes( (kingColor == PieceColor.WHITE ? PieceType.WHITE_KING : PieceType.BLACK_KING) ) )
     
     if (rIdx == -1)
     {
       return "";
     }
 
-    const cIdx = this.pieceState[rIdx].findIndex( p => p === (kingColor == PieceColor.WHITE ? PieceType.WHITE_KING : PieceType.BLACK_KING))
+    const cIdx = this._pieceState[rIdx].findIndex( p => p === (kingColor == PieceColor.WHITE ? PieceType.WHITE_KING : PieceType.BLACK_KING))
   
     return Chonse2.COORDS[rIdx][cIdx];
   }
@@ -236,7 +253,7 @@ export default class Chonse2
           boardCopy.turn = currentColor == PieceColor.WHITE;
           
           //Enemy ghost pawn to simulate "capturing"
-          boardCopy.pieceState[rowIndex][colIndex] = (currentColor === PieceColor.WHITE) ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
+          boardCopy._pieceState[rowIndex][colIndex] = (currentColor === PieceColor.WHITE) ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
 
           //Loop through every single piece.
           for (let i = 0; i < Chonse2.SIZE; i++) 
@@ -244,7 +261,7 @@ export default class Chonse2
               for (let j = 0; j < Chonse2.SIZE; j++) 
               {
                   //The current piece we are checking
-                  const piece = boardCopy.pieceState[i][j];
+                  const piece = boardCopy._pieceState[i][j];
                   
                   //If there is no piece there, it has no legal moves.
                   if (piece === PieceType.NONE) 
@@ -308,7 +325,7 @@ export default class Chonse2
     {
       for(let j = 0; j < Chonse2.COORDS[i].length; j++)
       {
-        const piece = this.pieceState[i][j];
+        const piece = this._pieceState[i][j];
 
         if ( piece.startsWith(color))
         {
@@ -363,6 +380,53 @@ export default class Chonse2
     return adv;
   }
 
+  //Places a piece on the board at any coord.
+  public setPieceOnBoard(coord: string, piece: string): void
+  {
+    const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coord);
+    
+    if (rowIndex >= 0 && colIndex >= 0)
+    {
+      this._pieceState[rowIndex][colIndex] = piece;
+    }
+  }
+
+  //Resets the board to its default.
+  public reset(): void
+  {
+    //Reset piece state.
+    this._pieceState = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]);
+    this._reinitializeInternal();
+  }
+
+  //Clears board except the kings.
+  public clear(): void 
+  {
+    this._pieceState = Chonse2.CLEARED_BOARD.map(rank => [...rank]);
+    this._reinitializeInternal();
+  }
+
+  //Reinitializes all the properties.
+  private _reinitializeInternal()
+  {
+    //Reset castling rights
+    this.whiteCastlingRights.kingSide = true;
+    this.whiteCastlingRights.queenSide = true;
+    this.blackCastlingRights.kingSide = true;
+    this.blackCastlingRights.queenSide = true;
+    
+    //Reset en passant.
+    this.enPassantSquare = "";
+
+    //Reset capture
+    this.piecesWhiteCaptured.length = 0;
+    this.piecesBlackCaptured.length = 0;
+
+    //Reset position map
+    this._previousPositionMap.clear();
+    this._stateCache = new PreviousStateCache();
+  }
+
   //Checks if any piece of the passed color can attack the passed square.
   private _isSquareAttacked(coord: string, attackerColor: string): boolean 
   {
@@ -385,7 +449,7 @@ export default class Chonse2
     for(let seenSquare of rookMoves)
     {
       const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
-      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == rookPiece)
+      if (this._pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == rookPiece)
       {
         return true;
       }
@@ -396,7 +460,7 @@ export default class Chonse2
     for(let seenSquare of queenMoves)
     {
       const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
-      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == queenPiece)
+      if (this._pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == queenPiece)
       {
         return true;
       }
@@ -407,7 +471,7 @@ export default class Chonse2
     for(let seenSquare of kingMoves)
     {
       const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
-      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == kingPiece)
+      if (this._pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == kingPiece)
       {
         return true;
       }
@@ -418,7 +482,7 @@ export default class Chonse2
     for(let seenSquare of bishopMoves)
     {
       const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
-      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == bishopPiece)
+      if (this._pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == bishopPiece)
       {
         return true;
       }
@@ -429,7 +493,7 @@ export default class Chonse2
     for(let seenSquare of knightMoves)
     {
       const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
-      if (this.pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == knightPiece)
+      if (this._pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == knightPiece)
       {
         return true;
       }
@@ -437,7 +501,7 @@ export default class Chonse2
 
     //Check if there's a pawn that can strike diagonally
     const pawnPiece = attackerColor + PieceType.PAWN;
-    const rankAbove = attackerColor == PieceColor.BLACK ? this.pieceState[rowIndex - 1] : this.pieceState[rowIndex + 1];
+    const rankAbove = attackerColor == PieceColor.BLACK ? this._pieceState[rowIndex - 1] : this._pieceState[rowIndex + 1];
     if (rankAbove)
     {
       const leftPotentialPawnSquare = rankAbove[colIndex - 1];
@@ -473,6 +537,11 @@ export default class Chonse2
   //#region Game state.
 
   //Triggers the check to see if the game is over. Updates GameState.
+  public getGameState()
+  {
+    return this.gameState;
+  }
+
   public checkIsGameOver()
   {
     const nextPlayerHasLegalMoves = this._playerHasLegalMoves(this.turn);
@@ -611,7 +680,7 @@ export default class Chonse2
     if (enPassantSquareIndex)
     {
       //Gets the row so that the pawns next to it can be checked.
-      const rankEnPassantPawnIsOn = this.turn ? this.pieceState[enPassantSquareIndex.rowIndex + 1] : this.pieceState[enPassantSquareIndex.rowIndex - 1];
+      const rankEnPassantPawnIsOn = this.turn ? this._pieceState[enPassantSquareIndex.rowIndex + 1] : this._pieceState[enPassantSquareIndex.rowIndex - 1];
 
       //The squares that might have pawns that could capture.
       const potentialOpposingPawnLeftSquare = rankEnPassantPawnIsOn[enPassantSquareIndex.colIndex - 1];
@@ -659,44 +728,44 @@ export default class Chonse2
   private _cacheState()
   {
     //Turn
-    this.stateCache.turn = this.turn;
+    this._stateCache.turn = this.turn;
 
     //Piece captures
-    this.stateCache.piecesWhiteCaptured.length = 0;
-    this.stateCache.piecesBlackCaptured.length = 0;
-    this.piecesWhiteCaptured.forEach( p => {this.stateCache.piecesWhiteCaptured.push(p)} );
-    this.piecesBlackCaptured.forEach( p => {this.stateCache.piecesBlackCaptured.push(p)} );
+    this._stateCache.piecesWhiteCaptured.length = 0;
+    this._stateCache.piecesBlackCaptured.length = 0;
+    this.piecesWhiteCaptured.forEach( p => {this._stateCache.piecesWhiteCaptured.push(p)} );
+    this.piecesBlackCaptured.forEach( p => {this._stateCache.piecesBlackCaptured.push(p)} );
 
     //Piece state
-    for(let rank = 0; rank < this.pieceState.length; rank++)
+    for(let rank = 0; rank < this._pieceState.length; rank++)
     {
-      for(let file = 0; file < this.pieceState.length; file++)
+      for(let file = 0; file < this._pieceState.length; file++)
       {
-        this.stateCache.pieceState[rank][file] = this.pieceState[rank][file];
+        this._stateCache.pieceState[rank][file] = this._pieceState[rank][file];
       }
     }
 
     //Game state
-    this.stateCache.isGameOver = this.gameState.isGameOver;
-    this.stateCache.gameOverReason = this.gameState.reason;
-    this.stateCache.winner = this.gameState.winner;
-    this.stateCache.gameScore = this.gameState.gameScore;
+    this._stateCache.isGameOver = this.gameState.isGameOver;
+    this._stateCache.gameOverReason = this.gameState.reason;
+    this._stateCache.winner = this.gameState.winner;
+    this._stateCache.gameScore = this.gameState.gameScore;
 
     //Castling rights
-    this.stateCache.whiteKingsideCastlingRights = this.whiteCastlingRights.kingSide;
-    this.stateCache.whiteQueensideCastlingRights = this.whiteCastlingRights.queenSide;
-    this.stateCache.blackKingsideCastlingRights = this.blackCastlingRights.kingSide;
-    this.stateCache.blackQueensideCastlingRights = this.blackCastlingRights.queenSide;
+    this._stateCache.whiteKingsideCastlingRights = this.whiteCastlingRights.kingSide;
+    this._stateCache.whiteQueensideCastlingRights = this.whiteCastlingRights.queenSide;
+    this._stateCache.blackKingsideCastlingRights = this.blackCastlingRights.kingSide;
+    this._stateCache.blackQueensideCastlingRights = this.blackCastlingRights.queenSide;
 
     //Move counters
-    this.stateCache.halfMovesWithoutPawnMovementsOrCaptures = this.halfMovesWithoutPawnMovementsOrCaptures;
-    this.stateCache.fullMoveCounter = this.fullMoveCounter;
+    this._stateCache.halfMovesWithoutPawnMovementsOrCaptures = this.halfMovesWithoutPawnMovementsOrCaptures;
+    this._stateCache.fullMoveCounter = this.fullMoveCounter;
 
     //Previous fen key
-    this.stateCache.previousStateMap.clear();
+    this._stateCache.previousStateMap.clear();
     for(const [k, v] of this._previousPositionMap)
     {
-      this.stateCache.previousStateMap.set(k, v);
+      this._stateCache.previousStateMap.set(k, v);
     }
   }
 
@@ -716,7 +785,7 @@ export default class Chonse2
     const index = Chonse2.findIndexFromCoordinate(coordinate);
 
     //The piece that is being moved.
-    const piece = this.pieceState[index.rowIndex][index.colIndex];
+    const piece = this._pieceState[index.rowIndex][index.colIndex];
 
     if (piece == ""
       || (piece.startsWith(PieceColor.WHITE) && !this.turn)
@@ -769,7 +838,7 @@ export default class Chonse2
     const fromSquareIndex = Chonse2.findIndexFromCoordinate(fromCoordinate);
 
     //Extract the piece from the square that is being moved from.
-    let piece = this.pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex];
+    let piece = this._pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex];
 
     //So far, potentially legal moves not counting checks.
     const legalMoves = this.getLegalMoves(fromCoordinate); 
@@ -791,7 +860,7 @@ export default class Chonse2
     notation.addToSquare(toCoordinate);
 
     //The piece already present in the square the current piece is moving to (being captured)
-    const pieceInToSquare = this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex];
+    const pieceInToSquare = this._pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex];
 
     //Used to track the 50 move rule.
     let isPawnMovementOrCapture = false;
@@ -804,7 +873,7 @@ export default class Chonse2
     if (toCoordinate == this.enPassantSquare && (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN))
     {
       //Remove the pawn that just got en passant'd
-      this.turn ? this.pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : this.pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
+      this.turn ? this._pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : this._pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
     
       //Add the captured piece.
       this.turn ? this.piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : this.piecesBlackCaptured.push(PieceType.WHITE_PAWN);
@@ -862,14 +931,14 @@ export default class Chonse2
       }
 
       //set promoted piece
-      this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
+      this._pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
     }
     
     //Clear the old piece position.
-    this.pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex] = "";
+    this._pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex] = "";
 
     //Replace it in the new position.
-    this.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
+    this._pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
 
     //If the player castled kingside (check that the from and to coordinates match a kingside castle).
     if (this.turn == true ? 
@@ -889,10 +958,10 @@ export default class Chonse2
         const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
 
         //Clears the old rook place.
-        this.pieceState[oldRookPlaceIndex.rowIndex][oldRookPlaceIndex.colIndex] = PieceType.NONE;
+        this._pieceState[oldRookPlaceIndex.rowIndex][oldRookPlaceIndex.colIndex] = PieceType.NONE;
 
         //Sets the new rook in place (protecting the king).
-        this.pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
+        this._pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
 
         //Removes castling rights as a player cannot castle multiple times.
         piece == PieceType.WHITE_KING ? this.whiteCastlingRights.removeBothCastlingRights() : this.blackCastlingRights.removeBothCastlingRights();
@@ -920,10 +989,10 @@ export default class Chonse2
         const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
 
         //Clears the old rook place.
-        this.pieceState[oldRookPlaceIndex.rowIndex][oldRookPlaceIndex.colIndex] = PieceType.NONE;
+        this._pieceState[oldRookPlaceIndex.rowIndex][oldRookPlaceIndex.colIndex] = PieceType.NONE;
 
         //Sets the new rook in place (protecting the king).
-        this.pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
+        this._pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
 
         //Removes castling rights as a player cannot castle multiple times.
         piece == PieceType.WHITE_KING ? this.whiteCastlingRights.removeBothCastlingRights() : this.blackCastlingRights.removeBothCastlingRights();
@@ -1040,43 +1109,43 @@ export default class Chonse2
   public undoMostRecentMove()
   {
     //Turn
-    this.turn = this.stateCache.turn;
+    this.turn = this._stateCache.turn;
 
     //Piece captures
     this.piecesWhiteCaptured.length = 0;
     this.piecesBlackCaptured.length = 0;
-    this.stateCache.piecesWhiteCaptured.forEach(p => { this.piecesWhiteCaptured.push(p); });
-    this.stateCache.piecesBlackCaptured.forEach(p => { this.piecesBlackCaptured.push(p); });
+    this._stateCache.piecesWhiteCaptured.forEach(p => { this.piecesWhiteCaptured.push(p); });
+    this._stateCache.piecesBlackCaptured.forEach(p => { this.piecesBlackCaptured.push(p); });
 
     //piece state
-    for(let rank = 0; rank < this.stateCache.pieceState.length; rank++)
+    for(let rank = 0; rank < this._stateCache.pieceState.length; rank++)
     {
-      for(let file = 0; file < this.stateCache.pieceState.length; file++)
+      for(let file = 0; file < this._stateCache.pieceState.length; file++)
       {
-        this.pieceState[rank][file] = this.stateCache.pieceState[rank][file];
+        this._pieceState[rank][file] = this._stateCache.pieceState[rank][file];
       }
     }
 
     //game state
-    this.gameState.isGameOver = this.stateCache.isGameOver;
-    this.gameState.reason = this.stateCache.gameOverReason;
-    this.gameState.winner = this.stateCache.winner;
-    this.gameState.gameScore = this.stateCache.gameScore;
+    this.gameState.isGameOver = this._stateCache.isGameOver;
+    this.gameState.reason = this._stateCache.gameOverReason;
+    this.gameState.winner = this._stateCache.winner;
+    this.gameState.gameScore = this._stateCache.gameScore;
 
     //Castling rights
-    this.whiteCastlingRights.kingSide = this.stateCache.whiteKingsideCastlingRights;
-    this.whiteCastlingRights.queenSide = this.stateCache.whiteQueensideCastlingRights;
-    this.blackCastlingRights.kingSide = this.stateCache.blackKingsideCastlingRights;
-    this.blackCastlingRights.queenSide = this.stateCache.blackQueensideCastlingRights;
+    this.whiteCastlingRights.kingSide = this._stateCache.whiteKingsideCastlingRights;
+    this.whiteCastlingRights.queenSide = this._stateCache.whiteQueensideCastlingRights;
+    this.blackCastlingRights.kingSide = this._stateCache.blackKingsideCastlingRights;
+    this.blackCastlingRights.queenSide = this._stateCache.blackQueensideCastlingRights;
 
     //Move counters
-    this.halfMovesWithoutPawnMovementsOrCaptures = this.stateCache.halfMovesWithoutPawnMovementsOrCaptures;
-    this.fullMoveCounter = this.stateCache.fullMoveCounter;
+    this.halfMovesWithoutPawnMovementsOrCaptures = this._stateCache.halfMovesWithoutPawnMovementsOrCaptures;
+    this.fullMoveCounter = this._stateCache.fullMoveCounter;
 
     //Previous fen key
     this._previousPositionMap.clear();
 
-    for(const [k, v] of this.stateCache.previousStateMap)
+    for(const [k, v] of this._stateCache.previousStateMap)
     {
       this._previousPositionMap.set(k, v);
     }
@@ -1086,7 +1155,7 @@ export default class Chonse2
   private _getPotentiallyLegalMoves(coordinate: string): Array<string>
   {
     const index = Chonse2.findIndexFromCoordinate(coordinate);
-    const piece = this.pieceState[index.rowIndex][index.colIndex];
+    const piece = this._pieceState[index.rowIndex][index.colIndex];
     let potentiallyLegalMoves: Array<string> = [];
 
     //handle pawn
@@ -1135,7 +1204,7 @@ export default class Chonse2
     const legalMoves:Array<string> = [];
 
     //rank ahead of this one
-    const rankAbove = color == PieceColor.WHITE ? this.pieceState.at(rowIndex - 1) : this.pieceState.at(rowIndex + 1);
+    const rankAbove = color == PieceColor.WHITE ? this._pieceState.at(rowIndex - 1) : this._pieceState.at(rowIndex + 1);
     const rankNumber = Number(coordinate[1]);
 
     //if the rank above this one exists, there might be a legal move
@@ -1186,7 +1255,7 @@ export default class Chonse2
       if (color == PieceColor.WHITE ? rankNumber == Chonse2.WHITE_PAWN_RANK : rankNumber === Chonse2.BLACK_PAWN_RANK)
       {
         //two ranks ahead of where the pawn is.
-        const twoRanksAbove = color == PieceColor.WHITE ? this.pieceState.at(rowIndex - 2) : this.pieceState.at(rowIndex + 2);
+        const twoRanksAbove = color == PieceColor.WHITE ? this._pieceState.at(rowIndex - 2) : this._pieceState.at(rowIndex + 2);
 
         //the two squares above it can potentially be legal moves.
         if (twoRanksAbove)
@@ -1218,7 +1287,7 @@ export default class Chonse2
     for(let i = 0; i < dRow.length; i++)
     {
       //The rank that the knight will move to.
-      const rankInQuestion = this.pieceState[rowIndex + dRow[i]];      
+      const rankInQuestion = this._pieceState[rowIndex + dRow[i]];      
 
       //If the rank does in fact exist, find its square.
       if (rankInQuestion)
@@ -1269,7 +1338,7 @@ export default class Chonse2
   private _getPotentiallyLegalKingMoves(coordinate: string, color: string): Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
-    let piece = this.pieceState[rowIndex][colIndex];
+    let piece = this._pieceState[rowIndex][colIndex];
 
       //Base moves.
       let legalMoves = this._getVectorMoves(coordinate, color, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
@@ -1287,8 +1356,8 @@ export default class Chonse2
 
           //Check if they're clear and that the king is not castling through an attacked square, and if so, push the castling square as a legal move.
           if (
-            this.pieceState[kingsideKnightSquare.rowIndex][kingsideKnightSquare.colIndex] == ""
-            && this.pieceState[kingsideBishopSquare.rowIndex][kingsideBishopSquare.colIndex] == "" 
+            this._pieceState[kingsideKnightSquare.rowIndex][kingsideKnightSquare.colIndex] == ""
+            && this._pieceState[kingsideBishopSquare.rowIndex][kingsideBishopSquare.colIndex] == "" 
             && !this._isSquareAttacked( (color == PieceColor.WHITE ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE), PieceColor.getOpposite(color) )
             && coordinate == kingSquare
           )
@@ -1308,9 +1377,9 @@ export default class Chonse2
 
           //Check if they're clear and that the king is not castling through an attacked square, and if so, push the castling square as a legal move.
           if (
-            this.pieceState[queensideKnightSquare.rowIndex][queensideKnightSquare.colIndex] == ""
-            && this.pieceState[queensideBishopSquare.rowIndex][queensideBishopSquare.colIndex] == ""
-            && this.pieceState[queenSquare.rowIndex][queenSquare.colIndex] == ""
+            this._pieceState[queensideKnightSquare.rowIndex][queensideKnightSquare.colIndex] == ""
+            && this._pieceState[queensideBishopSquare.rowIndex][queensideBishopSquare.colIndex] == ""
+            && this._pieceState[queenSquare.rowIndex][queenSquare.colIndex] == ""
             && !this._isSquareAttacked(  (color == PieceColor.WHITE ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE), PieceColor.getOpposite(color)  )
             && coordinate == kingSquare
           )
@@ -1347,7 +1416,7 @@ export default class Chonse2
           currentXOffset += dx, currentYOffset += dy, runCount ++)
           {
             //row of the square the bishop will move to.
-            const rowInQuestion = this.pieceState[rowIndex + currentXOffset];
+            const rowInQuestion = this._pieceState[rowIndex + currentXOffset];
   
             //if it indeed exists within the board, get the square.
             if (rowInQuestion)
@@ -1394,7 +1463,7 @@ export default class Chonse2
     {
       for(let j = 0; j < Chonse2.COORDS[i].length; j++)
       {
-        const piece = this.pieceState[i][j];
+        const piece = this._pieceState[i][j];
 
         if ( piece.startsWith(color))
         {
@@ -1426,23 +1495,23 @@ export default class Chonse2
     const fromSquareIndex = Chonse2.findIndexFromCoordinate(fromCoordinate);
 
     //Extract the piece from the square that is being moved from.
-    let piece = inst.pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex];
+    let piece = inst._pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex];
 
     //Handle en passant
     if (toCoordinate == inst.enPassantSquare && (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN))
     {
       //Remove the pawn that just got en passant'd
-      inst.turn ? inst.pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : inst.pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
+      inst.turn ? inst._pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : inst._pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
     
       //Add the captured piece.
       inst.turn ? inst.piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : inst.piecesBlackCaptured.push(PieceType.WHITE_PAWN);
     }
     
     //Clear the old piece position.
-    inst.pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex] = "";
+    inst._pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex] = "";
 
     //Replace it in the new position.
-    inst.pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
+    inst._pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
 
     //If the player castled kingside (check that the from and to coordinates match a kingside castle).
     if (inst.turn == true ? 
@@ -1462,10 +1531,10 @@ export default class Chonse2
         const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
 
         //Clears the old rook place.
-        inst.pieceState[oldRookPlaceIndex.rowIndex][oldRookPlaceIndex.colIndex] = PieceType.NONE;
+        inst._pieceState[oldRookPlaceIndex.rowIndex][oldRookPlaceIndex.colIndex] = PieceType.NONE;
 
         //Sets the new rook in place (protecting the king).
-        inst.pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
+        inst._pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
       }
     }
 
@@ -1487,10 +1556,10 @@ export default class Chonse2
         const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
 
         //Clears the old rook place.
-        inst.pieceState[oldRookPlaceIndex.rowIndex][oldRookPlaceIndex.colIndex] = PieceType.NONE;
+        inst._pieceState[oldRookPlaceIndex.rowIndex][oldRookPlaceIndex.colIndex] = PieceType.NONE;
 
         //Sets the new rook in place (protecting the king).
-        inst.pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
+        inst._pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
       }
     }
 
@@ -1533,7 +1602,7 @@ export default class Chonse2
       for(let row = 0; row < Chonse2.SIZE; row++)
       {
         //instantiate board here
-        obj.pieceState[row] = [];
+        obj._pieceState[row] = [];
 
         let col = 0;
 
@@ -1546,14 +1615,14 @@ export default class Chonse2
 
                 for (let j = 0; j < emptyCount; j++)
                 {
-                  obj.pieceState[row][col] = PieceType.NONE;
+                  obj._pieceState[row][col] = PieceType.NONE;
                   col++;
                 }
             }
             //if there is a piece on the board.
             else
             {
-              obj.pieceState[row][col] =
+              obj._pieceState[row][col] =
                   FenHelper.getPieceFromFenPiece(char);
 
               col++;
@@ -1600,7 +1669,7 @@ export default class Chonse2
     copy.piecesBlackCaptured = structuredClone(this.piecesBlackCaptured);
 
     //pieces
-    copy.pieceState = structuredClone(this.pieceState);
+    copy._pieceState = structuredClone(this._pieceState);
 
     //game state
     const gameStateCopy = new GameState();
@@ -1631,7 +1700,7 @@ export default class Chonse2
     copy._previousPositionMap = structuredClone(this._previousPositionMap);
 
     //cached state
-    copy.stateCache = this.stateCache.deepCopy();
+    copy._stateCache = this._stateCache.deepCopy();
 
     return copy;
   }
@@ -1647,10 +1716,10 @@ export default class Chonse2
     let fen: string = "";
 
     //board
-    for(let i = 0; i < this.pieceState.length; i++)
+    for(let i = 0; i < this._pieceState.length; i++)
     {
       //check each rank
-      const currentRank = this.pieceState[i];
+      const currentRank = this._pieceState[i];
       
       //notation requires the number of consecutive empty squares
       let emptyCount = 0;
@@ -1682,7 +1751,7 @@ export default class Chonse2
         fen += emptyCount.toString();
       }
 
-      if (i != this.pieceState.length - 1)
+      if (i != this._pieceState.length - 1)
       {
         fen += "/";
       }

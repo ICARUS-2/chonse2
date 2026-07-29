@@ -736,10 +736,10 @@ export default class BoardState
                         const pieceThatWillMove = colorToMove + move.piece;
                         const candidateFromCoordinates: Array<string> = [];
                         //Loop through the ranks.
-                        for (let rank = 0; rank < copyOfState.pieceState.length; rank++)
+                        for (let rank = 0; rank < copyOfState.getPieceState().length; rank++)
                         {
                             //Get the current rank.
-                            const currentRank = copyOfState.pieceState[rank];
+                            const currentRank = copyOfState.getPieceState()[rank];
 
                             //Loop through this current rank.
                             for(let file = 0; file < currentRank.length; file++)
