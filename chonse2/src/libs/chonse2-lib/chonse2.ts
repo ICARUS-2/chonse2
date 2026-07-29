@@ -596,7 +596,7 @@ export default class Chonse2
   }
 
   //Checks if a pawn can capture en passant (not just that there is an en passant square)
-  public isEnPassantCaptureActuallyPossible() : boolean
+  private _isEnPassantCaptureActuallyPossible() : boolean
   {
     //Logically an en passant capture can't happen if no pawn moved to squares to begin with.
     if (this.enPassantSquare == "")
@@ -650,7 +650,7 @@ export default class Chonse2
       posKey += " ";
     }
 
-    this.isEnPassantCaptureActuallyPossible() ? posKey += this.enPassantSquare : posKey += "-"
+    this._isEnPassantCaptureActuallyPossible() ? posKey += this.enPassantSquare : posKey += "-"
 
     return posKey
   }
@@ -1083,7 +1083,7 @@ export default class Chonse2
   }
 
   //Pseudolegal moves (not validated).
-  public _getPotentiallyLegalMoves(coordinate: string): Array<string>
+  private _getPotentiallyLegalMoves(coordinate: string): Array<string>
   {
     const index = Chonse2.findIndexFromCoordinate(coordinate);
     const piece = this.pieceState[index.rowIndex][index.colIndex];
@@ -1129,7 +1129,7 @@ export default class Chonse2
   }
   
   //Pawn pseudolegal moves (not validated)
-  public _getPotentiallyLegalPawnMoves(coordinate: string, color: string): Array<string>
+  private _getPotentiallyLegalPawnMoves(coordinate: string, color: string): Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
     const legalMoves:Array<string> = [];
@@ -1205,7 +1205,7 @@ export default class Chonse2
   }
   
   //Knight pseudolegal moves (not validated)
-  public _getPotentiallyLegalKnightMoves(coordinate: string, color: string) : Array<string>
+  private _getPotentiallyLegalKnightMoves(coordinate: string, color: string) : Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
     const legalMoves: Array<string> = [];
@@ -1248,25 +1248,25 @@ export default class Chonse2
   }
     
   //Bishop pseudolegal moves (not validated)
-  public _getPotentiallyLegalBishopMoves(coordinate: string, color: string): Array<string>
+  private _getPotentiallyLegalBishopMoves(coordinate: string, color: string): Array<string>
   {
     return this._getVectorMoves(coordinate, color, Chonse2._BISHOP_VECTOR_X, Chonse2._BISHOP_VECTOR_Y);
   }
   
   //Rook pseudolegal moves (not validated)
-  public _getPotentiallyLegalRookMoves(coordinate: string, color: string): Array<string>
+  private _getPotentiallyLegalRookMoves(coordinate: string, color: string): Array<string>
   {
     return this._getVectorMoves(coordinate, color, Chonse2._ROOK_VECTOR_X, Chonse2._ROOK_VECTOR_Y);
   }
   
   //Queen pseudolegal moves (not validated)
-  public _getPotentiallyLegalQueenMoves(coordinate: string, color: string) : Array<string>
+  private _getPotentiallyLegalQueenMoves(coordinate: string, color: string) : Array<string>
   {
     return this._getVectorMoves(coordinate, color, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y);
   }
   
   //King pseudolegal moves (not validated)
-  public _getPotentiallyLegalKingMoves(coordinate: string, color: string): Array<string>
+  private _getPotentiallyLegalKingMoves(coordinate: string, color: string): Array<string>
   {
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
     let piece = this.pieceState[rowIndex][colIndex];
@@ -1715,7 +1715,7 @@ export default class Chonse2
 }
 
 //Used to cache the state one move ago.
-export class PreviousStateCache
+class PreviousStateCache
 {
   //captures
   piecesWhiteCaptured: string[] = [];

@@ -621,12 +621,13 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   resignVsAiClicked()
   {
-    const gameState = this.getMostCurrentMainState().gameState;
+    // const gameState = this.getMostCurrentMainState().gameState;
 
-    gameState.isGameOver = true;
-    gameState.reason = GameOverReason.Resignation;
-    gameState.gameScore = this.boardState().humanPlayerIsWhite() ? GameScore.BLACK_WON : GameScore.WHITE_WON;
+    // gameState.isGameOver = true;
+    // gameState.reason = GameOverReason.Resignation;
+    // gameState.gameScore = this.boardState().humanPlayerIsWhite() ? GameScore.BLACK_WON : GameScore.WHITE_WON;
 
+    this.boardState().playerDidResign.set(true);
     this.toastr.warning(this.translate.instant("chessboard.toastr.resign"));
   }
 
@@ -638,17 +639,17 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       this.toastr, 
       this.translate, 
       this);
+
   }
 
   analyzeAiGameClicked()
   {
 
     const states = this.boardState().mainStateStack().map( s => s.getFEN() );
-    const gameStates = this.boardState().mainStateStack().map( s => structuredClone(s.gameState) );
     const moves = this.boardState().mainMoveStack().map(m => structuredClone(m));
     const pgnHeaders = structuredClone(this.boardState().pgnHeaders());
 
-    this.router.navigate(['/analysis'], {state: { "vsAiStates": states, "vsAiGameStates": gameStates, "vsAiMoves": moves, "vsAiPgnHeaders": pgnHeaders}});
+    this.router.navigate(['/analysis'], {state: { "vsAiStates": states, "vsAiMoves": moves, "vsAiPgnHeaders": pgnHeaders}});
   }
 
   getMostCurrentMainState()

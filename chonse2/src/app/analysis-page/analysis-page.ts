@@ -10,11 +10,10 @@ import { RouteConstants } from '../app.routes';
 import { PgnHeaders } from '../chessboard/chessboard/pgn-misc';
 import { LichessAPI } from '../../libs/server-api-lib/lichess-api';
 import ThemeService from '../themes/theme-service';
-import Chonse2, { PreviousStateCache } from '../../libs/chonse2-lib/chonse2';
+import Chonse2 from '../../libs/chonse2-lib/chonse2';
 import { GameState } from '../../libs/chonse2-lib/game-state';
 import MoveResult from '../chessboard/chessboard/move-result';
 import LocalStorageHelper from '../../libs/local-storage-helper';
-import { compress } from 'lz-string';
 
 @Component({
   selector: 'app-analysis-page',
@@ -170,7 +169,7 @@ export class AnalysisPage implements OnInit{
       this.gameService.addGame(BoardNames.Analysis, boardState);
       boardState.doEvaluateGame.set(true);
     }
-    else if (this.vsAiMoves && this.vsAiStates && this.vsAiGameStates && this.vsAiPgnHeaders) //if it was imported from vs ai
+    else if (this.vsAiMoves && this.vsAiStates && this.vsAiPgnHeaders) //if it was imported from vs ai
     {
       //Set up board state.
       const bs = new BoardState();
@@ -179,18 +178,8 @@ export class AnalysisPage implements OnInit{
       
       //Set positions.
       const restoredPositions = this.vsAiStates.map( fen => Chonse2.instantiateFromFen(fen) );
+      restoredPositions.at(-1)?.checkIsGameOver();
       bs.mainStateStack.set(restoredPositions);
-
-      //ensures that every state has a cache
-      restoredPositions.forEach(p => 
-        {
-          p.stateCache = new PreviousStateCache();  
-        }
-      )
-
-      //Set game states for the positions.
-      const restoredGameStates = this.vsAiGameStates?.map( s => Object.assign(new GameState, s) );
-      restoredPositions.forEach( (s: Chonse2, idx: number) => s.gameState = restoredGameStates[idx]);
   
       //Set move stack.
       const restoredMoveStack = this.vsAiMoves.map( m => Object.assign(new MoveResult, m) )

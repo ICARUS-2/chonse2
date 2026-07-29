@@ -54,6 +54,7 @@ export default class BoardState
     isVsAi: WritableSignal<boolean> = signal(false);
     humanPlayerIsWhite: WritableSignal<boolean> = signal(true);
     aiElo: WritableSignal<number> = signal(UciEngine.MIN_ELO);
+    playerDidResign: WritableSignal <boolean> = signal(false);
 
     //Cosmetic stuff.
     squareHighlightStatuses: WritableSignal<Array<Array<boolean>>>;

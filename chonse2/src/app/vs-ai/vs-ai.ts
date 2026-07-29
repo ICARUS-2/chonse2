@@ -7,8 +7,7 @@ import { RouteConstants } from '../app.routes';
 import VsAiConfigurationModalHelper from './vs-ai-configuration-modal-helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import Chonse2, { PreviousStateCache } from '../../libs/chonse2-lib/chonse2';
-import { GameState } from '../../libs/chonse2-lib/game-state';
+import Chonse2 from '../../libs/chonse2-lib/chonse2';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -36,9 +35,7 @@ export class VsAi implements OnInit, AfterViewInit{
 
     if (this.inputtedPosition) 
     {
-      const restoredPosition = Object.assign(new Chonse2(), this.inputtedPosition);
-      restoredPosition.gameState = new GameState();
-      restoredPosition.stateCache = new PreviousStateCache();
+      const restoredPosition = Chonse2.instantiateFromFen(this.inputtedPosition);
       restoredPosition.checkIsGameOver();
 
       VsAiConfigurationModalHelper.doModal(
@@ -52,7 +49,7 @@ export class VsAi implements OnInit, AfterViewInit{
     }
   }
 
-  inputtedPosition: Chonse2 | undefined;
+  inputtedPosition: string | undefined;
   
   private translate = inject(TranslateService);
 
