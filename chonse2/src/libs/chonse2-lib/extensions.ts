@@ -1,4 +1,5 @@
 import AlgebraicNotationMaker from "./algebraic-notation-builder";
+import { CastlingRightsType } from "./castling-rights-type";
 import Chonse2 from "./chonse2";
 import { PieceColor } from "./piece-color";
 import PieceMaterial from "./piece-material";
@@ -511,7 +512,7 @@ export default class Chonse2Extensions
         const blackKingCoord = board.getKingCoordinate(PieceColor.BLACK);
 
         //It's impossible to have castled if castling rights are still there.
-        if (!board.whiteCastlingRights.kingSide && !board.whiteCastlingRights.queenSide)
+        if (!board.getCastlingRights(CastlingRightsType.WhiteKingside) && !board.getCastlingRights(CastlingRightsType.WhiteQueenside) )
         {
             if (Chonse2Extensions.WHITE_KINGSIDE_CASTLE_SQUARES.includes(whiteKingCoord))
             {
@@ -524,7 +525,7 @@ export default class Chonse2Extensions
             }
         }
 
-        if (!board.blackCastlingRights.kingSide && !board.blackCastlingRights.queenSide)
+        if (!board.getCastlingRights(CastlingRightsType.BlackKingside)  && !board.getCastlingRights(CastlingRightsType.BlackQueenside) )
         {
             if (Chonse2Extensions.BLACK_KINGSIDE_CASTLE_SQUARES.includes(blackKingCoord))
             {
@@ -552,7 +553,7 @@ export default class Chonse2Extensions
         };
 
         //white
-        if (board.whiteCastlingRights.kingSide) 
+        if (board.getCastlingRights(CastlingRightsType.WhiteKingside)) 
         {
             // King is on e1, Rook is on h1. Squares to check: f1, g1
             const f1Clear = board.findPieceAtCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) === "";
@@ -561,7 +562,7 @@ export default class Chonse2Extensions
             returnObj.whiteKingside = f1Clear && g1Clear;
         }
 
-        if (board.whiteCastlingRights.queenSide) 
+        if (board.getCastlingRights(CastlingRightsType.WhiteQueenside)) 
         {
             // King is on e1, Rook is on a1. Squares to check: d1, c1, b1
             const d1Clear = board.findPieceAtCoordinate(Chonse2.WHITE_QUEEN_SQUARE) === "";
@@ -572,7 +573,7 @@ export default class Chonse2Extensions
         }
 
         //black
-        if (board.blackCastlingRights.kingSide) 
+        if (board.getCastlingRights(CastlingRightsType.BlackKingside)) 
         {
             // King is on e8, Rook is on h8. Squares to check: f8, g8
             const f8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) === "";
@@ -581,7 +582,7 @@ export default class Chonse2Extensions
             returnObj.blackKingside = f8Clear && g8Clear;
         }
 
-        if (board.blackCastlingRights.queenSide) 
+        if (board.getCastlingRights(CastlingRightsType.BlackQueenside)) 
         {
             //king is on e8, Rook is on a8. Squares to check: d8, c8, b8
             const d8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_QUEEN_SQUARE) === "";

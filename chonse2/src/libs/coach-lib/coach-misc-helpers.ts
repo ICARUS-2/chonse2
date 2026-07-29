@@ -1,3 +1,4 @@
+import { CastlingRightsType } from "../chonse2-lib/castling-rights-type";
 import Chonse2 from "../chonse2-lib/chonse2";
 import { PieceType } from "../chonse2-lib/piece-type";
 import { LineEval } from "../engine-lib/types/eval";
@@ -73,13 +74,25 @@ export class CoachMiscHelpers
         nextBestMove: { fromSquare: string; toSquare: string; promotion: string;}
     ) : boolean
     {
-        const doesOpponentHaveCastlingRights = whiteToMove ? 
-            (state.whiteCastlingRights.kingSide || state.whiteCastlingRights.queenSide) : 
-            (state.blackCastlingRights.kingSide || state.blackCastlingRights.queenSide);
+        const doesOpponentHaveCastlingRights = whiteToMove
+            ? (
+                state.getCastlingRights(CastlingRightsType.WhiteKingside) ||
+                state.getCastlingRights(CastlingRightsType.WhiteQueenside)
+            )
+            : (
+                state.getCastlingRights(CastlingRightsType.BlackKingside) ||
+                state.getCastlingRights(CastlingRightsType.BlackQueenside)
+            );
 
-        const willOpponentHaveCastlingRights = whiteToMove ? 
-            (nextBestState.whiteCastlingRights.kingSide || nextBestState.whiteCastlingRights.queenSide) :
-            (nextBestState.blackCastlingRights.kingSide || nextBestState.blackCastlingRights.queenSide);
+        const willOpponentHaveCastlingRights = whiteToMove
+            ? (
+                nextBestState.getCastlingRights(CastlingRightsType.WhiteKingside) ||
+                nextBestState.getCastlingRights(CastlingRightsType.WhiteQueenside)
+            )
+            : (
+                nextBestState.getCastlingRights(CastlingRightsType.BlackKingside) ||
+                nextBestState.getCastlingRights(CastlingRightsType.BlackQueenside)
+            );
 
 
         //If the opponent will not have castling rights after that move, make sure it wasn't cause they castled.

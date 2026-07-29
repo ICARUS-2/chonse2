@@ -8,11 +8,11 @@
     <div 
         class="boardPlayerInfo justify-space-between align-items-center"
         [ngClass]="{ 'flex-column-reverse' : this.boardState().isFlipped()}">
-        <app-board-player-info [playerName]="boardState().pgnHeaders().black" [playerElo]="boardState().pgnHeaders().blackElo" for="b" [clock]="getClockForPlayer('b')()" [capturedPieces]="boardState().getCurrentState().piecesBlackCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
+        <app-board-player-info [playerName]="boardState().pgnHeaders().black" [playerElo]="boardState().pgnHeaders().blackElo" for="b" [clock]="getClockForPlayer('b')()" [capturedPieces]="boardState().getCurrentState().getPiecesCapturedByPlayer(PieceColor.BLACK)" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
         
         <app-game-info [boardState]="boardState()"></app-game-info>
 
-        <app-board-player-info [playerName]="boardState().pgnHeaders().white" [playerElo]="boardState().pgnHeaders().whiteElo" for="w" [clock]="getClockForPlayer('w')()" [capturedPieces]="boardState().getCurrentState().piecesWhiteCaptured" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
+        <app-board-player-info [playerName]="boardState().pgnHeaders().white" [playerElo]="boardState().pgnHeaders().whiteElo" for="w" [clock]="getClockForPlayer('w')()" [capturedPieces]="boardState().getCurrentState().getPiecesCapturedByPlayer(PieceColor.WHITE)" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
     </div>
 
     <div class="compactBoardPlayerInfoContainer">

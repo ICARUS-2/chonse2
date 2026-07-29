@@ -5,6 +5,7 @@ import { PieceType } from "./piece-type";
 import { GameOverReason, GameScore, GameState } from "./game-state";
 import FenHelper from "./fen-helper";
 import AlgebraicNotationMaker from "./algebraic-notation-builder";
+import { CastlingRightsType } from "./castling-rights-type";
 
 export default class Chonse2
 {
@@ -132,19 +133,21 @@ export default class Chonse2
   ]);
 
   //Captures
-  piecesWhiteCaptured: string[] = [];
-  piecesBlackCaptured: string[] = [];
+  private _piecesWhiteCaptured: string[] = [];
+  private _piecesBlackCaptured: string[] = [];
 
   //Piece and board state.
-  _pieceState: Array<Array<string>>;
-  gameState: GameState = new GameState();
+  private _pieceState: Array<Array<string>>;
+  private _gameState: GameState = new GameState();
 
   //True: White's turn, false: black's turn
-  turn: boolean = true; 
+  public turn: boolean = true; 
     
-  //Special cases (castling/en passant)
-  whiteCastlingRights: CastlingRights;
-  blackCastlingRights: CastlingRights;
+  //Castling
+  private _whiteCastlingRights: CastlingRights;
+  private _blackCastlingRights: CastlingRights;
+
+  //En passant
   enPassantSquare: string = "";
 
   //Move counters
@@ -164,7 +167,7 @@ export default class Chonse2
 
     if (this._pieceState.length != Chonse2.SIZE)
     {
-        throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
+      throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
     }
 
     //validates correct number of files per rank.
@@ -172,13 +175,13 @@ export default class Chonse2
     {
       if (rank.length != Chonse2.SIZE)
       {
-          throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
+        throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
       }
     });
 
     //Initialize castling rights
-    this.whiteCastlingRights = new CastlingRights();
-    this.blackCastlingRights = new CastlingRights();
+    this._whiteCastlingRights = new CastlingRights();
+    this._blackCastlingRights = new CastlingRights();
 
     //Initialize state cache
     this._stateCache = new PreviousStateCache();
@@ -406,21 +409,32 @@ export default class Chonse2
     this._reinitializeInternal();
   }
 
+  //Get captured pieces by color.
+  public getPiecesCapturedByPlayer(color: PieceColor)
+  {
+    if (color == PieceColor.BLACK)
+    {
+      return this._piecesBlackCaptured;
+    }
+
+    return this._piecesWhiteCaptured;
+  }
+
   //Reinitializes all the properties.
   private _reinitializeInternal()
   {
     //Reset castling rights
-    this.whiteCastlingRights.kingSide = true;
-    this.whiteCastlingRights.queenSide = true;
-    this.blackCastlingRights.kingSide = true;
-    this.blackCastlingRights.queenSide = true;
+    this._whiteCastlingRights.kingSide = true;
+    this._whiteCastlingRights.queenSide = true;
+    this._blackCastlingRights.kingSide = true;
+    this._blackCastlingRights.queenSide = true;
     
     //Reset en passant.
     this.enPassantSquare = "";
 
     //Reset capture
-    this.piecesWhiteCaptured.length = 0;
-    this.piecesBlackCaptured.length = 0;
+    this._piecesWhiteCaptured.length = 0;
+    this._piecesBlackCaptured.length = 0;
 
     //Reset position map
     this._previousPositionMap.clear();
@@ -536,12 +550,13 @@ export default class Chonse2
 
   //#region Game state.
 
-  //Triggers the check to see if the game is over. Updates GameState.
+  //Retrieves the game state object.
   public getGameState()
   {
-    return this.gameState;
+    return this._gameState;
   }
 
+  //Triggers the check to see if the game is over. Updates GameState.
   public checkIsGameOver()
   {
     const nextPlayerHasLegalMoves = this._playerHasLegalMoves(this.turn);
@@ -551,27 +566,27 @@ export default class Chonse2
     //Checkmate
     if (!nextPlayerHasLegalMoves && nextPlayerIsIncheck)
     {
-      this.gameState.isGameOver = true;
-      this.gameState.reason = GameOverReason.Checkmate;
-      this.gameState.winner = PieceColor.getOpposite(playerColor);
+      this._gameState.isGameOver = true;
+      this._gameState.reason = GameOverReason.Checkmate;
+      this._gameState.winner = PieceColor.getOpposite(playerColor);
 
       if (playerColor == PieceColor.WHITE)
       {
-        this.gameState.gameScore = GameScore.BLACK_WON;
+        this._gameState.gameScore = GameScore.BLACK_WON;
       }
       
       if (playerColor == PieceColor.BLACK)
       {
-        this.gameState.gameScore = GameScore.WHITE_WON;
+        this._gameState.gameScore = GameScore.WHITE_WON;
       }
     }
 
     //Stalemate
     if (!nextPlayerHasLegalMoves && !nextPlayerIsIncheck)
     {
-      this.gameState.isGameOver = true;
-      this.gameState.reason = GameOverReason.Stalemate;
-      this.gameState.gameScore = GameScore.DRAW
+      this._gameState.isGameOver = true;
+      this._gameState.reason = GameOverReason.Stalemate;
+      this._gameState.gameScore = GameScore.DRAW
     }
 
     //Insufficient material
@@ -631,17 +646,17 @@ export default class Chonse2
       || isKingAndBishopVsKingAndBishopOnSameColor 
         )
       {
-        this.gameState.isGameOver = true;
-        this.gameState.gameScore = GameScore.DRAW
-        this.gameState.reason = GameOverReason.InsufficientMaterial;
+        this._gameState.isGameOver = true;
+        this._gameState.gameScore = GameScore.DRAW
+        this._gameState.reason = GameOverReason.InsufficientMaterial;
       }
 
     //fifty moves with no pawn movements or captures
     if (this.halfMovesWithoutPawnMovementsOrCaptures >= Chonse2.DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD)
     {
-      this.gameState.isGameOver = true;
-      this.gameState.reason = GameOverReason.FiftyMoveNoPawnMovementsOrCaptures;
-      this.gameState.gameScore = GameScore.DRAW
+      this._gameState.isGameOver = true;
+      this._gameState.reason = GameOverReason.FiftyMoveNoPawnMovementsOrCaptures;
+      this._gameState.gameScore = GameScore.DRAW
     }
 
     //threefold repetition
@@ -653,9 +668,9 @@ export default class Chonse2
       {
         if (val >= Chonse2.DRAW_BY_REPETITION_THRESHOLD)
         {
-          this.gameState.isGameOver = true;
-          this.gameState.reason = GameOverReason.ThreefoldRepetition;
-          this.gameState.gameScore = GameScore.DRAW
+          this._gameState.isGameOver = true;
+          this._gameState.reason = GameOverReason.ThreefoldRepetition;
+          this._gameState.gameScore = GameScore.DRAW
           break;
         }
       }
@@ -733,8 +748,8 @@ export default class Chonse2
     //Piece captures
     this._stateCache.piecesWhiteCaptured.length = 0;
     this._stateCache.piecesBlackCaptured.length = 0;
-    this.piecesWhiteCaptured.forEach( p => {this._stateCache.piecesWhiteCaptured.push(p)} );
-    this.piecesBlackCaptured.forEach( p => {this._stateCache.piecesBlackCaptured.push(p)} );
+    this._piecesWhiteCaptured.forEach( p => {this._stateCache.piecesWhiteCaptured.push(p)} );
+    this._piecesBlackCaptured.forEach( p => {this._stateCache.piecesBlackCaptured.push(p)} );
 
     //Piece state
     for(let rank = 0; rank < this._pieceState.length; rank++)
@@ -746,16 +761,16 @@ export default class Chonse2
     }
 
     //Game state
-    this._stateCache.isGameOver = this.gameState.isGameOver;
-    this._stateCache.gameOverReason = this.gameState.reason;
-    this._stateCache.winner = this.gameState.winner;
-    this._stateCache.gameScore = this.gameState.gameScore;
+    this._stateCache.isGameOver = this._gameState.isGameOver;
+    this._stateCache.gameOverReason = this._gameState.reason;
+    this._stateCache.winner = this._gameState.winner;
+    this._stateCache.gameScore = this._gameState.gameScore;
 
     //Castling rights
-    this._stateCache.whiteKingsideCastlingRights = this.whiteCastlingRights.kingSide;
-    this._stateCache.whiteQueensideCastlingRights = this.whiteCastlingRights.queenSide;
-    this._stateCache.blackKingsideCastlingRights = this.blackCastlingRights.kingSide;
-    this._stateCache.blackQueensideCastlingRights = this.blackCastlingRights.queenSide;
+    this._stateCache.whiteKingsideCastlingRights = this._whiteCastlingRights.kingSide;
+    this._stateCache.whiteQueensideCastlingRights = this._whiteCastlingRights.queenSide;
+    this._stateCache.blackKingsideCastlingRights = this._blackCastlingRights.kingSide;
+    this._stateCache.blackQueensideCastlingRights = this._blackCastlingRights.queenSide;
 
     //Move counters
     this._stateCache.halfMovesWithoutPawnMovementsOrCaptures = this.halfMovesWithoutPawnMovementsOrCaptures;
@@ -776,7 +791,7 @@ export default class Chonse2
   //Fully validated legal moves that a certain coordinate's piece can make
   public getLegalMoves(coordinate: string): Array<string>
   {
-    if (this.gameState.isGameOver)
+    if (this._gameState.isGameOver)
     {
       return [];
     }
@@ -823,7 +838,7 @@ export default class Chonse2
   //Moves a piece from one spot to another and accounting for promotion if applicable.
   public completeMove(fromCoordinate: string, toCoordinate: string, promotionPiece = PieceType.QUEEN): IMoveResult
   {
-    if (this.gameState.isGameOver || fromCoordinate == toCoordinate)
+    if (this._gameState.isGameOver || fromCoordinate == toCoordinate)
     {
       return {result: false, notation: "", notationMinimal: "" , fromCoord: fromCoordinate, toCoord: toCoordinate, piece: "", pgnComment: "", promotion: ""};
     }
@@ -876,7 +891,7 @@ export default class Chonse2
       this.turn ? this._pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : this._pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
     
       //Add the captured piece.
-      this.turn ? this.piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : this.piecesBlackCaptured.push(PieceType.WHITE_PAWN);
+      this.turn ? this._piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : this._piecesBlackCaptured.push(PieceType.WHITE_PAWN);
     
       //Add to notation.
       notation.addCapture();
@@ -893,13 +908,13 @@ export default class Chonse2
       //if there was already a piece in the TO square, and the current piece is a black one, then black must be capturing a white piece.
       if (piece.startsWith(PieceColor.BLACK))
       {
-        this.piecesBlackCaptured.push(pieceInToSquare);
+        this._piecesBlackCaptured.push(pieceInToSquare);
       }
       
       //vice versa
       if (piece.startsWith(PieceColor.WHITE))
       {
-        this.piecesWhiteCaptured.push(pieceInToSquare);
+        this._piecesWhiteCaptured.push(pieceInToSquare);
       }
     }
 
@@ -946,7 +961,7 @@ export default class Chonse2
       : (piece == PieceType.BLACK_KING && fromCoordinate == Chonse2.BLACK_KING_SQUARE && toCoordinate == Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE))
     {
       //If they do, check that they actually have castling rights for the king side.
-      if (piece == PieceType.WHITE_KING ? this.whiteCastlingRights.kingSide : this.blackCastlingRights.kingSide)
+      if (piece == PieceType.WHITE_KING ? this._whiteCastlingRights.kingSide : this._blackCastlingRights.kingSide)
       {
         //Where the rook will when the player castles.
         const newRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) : Chonse2.findIndexFromCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
@@ -964,7 +979,7 @@ export default class Chonse2
         this._pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
 
         //Removes castling rights as a player cannot castle multiple times.
-        piece == PieceType.WHITE_KING ? this.whiteCastlingRights.removeBothCastlingRights() : this.blackCastlingRights.removeBothCastlingRights();
+        piece == PieceType.WHITE_KING ? this._whiteCastlingRights.removeBothCastlingRights() : this._blackCastlingRights.removeBothCastlingRights();
       
         //Record castling move in notation.
         notation.addKingsideCastle();
@@ -977,7 +992,7 @@ export default class Chonse2
       : (piece == PieceType.BLACK_KING && fromCoordinate == Chonse2.BLACK_KING_SQUARE && toCoordinate == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE))
     {
       //If they do, check that they actually have castling rights for the queen side.
-      if (piece == PieceType.WHITE_KING ? this.whiteCastlingRights.queenSide : this.blackCastlingRights.queenSide)
+      if (piece == PieceType.WHITE_KING ? this._whiteCastlingRights.queenSide : this._blackCastlingRights.queenSide)
       {
         //Where the rook will when the player castles.
         const newRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(Chonse2.WHITE_QUEEN_SQUARE) : Chonse2.findIndexFromCoordinate(Chonse2.BLACK_QUEEN_SQUARE);
@@ -995,7 +1010,7 @@ export default class Chonse2
         this._pieceState[newRookPlaceIndex.rowIndex][newRookPlaceIndex.colIndex] = newRook;
 
         //Removes castling rights as a player cannot castle multiple times.
-        piece == PieceType.WHITE_KING ? this.whiteCastlingRights.removeBothCastlingRights() : this.blackCastlingRights.removeBothCastlingRights();
+        piece == PieceType.WHITE_KING ? this._whiteCastlingRights.removeBothCastlingRights() : this._blackCastlingRights.removeBothCastlingRights();
       
         //Record castling move in notation.
         notation.addQueensideCastle();
@@ -1005,7 +1020,7 @@ export default class Chonse2
     //If the player moved their king, strip castling rights on both sides.
     if (this.turn == true ? piece == PieceType.WHITE_KING : piece == PieceType.BLACK_KING)
     {
-      this.turn == true ? this.whiteCastlingRights.removeBothCastlingRights() : this.blackCastlingRights.removeBothCastlingRights();
+      this.turn == true ? this._whiteCastlingRights.removeBothCastlingRights() : this._blackCastlingRights.removeBothCastlingRights();
     }
   
     //If the player moved their rook, remove castling rights for that side.
@@ -1013,44 +1028,44 @@ export default class Chonse2
     {
       if (this.turn && fromCoordinate == Chonse2.WHITE_KINGSIDE_ROOK_SQUARE)
       {
-        this.whiteCastlingRights.kingSide = false;
+        this._whiteCastlingRights.kingSide = false;
       }
 
       if (this.turn && fromCoordinate == Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE)
       {
-        this.whiteCastlingRights.queenSide = false;
+        this._whiteCastlingRights.queenSide = false;
       }
 
       if (!this.turn && fromCoordinate == Chonse2.BLACK_KINGSIDE_ROOK_SQUARE)
       {
-        this.blackCastlingRights.kingSide = false;
+        this._blackCastlingRights.kingSide = false;
       }
 
       if (!this.turn && fromCoordinate == Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE)
       {
-        this.blackCastlingRights.queenSide = false;
+        this._blackCastlingRights.queenSide = false;
       }
     }
 
     //If the player had that rook captured, remove castling rights for that side
     if (this.turn && toCoordinate == Chonse2.BLACK_KINGSIDE_ROOK_SQUARE)
     {
-      this.blackCastlingRights.kingSide = false;
+      this._blackCastlingRights.kingSide = false;
     }
 
     if (this.turn && toCoordinate == Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE)
     {
-      this.blackCastlingRights.queenSide = false;
+      this._blackCastlingRights.queenSide = false;
     }
 
     if (!this.turn && toCoordinate == Chonse2.WHITE_KINGSIDE_ROOK_SQUARE)
     {
-      this.whiteCastlingRights.kingSide = false;
+      this._whiteCastlingRights.kingSide = false;
     }
 
     if (!this.turn && toCoordinate == Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE)
     {
-      this.whiteCastlingRights.queenSide = false;
+      this._whiteCastlingRights.queenSide = false;
     }
 
     //If black just moved, increase counter of full moves.
@@ -1088,7 +1103,7 @@ export default class Chonse2
     this.checkIsGameOver();
 
     //If there is a checkmate, append it to the notation.
-    if (this.gameState.isGameOver && this.gameState.reason == GameOverReason.Checkmate)
+    if (this._gameState.isGameOver && this._gameState.reason == GameOverReason.Checkmate)
     {
       notation.addMate();
     }
@@ -1112,10 +1127,10 @@ export default class Chonse2
     this.turn = this._stateCache.turn;
 
     //Piece captures
-    this.piecesWhiteCaptured.length = 0;
-    this.piecesBlackCaptured.length = 0;
-    this._stateCache.piecesWhiteCaptured.forEach(p => { this.piecesWhiteCaptured.push(p); });
-    this._stateCache.piecesBlackCaptured.forEach(p => { this.piecesBlackCaptured.push(p); });
+    this._piecesWhiteCaptured.length = 0;
+    this._piecesBlackCaptured.length = 0;
+    this._stateCache.piecesWhiteCaptured.forEach(p => { this._piecesWhiteCaptured.push(p); });
+    this._stateCache.piecesBlackCaptured.forEach(p => { this._piecesBlackCaptured.push(p); });
 
     //piece state
     for(let rank = 0; rank < this._stateCache.pieceState.length; rank++)
@@ -1127,16 +1142,16 @@ export default class Chonse2
     }
 
     //game state
-    this.gameState.isGameOver = this._stateCache.isGameOver;
-    this.gameState.reason = this._stateCache.gameOverReason;
-    this.gameState.winner = this._stateCache.winner;
-    this.gameState.gameScore = this._stateCache.gameScore;
+    this._gameState.isGameOver = this._stateCache.isGameOver;
+    this._gameState.reason = this._stateCache.gameOverReason;
+    this._gameState.winner = this._stateCache.winner;
+    this._gameState.gameScore = this._stateCache.gameScore;
 
     //Castling rights
-    this.whiteCastlingRights.kingSide = this._stateCache.whiteKingsideCastlingRights;
-    this.whiteCastlingRights.queenSide = this._stateCache.whiteQueensideCastlingRights;
-    this.blackCastlingRights.kingSide = this._stateCache.blackKingsideCastlingRights;
-    this.blackCastlingRights.queenSide = this._stateCache.blackQueensideCastlingRights;
+    this._whiteCastlingRights.kingSide = this._stateCache.whiteKingsideCastlingRights;
+    this._whiteCastlingRights.queenSide = this._stateCache.whiteQueensideCastlingRights;
+    this._blackCastlingRights.kingSide = this._stateCache.blackKingsideCastlingRights;
+    this._blackCastlingRights.queenSide = this._stateCache.blackQueensideCastlingRights;
 
     //Move counters
     this.halfMovesWithoutPawnMovementsOrCaptures = this._stateCache.halfMovesWithoutPawnMovementsOrCaptures;
@@ -1337,59 +1352,56 @@ export default class Chonse2
   //King pseudolegal moves (not validated)
   private _getPotentiallyLegalKingMoves(coordinate: string, color: string): Array<string>
   {
-    const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
-    let piece = this._pieceState[rowIndex][colIndex];
+    //Base moves.
+    let legalMoves = this._getVectorMoves(coordinate, color, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
 
-      //Base moves.
-      let legalMoves = this._getVectorMoves(coordinate, color, Chonse2._QUEEN_KING_VECTOR_X, Chonse2._QUEEN_KING_VECTOR_Y, 1);
-
-      //King cannot castle while in check
-      if (!this.isInCheck(color))
+    //King cannot castle while in check
+    if (!this.isInCheck(color))
+    {
+      //Kingside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
+      if (this.turn == true ? this._whiteCastlingRights.kingSide : this._blackCastlingRights.kingSide)
       {
-        //Kingside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
-        if (this.turn == true ? this.whiteCastlingRights.kingSide : this.blackCastlingRights.kingSide)
+        //These two squares need to be free in order to castle kingside.
+        const kingsideKnightSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
+        const kingsideBishopSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
+        const kingSquare = this.turn == true ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
+
+        //Check if they're clear and that the king is not castling through an attacked square, and if so, push the castling square as a legal move.
+        if (
+          this._pieceState[kingsideKnightSquare.rowIndex][kingsideKnightSquare.colIndex] == ""
+          && this._pieceState[kingsideBishopSquare.rowIndex][kingsideBishopSquare.colIndex] == "" 
+          && !this._isSquareAttacked( (color == PieceColor.WHITE ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE), PieceColor.getOpposite(color) )
+          && coordinate == kingSquare
+        )
         {
-          //These two squares need to be free in order to castle kingside.
-          const kingsideKnightSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
-          const kingsideBishopSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
-          const kingSquare = this.turn == true ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
-
-          //Check if they're clear and that the king is not castling through an attacked square, and if so, push the castling square as a legal move.
-          if (
-            this._pieceState[kingsideKnightSquare.rowIndex][kingsideKnightSquare.colIndex] == ""
-            && this._pieceState[kingsideBishopSquare.rowIndex][kingsideBishopSquare.colIndex] == "" 
-            && !this._isSquareAttacked( (color == PieceColor.WHITE ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE), PieceColor.getOpposite(color) )
-            && coordinate == kingSquare
-          )
-          {
-            this.turn == true ? legalMoves.push(Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) : legalMoves.push(Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
-          }
-        }
-
-        //Queenside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
-        if (this.turn == true ? this.whiteCastlingRights.queenSide : this.blackCastlingRights.queenSide)
-        {
-          //These three squares need to be free in order to castle queenside.
-          const queensideKnightSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE : Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE);
-          const queensideBishopSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
-          const queenSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE);
-          const kingSquare = this.turn == true ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
-
-          //Check if they're clear and that the king is not castling through an attacked square, and if so, push the castling square as a legal move.
-          if (
-            this._pieceState[queensideKnightSquare.rowIndex][queensideKnightSquare.colIndex] == ""
-            && this._pieceState[queensideBishopSquare.rowIndex][queensideBishopSquare.colIndex] == ""
-            && this._pieceState[queenSquare.rowIndex][queenSquare.colIndex] == ""
-            && !this._isSquareAttacked(  (color == PieceColor.WHITE ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE), PieceColor.getOpposite(color)  )
-            && coordinate == kingSquare
-          )
-          {
-            this.turn == true ? legalMoves.push(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) : legalMoves.push(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
-          }
+          this.turn == true ? legalMoves.push(Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) : legalMoves.push(Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
         }
       }
 
-      return legalMoves;   
+      //Queenside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
+      if (this.turn == true ? this._whiteCastlingRights.queenSide : this._blackCastlingRights.queenSide)
+      {
+        //These three squares need to be free in order to castle queenside.
+        const queensideKnightSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE : Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE);
+        const queensideBishopSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
+        const queenSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE);
+        const kingSquare = this.turn == true ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
+
+        //Check if they're clear and that the king is not castling through an attacked square, and if so, push the castling square as a legal move.
+        if (
+          this._pieceState[queensideKnightSquare.rowIndex][queensideKnightSquare.colIndex] == ""
+          && this._pieceState[queensideBishopSquare.rowIndex][queensideBishopSquare.colIndex] == ""
+          && this._pieceState[queenSquare.rowIndex][queenSquare.colIndex] == ""
+          && !this._isSquareAttacked(  (color == PieceColor.WHITE ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE), PieceColor.getOpposite(color)  )
+          && coordinate == kingSquare
+        )
+        {
+          this.turn == true ? legalMoves.push(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) : legalMoves.push(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
+        }
+      }
+    }
+
+    return legalMoves;   
   }
   
   //Generates moves for vector-moving pieces (any sliding one)
@@ -1504,7 +1516,7 @@ export default class Chonse2
       inst.turn ? inst._pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : inst._pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
     
       //Add the captured piece.
-      inst.turn ? inst.piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : inst.piecesBlackCaptured.push(PieceType.WHITE_PAWN);
+      inst.turn ? inst._piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : inst._piecesBlackCaptured.push(PieceType.WHITE_PAWN);
     }
     
     //Clear the old piece position.
@@ -1519,7 +1531,7 @@ export default class Chonse2
       : (piece == PieceType.BLACK_KING && fromCoordinate == Chonse2.BLACK_KING_SQUARE && toCoordinate == Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE))
     {
       //If they do, check that they actually have castling rights for the king side.
-      if (piece == PieceType.WHITE_KING ? inst.whiteCastlingRights.kingSide : inst.blackCastlingRights.kingSide)
+      if (piece == PieceType.WHITE_KING ? inst._whiteCastlingRights.kingSide : inst._blackCastlingRights.kingSide)
       {
         //Where the rook will when the player castles.
         const newRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) : Chonse2.findIndexFromCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
@@ -1544,7 +1556,7 @@ export default class Chonse2
       : (piece == PieceType.BLACK_KING && fromCoordinate == Chonse2.BLACK_KING_SQUARE && toCoordinate == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE))
     {
       //If they do, check that they actually have castling rights for the queen side.
-      if (piece == PieceType.WHITE_KING ? inst.whiteCastlingRights.queenSide : inst.blackCastlingRights.queenSide)
+      if (piece == PieceType.WHITE_KING ? inst._whiteCastlingRights.queenSide : inst._blackCastlingRights.queenSide)
       {
         //Where the rook will when the player castles.
         const newRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(Chonse2.WHITE_QUEEN_SQUARE) : Chonse2.findIndexFromCoordinate(Chonse2.BLACK_QUEEN_SQUARE);
@@ -1567,7 +1579,7 @@ export default class Chonse2
     return true;
   }
   
-  //En passant square for move generation.
+  //Castling and en passant
   private _getEnPassantSquareIfExists(fromSquare: string, toSquare: string, turn: boolean) : string
   {
     //En passant moves are stored with key fromsquare-tosquare
@@ -1578,6 +1590,47 @@ export default class Chonse2
 
     //Return it if it exists or empty string otherwise.
     return val == null ? "" : val;
+  }
+
+  //Retrieves one of the four castling rights types.
+  public getCastlingRights(type: CastlingRightsType): boolean
+  {
+    switch(type)
+    {
+      case CastlingRightsType.WhiteKingside:
+        return this._whiteCastlingRights.kingSide;
+
+      case CastlingRightsType.WhiteQueenside:
+        return this._whiteCastlingRights.queenSide;
+
+      case CastlingRightsType.BlackKingside:
+        return this._blackCastlingRights.kingSide;
+
+      case CastlingRightsType.BlackQueenside:
+        return this._blackCastlingRights.queenSide;
+    }
+  }
+
+  //Sets the castling rights for one of the four types
+  public setCastlingRights(type: CastlingRightsType, val: boolean)
+  {
+    switch(type)
+    {
+      case CastlingRightsType.WhiteKingside:
+        this._whiteCastlingRights.kingSide = val;
+        break;
+
+      case CastlingRightsType.WhiteQueenside:
+        this._whiteCastlingRights.queenSide = val;
+        break;
+
+      case CastlingRightsType.BlackKingside:
+        this._blackCastlingRights.kingSide = val;
+        break;
+
+      case CastlingRightsType.BlackQueenside:
+        this._blackCastlingRights.queenSide = val;
+    }
   }
 
   //#endregion
@@ -1635,8 +1688,8 @@ export default class Chonse2
 
       //castling
       const castling = FenHelper.getCastlingRightsFromFen(castlingRights);
-      obj.whiteCastlingRights = castling.white;
-      obj.blackCastlingRights = castling.black;
+      obj._whiteCastlingRights = castling.white;
+      obj._blackCastlingRights = castling.black;
 
       //en passant
       if (enPassantSquare != "-")
@@ -1665,17 +1718,17 @@ export default class Chonse2
     const copy = new Chonse2();
 
     //captures/material
-    copy.piecesWhiteCaptured = structuredClone(this.piecesWhiteCaptured);
-    copy.piecesBlackCaptured = structuredClone(this.piecesBlackCaptured);
+    copy._piecesWhiteCaptured = structuredClone(this._piecesWhiteCaptured);
+    copy._piecesBlackCaptured = structuredClone(this._piecesBlackCaptured);
 
     //pieces
     copy._pieceState = structuredClone(this._pieceState);
 
     //game state
     const gameStateCopy = new GameState();
-    gameStateCopy.isGameOver = this.gameState.isGameOver;
-    gameStateCopy.reason = this.gameState.reason;
-    copy.gameState = gameStateCopy;
+    gameStateCopy.isGameOver = this._gameState.isGameOver;
+    gameStateCopy.reason = this._gameState.reason;
+    copy._gameState = gameStateCopy;
 
     //turn
     copy.turn = this.turn;
@@ -1684,13 +1737,13 @@ export default class Chonse2
     copy.enPassantSquare = this.enPassantSquare;
 
     //castling rights
-    copy.whiteCastlingRights = new CastlingRights();
-    copy.whiteCastlingRights.kingSide = this.whiteCastlingRights.kingSide;
-    copy.whiteCastlingRights.queenSide = this.whiteCastlingRights.queenSide;
+    copy._whiteCastlingRights = new CastlingRights();
+    copy._whiteCastlingRights.kingSide = this._whiteCastlingRights.kingSide;
+    copy._whiteCastlingRights.queenSide = this._whiteCastlingRights.queenSide;
 
-    copy.blackCastlingRights = new CastlingRights();
-    copy.blackCastlingRights.kingSide = this.blackCastlingRights.kingSide; 
-    copy.blackCastlingRights.queenSide = this.blackCastlingRights.queenSide;
+    copy._blackCastlingRights = new CastlingRights();
+    copy._blackCastlingRights.kingSide = this._blackCastlingRights.kingSide; 
+    copy._blackCastlingRights.queenSide = this._blackCastlingRights.queenSide;
 
     //move counters
     copy.halfMovesWithoutPawnMovementsOrCaptures = this.halfMovesWithoutPawnMovementsOrCaptures;
@@ -1763,7 +1816,7 @@ export default class Chonse2
 
     //castling
     fen += " "
-    fen += FenHelper.getFenCastlingRights(this.whiteCastlingRights, this.blackCastlingRights);
+    fen += FenHelper.getFenCastlingRights(this._whiteCastlingRights, this._blackCastlingRights);
 
     //en passant
     fen += " "

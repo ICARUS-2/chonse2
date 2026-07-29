@@ -98,24 +98,36 @@
             <!--White castling rights-->
             <div>
                 <p>{{ 'inputPosition.board.white' | translate }}</p>
+
                 @if(getPotentialForCastlingRights(true, true))
                 {
-                    <div 
-                        class="form-check form-switch" 
-                        [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
-                        >
+                    <div
+                        class="form-check form-switch"
+                        [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
+
                         <label>{{ 'inputPosition.board.kingside' | translate }}</label>
-                        <input class="form-check-input custom-switch" type="checkbox" [(ngModel)]="this.model().game().whiteCastlingRights.kingSide">
+
+                        <input
+                            class="form-check-input custom-switch"
+                            type="checkbox"
+                            [ngModel]="model().game().getCastlingRights(CastlingRightsType.WhiteKingside)"
+                            (ngModelChange)="model().game().setCastlingRights(CastlingRightsType.WhiteKingside, $event)">
                     </div>
                 }
 
                 @if(getPotentialForCastlingRights(true, false))
                 {
-                    <div 
+                    <div
                         class="form-check form-switch"
                         [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
+
                         <label>{{ 'inputPosition.board.queenside' | translate }}</label>
-                        <input class="form-check-input custom-switch" type="checkbox" [(ngModel)]="this.model().game().whiteCastlingRights.queenSide">
+
+                        <input
+                            class="form-check-input custom-switch"
+                            type="checkbox"
+                            [ngModel]="model().game().getCastlingRights(CastlingRightsType.WhiteQueenside)"
+                            (ngModelChange)="model().game().setCastlingRights(CastlingRightsType.WhiteQueenside, $event)">
                     </div>
                 }
             </div>
@@ -123,23 +135,36 @@
             <!--Black castling rights-->
             <div>
                 <p>{{ 'inputPosition.board.black' | translate }}</p>
+
                 @if(getPotentialForCastlingRights(false, true))
                 {
-                    <div 
+                    <div
                         class="form-check form-switch"
                         [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
+
                         <label>{{ 'inputPosition.board.kingside' | translate }}</label>
-                        <input class="form-check-input custom-switch" type="checkbox" [(ngModel)]="this.model().game().blackCastlingRights.kingSide">
+
+                        <input
+                            class="form-check-input custom-switch"
+                            type="checkbox"
+                            [ngModel]="model().game().getCastlingRights(CastlingRightsType.BlackKingside)"
+                            (ngModelChange)="model().game().setCastlingRights(CastlingRightsType.BlackKingside, $event)">
                     </div>
                 }
 
                 @if(getPotentialForCastlingRights(false, false))
                 {
-                    <div 
+                    <div
                         class="form-check form-switch"
                         [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()">
+
                         <label>{{ 'inputPosition.board.queenside' | translate }}</label>
-                        <input class="form-check-input custom-switch" type="checkbox" [(ngModel)]="this.model().game().blackCastlingRights.queenSide">
+
+                        <input
+                            class="form-check-input custom-switch"
+                            type="checkbox"
+                            [ngModel]="model().game().getCastlingRights(CastlingRightsType.BlackQueenside)"
+                            (ngModelChange)="model().game().setCastlingRights(CastlingRightsType.BlackQueenside, $event)">
                     </div>
                 }
             </div>

@@ -15,6 +15,7 @@ import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
 import { GameOverReason } from "../chonse2-lib/game-state";
 import { CoachAudio } from "./coach-audio";
 import { uciMoveParams } from "../engine-lib/helpers/chessHelper";
+import { CastlingRightsType } from "../chonse2-lib/castling-rights-type";
 export class CoachUtils
 {
     public static performCoachAnalysis(states: Array<Chonse2>, moves: Array<MoveResult>, evals: Array<PositionEval>, isDivergenceStack: boolean = false)
@@ -398,16 +399,16 @@ export class CoachUtils
                             !move.coachMoveFlags.includes(CoachMoveFlagType.InevitablyHungPiece)) //queen and king forked but king moved to the wrong square -> don't scold them for losing the queen.
                         {
                             //what white already had before the engine line
-                            const whiteCapturedBefore = currentFollowUp[0].piecesWhiteCaptured;
+                            const whiteCapturedBefore = currentFollowUp[0].getPiecesCapturedByPlayer(PieceColor.WHITE);
 
                             //what white had after all follow up moves were completed.
-                            const whiteCapturedAfter = currentFollowUp.at(-1)?.piecesWhiteCaptured;
+                            const whiteCapturedAfter = currentFollowUp.at(-1)?.getPiecesCapturedByPlayer(PieceColor.WHITE);
 
                             //what black already had before the engine line
-                            const blackCapturedBefore = currentFollowUp[0].piecesBlackCaptured;
+                            const blackCapturedBefore = currentFollowUp[0].getPiecesCapturedByPlayer(PieceColor.BLACK);
 
                             //what black had after all follow up moves were completed.
-                            const blackCapturedAfter = currentFollowUp.at(-1)?.piecesBlackCaptured;
+                            const blackCapturedAfter = currentFollowUp.at(-1)?.getPiecesCapturedByPlayer(PieceColor.BLACK);
 
 
                             //Only the NEW pieces gained after this engine line.
@@ -686,25 +687,49 @@ export class CoachUtils
                     {
                         if (previousBestMove)
                         {
-                            const castlingRights = whiteToMove ? previousState.blackCastlingRights : previousState.whiteCastlingRights;
+                            const hasCastlingRights = whiteToMove
+                                ? (
+                                    previousState.getCastlingRights(CastlingRightsType.BlackKingside) ||
+                                    previousState.getCastlingRights(CastlingRightsType.BlackQueenside)
+                                )
+                                : (
+                                    previousState.getCastlingRights(CastlingRightsType.WhiteKingside) ||
+                                    previousState.getCastlingRights(CastlingRightsType.WhiteQueenside)
+                                );
 
-                            //Via this, we will automatically know that it's the king that's supposed to move because if the king weren't on the starting square there would be no castling rights.
-                            if (castlingRights.kingSide || castlingRights.queenSide)
+                            // Via this, we will automatically know that it's the king that's supposed to move
+                            // because if the king weren't on the starting square there would be no castling rights.
+                            if (hasCastlingRights)
                             {
-                                const kingsideCastle = whiteToMove ? Chonse2Extensions.BLACK_KINGSIDE_CASTLE : Chonse2Extensions.WHITE_KINGSIDE_CASTLE;
-                                const queensideCastle = whiteToMove ? Chonse2Extensions.BLACK_QUEENSIDE_CASTLE : Chonse2Extensions.WHITE_QUEENSIDE_CASTLE;
+                                const kingsideCastle = whiteToMove
+                                    ? Chonse2Extensions.BLACK_KINGSIDE_CASTLE
+                                    : Chonse2Extensions.WHITE_KINGSIDE_CASTLE;
 
-                                if (previousBestMove.fromSquare == kingsideCastle.kingFrom && previousBestMove.toSquare == kingsideCastle.kingTo)
+                                const queensideCastle = whiteToMove
+                                    ? Chonse2Extensions.BLACK_QUEENSIDE_CASTLE
+                                    : Chonse2Extensions.WHITE_QUEENSIDE_CASTLE;
+
+                                if (previousBestMove.fromSquare == kingsideCastle.kingFrom &&
+                                    previousBestMove.toSquare == kingsideCastle.kingTo)
                                 {
-                                    CoachText.addCoachSentence(move, CoachText.MISSED_CASTLING_KINGSIDE, colorThatMovedText);
+                                    CoachText.addCoachSentence(
+                                        move,
+                                        CoachText.MISSED_CASTLING_KINGSIDE,
+                                        colorThatMovedText
+                                    );
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedCastle);
                                 }
 
-                                if (previousBestMove.fromSquare == queensideCastle.kingFrom && previousBestMove.toSquare == queensideCastle.kingTo)
+                                if (previousBestMove.fromSquare == queensideCastle.kingFrom &&
+                                    previousBestMove.toSquare == queensideCastle.kingTo)
                                 {
-                                    CoachText.addCoachSentence(move, CoachText.MISSED_CASTLING_QUEENSIDE, colorThatMovedText);
+                                    CoachText.addCoachSentence(
+                                        move,
+                                        CoachText.MISSED_CASTLING_QUEENSIDE,
+                                        colorThatMovedText
+                                    );
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedCastle);
-                                }               
+                                }
                             }
                         }
                     }

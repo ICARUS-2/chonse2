@@ -21,6 +21,7 @@ import { IconButton } from "../../ui/icon-button/icon-button";
 import GameLinkHelper from '../../chessboard/chessboard/game-link-helper';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import ChessboardHelper from '../../chessboard/helpers';
+import { CastlingRightsType } from '../../../libs/chonse2-lib/castling-rights-type';
 
 @Component({
   selector: 'app-input-position-board',
@@ -38,15 +39,17 @@ export class InputPositionBoard {
   Object = Object;
   MoveClassification = MoveClassification;
   Math = Math;
+  CastlingRightsType = CastlingRightsType;
 
   COORDS: Array<Array<string>> = Chonse2.COORDS;
 
   //Game service ID
   stateId = input<string>('');
+
   //State
   model: WritableSignal<InputPositionState>;
 
-  //MOVE PROPERTIES
+  //Move properties
   currentlyHeldPiece = signal<string>('');
   fromSquare = signal<string>('');
   toSquare = signal<string>('');
@@ -402,7 +405,16 @@ export class InputPositionBoard {
       //If there is no rook in that place, no castling rights can potentially exist there.
       if (rookSquareContent != rookPiece)
       {
-        isWhite ? (isKingside ? this.model().game().whiteCastlingRights.kingSide = false : this.model().game().whiteCastlingRights.queenSide = false) : (isKingside ? this.model().game().blackCastlingRights.kingSide = false : this.model().game().blackCastlingRights.queenSide = false);
+        isWhite ? 
+          //White
+          (isKingside ?
+            this.model().game().setCastlingRights(CastlingRightsType.WhiteKingside, false) : 
+            this.model().game().setCastlingRights(CastlingRightsType.WhiteQueenside, false)) : 
+
+          //Black
+          (isKingside ? 
+            this.model().game().setCastlingRights(CastlingRightsType.BlackKingside, false) : 
+            this.model().game().setCastlingRights(CastlingRightsType.BlackQueenside, false));
       }
       else 
       {
@@ -413,7 +425,16 @@ export class InputPositionBoard {
     else 
     {
       //If there is no king or the king has moved, strip both.
-      isWhite ? this.model().game().whiteCastlingRights.removeBothCastlingRights() : this.model().game().blackCastlingRights.removeBothCastlingRights();
+      if (isWhite)
+      {
+        this.model().game().setCastlingRights(CastlingRightsType.WhiteKingside, false);
+        this.model().game().setCastlingRights(CastlingRightsType.WhiteQueenside, false);
+      }
+      else 
+      {
+        this.model().game().setCastlingRights(CastlingRightsType.BlackKingside, false);
+        this.model().game().setCastlingRights(CastlingRightsType.BlackQueenside, false);
+      }
     }
 
     //If any check failed, castling rights cannot exist.
