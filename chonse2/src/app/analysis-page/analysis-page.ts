@@ -11,7 +11,6 @@ import { PgnHeaders } from '../chessboard/chessboard/pgn-misc';
 import { LichessAPI } from '../../libs/server-api-lib/lichess-api';
 import ThemeService from '../themes/theme-service';
 import Chonse2 from '../../libs/chonse2-lib/chonse2';
-import { GameState } from '../../libs/chonse2-lib/game-state';
 import MoveResult from '../chessboard/chessboard/move-result';
 import LocalStorageHelper from '../../libs/local-storage-helper';
 
@@ -36,7 +35,6 @@ export class AnalysisPage implements OnInit{
   pgnFromLink: string | undefined;
 
   vsAiStates: Array<string> | undefined;
-  vsAiGameStates: Array<GameState> | undefined;
   vsAiMoves: Array<MoveResult> | undefined;
   vsAiPgnHeaders: PgnHeaders | undefined;
 
@@ -69,7 +67,6 @@ export class AnalysisPage implements OnInit{
 
     //Game vs AI.
     this.vsAiStates = state[RouteConstants.ROUTE_VSAI_STATES];
-    this.vsAiGameStates = state[RouteConstants.ROUTE_VSAI_GAMESTATES];
     this.vsAiMoves = state[RouteConstants.ROUTE_VSAI_MOVES];
     this.vsAiPgnHeaders = state[RouteConstants.ROUTE_VSAI_PGNHEADERS];
 

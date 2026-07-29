@@ -157,7 +157,7 @@ export class CoachDisplay {
           if (this.boardState().isCoachMoveShowing())
           { 
             //Addresses possibility of a game ending by repetition or insufficient material but the engine not detecting it.
-            if (this.boardState().getCurrentState().gameState.isGameOver)
+            if (this.boardState().getCurrentState().getGameState().isGameOver)
             {
               break;
             }

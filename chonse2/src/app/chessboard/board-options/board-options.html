@@ -46,7 +46,7 @@
   <div class="iconButtonContainer d-flex flex-wrap w-100 justify-content-around p-1 user-select-none" 
   [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()">
 
-    @if ((!mostCurrentMainState.gameState.isGameOver && !boardState().playerDidResign())&& boardState().engine()) {
+    @if ((!mostCurrentMainState.getGameState().isGameOver && !boardState().playerDidResign())&& boardState().engine()) {
       <app-icon-button
         [label]="'chessboard.boardOptions.resign' | translate"
         iconClass="bi-flag"

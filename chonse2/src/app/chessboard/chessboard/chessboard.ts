@@ -513,7 +513,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     if (e)
     {
-      const data = getEvaluationBarValue2(e, state.gameState.gameScore);
+      const data = getEvaluationBarValue2(e, state.getGameState().gameScore);
       return data;
     }
     else 
@@ -521,7 +521,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       const pe = this.boardState().getPreviousMostRecentEval();
       if (pe)
       {
-        const data = getEvaluationBarValue2(pe, state.gameState.gameScore);
+        const data = getEvaluationBarValue2(pe, state.getGameState().gameScore);
         return data;
       }
     }
@@ -560,7 +560,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //#region Vs AI
   async playAIMove()
   {
-    if (this.getMostCurrentMainState().gameState.isGameOver)
+    if (this.getMostCurrentMainState().getGameState().isGameOver)
     {
       return;
     }
@@ -621,12 +621,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   resignVsAiClicked()
   {
-    // const gameState = this.getMostCurrentMainState().gameState;
-
-    // gameState.isGameOver = true;
-    // gameState.reason = GameOverReason.Resignation;
-    // gameState.gameScore = this.boardState().humanPlayerIsWhite() ? GameScore.BLACK_WON : GameScore.WHITE_WON;
-
     this.boardState().playerDidResign.set(true);
     this.toastr.warning(this.translate.instant("chessboard.toastr.resign"));
   }
@@ -1107,17 +1101,17 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   _isSquareCheckmatedKing = (rankIndex: number, fileIndex: number) => computed( (): boolean =>
   {
-    return (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.BLACK) || (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.WHITE) && this.boardState().getCurrentState().gameState.reason == GameOverReason.Checkmate;
+    return (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().getGameState().winner == PieceColor.BLACK) || (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().getGameState().winner == PieceColor.WHITE) && this.boardState().getCurrentState().getGameState().reason == GameOverReason.Checkmate;
   })
 
   _isSquareWinningKing = (rankIndex: number, fileIndex: number) => computed( (): boolean => 
   {
-    return (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.WHITE) || (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.BLACK); 
+    return (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().getGameState().winner == PieceColor.WHITE) || (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().getGameState().winner == PieceColor.BLACK); 
   } )
 
   _isSquareKingInDraw = (rankIndex: number, fileIndex: number) => computed( (): boolean => 
   {
-    return this.boardState().getCurrentState().gameState.isDraw() && (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING || this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING);
+    return this.boardState().getCurrentState().getGameState().isDraw() && (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING || this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING);
   })
 
   _getEndgameSquareBackgroundColor = (rankIndex: number, fileIndex: number) => computed( (): string => 

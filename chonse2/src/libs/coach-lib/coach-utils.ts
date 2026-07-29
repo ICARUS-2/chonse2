@@ -49,21 +49,21 @@ export class CoachUtils
                 const colorThatMovedText = whiteToMove ? "Black" : "White";
 
                 //Case: Player checkmated the king.
-                if (state.gameState.reason == GameOverReason.Checkmate)
+                if (state.getGameState().reason == GameOverReason.Checkmate)
                 {
                     CoachText.addCoachSentence(move, CoachText.CHECKMATE_SENTENCES, colorThatMovedText);
                     break;
                 }
 
-                if (state.gameState.reason == GameOverReason.Stalemate)
+                if (state.getGameState().reason == GameOverReason.Stalemate)
                 {
                     CoachText.addCoachSentence(move, CoachText.STALEMATE_SENTENCES, colorThatMovedText);
                     break;
                 }
 
-                if (state.gameState.reason == GameOverReason.InsufficientMaterial || 
-                    state.gameState.reason == GameOverReason.ThreefoldRepetition || 
-                    state.gameState.reason == GameOverReason.FiftyMoveNoPawnMovementsOrCaptures)
+                if (state.getGameState().reason == GameOverReason.InsufficientMaterial || 
+                    state.getGameState().reason == GameOverReason.ThreefoldRepetition || 
+                    state.getGameState().reason == GameOverReason.FiftyMoveNoPawnMovementsOrCaptures)
                 {
                     CoachText.addCoachSentence(move, CoachText.DRAW_SENTENCES, colorThatMovedText);
                     break;
