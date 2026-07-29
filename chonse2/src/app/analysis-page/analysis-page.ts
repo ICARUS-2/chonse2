@@ -36,7 +36,7 @@ export class AnalysisPage implements OnInit{
   //Import from PGN link
   pgnFromLink: string | undefined;
 
-  vsAiStates: Array<Chonse2> | undefined;
+  vsAiStates: Array<string> | undefined;
   vsAiGameStates: Array<GameState> | undefined;
   vsAiMoves: Array<MoveResult> | undefined;
   vsAiPgnHeaders: PgnHeaders | undefined;
@@ -158,10 +158,8 @@ export class AnalysisPage implements OnInit{
     }
     else if (this.inputtedPosition) //from board editor
     {
-      //Reconstructs the passed data into a Chonse2 object and reinitializes the game state.
+      //Reconstruct from fen.
       const restoredPosition = Chonse2.instantiateFromFen(this.inputtedPosition);
-      //restoredPosition.gameState = new GameState();
-      //restoredPosition.stateCache = new PreviousStateCache();
 
       restoredPosition.checkIsGameOver();
 
@@ -180,7 +178,7 @@ export class AnalysisPage implements OnInit{
       bs.doEvaluateGame.set(true);
       
       //Set positions.
-      const restoredPositions = this.vsAiStates.map( s => Object.assign(new Chonse2, s) );
+      const restoredPositions = this.vsAiStates.map( fen => Chonse2.instantiateFromFen(fen) );
       bs.mainStateStack.set(restoredPositions);
 
       //ensures that every state has a cache

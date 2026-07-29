@@ -642,7 +642,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   analyzeAiGameClicked()
   {
-    const states = this.boardState().mainStateStack().map( s => s.getFullDeepCopy() );
+
+    const states = this.boardState().mainStateStack().map( s => s.getFEN() );
     const gameStates = this.boardState().mainStateStack().map( s => structuredClone(s.gameState) );
     const moves = this.boardState().mainMoveStack().map(m => structuredClone(m));
     const pgnHeaders = structuredClone(this.boardState().pgnHeaders());
