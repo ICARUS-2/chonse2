@@ -111,25 +111,25 @@ export default class Chonse2
 
   //En passant coords - O(1)
   private static readonly _WHITE_EP_TRIGGERS = new Map<string, string>([
-      ["a2-a4", "a3"],
-      ["b2-b4", "b3"],
-      ["c2-c4", "c3"],
-      ["d2-d4", "d3"],
-      ["e2-e4", "e3"],
-      ["f2-f4", "f3"],
-      ["g2-g4", "g3"],
-      ["h2-h4", "h3"],
+    ["a2-a4", "a3"],
+    ["b2-b4", "b3"],
+    ["c2-c4", "c3"],
+    ["d2-d4", "d3"],
+    ["e2-e4", "e3"],
+    ["f2-f4", "f3"],
+    ["g2-g4", "g3"],
+    ["h2-h4", "h3"],
   ]);
 
   private static readonly _BLACK_EP_TRIGGERS = new Map<string, string>([
-      ["a7-a5", "a6"],
-      ["b7-b5", "b6"],
-      ["c7-c5", "c6"],
-      ["d7-d5", "d6"],
-      ["e7-e5", "e6"],
-      ["f7-f5", "f6"],
-      ["g7-g5", "g6"],
-      ["h7-h5", "h6"],
+    ["a7-a5", "a6"],
+    ["b7-b5", "b6"],
+    ["c7-c5", "c6"],
+    ["d7-d5", "d6"],
+    ["e7-e5", "e6"],
+    ["f7-f5", "f6"],
+    ["g7-g5", "g6"],
+    ["h7-h5", "h6"],
   ]);
 
   //Captures
@@ -148,11 +148,11 @@ export default class Chonse2
   private _blackCastlingRights: CastlingRights;
 
   //En passant
-  enPassantSquare: string = "";
+  public enPassantSquare: string = "";
 
   //Move counters
-  halfMovesWithoutPawnMovementsOrCaptures: number = 0;
-  fullMoveCounter: number = 1;
+  private _halfMovesWithoutPawnMovementsOrCaptures: number = 0;
+  private _fullMoveCounter: number = 1;
 
   //Used to track repetition
   private _previousPositionMap: Map<string, number> = new Map<string, number>();
@@ -652,7 +652,7 @@ export default class Chonse2
       }
 
     //fifty moves with no pawn movements or captures
-    if (this.halfMovesWithoutPawnMovementsOrCaptures >= Chonse2.DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD)
+    if (this._halfMovesWithoutPawnMovementsOrCaptures >= Chonse2.DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD)
     {
       this._gameState.isGameOver = true;
       this._gameState.reason = GameOverReason.FiftyMoveNoPawnMovementsOrCaptures;
@@ -773,8 +773,8 @@ export default class Chonse2
     this._stateCache.blackQueensideCastlingRights = this._blackCastlingRights.queenSide;
 
     //Move counters
-    this._stateCache.halfMovesWithoutPawnMovementsOrCaptures = this.halfMovesWithoutPawnMovementsOrCaptures;
-    this._stateCache.fullMoveCounter = this.fullMoveCounter;
+    this._stateCache.halfMovesWithoutPawnMovementsOrCaptures = this._halfMovesWithoutPawnMovementsOrCaptures;
+    this._stateCache.fullMoveCounter = this._fullMoveCounter;
 
     //Previous fen key
     this._stateCache.previousStateMap.clear();
@@ -1071,17 +1071,17 @@ export default class Chonse2
     //If black just moved, increase counter of full moves.
     if (!this.turn)
     {
-      this.fullMoveCounter++;
+      this._fullMoveCounter++;
     }
 
     //If it was a move or a pawn capture, reset the draw counter. If not, increment it.
     if (!isPawnMovementOrCapture)
     {
-      this.halfMovesWithoutPawnMovementsOrCaptures++;
+      this._halfMovesWithoutPawnMovementsOrCaptures++;
     }
     else
     {
-      this.halfMovesWithoutPawnMovementsOrCaptures = 0;
+      this._halfMovesWithoutPawnMovementsOrCaptures = 0;
     }
 
     //Once this player finishes their move, it's the next person's turn.
@@ -1154,8 +1154,8 @@ export default class Chonse2
     this._blackCastlingRights.queenSide = this._stateCache.blackQueensideCastlingRights;
 
     //Move counters
-    this.halfMovesWithoutPawnMovementsOrCaptures = this._stateCache.halfMovesWithoutPawnMovementsOrCaptures;
-    this.fullMoveCounter = this._stateCache.fullMoveCounter;
+    this._halfMovesWithoutPawnMovementsOrCaptures = this._stateCache.halfMovesWithoutPawnMovementsOrCaptures;
+    this._fullMoveCounter = this._stateCache.fullMoveCounter;
 
     //Previous fen key
     this._previousPositionMap.clear();
@@ -1698,10 +1698,10 @@ export default class Chonse2
       }
 
       //half move
-      obj.halfMovesWithoutPawnMovementsOrCaptures = halfMoveClock;
+      obj._halfMovesWithoutPawnMovementsOrCaptures = halfMoveClock;
 
       //full move
-      obj.fullMoveCounter = fullMoveClock;
+      obj._fullMoveCounter = fullMoveClock;
     }
     catch(ex)
     {
@@ -1746,8 +1746,8 @@ export default class Chonse2
     copy._blackCastlingRights.queenSide = this._blackCastlingRights.queenSide;
 
     //move counters
-    copy.halfMovesWithoutPawnMovementsOrCaptures = this.halfMovesWithoutPawnMovementsOrCaptures;
-    copy.fullMoveCounter = this.fullMoveCounter;
+    copy._halfMovesWithoutPawnMovementsOrCaptures = this._halfMovesWithoutPawnMovementsOrCaptures;
+    copy._fullMoveCounter = this._fullMoveCounter;
 
     //state tracker
     copy._previousPositionMap = structuredClone(this._previousPositionMap);
@@ -1824,11 +1824,11 @@ export default class Chonse2
 
     //halfmove clock
     fen += " "
-    fen += this.halfMovesWithoutPawnMovementsOrCaptures;
+    fen += this._halfMovesWithoutPawnMovementsOrCaptures;
 
     //full move clock
     fen += " "
-    fen += this.fullMoveCounter;
+    fen += this._fullMoveCounter;
     return fen;
   }
 
