@@ -163,7 +163,7 @@ export default class Chonse2
   //Instantiates with either a passed game state or the default one.
   constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]))
   {
-    this._pieceState = passedState;
+    this._pieceState = passedState.map(row => [...row]);
 
     if (this._pieceState.length != Chonse2.SIZE)
     {
@@ -414,10 +414,10 @@ export default class Chonse2
   {
     if (color == PieceColor.BLACK)
     {
-      return this._piecesBlackCaptured;
+      return [...this._piecesBlackCaptured];
     }
 
-    return this._piecesWhiteCaptured;
+    return [...this._piecesWhiteCaptured];
   }
 
   //Returns true if white to move, false if black to move.
