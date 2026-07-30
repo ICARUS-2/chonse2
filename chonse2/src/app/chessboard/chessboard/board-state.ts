@@ -664,7 +664,7 @@ export default class BoardState
 
                         //Copy the state and get whose turn it is.
                         const copyOfState: Chonse2 = states[states.length - 1].getFullDeepCopy();
-                        const turn = copyOfState.turn;
+                        const turn = copyOfState.getTurn();
                         const colorToMove = turn ? PieceColor.WHITE : PieceColor.BLACK;
         
                         let moveResult = new MoveResult();
@@ -871,7 +871,7 @@ export default class BoardState
         })
 
         //Pushes the indeces of the moves to their correct arrays.
-        let turn = !this.mainStateStack()[0].turn;
+        let turn = !this.mainStateStack()[0].getTurn();
 
         this.eval()?.positions.forEach( (pos, idx) =>
         {

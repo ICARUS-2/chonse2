@@ -108,7 +108,7 @@ export default class Chonse2Extensions
         const boardCopy = board.getFullDeepCopy();
 
         //Need to set the turn accordingly so legal moves register.
-        boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
+        boardCopy.setTurn(attackerColor == PieceColor.WHITE ? true : false);
 
         //All of the pieces/coords belonging to the attacker.
         const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board.getAllPiecesAndCoordsByColor(attackerColor);
@@ -166,9 +166,9 @@ export default class Chonse2Extensions
                     if (opponentHangingPieceCoords.includes(coord))
                     {
                         //One thing barring it from being a filtered candidate is if this piece can give a check stopping the fork.
-                        boardCopy.turn = attackerColor == PieceColor.WHITE ? false : true;
+                        boardCopy.setTurn(attackerColor == PieceColor.WHITE ? false : true);
                         const legalMoves = boardCopy.getLegalMoves(coord);
-                        boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
+                        boardCopy.setTurn(attackerColor == PieceColor.WHITE ? true : false);
 
                         let attackedPlayerHasCheckWithPiece = false;
 
@@ -187,12 +187,12 @@ export default class Chonse2Extensions
                             }
 
                             //verify if there is a check.
-                            boardCopy.turn = attackerColor == PieceColor.WHITE ? false : true;
+                            boardCopy.setTurn(attackerColor == PieceColor.WHITE ? false : true);
                             boardCopy.completeMove(coord, move);
 
                             
                             const attackerIsInCheck = boardCopy.isInCheck(attackerColor);
-                            boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
+                            boardCopy.setTurn(attackerColor == PieceColor.WHITE ? true : false);
                             boardCopy.undoMostRecentMove();
                             if (attackerIsInCheck)
                             {
@@ -265,16 +265,16 @@ export default class Chonse2Extensions
                     for(const defenderPieceCoord of filteredDefenderPieceCoords )
                     {
                         const legalMovesForDefenderPiece = boardCopy.getLegalMoves(defenderPieceCoord);
-                        boardCopy.turn = !boardCopy.turn;
+                        boardCopy.setTurn(!boardCopy.getTurn());
 
                         //For each of the legal moves of the defender pieces, check if it can hit the forked piece and defend it.
                         for(const legalMove of legalMovesForDefenderPiece)
                         {
                             //Clone the object and complete the move (this is horribly inefficient but all I can think of right now, fix this shit later).
                             //const clone = boardCopy.getFullDeepCopy();
-                            boardCopy.turn = !boardCopy.turn;
+                            boardCopy.setTurn(!boardCopy.getTurn());
                             boardCopy.completeMove(defenderPieceCoord, legalMove);
-                            boardCopy.turn = !boardCopy.turn;
+                            boardCopy.setTurn(!boardCopy.getTurn());
 
                             //Get the pieces that defend the forked square.
                             const piecesThatHitForkedPieceSquare = boardCopy.getPiecesThatHitSquare(nonKingPieceCoordinate);
@@ -829,7 +829,7 @@ export default class Chonse2Extensions
         //Time to check some additional edge cases
 
         const boardCopy = board.getFullDeepCopy();
-        const turnInCurrentState = board.turn;
+        const turnInCurrentState = board.getTurn();
 
         //Now, need to check if the skewered high value piece or the piece behind it cannot just check the king without hanging, or move and defend both.
         candidateSkewers = candidateSkewers.filter( sk => 
@@ -838,7 +838,7 @@ export default class Chonse2Extensions
                 const attackerColor = attackerPiece[0];
 
                 //Sets the turn to the defender.
-                attackerColor == PieceColor.WHITE ? boardCopy.turn = false : boardCopy.turn = true;
+                attackerColor == PieceColor.WHITE ? boardCopy.setTurn(false) : boardCopy.setTurn(true);
 
                 //Gotta check each legal move for the high value piece.
                 const legalMovesForHighValuePiece = boardCopy.getLegalMoves(sk.highValuePieceCoordinate);
@@ -902,7 +902,7 @@ export default class Chonse2Extensions
         )
 
         //Reset the turn so that it's correct.
-        boardCopy.turn = turnInCurrentState;
+        boardCopy.setTurn(turnInCurrentState);
 
         //And need to check that the skewered piece is hanging without the high value piece on the board (aka that the piece can even be viably captured).
         candidateSkewers = candidateSkewers.filter( sk =>
@@ -1492,7 +1492,7 @@ export default class Chonse2Extensions
         }
 
         //Will need to verify that the king is indeed in check
-        const colorToVerifyIsInCheck: string = afterState.turn ? PieceColor.WHITE : PieceColor.BLACK;
+        const colorToVerifyIsInCheck: string = afterState.getTurn() ? PieceColor.WHITE : PieceColor.BLACK;
         const isKingInCheck: boolean = afterState.isInCheck(colorToVerifyIsInCheck);
         if (!isKingInCheck)
         {

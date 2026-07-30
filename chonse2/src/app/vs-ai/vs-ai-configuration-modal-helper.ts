@@ -66,7 +66,7 @@ export default class VsAiConfigurationModalHelper
                     //If stockfish is white (or if the board says it's stockfish's color to move), play the first move.
                     if (startingState)
                     {
-                        if ((!startingState.turn && isHumanWhite) || (startingState.turn && !isHumanWhite))
+                        if ((!startingState.getTurn() && isHumanWhite) || (startingState.getTurn() && !isHumanWhite))
                         {
                             componentInstance.playAIMove();
                         }

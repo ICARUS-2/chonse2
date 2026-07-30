@@ -218,7 +218,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       //If we aren't diverging:
       if (this.getMostCurrentMainState() == this.boardState().getCurrentState())
       {
-        if ((this.getMostCurrentMainState().turn && !this.boardState().humanPlayerIsWhite()) || (!this.getMostCurrentMainState().turn && this.boardState().humanPlayerIsWhite()))
+        if ((this.getMostCurrentMainState().getTurn() && !this.boardState().humanPlayerIsWhite()) || (!this.getMostCurrentMainState().getTurn() && this.boardState().humanPlayerIsWhite()))
         {
           return;
         }

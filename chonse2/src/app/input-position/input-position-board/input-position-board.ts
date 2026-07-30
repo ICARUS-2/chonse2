@@ -352,7 +352,7 @@ export class InputPositionBoard {
 
   onTurnChanged(event: boolean)
   {
-    this.model().game().turn = event;
+    this.model().game().setTurn(event);
     this.model().game().enPassantSquare = "";
   }
 
@@ -362,8 +362,8 @@ export class InputPositionBoard {
     const arr: string[] = [];
 
     //The indeces of both the ranks the pawn moves to and the ones where the capture takes place.
-    const rankIndex = this.model().game().turn ? 3 : 4;
-    const previousRankIndex = this.model().game().turn ? 2 : 5;
+    const rankIndex = this.model().game().getTurn() ? 3 : 4;
+    const previousRankIndex = this.model().game().getTurn() ? 2 : 5;
 
     //The ranks where the pawn is located (two spaces) and the en passant rank beneath it.
     const pawnRank = this.model().game().getPieceState()[rankIndex];
@@ -377,7 +377,7 @@ export class InputPositionBoard {
       const potentialEnPassantSquareContent = enPassantSquareRank[i];
 
       //If there is a pawn that has moved two spaces AND there is nothing underneath it.
-      if (this.model().game().turn ? pawnRankSquareContent == PieceType.BLACK_PAWN : pawnRankSquareContent == PieceType.WHITE_PAWN)
+      if (this.model().game().getTurn() ? pawnRankSquareContent == PieceType.BLACK_PAWN : pawnRankSquareContent == PieceType.WHITE_PAWN)
       {
         if (potentialEnPassantSquareContent == "")
         {
@@ -521,7 +521,7 @@ export class InputPositionBoard {
     }
 
     //White to move -> Black cannot be in check. Black to move -> White cannot be in check.
-    if ((game().turn && isBlackInCheck) || !game().turn && isWhiteInCheck)
+    if ((game().getTurn() && isBlackInCheck) || !game().getTurn() && isWhiteInCheck)
     {
       return false;
     }

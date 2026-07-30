@@ -38,7 +38,7 @@ export class EngineLineDisplay {
     }
     const currentWinPercentage = getPositionWinPercentage(posEval);
     const lineWinPercentage = getLineWinPercentage(lineEval);
-    const isWhiteMove = this.boardState().getCurrentState().turn;
+    const isWhiteMove = this.boardState().getCurrentState().getTurn();
 
     const winPctChange = (lineWinPercentage - currentWinPercentage) * (isWhiteMove ? 1 : -1);
 

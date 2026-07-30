@@ -46,7 +46,7 @@ export class CoachUtils
             //Verifying game end conditions first. 
             if (move && state && move.coachSentences.length === 0)
             {
-                const whiteToMove = state.turn;
+                const whiteToMove = state.getTurn();
                 const colorThatMovedText = whiteToMove ? "Black" : "White";
 
                 //Case: Player checkmated the king.
@@ -99,7 +99,7 @@ export class CoachUtils
                     continue;
                 }
 
-                const whiteToMove = state.turn;
+                const whiteToMove = state.getTurn();
 
                 const colorThatMovedText = whiteToMove ? "Black" : "White";
                 const oppositeColorText = whiteToMove ? "White" : "Black";
@@ -1980,12 +1980,12 @@ export class CoachUtils
 
                         //Clones the board to check the legal moves.
                         const boardCopy = state.getFullDeepCopy();
-                        boardCopy.turn = !boardCopy.turn;
+                        boardCopy.setTurn(!boardCopy.getTurn());
 
                         //Get the legal moves for the bishop that just got into the game.
                         let allLegalMovesForBishop: Array<string> = [];
                         let bishopSquare = "";
-                        if (boardCopy.turn)
+                        if (boardCopy.getTurn())
                         {
                             if (move.notation.startsWith(Chonse2.WHITE_KING_PAWN_SQUARE))
                             {
@@ -2026,7 +2026,7 @@ export class CoachUtils
                                 {
                                     //gets which hanging pieces it should check
                                     const hangingPieces = Chonse2Extensions.getHangingPieces(boardCopy);
-                                    const hangingPiecesToCheck = boardCopy.turn ? hangingPieces.black : hangingPieces.white;
+                                    const hangingPiecesToCheck = boardCopy.getTurn() ? hangingPieces.black : hangingPieces.white;
 
                                     //undo the move so that we don't have to deep copy the whole ass object again.
                                     boardCopy.undoMostRecentMove();

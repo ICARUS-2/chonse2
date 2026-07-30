@@ -86,7 +86,7 @@
         <hr>
 
         <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'inputPosition.board.turn' | translate }}</h4>
-        <select [(ngModel)]="this.model().game().turn" (ngModelChange)="onTurnChanged($event)">
+        <select [ngModel]="this.model().game().getTurn()" (ngModelChange)="onTurnChanged($event)">
             <option [ngValue]="true">{{ 'inputPosition.board.whiteToMove' | translate }}</option>
             <option [ngValue]="false">{{ 'inputPosition.board.blackToMove' | translate }}</option>
         </select>

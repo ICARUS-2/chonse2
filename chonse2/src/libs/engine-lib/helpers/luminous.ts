@@ -146,7 +146,7 @@ export default class LuminousDetector
         //Now we need to see if this hanging piece can actually be recaptured in any way.
         let canPieceActuallyBeRecaptured = false;
 
-        const sideThatCanPotentiallyRecapture = afterState.turn ? PieceColor.WHITE : PieceColor.BLACK;
+        const sideThatCanPotentiallyRecapture = afterState.getTurn() ? PieceColor.WHITE : PieceColor.BLACK;
         const pieceDataForOpponent = afterState.getAllPiecesAndCoordsByColor(sideThatCanPotentiallyRecapture);
 
         for(let i = 0; i < pieceDataForOpponent.coords.length; i++)

@@ -141,7 +141,7 @@ export default class Chonse2
   private _gameState: GameState = new GameState();
 
   //True: White's turn, false: black's turn
-  public turn: boolean = true; 
+  private _turn: boolean = true; 
     
   //Castling
   private _whiteCastlingRights: CastlingRights;
@@ -253,7 +253,7 @@ export default class Chonse2
       const colors = [PieceColor.WHITE, PieceColor.BLACK]; 
 
       for (const currentColor of colors) {
-          boardCopy.turn = currentColor == PieceColor.WHITE;
+          boardCopy._turn = currentColor == PieceColor.WHITE;
           
           //Enemy ghost pawn to simulate "capturing"
           boardCopy._pieceState[rowIndex][colIndex] = (currentColor === PieceColor.WHITE) ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
@@ -420,6 +420,18 @@ export default class Chonse2
     return this._piecesWhiteCaptured;
   }
 
+  //Returns true if white to move, false if black to move.
+  public getTurn()
+  {
+    return this._turn;
+  }
+
+  //Set true for white to move, false for black to move.
+  public setTurn(val: boolean)
+  {
+    this._turn = val;
+  }
+
   //Reinitializes all the properties.
   private _reinitializeInternal()
   {
@@ -559,8 +571,8 @@ export default class Chonse2
   //Triggers the check to see if the game is over. Updates GameState.
   public checkIsGameOver()
   {
-    const nextPlayerHasLegalMoves = this._playerHasLegalMoves(this.turn);
-    const playerColor: string = this.turn ? PieceColor.WHITE : PieceColor.BLACK;
+    const nextPlayerHasLegalMoves = this._playerHasLegalMoves(this._turn);
+    const playerColor: string = this._turn ? PieceColor.WHITE : PieceColor.BLACK;
     const nextPlayerIsIncheck = this.isInCheck(playerColor)
 
     //Checkmate
@@ -695,7 +707,7 @@ export default class Chonse2
     if (enPassantSquareIndex)
     {
       //Gets the row so that the pawns next to it can be checked.
-      const rankEnPassantPawnIsOn = this.turn ? this._pieceState[enPassantSquareIndex.rowIndex + 1] : this._pieceState[enPassantSquareIndex.rowIndex - 1];
+      const rankEnPassantPawnIsOn = this._turn ? this._pieceState[enPassantSquareIndex.rowIndex + 1] : this._pieceState[enPassantSquareIndex.rowIndex - 1];
 
       //The squares that might have pawns that could capture.
       const potentialOpposingPawnLeftSquare = rankEnPassantPawnIsOn[enPassantSquareIndex.colIndex - 1];
@@ -704,7 +716,7 @@ export default class Chonse2
       //If there are indeed pawns of the color opposing the pawn that just moved two spaces to the left or right, then an en passant capture is possible.
       if (potentialOpposingPawnLeftSquare)
       {
-        if (this.turn ? potentialOpposingPawnLeftSquare == PieceType.WHITE_PAWN : potentialOpposingPawnLeftSquare == PieceType.BLACK_PAWN)
+        if (this._turn ? potentialOpposingPawnLeftSquare == PieceType.WHITE_PAWN : potentialOpposingPawnLeftSquare == PieceType.BLACK_PAWN)
         {
           return true;
         }
@@ -712,7 +724,7 @@ export default class Chonse2
 
       if (potentialOpposingPawnRightSquare)
       {
-        if (this.turn ? potentialOpposingPawnRightSquare == PieceType.WHITE_PAWN : potentialOpposingPawnRightSquare == PieceType.BLACK_PAWN)
+        if (this._turn ? potentialOpposingPawnRightSquare == PieceType.WHITE_PAWN : potentialOpposingPawnRightSquare == PieceType.BLACK_PAWN)
         {
           return true;
         }
@@ -743,7 +755,7 @@ export default class Chonse2
   private _cacheState()
   {
     //Turn
-    this._stateCache.turn = this.turn;
+    this._stateCache.turn = this._turn;
 
     //Piece captures
     this._stateCache.piecesWhiteCaptured.length = 0;
@@ -777,10 +789,10 @@ export default class Chonse2
     this._stateCache.fullMoveCounter = this._fullMoveCounter;
 
     //Previous fen key
-    this._stateCache.previousStateMap.clear();
+    this._stateCache._previousStateMap.clear();
     for(const [k, v] of this._previousPositionMap)
     {
-      this._stateCache.previousStateMap.set(k, v);
+      this._stateCache._previousStateMap.set(k, v);
     }
   }
 
@@ -803,8 +815,8 @@ export default class Chonse2
     const piece = this._pieceState[index.rowIndex][index.colIndex];
 
     if (piece == ""
-      || (piece.startsWith(PieceColor.WHITE) && !this.turn)
-      || (piece.startsWith(PieceColor.BLACK) && this.turn)
+      || (piece.startsWith(PieceColor.WHITE) && !this._turn)
+      || (piece.startsWith(PieceColor.BLACK) && this._turn)
     )
     {
       return [];
@@ -823,7 +835,7 @@ export default class Chonse2
         Chonse2._playDummyMove(deepCopy, coordinate, item);
 
         //Return true if the player was not in check after the legal move, false if the move would put them in check
-        const isKingSafe = this.turn ? !deepCopy.isInCheck(PieceColor.WHITE) : !deepCopy.isInCheck(PieceColor.BLACK);
+        const isKingSafe = this._turn ? !deepCopy.isInCheck(PieceColor.WHITE) : !deepCopy.isInCheck(PieceColor.BLACK);
       
         //Undo the move so that this object can be reused to check the legality of the next
         deepCopy.undoMostRecentMove();
@@ -888,16 +900,16 @@ export default class Chonse2
     if (toCoordinate == this.enPassantSquare && (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN))
     {
       //Remove the pawn that just got en passant'd
-      this.turn ? this._pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : this._pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
+      this._turn ? this._pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : this._pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
     
       //Add the captured piece.
-      this.turn ? this._piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : this._piecesBlackCaptured.push(PieceType.WHITE_PAWN);
+      this._turn ? this._piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : this._piecesBlackCaptured.push(PieceType.WHITE_PAWN);
     
       //Add to notation.
       notation.addCapture();
     }
     //Update the en passant square.
-    this.enPassantSquare = this._getEnPassantSquareIfExists(fromCoordinate, toCoordinate, this.turn);
+    this.enPassantSquare = this._getEnPassantSquareIfExists(fromCoordinate, toCoordinate, this._turn);
 
     //handle capture
     if (pieceInToSquare != "")
@@ -956,7 +968,7 @@ export default class Chonse2
     this._pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
 
     //If the player castled kingside (check that the from and to coordinates match a kingside castle).
-    if (this.turn == true ? 
+    if (this._turn == true ? 
       (piece == PieceType.WHITE_KING && fromCoordinate == Chonse2.WHITE_KING_SQUARE && toCoordinate == Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) 
       : (piece == PieceType.BLACK_KING && fromCoordinate == Chonse2.BLACK_KING_SQUARE && toCoordinate == Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE))
     {
@@ -987,7 +999,7 @@ export default class Chonse2
     }
 
     //If the player castled queenside (check that the from and to coordinates match a queenside castle).
-    if (this.turn == true ? 
+    if (this._turn == true ? 
       (piece == PieceType.WHITE_KING && fromCoordinate == Chonse2.WHITE_KING_SQUARE && toCoordinate == Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) 
       : (piece == PieceType.BLACK_KING && fromCoordinate == Chonse2.BLACK_KING_SQUARE && toCoordinate == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE))
     {
@@ -1018,58 +1030,58 @@ export default class Chonse2
     }
     
     //If the player moved their king, strip castling rights on both sides.
-    if (this.turn == true ? piece == PieceType.WHITE_KING : piece == PieceType.BLACK_KING)
+    if (this._turn == true ? piece == PieceType.WHITE_KING : piece == PieceType.BLACK_KING)
     {
-      this.turn == true ? this._whiteCastlingRights.removeBothCastlingRights() : this._blackCastlingRights.removeBothCastlingRights();
+      this._turn == true ? this._whiteCastlingRights.removeBothCastlingRights() : this._blackCastlingRights.removeBothCastlingRights();
     }
   
     //If the player moved their rook, remove castling rights for that side.
-    if (this.turn == true ? piece == PieceType.WHITE_ROOK : piece == PieceType.BLACK_ROOK)
+    if (this._turn == true ? piece == PieceType.WHITE_ROOK : piece == PieceType.BLACK_ROOK)
     {
-      if (this.turn && fromCoordinate == Chonse2.WHITE_KINGSIDE_ROOK_SQUARE)
+      if (this._turn && fromCoordinate == Chonse2.WHITE_KINGSIDE_ROOK_SQUARE)
       {
         this._whiteCastlingRights.kingSide = false;
       }
 
-      if (this.turn && fromCoordinate == Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE)
+      if (this._turn && fromCoordinate == Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE)
       {
         this._whiteCastlingRights.queenSide = false;
       }
 
-      if (!this.turn && fromCoordinate == Chonse2.BLACK_KINGSIDE_ROOK_SQUARE)
+      if (!this._turn && fromCoordinate == Chonse2.BLACK_KINGSIDE_ROOK_SQUARE)
       {
         this._blackCastlingRights.kingSide = false;
       }
 
-      if (!this.turn && fromCoordinate == Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE)
+      if (!this._turn && fromCoordinate == Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE)
       {
         this._blackCastlingRights.queenSide = false;
       }
     }
 
     //If the player had that rook captured, remove castling rights for that side
-    if (this.turn && toCoordinate == Chonse2.BLACK_KINGSIDE_ROOK_SQUARE)
+    if (this._turn && toCoordinate == Chonse2.BLACK_KINGSIDE_ROOK_SQUARE)
     {
       this._blackCastlingRights.kingSide = false;
     }
 
-    if (this.turn && toCoordinate == Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE)
+    if (this._turn && toCoordinate == Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE)
     {
       this._blackCastlingRights.queenSide = false;
     }
 
-    if (!this.turn && toCoordinate == Chonse2.WHITE_KINGSIDE_ROOK_SQUARE)
+    if (!this._turn && toCoordinate == Chonse2.WHITE_KINGSIDE_ROOK_SQUARE)
     {
       this._whiteCastlingRights.kingSide = false;
     }
 
-    if (!this.turn && toCoordinate == Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE)
+    if (!this._turn && toCoordinate == Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE)
     {
       this._whiteCastlingRights.queenSide = false;
     }
 
     //If black just moved, increase counter of full moves.
-    if (!this.turn)
+    if (!this._turn)
     {
       this._fullMoveCounter++;
     }
@@ -1085,7 +1097,7 @@ export default class Chonse2
     }
 
     //Once this player finishes their move, it's the next person's turn.
-    this.turn = !this.turn;
+    this._turn = !this._turn;
 
     //Track this position in the state map.
     const currentPosKey = this._getPositionKey()
@@ -1109,7 +1121,7 @@ export default class Chonse2
     }
     else //If there isn't, verify if there is just a check and add it if applicable.
     {
-      const nextPlayerIsIncheck = this.isInCheck(this.turn ? PieceColor.WHITE : PieceColor.BLACK);
+      const nextPlayerIsIncheck = this.isInCheck(this._turn ? PieceColor.WHITE : PieceColor.BLACK);
       if (nextPlayerIsIncheck)
       {
         notation.addCheck();
@@ -1124,7 +1136,7 @@ export default class Chonse2
   public undoMostRecentMove()
   {
     //Turn
-    this.turn = this._stateCache.turn;
+    this._turn = this._stateCache.turn;
 
     //Piece captures
     this._piecesWhiteCaptured.length = 0;
@@ -1160,7 +1172,7 @@ export default class Chonse2
     //Previous fen key
     this._previousPositionMap.clear();
 
-    for(const [k, v] of this._stateCache.previousStateMap)
+    for(const [k, v] of this._stateCache._previousStateMap)
     {
       this._previousPositionMap.set(k, v);
     }
@@ -1359,12 +1371,12 @@ export default class Chonse2
     if (!this.isInCheck(color))
     {
       //Kingside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
-      if (this.turn == true ? this._whiteCastlingRights.kingSide : this._blackCastlingRights.kingSide)
+      if (this._turn == true ? this._whiteCastlingRights.kingSide : this._blackCastlingRights.kingSide)
       {
         //These two squares need to be free in order to castle kingside.
-        const kingsideKnightSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
-        const kingsideBishopSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
-        const kingSquare = this.turn == true ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
+        const kingsideKnightSquare = Chonse2.findIndexFromCoordinate(this._turn == true ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
+        const kingsideBishopSquare = Chonse2.findIndexFromCoordinate(this._turn == true ? Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE : Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
+        const kingSquare = this._turn == true ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
 
         //Check if they're clear and that the king is not castling through an attacked square, and if so, push the castling square as a legal move.
         if (
@@ -1374,18 +1386,18 @@ export default class Chonse2
           && coordinate == kingSquare
         )
         {
-          this.turn == true ? legalMoves.push(Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) : legalMoves.push(Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
+          this._turn == true ? legalMoves.push(Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) : legalMoves.push(Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
         }
       }
 
       //Queenside castling moves. Ensures the player possesses castling rights before checking for their legal moves.
-      if (this.turn == true ? this._whiteCastlingRights.queenSide : this._blackCastlingRights.queenSide)
+      if (this._turn == true ? this._whiteCastlingRights.queenSide : this._blackCastlingRights.queenSide)
       {
         //These three squares need to be free in order to castle queenside.
-        const queensideKnightSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE : Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE);
-        const queensideBishopSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
-        const queenSquare = Chonse2.findIndexFromCoordinate(this.turn == true ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE);
-        const kingSquare = this.turn == true ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
+        const queensideKnightSquare = Chonse2.findIndexFromCoordinate(this._turn == true ? Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE : Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE);
+        const queensideBishopSquare = Chonse2.findIndexFromCoordinate(this._turn == true ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
+        const queenSquare = Chonse2.findIndexFromCoordinate(this._turn == true ? Chonse2.WHITE_QUEEN_SQUARE : Chonse2.BLACK_QUEEN_SQUARE);
+        const kingSquare = this._turn == true ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
 
         //Check if they're clear and that the king is not castling through an attacked square, and if so, push the castling square as a legal move.
         if (
@@ -1396,7 +1408,7 @@ export default class Chonse2
           && coordinate == kingSquare
         )
         {
-          this.turn == true ? legalMoves.push(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) : legalMoves.push(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
+          this._turn == true ? legalMoves.push(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) : legalMoves.push(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
         }
       }
     }
@@ -1513,10 +1525,10 @@ export default class Chonse2
     if (toCoordinate == inst.enPassantSquare && (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN))
     {
       //Remove the pawn that just got en passant'd
-      inst.turn ? inst._pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : inst._pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
+      inst._turn ? inst._pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : inst._pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
     
       //Add the captured piece.
-      inst.turn ? inst._piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : inst._piecesBlackCaptured.push(PieceType.WHITE_PAWN);
+      inst._turn ? inst._piecesWhiteCaptured.push(PieceType.BLACK_PAWN) : inst._piecesBlackCaptured.push(PieceType.WHITE_PAWN);
     }
     
     //Clear the old piece position.
@@ -1526,7 +1538,7 @@ export default class Chonse2
     inst._pieceState[toSquareIndex.rowIndex][toSquareIndex.colIndex] = piece;
 
     //If the player castled kingside (check that the from and to coordinates match a kingside castle).
-    if (inst.turn == true ? 
+    if (inst._turn == true ? 
       (piece == PieceType.WHITE_KING && fromCoordinate == Chonse2.WHITE_KING_SQUARE && toCoordinate == Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) 
       : (piece == PieceType.BLACK_KING && fromCoordinate == Chonse2.BLACK_KING_SQUARE && toCoordinate == Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE))
     {
@@ -1551,7 +1563,7 @@ export default class Chonse2
     }
 
     //If the player castled queenside (check that the from and to coordinates match a queenside castle).
-    if (inst.turn == true ? 
+    if (inst._turn == true ? 
       (piece == PieceType.WHITE_KING && fromCoordinate == Chonse2.WHITE_KING_SQUARE && toCoordinate == Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) 
       : (piece == PieceType.BLACK_KING && fromCoordinate == Chonse2.BLACK_KING_SQUARE && toCoordinate == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE))
     {
@@ -1684,7 +1696,7 @@ export default class Chonse2
       }
 
       //active color
-      obj.turn = turn === PieceColor.WHITE ? true : false;
+      obj._turn = turn === PieceColor.WHITE ? true : false;
 
       //castling
       const castling = FenHelper.getCastlingRightsFromFen(castlingRights);
@@ -1731,7 +1743,7 @@ export default class Chonse2
     copy._gameState = gameStateCopy;
 
     //turn
-    copy.turn = this.turn;
+    copy._turn = this._turn;
 
     //en passant
     copy.enPassantSquare = this.enPassantSquare;
@@ -1812,7 +1824,7 @@ export default class Chonse2
 
     //active color
     fen += " "; 
-    fen += this.turn ? PieceColor.WHITE : PieceColor.BLACK;
+    fen += this._turn ? PieceColor.WHITE : PieceColor.BLACK;
 
     //castling
     fen += " "
@@ -1877,7 +1889,7 @@ class PreviousStateCache
   fullMoveCounter: number = 1;
 
   //used to track repetition
-  previousStateMap: Map<string, number> = new Map<string, number>();
+  _previousStateMap: Map<string, number> = new Map<string, number>();
 
   deepCopy(): PreviousStateCache {
   const copy = new PreviousStateCache();
@@ -1909,7 +1921,7 @@ class PreviousStateCache
   copy.fullMoveCounter = this.fullMoveCounter;
 
   //Map deep copy
-  copy.previousStateMap = new Map(this.previousStateMap);
+  copy._previousStateMap = new Map(this._previousStateMap);
 
   return copy;
   }
