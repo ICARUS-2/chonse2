@@ -148,7 +148,7 @@ export default class Chonse2
   private _blackCastlingRights: CastlingRights;
 
   //En passant
-  public enPassantSquare: string = "";
+  private _enPassantSquare: string = "";
 
   //Move counters
   private _halfMovesWithoutPawnMovementsOrCaptures: number = 0;
@@ -442,7 +442,7 @@ export default class Chonse2
     this._blackCastlingRights.queenSide = true;
     
     //Reset en passant.
-    this.enPassantSquare = "";
+    this._enPassantSquare = "";
 
     //Reset capture
     this._piecesWhiteCaptured.length = 0;
@@ -695,13 +695,13 @@ export default class Chonse2
   private _isEnPassantCaptureActuallyPossible() : boolean
   {
     //Logically an en passant capture can't happen if no pawn moved to squares to begin with.
-    if (this.enPassantSquare == "")
+    if (this._enPassantSquare == "")
     {
       return false;
     }
 
     //The place within the piece state that the en passant square can be found
-    let enPassantSquareIndex = Chonse2.findIndexFromCoordinate(this.enPassantSquare);
+    let enPassantSquareIndex = Chonse2.findIndexFromCoordinate(this._enPassantSquare);
     
     //Only run the necessary checks if there is an en passant square.
     if (enPassantSquareIndex)
@@ -746,7 +746,7 @@ export default class Chonse2
       posKey += " ";
     }
 
-    this._isEnPassantCaptureActuallyPossible() ? posKey += this.enPassantSquare : posKey += "-"
+    this._isEnPassantCaptureActuallyPossible() ? posKey += this._enPassantSquare : posKey += "-"
 
     return posKey
   }
@@ -897,7 +897,7 @@ export default class Chonse2
     }
 
     //Handle en passant
-    if (toCoordinate == this.enPassantSquare && (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN))
+    if (toCoordinate == this._enPassantSquare && (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN))
     {
       //Remove the pawn that just got en passant'd
       this._turn ? this._pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : this._pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
@@ -909,7 +909,7 @@ export default class Chonse2
       notation.addCapture();
     }
     //Update the en passant square.
-    this.enPassantSquare = this._getEnPassantSquareIfExists(fromCoordinate, toCoordinate, this._turn);
+    this._enPassantSquare = this._getEnPassantSquareIfExistsFromTurn(fromCoordinate, toCoordinate, this._turn);
 
     //handle capture
     if (pieceInToSquare != "")
@@ -1256,7 +1256,7 @@ export default class Chonse2
 
         //The square is a legal move if it has an opposing piece OR it is the en passant square
         if (leftCaptureSquare?.startsWith(color == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE) 
-          || leftCaptureSquareCoord == this.enPassantSquare)
+          || leftCaptureSquareCoord == this._enPassantSquare)
         {
           legalMoves.push(leftCaptureSquareCoord);
         }
@@ -1273,7 +1273,7 @@ export default class Chonse2
 
         //The square is a legal move if it has an opposing piece OR it is the en passant square
         if (rightCaptureSquare?.startsWith(color == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE)
-          || rightCaptureSquareCoord == this.enPassantSquare)
+          || rightCaptureSquareCoord == this._enPassantSquare)
         {
           legalMoves.push(rightCaptureSquareCoord);
         }
@@ -1522,7 +1522,7 @@ export default class Chonse2
     let piece = inst._pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex];
 
     //Handle en passant
-    if (toCoordinate == inst.enPassantSquare && (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN))
+    if (toCoordinate == inst._enPassantSquare && (piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN))
     {
       //Remove the pawn that just got en passant'd
       inst._turn ? inst._pieceState[toSquareIndex.rowIndex+1][toSquareIndex.colIndex] = "" : inst._pieceState[toSquareIndex.rowIndex-1][toSquareIndex.colIndex] = ""; 
@@ -1592,7 +1592,20 @@ export default class Chonse2
   }
   
   //Castling and en passant
-  private _getEnPassantSquareIfExists(fromSquare: string, toSquare: string, turn: boolean) : string
+
+  //Retrieves the coord of the en passant square
+  public getEnPassantSquare()
+  {
+    return this._enPassantSquare;
+  }
+
+  //Sets en passant square to the passed coord.
+  public setEnPassantSquare(coord: string)
+  {
+    this._enPassantSquare = coord;
+  }
+
+  private _getEnPassantSquareIfExistsFromTurn(fromSquare: string, toSquare: string, turn: boolean) : string
   {
     //En passant moves are stored with key fromsquare-tosquare
     const key = fromSquare + "-" + toSquare;
@@ -1706,7 +1719,7 @@ export default class Chonse2
       //en passant
       if (enPassantSquare != "-")
       {
-        obj.enPassantSquare = enPassantSquare;
+        obj._enPassantSquare = enPassantSquare;
       }
 
       //half move
@@ -1746,7 +1759,7 @@ export default class Chonse2
     copy._turn = this._turn;
 
     //en passant
-    copy.enPassantSquare = this.enPassantSquare;
+    copy._enPassantSquare = this._enPassantSquare;
 
     //castling rights
     copy._whiteCastlingRights = new CastlingRights();
@@ -1832,7 +1845,7 @@ export default class Chonse2
 
     //en passant
     fen += " "
-    fen += this.enPassantSquare == "" ? "-" : this.enPassantSquare;
+    fen += this._enPassantSquare == "" ? "-" : this._enPassantSquare;
 
     //halfmove clock
     fen += " "

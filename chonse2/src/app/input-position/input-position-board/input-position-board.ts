@@ -353,7 +353,7 @@ export class InputPositionBoard {
   onTurnChanged(event: boolean)
   {
     this.model().game().setTurn(event);
-    this.model().game().enPassantSquare = "";
+    this.model().game().setEnPassantSquare("");
   }
 
   //#region Board
@@ -451,9 +451,9 @@ export class InputPositionBoard {
   {
     const epArr = this.getPotentialEnPassantSquares();
 
-    if (!epArr.includes(this.model().game().enPassantSquare))
+    if (!epArr.includes(this.model().game().getEnPassantSquare()))
     {
-      this.model().game().enPassantSquare = "";
+      this.model().game().setEnPassantSquare("");
     }
   }
 

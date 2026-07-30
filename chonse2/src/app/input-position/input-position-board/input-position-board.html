@@ -179,7 +179,9 @@
                 @if (potentialEpSquares.length > 0)
                 {
                     <div>{{ 'inputPosition.board.select' | translate }}</div>
-                    <select [(ngModel)]="this.model().game().enPassantSquare">
+                    <select 
+                        [ngModel]="this.model().game().getEnPassantSquare()"
+                        (ngModelChange)="this.model().game().setEnPassantSquare($event)">
                         @for(square of potentialEpSquares; track $index)
                         {
                             <option [ngValue]="square">{{square}}</option>
