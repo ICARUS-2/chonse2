@@ -8,7 +8,6 @@ import { ArrowContext } from '../chessboard/arrow';
 import ChessboardHelper from '../helpers';
 import { CommonModule } from '@angular/common';
 import ThemeService from '../../themes/theme-service';
-import Chonse2 from '../../../libs/chonse2-lib/chonse2';
 import LocalStorageHelper from '../../../libs/local-storage-helper';
 import Sound from '../chessboard/sound';
 import { Chessboard } from '../chessboard/chessboard';
@@ -16,6 +15,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CoachMiscHelpers } from '../../../libs/coach-lib/coach-misc-helpers';
 import { CoachMoveFlagType, CoachMoveSequenceType, CoachIdeaFlagType, CoachIdea, CoachResourceFlagType } from '../../../libs/coach-lib/coach-types';
 import { CoachAudio } from '../../../libs/coach-lib/coach-audio';
+import Chonse2 from '../../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
 
 @Component({
   selector: 'app-coach-display',
@@ -166,7 +166,7 @@ export class CoachDisplay {
             const engineMove = topEngineLine.pv[i];
 
             //Clones the board so that the move can be played.
-            const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
+            const stateCopy = this.boardState().getCurrentState().clone();
 
             //Converts the move.
             const {fromSquare, toSquare, promotion } = CoachMiscHelpers.convertUciToChonse2Move(engineMove);
@@ -327,7 +327,7 @@ export class CoachDisplay {
     this.boardState().coachMoveSequenceType.set(CoachMoveSequenceType.MissedOpportunity);
 
     //Gets previous state and eval
-    const previousState = this.boardState().getPreviousMostRecentState().getFullDeepCopy();
+    const previousState = this.boardState().getPreviousMostRecentState().clone();
     const previousEval = structuredClone(this.boardState().getPreviousMostRecentEval());
     const dummyResult = new MoveResult();
     dummyResult.notation = "-";

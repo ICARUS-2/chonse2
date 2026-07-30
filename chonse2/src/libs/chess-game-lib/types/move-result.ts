@@ -1,4 +1,4 @@
-interface IMoveResult 
+export interface IMoveResult 
 {
     result: boolean,
     notation: string,

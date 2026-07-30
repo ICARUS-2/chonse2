@@ -1,10 +1,10 @@
 import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
-import Chonse2 from '../../../libs/chonse2-lib/chonse2';
 import { form, FormField } from '@angular/forms/signals';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
 import { TranslatePipe } from '@ngx-translate/core';
+import Chonse2 from '../../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
 
 @Component({
   selector: 'app-fen-import-modal',

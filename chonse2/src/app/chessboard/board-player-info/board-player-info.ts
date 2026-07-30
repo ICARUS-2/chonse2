@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 import ThemeService from '../../themes/theme-service';
-import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
 import { PgnComments } from '../chessboard/pgn-misc';
 import { CommonModule } from '@angular/common';
 import ChessboardHelper from '../helpers';
+import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
 
 @Component({
   selector: 'app-board-player-info',

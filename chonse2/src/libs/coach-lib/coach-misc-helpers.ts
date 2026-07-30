@@ -1,6 +1,8 @@
-import { CastlingRightsType } from "../chonse2-lib/castling-rights-type";
-import Chonse2 from "../chonse2-lib/chonse2";
-import { PieceType } from "../chonse2-lib/piece-type";
+
+import Chonse2 from "../chess-game-lib/implementations/chonse2-impl/chonse2";
+import { CastlingRightsType } from "../chess-game-lib/types/castling-rights-type";
+import { ChessConstants } from "../chess-game-lib/types/constants";
+import { PieceType } from "../chess-game-lib/types/piece-type";
 import { LineEval } from "../engine-lib/types/eval";
 
 export class CoachMiscHelpers 
@@ -34,7 +36,7 @@ export class CoachMiscHelpers
                 if (potentialMoveSquare != undefined)
                 {
                     //Legal move in either case is the current square with the 2 straight/1 side offset applied.
-                    legalMoves.push(Chonse2.COORDS[rowIndex + dRow[i]][colIndex + dCol[i]]);
+                    legalMoves.push(ChessConstants.COORDS[rowIndex + dRow[i]][colIndex + dCol[i]]);
                 }
             }
         }
@@ -48,7 +50,7 @@ export class CoachMiscHelpers
 
         line.pv.forEach( engineLineMove => 
             {
-                const stateCopy = followUp.at(-1)?.getFullDeepCopy();
+                const stateCopy = followUp.at(-1)?.clone();
 
                 const {fromSquare, toSquare, promotion } = CoachMiscHelpers.convertUciToChonse2Move(engineLineMove);
 
@@ -144,22 +146,22 @@ export const BLOCKED_BISHOPS =
 {
     WhiteLightSquared: 
     {
-        bishopSquare: Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE,
+        bishopSquare: ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE,
         pawnSquare: "d3",
     },
     WhiteDarkSquared: 
     {
-        bishopSquare: Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE,
+        bishopSquare: ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE,
         pawnSquare: "e3",
     },
     BlackLightSquared: 
     {
-        bishopSquare: Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE,
+        bishopSquare: ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE,
         pawnSquare: "e6",
     },
     BlackDarkSquared: 
     {
-        bishopSquare: Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE,
+        bishopSquare: ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE,
         pawnSquare: "d6",
     },
 }
@@ -191,25 +193,25 @@ export const CASTLING_MOVES =
 {
     whiteKingside:
     {
-        fromSquare: Chonse2.WHITE_KING_SQUARE,
-        toSquare: Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE,
+        fromSquare: ChessConstants.WHITE_KING_SQUARE,
+        toSquare: ChessConstants.WHITE_KINGSIDE_KNIGHT_SQUARE,
     },
 
     whiteQueenside:
     {
-        fromSquare: Chonse2.WHITE_KING_SQUARE,
-        toSquare: Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE,
+        fromSquare: ChessConstants.WHITE_KING_SQUARE,
+        toSquare: ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE,
     },
 
     blackKingside:
     {
-        fromSquare: Chonse2.BLACK_KING_SQUARE,
-        toSquare: Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE,
+        fromSquare: ChessConstants.BLACK_KING_SQUARE,
+        toSquare: ChessConstants.BLACK_KINGSIDE_KNIGHT_SQUARE,
     },
 
     blackQueenside:
     {
-        fromSquare: Chonse2.BLACK_KING_SQUARE,
-        toSquare: Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE,
+        fromSquare: ChessConstants.BLACK_KING_SQUARE,
+        toSquare: ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE,
     },
 };

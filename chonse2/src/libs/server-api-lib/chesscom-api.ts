@@ -1,5 +1,4 @@
-import { GameScore, GameOverReason } from "../chonse2-lib/game-state";
-
+import { GameScore, GameOverReason } from "../chess-game-lib/types/game-state";
 
 export class ChessComAPI
 {

@@ -7,8 +7,8 @@ import { RouteConstants } from '../app.routes';
 import VsAiConfigurationModalHelper from './vs-ai-configuration-modal-helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import Chonse2 from '../../libs/chonse2-lib/chonse2';
 import { TranslateService } from '@ngx-translate/core';
+import Chonse2 from '../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
 
 @Component({
   selector: 'app-vs-ai',

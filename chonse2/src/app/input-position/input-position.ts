@@ -3,10 +3,9 @@ import { BoardNames } from '../boards';
 import { InputPositionBoard } from "./input-position-board/input-position-board";
 import { InputPositionService } from './input-position-service';
 import InputPositionState from './input-position-state';
-import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import { RouteConstants } from '../app.routes';
-import Chonse2 from '../../libs/chonse2-lib/chonse2';
 import { ToastrService } from 'ngx-toastr';
+import Chonse2 from '../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
 
 @Component({
   selector: 'app-input-position',

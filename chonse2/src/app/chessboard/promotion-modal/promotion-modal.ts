@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import ThemeService from '../../themes/theme-service';
-import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
-import { PieceType } from '../../../libs/chonse2-lib/piece-type';
 import { TranslatePipe } from '@ngx-translate/core';
 import ChessboardHelper from '../helpers';
+import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
+import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
 
 @Component({
   selector: 'app-promotion-modal',

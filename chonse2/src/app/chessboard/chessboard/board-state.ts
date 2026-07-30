@@ -4,10 +4,6 @@ import LocalStorageHelper from "../../../libs/local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
 import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
 import { Quote, Quotes } from "./quotes";
-import Chonse2 from "../../../libs/chonse2-lib/chonse2";
-import { GameScore } from "../../../libs/chonse2-lib/game-state";
-import { PieceColor } from "../../../libs/chonse2-lib/piece-color";
-import { PieceType } from "../../../libs/chonse2-lib/piece-type";
 import { MoveClassification, EngineName } from "../../../libs/engine-lib/types/enums";
 import { PositionEval, GameEval, EvaluateGameParams, EvalSource, LineEval, EvaluatePositionWithUpdateParams } from "../../../libs/engine-lib/types/eval";
 import { UciEngine } from "../../../libs/engine-lib/uciEngine";
@@ -17,6 +13,11 @@ import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
 import { getMovesClassification } from "../../../libs/engine-lib/helpers/moveClassification";
 import { AppInjector } from "../../app-injector";
 import { CoachAudio } from "../../../libs/coach-lib/coach-audio";
+import Chonse2 from "../../../libs/chess-game-lib/implementations/chonse2-impl/chonse2";
+import { ChessConstants } from "../../../libs/chess-game-lib/types/constants";
+import { GameScore } from "../../../libs/chess-game-lib/types/game-state";
+import { PieceColor } from "../../../libs/chess-game-lib/types/piece-color";
+import { PieceType } from "../../../libs/chess-game-lib/types/piece-type";
 
 export default class BoardState
 {
@@ -663,7 +664,7 @@ export default class BoardState
                         }
 
                         //Copy the state and get whose turn it is.
-                        const copyOfState: Chonse2 = states[states.length - 1].getFullDeepCopy();
+                        const copyOfState: Chonse2 = states[states.length - 1].clone();
                         const turn = copyOfState.getTurn();
                         const colorToMove = turn ? PieceColor.WHITE : PieceColor.BLACK;
         
@@ -673,8 +674,8 @@ export default class BoardState
                         if (token == "O-O" || token == "O-O+" || token == "O-O#")
                         {
                             //From and to when castling kingside.
-                            const kingSquare = turn ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
-                            const toSquare = turn ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE;
+                            const kingSquare = turn ? ChessConstants.WHITE_KING_SQUARE : ChessConstants.BLACK_KING_SQUARE;
+                            const toSquare = turn ? ChessConstants.WHITE_KINGSIDE_KNIGHT_SQUARE : ChessConstants.BLACK_KINGSIDE_KNIGHT_SQUARE;
 
                             //Perform the move on the deep copy.
                             moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(kingSquare, toSquare));      
@@ -691,8 +692,8 @@ export default class BoardState
                         if (token == "O-O-O" || token == "O-O-O+" || token == "O-O-O#")
                         {
                             //From and to when castling queenside.
-                            const kingSquare = turn ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
-                            const toSquare = turn ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE;
+                            const kingSquare = turn ? ChessConstants.WHITE_KING_SQUARE : ChessConstants.BLACK_KING_SQUARE;
+                            const toSquare = turn ? ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE : ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE;
 
                             //Perform the move on the deep copy.
                             moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(kingSquare, toSquare));
@@ -766,7 +767,7 @@ export default class BoardState
                                 //Rank is known but is not the right file we are looking for. Disregard it.
                                 if (move.fromRank != null)
                                 {
-                                    const rankChar = (Chonse2.SIZE - rank).toString();
+                                    const rankChar = (ChessConstants.SIZE - rank).toString();
 
                                     if (rankChar != move.fromRank)
                                     {
@@ -775,7 +776,7 @@ export default class BoardState
                                 }
 
                                 //If we got this far, it might be the right square.
-                                candidateFromCoordinates.push(Chonse2.COORDS[rank][file])
+                                candidateFromCoordinates.push(ChessConstants.COORDS[rank][file])
                             } 
                         }
 
@@ -912,10 +913,10 @@ export default class BoardState
     {
         const highlightStatuses: Array<Array<boolean>> = [];
 
-        for(let i = 0; i < Chonse2.SIZE; i++)
+        for(let i = 0; i < ChessConstants.SIZE; i++)
         {
             const rank: Array<boolean> = [];
-            for(let j = 0; j < Chonse2.SIZE; j++)
+            for(let j = 0; j < ChessConstants.SIZE; j++)
             {
                 rank[j] = false;
             }

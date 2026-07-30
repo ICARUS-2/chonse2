@@ -10,9 +10,9 @@ import { RouteConstants } from '../app.routes';
 import { PgnHeaders } from '../chessboard/chessboard/pgn-misc';
 import { LichessAPI } from '../../libs/server-api-lib/lichess-api';
 import ThemeService from '../themes/theme-service';
-import Chonse2 from '../../libs/chonse2-lib/chonse2';
 import MoveResult from '../chessboard/chessboard/move-result';
 import LocalStorageHelper from '../../libs/local-storage-helper';
+import Chonse2 from '../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
 
 @Component({
   selector: 'app-analysis-page',

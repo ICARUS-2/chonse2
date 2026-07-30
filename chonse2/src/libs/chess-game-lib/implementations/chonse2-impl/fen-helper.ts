@@ -1,5 +1,5 @@
 import CastlingRights from "./castling-rights";
-import { PieceType } from "./piece-type";
+import { PieceType } from "../../types/piece-type";
 
 export default class FenHelper
 {

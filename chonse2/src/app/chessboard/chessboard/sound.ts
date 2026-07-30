@@ -1,4 +1,5 @@
-import AlgebraicNotationMaker from "../../../libs/chonse2-lib/algebraic-notation-builder";
+import AlgebraicNotationMaker from "../../../libs/chess-game-lib/types/algebraic-notation-builder";
+
 
 export default class Sound 
 {

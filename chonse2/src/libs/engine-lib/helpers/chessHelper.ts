@@ -1,7 +1,7 @@
 import { EvaluateGameParams, LineEval, PositionEval } from "../types/eval";
 import { Chess, PieceSymbol, Square } from "../helpers/chess";
 import { getPositionWinPercentage } from "../helpers/winPercentage";
-import { GameScore } from "../../chonse2-lib/game-state";
+import { GameScore } from "../../chess-game-lib/types/game-state";
 
 export const getEvaluateGameParams = (game: Chess): EvaluateGameParams => {
   const history = game.history({ verbose: true });

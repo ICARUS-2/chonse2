@@ -3,12 +3,12 @@ import { Router } from '@angular/router';
 import { StaticChessboard } from '../static-chessboard/static-chessboard';
 import ThemeService from '../themes/theme-service';
 import { IconButton } from "../ui/icon-button/icon-button";
-import Chonse2 from '../../libs/chonse2-lib/chonse2';
 import BoardState from '../chessboard/chessboard/board-state';
 import LocalStorageHelper from '../../libs/local-storage-helper';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
+import Chonse2 from '../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
 
 @Component({
   selector: 'app-homepage',

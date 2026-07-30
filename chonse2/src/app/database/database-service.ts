@@ -1,10 +1,8 @@
-import { inject, Injectable } from '@angular/core';
-import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
+import { Injectable } from '@angular/core';
 import BoardState from '../chessboard/chessboard/board-state';
 import LocalStorageHelper from '../../libs/local-storage-helper';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
-import { GameScore } from '../../libs/chonse2-lib/game-state';
-
+import { GameScore } from '../../libs/chess-game-lib/types/game-state';
 @Injectable({
   providedIn: 'root',
 })

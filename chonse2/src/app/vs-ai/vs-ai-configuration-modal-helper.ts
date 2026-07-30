@@ -5,9 +5,9 @@ import { ChessBoardService } from "../chessboard/chessboard/chess-board-service"
 import { BoardNames } from "../boards";
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { ToastrService } from "ngx-toastr";
-import Chonse2 from "../../libs/chonse2-lib/chonse2";
 import { EngineInformation, EngineName } from "../../libs/engine-lib/types/enums";
 import { TranslateService } from "@ngx-translate/core";
+import Chonse2 from "../../libs/chess-game-lib/implementations/chonse2-impl/chonse2";
 
 export default class VsAiConfigurationModalHelper
 {

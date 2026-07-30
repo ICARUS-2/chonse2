@@ -1,4 +1,5 @@
-import Chonse2 from "../../../libs/chonse2-lib/chonse2";
+import Chonse2 from "../../../libs/chess-game-lib/implementations/chonse2-impl/chonse2";
+
 
 export interface Arrow {
   fromFile: number; // 0–7

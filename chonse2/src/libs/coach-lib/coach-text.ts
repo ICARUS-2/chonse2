@@ -1,5 +1,5 @@
 import MoveResult from "../../app/chessboard/chessboard/move-result";
-import { PieceType } from "../chonse2-lib/piece-type";
+import { PieceType } from "../chess-game-lib/types/piece-type";
 import { MoveClassification } from "../engine-lib/types/enums";
 import { CoachAudio } from "./coach-audio";
 import { CoachSentence, FormattedCoachSentence } from "./coach-types";

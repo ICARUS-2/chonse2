@@ -1,6 +1,7 @@
 import { signal, WritableSignal } from "@angular/core";
 import { Arrow } from "../chessboard/chessboard/arrow";
-import Chonse2 from "../../libs/chonse2-lib/chonse2";
+import Chonse2 from "../../libs/chess-game-lib/implementations/chonse2-impl/chonse2";
+import { ChessConstants } from "../../libs/chess-game-lib/types/constants";
 
 export default class InputPositionState
 {
@@ -13,10 +14,10 @@ export default class InputPositionState
     {
         const highlightStatuses: Array<Array<boolean>> = [];
 
-        for(let i = 0; i < Chonse2.SIZE; i++)
+        for(let i = 0; i < ChessConstants.SIZE; i++)
         {
             const rank: Array<boolean> = [];
-            for(let j = 0; j < Chonse2.SIZE; j++)
+            for(let j = 0; j < ChessConstants.SIZE; j++)
             {
                 rank[j] = false;
             }

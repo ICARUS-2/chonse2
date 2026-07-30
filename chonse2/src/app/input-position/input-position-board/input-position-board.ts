@@ -6,10 +6,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
-import Chonse2 from '../../../libs/chonse2-lib/chonse2';
-import { GameOverReason } from '../../../libs/chonse2-lib/game-state';
-import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
-import { PieceType } from '../../../libs/chonse2-lib/piece-type';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { Arrow, ArrowContext } from '../../chessboard/chessboard/arrow';
 import { InputPositionService } from '../input-position-service';
@@ -20,8 +16,13 @@ import { ToastrService } from 'ngx-toastr';
 import { IconButton } from "../../ui/icon-button/icon-button";
 import GameLinkHelper from '../../chessboard/chessboard/game-link-helper';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import Chonse2 from '../../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
+import { CastlingRightsType } from '../../../libs/chess-game-lib/types/castling-rights-type';
+import { ChessConstants } from '../../../libs/chess-game-lib/types/constants';
+import { GameOverReason } from '../../../libs/chess-game-lib/types/game-state';
+import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
+import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
 import ChessboardHelper from '../../chessboard/helpers';
-import { CastlingRightsType } from '../../../libs/chonse2-lib/castling-rights-type';
 
 @Component({
   selector: 'app-input-position-board',
@@ -41,7 +42,7 @@ export class InputPositionBoard {
   Math = Math;
   CastlingRightsType = CastlingRightsType;
 
-  COORDS: Array<Array<string>> = Chonse2.COORDS;
+  COORDS: Array<Array<string>> = ChessConstants.COORDS;
 
   //Game service ID
   stateId = input<string>('');
@@ -381,7 +382,7 @@ export class InputPositionBoard {
       {
         if (potentialEnPassantSquareContent == "")
         {
-          arr.push(Chonse2.COORDS[previousRankIndex][i]);
+          arr.push(ChessConstants.COORDS[previousRankIndex][i]);
         }
       }
     }
@@ -395,9 +396,9 @@ export class InputPositionBoard {
     const king = this.model().game().getKingCoordinate( isWhite ? PieceColor.WHITE : PieceColor.BLACK );
     
     //To have castling rights you need to have a king on the board (obviously) and the rook needs to be in its place.
-    if (king && ( isWhite ? king == Chonse2.WHITE_KING_SQUARE : king == Chonse2.BLACK_KING_SQUARE ))
+    if (king && ( isWhite ? king == ChessConstants.WHITE_KING_SQUARE : king == ChessConstants.BLACK_KING_SQUARE ))
     {
-      const rookCoord = isWhite ? (isKingside ? Chonse2.WHITE_KINGSIDE_ROOK_SQUARE : Chonse2.WHITE_QUEENSIDE_ROOK_SQUARE) : (isKingside ? Chonse2.BLACK_KINGSIDE_ROOK_SQUARE : Chonse2.BLACK_QUEENSIDE_ROOK_SQUARE);
+      const rookCoord = isWhite ? (isKingside ? ChessConstants.WHITE_KINGSIDE_ROOK_SQUARE : ChessConstants.WHITE_QUEENSIDE_ROOK_SQUARE) : (isKingside ? ChessConstants.BLACK_KINGSIDE_ROOK_SQUARE : ChessConstants.BLACK_QUEENSIDE_ROOK_SQUARE);
       const rookSquareIndex = Chonse2.findIndexFromCoordinate(rookCoord);
       const rookSquareContent = this.model().game().getPieceState()[rookSquareIndex.rowIndex][rookSquareIndex.colIndex];
       const rookPiece = isWhite ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
@@ -547,10 +548,10 @@ export class InputPositionBoard {
   {
     if (this.model().squareHighlightStatuses().length == 0)
     {
-      for(let i = 0; i < Chonse2.SIZE; i++)
+      for(let i = 0; i < ChessConstants.SIZE; i++)
       {
         const rank: Array<boolean> = [];
-        for(let j = 0; j < Chonse2.SIZE; j++)
+        for(let j = 0; j < ChessConstants.SIZE; j++)
         {
           rank.push(false);
         }
@@ -559,10 +560,10 @@ export class InputPositionBoard {
     }
     else 
     {
-      for(let i = 0; i < Chonse2.SIZE; i++)
+      for(let i = 0; i < ChessConstants.SIZE; i++)
       {
         const rank = this.model().squareHighlightStatuses()[i];
-        for(let j = 0; j < Chonse2.SIZE; j++)
+        for(let j = 0; j < ChessConstants.SIZE; j++)
         {
           rank[j] = false;
         }

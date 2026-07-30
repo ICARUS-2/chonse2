@@ -20,16 +20,11 @@ import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-
 import ThemeService from '../../themes/theme-service';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
 import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
-import Chonse2 from '../../../libs/chonse2-lib/chonse2';
-import { GameOverReason, GameScore } from '../../../libs/chonse2-lib/game-state';
-import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
-import { PieceType } from '../../../libs/chonse2-lib/piece-type';
 import { getEvaluationBarValue2 } from '../../../libs/engine-lib/helpers/chessHelper';
 import { EngineName, EngineInformation, EngineType, MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { EvalSource } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
-import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
 import { BoardArrowButtons } from '../board-arrow-buttons/board-arrow-buttons';
 import { BoardOptions } from '../board-options/board-options';
 import { MovesTable } from '../moves-table/moves-table';
@@ -44,6 +39,13 @@ import GameLinkHelper from './game-link-helper';
 import { DatabaseModal } from '../database-modal/database-modal';
 import { TranslateService } from '@ngx-translate/core';
 import { CoachAudio } from '../../../libs/coach-lib/coach-audio';
+import { ChessConstants } from '../../../libs/chess-game-lib/types/constants';
+import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
+import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
+import { GameOverReason } from '../../../libs/chess-game-lib/types/game-state';
+import BoardScannerLibrary from '../../../libs/chess-game-lib/extensions';
+import Chonse2 from '../../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
+import { IMoveResult } from '../../../libs/chess-game-lib/types/move-result';
 
 interface PieceAnimationState {
   piece: string;
@@ -85,13 +87,12 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   EngineInformation = EngineInformation;
   EngineType = EngineType;
   EvalSource = EvalSource;
-  Chonse2Extensions = Chonse2Extensions;
   Object = Object;
   MoveClassification = MoveClassification;
   Chessboard = Chessboard;
   Math = Math;
 
-  COORDS: Array<Array<string>> = Chonse2.COORDS;
+  COORDS: Array<Array<string>> = ChessConstants.COORDS;
 
   //Game service ID
   gameId = input<string>("")
@@ -126,7 +127,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   animatedPiece = computed(() => this.animationState()?.piece ?? '');
   animatedPieceX = computed(() => this.animationState()?.x ?? 0);
   animatedPieceY = computed(() => this.animationState()?.y ?? 0);
-  getSquarePixelSize = computed(() => this.boardPixelSize() / Chonse2.SIZE);
+  getSquarePixelSize = computed(() => this.boardPixelSize() / ChessConstants.SIZE);
 
   // Must match the transition-duration on the ghost piece element in CSS.
   public static readonly ANIMATION_DURATION_MS = 70;
@@ -244,11 +245,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     
-    const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
+    const stateCopy = this.boardState().getCurrentState().clone();
 
     const isPromotion = (
-      piece == PieceType.WHITE_PAWN && this.toSquare().includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
-      piece == PieceType.BLACK_PAWN && this.toSquare().includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
+      piece == PieceType.WHITE_PAWN && this.toSquare().includes(ChessConstants.WHITE_PAWN_PROMOTE_RANK.toString()) ||
+      piece == PieceType.BLACK_PAWN && this.toSquare().includes(ChessConstants.BLACK_PAWN_PROMOTE_RANK.toString()))
 
     let moveResult: MoveResult = new MoveResult();
 
@@ -595,7 +596,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const promotion = engineResult[4] ? engineResult[4].toUpperCase() : PieceType.QUEEN;
 
     //The state to be pushed to the stack.
-    const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
+    const stateCopy = this.boardState().getCurrentState().clone();
     
     const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
     const pieceToAnimate = this.getMostCurrentMainState().getPieceState()[fromIdx.rowIndex][fromIdx.colIndex];
@@ -1045,10 +1046,10 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     if (this.boardState().squareHighlightStatuses().length == 0)
     {
-      for(let i = 0; i < Chonse2.SIZE; i++)
+      for(let i = 0; i < ChessConstants.SIZE; i++)
       {
         const rank: Array<boolean> = [];
-        for(let j = 0; j < Chonse2.SIZE; j++)
+        for(let j = 0; j < ChessConstants.SIZE; j++)
         {
           rank.push(false);
         }
@@ -1057,10 +1058,10 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
     else 
     {
-      for(let i = 0; i < Chonse2.SIZE; i++)
+      for(let i = 0; i < ChessConstants.SIZE; i++)
       {
         const rank = this.boardState().squareHighlightStatuses()[i];
-        for(let j = 0; j < Chonse2.SIZE; j++)
+        for(let j = 0; j < ChessConstants.SIZE; j++)
         {
           rank[j] = false;
         }

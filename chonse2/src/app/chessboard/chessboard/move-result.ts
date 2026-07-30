@@ -1,4 +1,5 @@
-import { PieceType } from "../../../libs/chonse2-lib/piece-type";
+import { IMoveResult } from "../../../libs/chess-game-lib/types/move-result";
+import { PieceType } from "../../../libs/chess-game-lib/types/piece-type";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType, FormattedCoachSentence } from "../../../libs/coach-lib/coach-types";
 
 //Object designed to hold move data as well as coach stuff.
@@ -19,7 +20,7 @@ export default class MoveResult implements IMoveResult
     coachResources: Map<CoachResourceFlagType, string> = new Map<CoachResourceFlagType, string>();
     isCoachMove: boolean = false;
 
-    //Exists because the Chonse2 library alone should not be returning anything more complex than the base IMoveResult, 
+    //Exists because a chess library alone should not be returning anything more complex than the base IMoveResult, 
     //but the chessboard needs something a bit more complex for coach interactions and whatnot.
     static createMoveResultFromInterface(obj: IMoveResult): MoveResult
     {

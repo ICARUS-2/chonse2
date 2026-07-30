@@ -9,7 +9,7 @@ export default class PieceMaterial
     static QUEEN: number = 9;
     static KING: number = 9999;
 
-    static getMaterialFromPiece(piece: string): number
+    static getMaterialFromPiece(piece: PieceType): number
     {
         if (piece == PieceType.BLACK_PAWN || piece == PieceType.WHITE_PAWN)
         {
