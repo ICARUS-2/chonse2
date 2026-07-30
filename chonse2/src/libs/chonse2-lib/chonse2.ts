@@ -161,23 +161,9 @@ export default class Chonse2
   private _stateCache: PreviousStateCache;
 
   //Instantiates with either a passed game state or the default one.
-  constructor(passedState: Array<Array<string>> = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank]))
+  constructor()
   {
-    this._pieceState = passedState.map(row => [...row]);
-
-    if (this._pieceState.length != Chonse2.SIZE)
-    {
-      throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
-    }
-
-    //validates correct number of files per rank.
-    this._pieceState.forEach( rank => 
-    {
-      if (rank.length != Chonse2.SIZE)
-      {
-        throw("BOARD SHOULD BE OF SIZE " + Chonse2.SIZE);
-      }
-    });
+    this._pieceState = Chonse2.DEFAULT_PIECE_STATE.map(rank => [...rank])
 
     //Initialize castling rights
     this._whiteCastlingRights = new CastlingRights();
@@ -197,6 +183,7 @@ export default class Chonse2
     return this._pieceState.map(row => [...row]);
   }
 
+  //Gets the index from a piece array.
   static findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
   {
       //Finds the row that includes this coordinate.
@@ -205,7 +192,7 @@ export default class Chonse2
       //If it doesn't exist, it should return -1.
       if (rIdx === -1)
       {
-          return { rowIndex: -1, colIndex: -1 };
+        return { rowIndex: -1, colIndex: -1 };
       }
 
       //The column index is the place in the rank where that exact coordinate is found.
