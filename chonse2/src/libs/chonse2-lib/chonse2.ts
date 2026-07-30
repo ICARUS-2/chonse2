@@ -192,9 +192,9 @@ export default class Chonse2
 
   //#region Pieces + squares.
   //Gets the row and column indeces when a rank and file coordinate are passed in.
-  public getPieceState()
+  public getPieceState(): string[][]
   {
-    return this._pieceState;
+    return this._pieceState.map(row => [...row]);
   }
 
   static findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
@@ -563,9 +563,16 @@ export default class Chonse2
   //#region Game state.
 
   //Retrieves the game state object.
-  public getGameState()
+  public getGameState(): GameState
   {
-    return this._gameState;
+    const copy = new GameState();
+
+    copy.isGameOver = this._gameState.isGameOver;
+    copy.reason = this._gameState.reason;
+    copy.winner = this._gameState.winner;
+    copy.gameScore = this._gameState.gameScore;
+
+    return copy;
   }
 
   //Triggers the check to see if the game is over. Updates GameState.
