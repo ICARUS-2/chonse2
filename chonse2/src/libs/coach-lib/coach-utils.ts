@@ -77,7 +77,7 @@ export class CoachUtils
             if (state && move && posEval && posEval.bestMove)
             {
                 //What the next best state will be.
-                const nextBestMove = CoachMiscHelpers.convertUciToChonse2Move(posEval.bestMove);
+                const nextBestMove = CoachMiscHelpers.convertUciStringToParams(posEval.bestMove);
                 const nextBestState = state.clone();
                 nextBestState.completeMove(nextBestMove.fromSquare, nextBestMove.toSquare, nextBestMove.promotion);
                 
@@ -149,7 +149,7 @@ export class CoachUtils
 
                     if (previousPosEval.bestMove && previousState)
                     {
-                        previousBestMove = CoachMiscHelpers.convertUciToChonse2Move(previousPosEval.bestMove);
+                        previousBestMove = CoachMiscHelpers.convertUciStringToParams(previousPosEval.bestMove);
                         const previousStateCopy = previousState.clone();
                         previousStateCopy.completeMove(previousBestMove.fromSquare, previousBestMove.toSquare, previousBestMove.promotion);  
                         missedState = previousStateCopy;
@@ -158,7 +158,7 @@ export class CoachUtils
                     
                     //Case: Player leaves a piece hanging.
                     {
-                        const bestMove = CoachMiscHelpers.convertUciToChonse2Move(posEval.bestMove);
+                        const bestMove = CoachMiscHelpers.convertUciStringToParams(posEval.bestMove);
                         const hangingPiecesArrToCheck = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
 
                         let pieceToTake = PieceType.NONE;
@@ -517,7 +517,7 @@ export class CoachUtils
                             {
                                 const previousHangingPiecesArrToCheck = whiteToMove ? allPreviousHangingPieceCoords.white : allPreviousHangingPieceCoords.black;
                                 
-                                const previousBestMove = CoachMiscHelpers.convertUciToChonse2Move(previousPosEval.bestMove);
+                                const previousBestMove = CoachMiscHelpers.convertUciStringToParams(previousPosEval.bestMove);
 
                                 //For all the previously hanging pieces, check if the previous best move was to capture it. If it was, the coach should tell them.
                                 for (let i = 0; i < previousHangingPiecesArrToCheck.length; i++)

@@ -52,7 +52,7 @@ export class CoachMiscHelpers
             {
                 const stateCopy = followUp.at(-1)?.clone();
 
-                const {fromSquare, toSquare, promotion } = CoachMiscHelpers.convertUciToChonse2Move(engineLineMove);
+                const {fromSquare, toSquare, promotion } = CoachMiscHelpers.convertUciStringToParams(engineLineMove);
 
                 if (stateCopy)
                 {
@@ -123,8 +123,8 @@ export class CoachMiscHelpers
         return false;
     }
 
-    //Converts a UCI move to the format in which it can be used to move in the Chonse2 library.
-    public static convertUciToChonse2Move(uci: string) : {fromSquare: string, toSquare: string, promotion: string}
+    //Converts a UCI move to the format in which it can be used to move in the interface.
+    public static convertUciStringToParams(uci: string) : {fromSquare: string, toSquare: string, promotion: string}
     {
         const fromSquare = uci[0] + uci[1];
         const toSquare = uci[2] + uci[3];

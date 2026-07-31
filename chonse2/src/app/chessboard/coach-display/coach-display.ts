@@ -169,7 +169,7 @@ export class CoachDisplay {
             const stateCopy = this.boardState().getCurrentState().clone();
 
             //Converts the move.
-            const {fromSquare, toSquare, promotion } = CoachMiscHelpers.convertUciToChonse2Move(engineMove);
+            const {fromSquare, toSquare, promotion } = CoachMiscHelpers.convertUciStringToParams(engineMove);
 
             const currentState = this.boardState().getCurrentState();
             const rawPieceIndex = ChessConstants.findIndexFromCoordinate(fromSquare);
