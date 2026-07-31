@@ -11,9 +11,9 @@ import { LichessAPI, LichessGame } from '../../../libs/server-api-lib/lichess-ap
 import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from "../../ui/bootstrap-button/bootstrap-button";
 import { form, FormField } from '@angular/forms/signals';
-import { GameScore } from '../../../libs/chonse2-lib/game-state';
 import { IconButton } from "../../ui/icon-button/icon-button";
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { GameScore } from '../../../libs/chess-game-lib/types/game-state';
 
 @Component({
   selector: 'app-import-modal',

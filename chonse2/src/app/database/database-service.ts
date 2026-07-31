@@ -1,10 +1,8 @@
-import { inject, Injectable } from '@angular/core';
-import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
+import { Injectable } from '@angular/core';
 import BoardState from '../chessboard/chessboard/board-state';
 import LocalStorageHelper from '../../libs/local-storage-helper';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
-import { GameScore } from '../../libs/chonse2-lib/game-state';
-
+import { GameScore } from '../../libs/chess-game-lib/types/game-state';
 @Injectable({
   providedIn: 'root',
 })
@@ -45,7 +43,7 @@ export class DatabaseService
     //if the game actually had a result, set it.
     if (finalGameState != undefined)
     {
-      record.result = `${finalGameState.gameState.reason} ${finalGameState.gameState.gameScore == GameScore.IN_PROGRESS ? "" : finalGameState.gameState.gameScore}`
+      record.result = `${finalGameState.getGameState().reason} ${finalGameState.getGameState().gameScore == GameScore.IN_PROGRESS ? "" : finalGameState.getGameState().gameScore}`
     }
 
     //if the game was evaluated, set its basic estimation/accuracies.

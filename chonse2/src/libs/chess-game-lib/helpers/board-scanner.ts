@@ -1,15 +1,17 @@
-import AlgebraicNotationMaker from "./algebraic-notation-builder";
-import Chonse2 from "./chonse2";
-import { PieceColor } from "./piece-color";
-import PieceMaterial from "./piece-material";
-import { PieceType } from "./piece-type";
+import AlgebraicNotationMaker from "../types/algebraic-notation-builder";
+import { CastlingRightsType } from "../types/castling-rights-type";
+import { PieceColor } from "../types/piece-color";
+import { PieceType } from "../types/piece-type";
+import { ChessConstants } from "../types/constants";
+import PieceMaterial from "../types/piece-material";
+import IChessGame from "../i-chess-game";
 
-export default class Chonse2Extensions
+export default class BoardScanner
 {
     //#region Hanging pieces
 
     //Sorts hanging pieces by color.
-    public static getHangingPieces(board: Chonse2): { white: Array<string>, black: Array<string> }
+    public static getHangingPieces(board: IChessGame): { white: Array<string>, black: Array<string> }
     {
         const o: { white: Array<string>, black: Array<string> } = {
             white: [],
@@ -17,16 +19,16 @@ export default class Chonse2Extensions
         }
 
         //Check every piece in the board.
-        for(let i = 0; i < board.pieceState.length; i++)
+        for(let i = 0; i < board.getPieceState().length; i++)
         {
-            const currentRank = board.pieceState[i];
+            const currentRank = board.getPieceState()[i];
 
             for(let j = 0; j < currentRank.length; j++)
             {
-                const squareCoord = Chonse2.COORDS[i][j];
+                const squareCoord = ChessConstants.COORDS[i][j];
                 if(this.doesSquareHaveHangingPiece(board, squareCoord))
                 {
-                    const pieceColor = board.pieceState[i][j][0];
+                    const pieceColor = board.getPieceState()[i][j][0];
 
                     if (pieceColor == PieceColor.WHITE)
                     {
@@ -44,10 +46,10 @@ export default class Chonse2Extensions
     }
 
     //Simple hanging piece checker (doesn't account for xray tho)
-    public static doesSquareHaveHangingPiece(board: Chonse2, squareCoord: string): boolean
+    public static doesSquareHaveHangingPiece(board: IChessGame, squareCoord: string): boolean
     {        
-        const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(squareCoord);
-        const pieceInSquare = board.pieceState[rowIndex][colIndex];
+        const { rowIndex, colIndex } = ChessConstants.findIndexFromCoordinate(squareCoord);
+        const pieceInSquare = board.getPieceState()[rowIndex][colIndex];
 
         //A square with no piece in it isn't hanging.
         if (pieceInSquare == PieceType.NONE)
@@ -94,7 +96,7 @@ export default class Chonse2Extensions
 
     //#region Forks
     public static getForksOnBoard(
-        board: Chonse2, 
+        board: IChessGame, 
         attackerColor: string, 
         _precomputedHangingPieceArr: { white: Array<string>, black: Array<string> } | null = null //Array of all hanging pieces. 
                          // For efficiency in cases where the hanging pieces have already been computed, don't compute them again
@@ -104,16 +106,16 @@ export default class Chonse2Extensions
         const allForks: Array<Fork> = [];
 
         //Need to copy the board in order to simulate the correct turn.
-        const boardCopy = board.getFullDeepCopy();
+        const boardCopy = board.clone();
 
         //Need to set the turn accordingly so legal moves register.
-        boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
+        boardCopy.setTurn(attackerColor == PieceColor.WHITE ? true : false);
 
         //All of the pieces/coords belonging to the attacker.
         const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board.getAllPiecesAndCoordsByColor(attackerColor);
         
         //All of the hanging pieces on the board regardless of color.
-        const allHangingPieces = _precomputedHangingPieceArr == null ? Chonse2Extensions.getHangingPieces(boardCopy) : _precomputedHangingPieceArr;
+        const allHangingPieces = _precomputedHangingPieceArr == null ? BoardScanner.getHangingPieces(boardCopy) : _precomputedHangingPieceArr;
     
         //Need to check through every piece to find which ones might be forking.
         for(let i = 0; i < piecesAndCoords.coords.length; i++)
@@ -165,9 +167,9 @@ export default class Chonse2Extensions
                     if (opponentHangingPieceCoords.includes(coord))
                     {
                         //One thing barring it from being a filtered candidate is if this piece can give a check stopping the fork.
-                        boardCopy.turn = attackerColor == PieceColor.WHITE ? false : true;
+                        boardCopy.setTurn(attackerColor == PieceColor.WHITE ? false : true);
                         const legalMoves = boardCopy.getLegalMoves(coord);
-                        boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
+                        boardCopy.setTurn(attackerColor == PieceColor.WHITE ? true : false);
 
                         let attackedPlayerHasCheckWithPiece = false;
 
@@ -186,12 +188,12 @@ export default class Chonse2Extensions
                             }
 
                             //verify if there is a check.
-                            boardCopy.turn = attackerColor == PieceColor.WHITE ? false : true;
-                            boardCopy.completeMove(coord, move);
+                            boardCopy.setTurn(attackerColor == PieceColor.WHITE ? false : true);
+                            boardCopy.completeMove(coord, move, PieceType.QUEEN);
 
                             
                             const attackerIsInCheck = boardCopy.isInCheck(attackerColor);
-                            boardCopy.turn = attackerColor == PieceColor.WHITE ? true : false;
+                            boardCopy.setTurn(attackerColor == PieceColor.WHITE ? true : false);
                             boardCopy.undoMostRecentMove();
                             if (attackerIsInCheck)
                             {
@@ -264,16 +266,16 @@ export default class Chonse2Extensions
                     for(const defenderPieceCoord of filteredDefenderPieceCoords )
                     {
                         const legalMovesForDefenderPiece = boardCopy.getLegalMoves(defenderPieceCoord);
-                        boardCopy.turn = !boardCopy.turn;
+                        boardCopy.setTurn(!boardCopy.getTurn());
 
                         //For each of the legal moves of the defender pieces, check if it can hit the forked piece and defend it.
                         for(const legalMove of legalMovesForDefenderPiece)
                         {
                             //Clone the object and complete the move (this is horribly inefficient but all I can think of right now, fix this shit later).
                             //const clone = boardCopy.getFullDeepCopy();
-                            boardCopy.turn = !boardCopy.turn;
-                            boardCopy.completeMove(defenderPieceCoord, legalMove);
-                            boardCopy.turn = !boardCopy.turn;
+                            boardCopy.setTurn(!boardCopy.getTurn());
+                            boardCopy.completeMove(defenderPieceCoord, legalMove, PieceType.QUEEN);
+                            boardCopy.setTurn(!boardCopy.getTurn());
 
                             //Get the pieces that defend the forked square.
                             const piecesThatHitForkedPieceSquare = boardCopy.getPiecesThatHitSquare(nonKingPieceCoordinate);
@@ -304,7 +306,7 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Pins
-    static getPinsOnBoard(board: Chonse2, excludePawns: boolean = false)
+    static getPinsOnBoard(board: IChessGame, excludePawns: boolean = false)
     {
         const pins: Array<Pin> = [];
 
@@ -333,7 +335,7 @@ export default class Chonse2Extensions
             }
         )
 
-        const hangingPieceCoords = Chonse2Extensions.getHangingPieces(board);
+        const hangingPieceCoords = BoardScanner.getHangingPieces(board);
 
         for( let i = 0; i < candidateAttackers.pieces.length; i++ )
         {
@@ -362,22 +364,22 @@ export default class Chonse2Extensions
             switch(lastCharOfPiece)
             {
                 case PieceType.BISHOP:
-                    vectorX = Chonse2._BISHOP_VECTOR_X;
-                    vectorY = Chonse2._BISHOP_VECTOR_Y;
+                    vectorX = ChessConstants.BISHOP_VECTOR_X;
+                    vectorY = ChessConstants.BISHOP_VECTOR_Y;
                     break;
 
                 case PieceType.ROOK:
-                    vectorX = Chonse2._ROOK_VECTOR_X;
-                    vectorY = Chonse2._ROOK_VECTOR_Y;
+                    vectorX = ChessConstants.ROOK_VECTOR_X;
+                    vectorY = ChessConstants.ROOK_VECTOR_Y;
                     break;
 
                 case PieceType.QUEEN:
-                    vectorX = Chonse2._QUEEN_KING_VECTOR_X;
-                    vectorY = Chonse2._QUEEN_KING_VECTOR_Y;
+                    vectorX = ChessConstants.QUEEN_KING_VECTOR_X;
+                    vectorY = ChessConstants.QUEEN_KING_VECTOR_Y;
             }
 
             //This is the current index within the piece state array that the coordinate lies in. Need this for checking the squares it sees.
-            const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(currentCoord);
+            const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(currentCoord);
 
             for(let offsetIndex = 0; offsetIndex < vectorX.length; offsetIndex++)
             {
@@ -394,11 +396,11 @@ export default class Chonse2Extensions
 
                 for( 
                     let currentXOffset = dx, currentYOffset = dy; //starts at the places of the vector components relative to the piece.
-                    runCount < Chonse2.SIZE; //ensures that it does not check outside the bounds.
+                    runCount < ChessConstants.SIZE; //ensures that it does not check outside the bounds.
                     currentXOffset += dx, currentYOffset += dy, runCount++ //keep incrementing the offsets accordingly
                 )   
                 {
-                    const rowInQuestion = board.pieceState[rowIndex + currentXOffset];
+                    const rowInQuestion = board.getPieceState()[rowIndex + currentXOffset];
                     
                     if (rowInQuestion)
                     {
@@ -423,7 +425,7 @@ export default class Chonse2Extensions
                             //if the piece is an enemy one and there is no pinned piece already, make that the pinned piece.
                             if (!pinnedPieceCoordinate)
                             {
-                                pinnedPieceCoordinate = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                                pinnedPieceCoordinate = ChessConstants.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
                                 pinnedPieceType = squareInQuestionPiece;
                                 //after the first piece is found, continue the loop and search for a potential piece for this one to be pinned to.
                                 continue;
@@ -449,7 +451,7 @@ export default class Chonse2Extensions
 
                                 newPin.attackerCoordinate = currentCoord;
                                 newPin.pinnedPieceCoordinate = pinnedPieceCoordinate;
-                                newPin.highValuePieceCoordinate = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                                newPin.highValuePieceCoordinate = ChessConstants.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
                             
                                 pins.push(newPin);
                             }
@@ -499,7 +501,7 @@ export default class Chonse2Extensions
     };
 
     //Checks if the kings are in or around the castling position.
-    public static didPlayersLikelyCastle(board:Chonse2): {
+    public static didPlayersLikelyCastle(board:IChessGame): {
         whiteKingside: boolean, 
         whiteQueenside: boolean,
         blackKingside: boolean,
@@ -511,27 +513,27 @@ export default class Chonse2Extensions
         const blackKingCoord = board.getKingCoordinate(PieceColor.BLACK);
 
         //It's impossible to have castled if castling rights are still there.
-        if (!board.whiteCastlingRights.kingSide && !board.whiteCastlingRights.queenSide)
+        if (!board.getCastlingRights(CastlingRightsType.WhiteKingside) && !board.getCastlingRights(CastlingRightsType.WhiteQueenside) )
         {
-            if (Chonse2Extensions.WHITE_KINGSIDE_CASTLE_SQUARES.includes(whiteKingCoord))
+            if (BoardScanner.WHITE_KINGSIDE_CASTLE_SQUARES.includes(whiteKingCoord))
             {
                 returnObj.whiteKingside = true;
             }
 
-            if (Chonse2Extensions.WHITE_QUEENSIDE_CASTLE_SQUARES.includes(whiteKingCoord))
+            if (BoardScanner.WHITE_QUEENSIDE_CASTLE_SQUARES.includes(whiteKingCoord))
             {
                 returnObj.whiteQueenside = true;
             }
         }
 
-        if (!board.blackCastlingRights.kingSide && !board.blackCastlingRights.queenSide)
+        if (!board.getCastlingRights(CastlingRightsType.BlackKingside)  && !board.getCastlingRights(CastlingRightsType.BlackQueenside) )
         {
-            if (Chonse2Extensions.BLACK_KINGSIDE_CASTLE_SQUARES.includes(blackKingCoord))
+            if (BoardScanner.BLACK_KINGSIDE_CASTLE_SQUARES.includes(blackKingCoord))
             {
                 returnObj.blackKingside = true;
             }
 
-            if (Chonse2Extensions.BLACK_QUEENSIDE_CASTLE_SQUARES.includes(blackKingCoord))
+            if (BoardScanner.BLACK_QUEENSIDE_CASTLE_SQUARES.includes(blackKingCoord))
             {
                 returnObj.blackQueenside = true;
             }
@@ -541,7 +543,7 @@ export default class Chonse2Extensions
     }
 
     //If the player has castling rights, check that the squares are clear.
-    public static areSquaresClearForCastlingProvidedRightsAreThere(board: Chonse2): {whiteKingside: boolean, whiteQueenside: boolean, blackKingside: boolean, blackQueenside: boolean}
+    public static areSquaresClearForCastlingProvidedRightsAreThere(board: IChessGame): {whiteKingside: boolean, whiteQueenside: boolean, blackKingside: boolean, blackQueenside: boolean}
     {
         const returnObj = 
         {
@@ -552,41 +554,41 @@ export default class Chonse2Extensions
         };
 
         //white
-        if (board.whiteCastlingRights.kingSide) 
+        if (board.getCastlingRights(CastlingRightsType.WhiteKingside)) 
         {
             // King is on e1, Rook is on h1. Squares to check: f1, g1
-            const f1Clear = board.findPieceAtCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) === "";
-            const g1Clear = board.findPieceAtCoordinate(Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE) === "";
+            const f1Clear = board.findPieceAtCoordinate(ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE) === "";
+            const g1Clear = board.findPieceAtCoordinate(ChessConstants.WHITE_KINGSIDE_KNIGHT_SQUARE) === "";
             
             returnObj.whiteKingside = f1Clear && g1Clear;
         }
 
-        if (board.whiteCastlingRights.queenSide) 
+        if (board.getCastlingRights(CastlingRightsType.WhiteQueenside)) 
         {
             // King is on e1, Rook is on a1. Squares to check: d1, c1, b1
-            const d1Clear = board.findPieceAtCoordinate(Chonse2.WHITE_QUEEN_SQUARE) === "";
-            const c1Clear = board.findPieceAtCoordinate(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) === "";
-            const b1Clear = board.findPieceAtCoordinate(Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE) === "";
+            const d1Clear = board.findPieceAtCoordinate(ChessConstants.WHITE_QUEEN_SQUARE) === "";
+            const c1Clear = board.findPieceAtCoordinate(ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE) === "";
+            const b1Clear = board.findPieceAtCoordinate(ChessConstants.WHITE_QUEENSIDE_KNIGHT_SQUARE) === "";
             
             returnObj.whiteQueenside = d1Clear && c1Clear && b1Clear;
         }
 
         //black
-        if (board.blackCastlingRights.kingSide) 
+        if (board.getCastlingRights(CastlingRightsType.BlackKingside)) 
         {
             // King is on e8, Rook is on h8. Squares to check: f8, g8
-            const f8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) === "";
-            const g8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE) === "";
+            const f8Clear = board.findPieceAtCoordinate(ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE) === "";
+            const g8Clear = board.findPieceAtCoordinate(ChessConstants.BLACK_KINGSIDE_KNIGHT_SQUARE) === "";
             
             returnObj.blackKingside = f8Clear && g8Clear;
         }
 
-        if (board.blackCastlingRights.queenSide) 
+        if (board.getCastlingRights(CastlingRightsType.BlackQueenside)) 
         {
             //king is on e8, Rook is on a8. Squares to check: d8, c8, b8
-            const d8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_QUEEN_SQUARE) === "";
-            const c8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) === "";
-            const b8Clear = board.findPieceAtCoordinate(Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE) === "";
+            const d8Clear = board.findPieceAtCoordinate(ChessConstants.BLACK_QUEEN_SQUARE) === "";
+            const c8Clear = board.findPieceAtCoordinate(ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE) === "";
+            const b8Clear = board.findPieceAtCoordinate(ChessConstants.BLACK_QUEENSIDE_KNIGHT_SQUARE) === "";
             
             returnObj.blackQueenside = d8Clear && c8Clear && b8Clear;
         }
@@ -597,7 +599,7 @@ export default class Chonse2Extensions
     // Checks if any enemy piece is preventing the king from castling.
     // Assumes the castling path is already clear of pieces.
     public static isEnemyPieceBlockingCastlingPath(
-        board: Chonse2
+        board: IChessGame
     ): {
         whiteKingside: boolean,
         whiteQueenside: boolean,
@@ -605,7 +607,7 @@ export default class Chonse2Extensions
         blackQueenside: boolean
     }
     {
-        const clear = Chonse2Extensions.areSquaresClearForCastlingProvidedRightsAreThere(board);
+        const clear = BoardScanner.areSquaresClearForCastlingProvidedRightsAreThere(board);
 
         const returnObj = {
             whiteKingside: false,
@@ -616,8 +618,8 @@ export default class Chonse2Extensions
 
         if (clear.whiteKingside)
         {
-            const f1Hits = board.getPiecesThatHitSquare(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE);
-            const g1Hits = board.getPiecesThatHitSquare(Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE);
+            const f1Hits = board.getPiecesThatHitSquare(ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE);
+            const g1Hits = board.getPiecesThatHitSquare(ChessConstants.WHITE_KINGSIDE_KNIGHT_SQUARE);
 
             returnObj.whiteKingside =
                 f1Hits.blackCoords.length > 0 ||
@@ -626,8 +628,8 @@ export default class Chonse2Extensions
 
         if (clear.whiteQueenside)
         {
-            const d1Hits = board.getPiecesThatHitSquare(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE);
-            const c1Hits = board.getPiecesThatHitSquare(Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE);
+            const d1Hits = board.getPiecesThatHitSquare(ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE);
+            const c1Hits = board.getPiecesThatHitSquare(ChessConstants.WHITE_QUEENSIDE_KNIGHT_SQUARE);
 
             returnObj.whiteQueenside =
                 d1Hits.blackCoords.length > 0 ||
@@ -636,8 +638,8 @@ export default class Chonse2Extensions
 
         if (clear.blackKingside)
         {
-            const f8Hits = board.getPiecesThatHitSquare(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE);
-            const g8Hits = board.getPiecesThatHitSquare(Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE);
+            const f8Hits = board.getPiecesThatHitSquare(ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE);
+            const g8Hits = board.getPiecesThatHitSquare(ChessConstants.BLACK_KINGSIDE_KNIGHT_SQUARE);
 
             returnObj.blackKingside =
                 f8Hits.whiteCoords.length > 0 ||
@@ -646,8 +648,8 @@ export default class Chonse2Extensions
 
         if (clear.blackQueenside)
         {
-            const d8Hits = board.getPiecesThatHitSquare(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE);
-            const c8Hits = board.getPiecesThatHitSquare(Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE);
+            const d8Hits = board.getPiecesThatHitSquare(ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE);
+            const c8Hits = board.getPiecesThatHitSquare(ChessConstants.BLACK_QUEENSIDE_KNIGHT_SQUARE);
 
             returnObj.blackQueenside =
                 d8Hits.whiteCoords.length > 0 ||
@@ -659,7 +661,7 @@ export default class Chonse2Extensions
     //#endregion
     
     //#region Skewers
-    public static getSkewersOnBoard(board: Chonse2, optionalExistingHangingPieceArray: { white: Array<string>, black: Array<string> } | null = null): Array<Skewer>
+    public static getSkewersOnBoard(board: IChessGame, optionalExistingHangingPieceArray: { white: Array<string>, black: Array<string> } | null = null): Array<Skewer>
     {
         let candidateSkewers: Array<Skewer> = [];
 
@@ -737,22 +739,22 @@ export default class Chonse2Extensions
             switch(lastCharOfPiece)
             {
                 case PieceType.BISHOP:
-                    vectorX = Chonse2._BISHOP_VECTOR_X;
-                    vectorY = Chonse2._BISHOP_VECTOR_Y;
+                    vectorX = ChessConstants.BISHOP_VECTOR_X;
+                    vectorY = ChessConstants.BISHOP_VECTOR_Y;
                     break;
 
                 case PieceType.ROOK:
-                    vectorX = Chonse2._ROOK_VECTOR_X;
-                    vectorY = Chonse2._ROOK_VECTOR_Y;
+                    vectorX = ChessConstants.ROOK_VECTOR_X;
+                    vectorY = ChessConstants.ROOK_VECTOR_Y;
                     break;
 
                 case PieceType.QUEEN:
-                    vectorX = Chonse2._QUEEN_KING_VECTOR_X;
-                    vectorY = Chonse2._QUEEN_KING_VECTOR_Y;
+                    vectorX = ChessConstants.QUEEN_KING_VECTOR_X;
+                    vectorY = ChessConstants.QUEEN_KING_VECTOR_Y;
             }
 
             //Loop through the possible vector coords
-            const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(currentCoord);
+            const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(currentCoord);
 
             for(let offsetIndex = 0; offsetIndex < vectorX.length; offsetIndex++)
             {
@@ -769,12 +771,12 @@ export default class Chonse2Extensions
 
                 for( 
                     let currentXOffset = dx, currentYOffset = dy; //starts at the places of the vector components relative to the piece.
-                    runCount < Chonse2.SIZE; //ensures that it does not check outside the bounds.
+                    runCount < ChessConstants.SIZE; //ensures that it does not check outside the bounds.
                     currentXOffset += dx, currentYOffset += dy, runCount++ //keep incrementing the offsets accordingly
                 )   
                 {
                     //The row that contains the square that is being checked.
-                    const rowInQuestion = board.pieceState[rowIndex + currentXOffset];
+                    const rowInQuestion = board.getPieceState()[rowIndex + currentXOffset];
                     
                     if (rowInQuestion)
                     {
@@ -799,7 +801,7 @@ export default class Chonse2Extensions
                             //if the piece is an enemy one and there is no high-value piece already, make that the skewered piece.
                             if (!highValuePieceCoord)
                             {
-                                highValuePieceCoord = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                                highValuePieceCoord = ChessConstants.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
                                 highValuePieceType = squareInQuestionPiece;
                                 //after the first piece is found, continue the loop and search for a potential piece for this one to be pinned to.
                                 continue;
@@ -815,7 +817,7 @@ export default class Chonse2Extensions
 
                                 newSkewer.attackerCoordinate = currentCoord;
                                 newSkewer.highValuePieceCoordinate = highValuePieceCoord;
-                                newSkewer.lowValuePieceBehindCoordinate = Chonse2.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
+                                newSkewer.lowValuePieceBehindCoordinate = ChessConstants.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
                                 
                                 candidateSkewers.push(newSkewer);
                             }
@@ -827,8 +829,8 @@ export default class Chonse2Extensions
 
         //Time to check some additional edge cases
 
-        const boardCopy = board.getFullDeepCopy();
-        const turnInCurrentState = board.turn;
+        const boardCopy = board.clone();
+        const turnInCurrentState = board.getTurn();
 
         //Now, need to check if the skewered high value piece or the piece behind it cannot just check the king without hanging, or move and defend both.
         candidateSkewers = candidateSkewers.filter( sk => 
@@ -837,7 +839,7 @@ export default class Chonse2Extensions
                 const attackerColor = attackerPiece[0];
 
                 //Sets the turn to the defender.
-                attackerColor == PieceColor.WHITE ? boardCopy.turn = false : boardCopy.turn = true;
+                attackerColor == PieceColor.WHITE ? boardCopy.setTurn(false) : boardCopy.setTurn(true);
 
                 //Gotta check each legal move for the high value piece.
                 const legalMovesForHighValuePiece = boardCopy.getLegalMoves(sk.highValuePieceCoordinate);
@@ -852,13 +854,13 @@ export default class Chonse2Extensions
                 {
                     const mv = legalMovesForHighValuePiece[i];
 
-                    const r = boardCopy.completeMove(sk.highValuePieceCoordinate, mv);
+                    const r = boardCopy.completeMove(sk.highValuePieceCoordinate, mv, PieceType.QUEEN);
                     const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
 
                     //if the opponent can be checked without hanging the piece, don't count this as a valid skewer.
                     if (isOpponentInCheck)
                     {
-                        if (!Chonse2Extensions.doesSquareHaveHangingPiece(boardCopy,r.toCoord))
+                        if (!BoardScanner.doesSquareHaveHangingPiece(boardCopy,r.toCoord))
                         {
                             canHighValuePieceGiveCheckWithoutHanging = true;
                             boardCopy.undoMostRecentMove();
@@ -867,8 +869,8 @@ export default class Chonse2Extensions
                     }
 
                     //If both pieces could be defended, don't count this as a valid skewer.
-                    const isLowerValuePieceHanging = Chonse2Extensions.doesSquareHaveHangingPiece(boardCopy,r.toCoord);
-                    const isHigherValuePieceHanging = Chonse2Extensions.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
+                    const isLowerValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy,r.toCoord);
+                    const isHigherValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
 
                     if (!isLowerValuePieceHanging && !isHigherValuePieceHanging)
                     {
@@ -883,7 +885,7 @@ export default class Chonse2Extensions
                 {
                     const mv = legalMovesForLowValuePiece[i];
 
-                    const r = boardCopy.completeMove(sk.lowValuePieceBehindCoordinate, mv);
+                    const r = boardCopy.completeMove(sk.lowValuePieceBehindCoordinate, mv, PieceType.QUEEN);
                     const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
 
                     if (isOpponentInCheck)
@@ -901,7 +903,7 @@ export default class Chonse2Extensions
         )
 
         //Reset the turn so that it's correct.
-        boardCopy.turn = turnInCurrentState;
+        boardCopy.setTurn(turnInCurrentState);
 
         //And need to check that the skewered piece is hanging without the high value piece on the board (aka that the piece can even be viably captured).
         candidateSkewers = candidateSkewers.filter( sk =>
@@ -909,17 +911,15 @@ export default class Chonse2Extensions
                 let isLowValuePieceHanging = false;
 
                 const highValuePiece = boardCopy.findPieceAtCoordinate(sk.highValuePieceCoordinate);
-
-                const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(sk.highValuePieceCoordinate);
-
+                
                 //Temporarily remove the piece.
-                boardCopy.pieceState[rowIndex][colIndex] = "";
+                boardCopy.setPieceOnBoard(sk.highValuePieceCoordinate, "");
 
                 //check if the piece is hanging.
-                isLowValuePieceHanging = Chonse2Extensions.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
+                isLowValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
                 
                 //Put the piece back after
-                boardCopy.pieceState[rowIndex][colIndex] = highValuePiece;
+                boardCopy.setPieceOnBoard(sk.highValuePieceCoordinate, highValuePiece);
 
                 //if the piece is hanging without the high value piece, it's a valid skewer.
                 return isLowValuePieceHanging;
@@ -940,7 +940,7 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Connecting rooks
-    public static doesBoardHaveConnectedRooks(board: Chonse2):{white: boolean, black: boolean}
+    public static doesBoardHaveConnectedRooks(board: IChessGame):{white: boolean, black: boolean}
     {
         const returnObj = {white: false, black: false};
 
@@ -1020,7 +1020,7 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Rooks on open files
-    public static getOpenFilesWithRooks(board: Chonse2): { white: string[], black: string[] }
+    public static getOpenFilesWithRooks(board: IChessGame): { white: string[], black: string[] }
     {
         const returnObj = 
         {
@@ -1028,17 +1028,17 @@ export default class Chonse2Extensions
             black: [] as string[]
         };
 
-        const openFiles = Chonse2Extensions.getAllOpenFiles(board);
+        const openFiles = BoardScanner.getAllOpenFiles(board);
 
         for (const fileLetter of openFiles)
         {
             //convert file letter back to index
-            const fileIndex = Chonse2.COORDS[0].findIndex(coord => coord[0] === fileLetter);
+            const fileIndex = ChessConstants.COORDS[0].findIndex(coord => coord[0] === fileLetter);
 
             //check through each square to see if a rook is controlling it.
-            for (let rank = 0; rank < Chonse2.SIZE; rank++)
+            for (let rank = 0; rank < ChessConstants.SIZE; rank++)
             {
-                const piece = board.pieceState[rank][fileIndex];
+                const piece = board.getPieceState()[rank][fileIndex];
 
                 if (piece === PieceType.WHITE_ROOK)
                 {
@@ -1061,19 +1061,19 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Doubled pawns
-    public static getDoubledPawnFiles(board: Chonse2): {white: Array<string>, black: Array<string>}
+    public static getDoubledPawnFiles(board: IChessGame): {white: Array<string>, black: Array<string>}
     {
         const returnObj = {white: [] as Array<string>, black: [] as Array<string>}
 
         //check through every file
-        for(let file = 0; file < Chonse2.SIZE; file++)
+        for(let file = 0; file < ChessConstants.SIZE; file++)
         {
             let fileWhitePawnCount: number = 0;
             let fileBlackPawnCount: number = 0;
             
-            for(let rank = 0; rank < Chonse2.SIZE; rank++)
+            for(let rank = 0; rank < ChessConstants.SIZE; rank++)
             {
-                const pieceInSquare = board.pieceState[rank][file];
+                const pieceInSquare = board.getPieceState()[rank][file];
                 
                 if (pieceInSquare == PieceType.WHITE_PAWN)
                 {
@@ -1086,7 +1086,7 @@ export default class Chonse2Extensions
                 }
             }
 
-            const fileLetter = Chonse2.COORDS[0][file][0];
+            const fileLetter = ChessConstants.COORDS[0][file][0];
 
             if (fileWhitePawnCount >= 2)
             {
@@ -1104,18 +1104,18 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Passed pawns
-    public static getAllPassedPawns(board: Chonse2): {white: Array<string>, black: Array<string>}
+    public static getAllPassedPawns(board: IChessGame): {white: Array<string>, black: Array<string>}
     {
         //return object with the passed pawn coords. 
         const returnObj: { white: string[], black: string[] } = { white: [], black: [] };
 
-        const allPawns = Chonse2Extensions.getAllPieceCoordsOfType(board, PieceType.PAWN);
+        const allPawns = BoardScanner.getAllPieceCoordsOfType(board, PieceType.PAWN);
         const whitePawns: Array<string> = allPawns.white;
         const blackPawns: Array<string> = allPawns.black;
 
         whitePawns.forEach( whitePawnCoord => 
             {
-                const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(whitePawnCoord);
+                const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(whitePawnCoord);
 
                 let isPassed = true;
 
@@ -1127,7 +1127,7 @@ export default class Chonse2Extensions
                     {
                         if (c < 0 || c > 7) continue;
 
-                        if (board.pieceState[r][c] === PieceType.BLACK_PAWN)
+                        if (board.getPieceState()[r][c] === PieceType.BLACK_PAWN)
                         {
                             isPassed = false;
                             break;
@@ -1144,7 +1144,7 @@ export default class Chonse2Extensions
 
         blackPawns.forEach( blackPawnCoord => 
             {
-                const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(blackPawnCoord);
+                const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(blackPawnCoord);
 
                 let isPassed = true;
 
@@ -1154,7 +1154,7 @@ export default class Chonse2Extensions
                     {
                         if (c < 0 || c > 7) continue;
 
-                        if (board.pieceState[r][c] === PieceType.WHITE_PAWN)
+                        if (board.getPieceState()[r][c] === PieceType.WHITE_PAWN)
                         {
                             isPassed = false;
                             break;
@@ -1174,18 +1174,18 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Piece sitting on passed pawn promotion square.
-    public static getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(board: Chonse2): {white: Array<string>, black: Array<string>}
+    public static getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(board: IChessGame): {white: Array<string>, black: Array<string>}
     {
         const returnObj = {white: [] as Array<string>, black: [] as Array<string>}
         
-        const passedPawns = Chonse2Extensions.getAllPassedPawns(board);
+        const passedPawns = BoardScanner.getAllPassedPawns(board);
         
         //For each of the passed pawns, check if there is a piece of the opponent color sitting on the spot, actively preventing it from promotion.
         passedPawns.white.forEach( wppCoord => 
             {
-                const {colIndex} = Chonse2.findIndexFromCoordinate(wppCoord);
+                const {colIndex} = ChessConstants.findIndexFromCoordinate(wppCoord);
 
-                const promotionSquare = Chonse2.COORDS[0][colIndex];
+                const promotionSquare = ChessConstants.COORDS[0][colIndex];
 
                 const pieceInPromotionSquare = board.findPieceAtCoordinate(promotionSquare);
 
@@ -1204,9 +1204,9 @@ export default class Chonse2Extensions
 
         passedPawns.black.forEach( bpp => 
             {
-                const {colIndex} = Chonse2.findIndexFromCoordinate(bpp);
+                const {colIndex} = ChessConstants.findIndexFromCoordinate(bpp);
 
-                const promotionSquare = Chonse2.COORDS[7][colIndex];
+                const promotionSquare = ChessConstants.COORDS[7][colIndex];
 
                 const pieceInPromotionSquare = board.findPieceAtCoordinate(promotionSquare);
 
@@ -1228,10 +1228,10 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Isolated pawns
-    public static getAllIsolatedPawns(board: Chonse2): { white: Array<string>, black: Array<string> }
+    public static getAllIsolatedPawns(board: IChessGame): { white: Array<string>, black: Array<string> }
     {
         const returnObj = { white: [] as Array<string>, black: [] as Array<string> };
-        const allPawns = Chonse2Extensions.getAllPieceCoordsOfType(board, PieceType.PAWN);
+        const allPawns = BoardScanner.getAllPieceCoordsOfType(board, PieceType.PAWN);
 
         [
             {
@@ -1249,7 +1249,7 @@ export default class Chonse2Extensions
             //Check every pawn for its isolation status.
             pawns.forEach(pawnCoord =>
             {
-                const { colIndex } = Chonse2.findIndexFromCoordinate(pawnCoord);
+                const { colIndex } = ChessConstants.findIndexFromCoordinate(pawnCoord);
 
                 const filesToCheck: number[] = [];
 
@@ -1259,7 +1259,7 @@ export default class Chonse2Extensions
                     filesToCheck.push(colIndex - 1);
                 }
 
-                if (colIndex + 1 < Chonse2.SIZE)
+                if (colIndex + 1 < ChessConstants.SIZE)
                 {
                     filesToCheck.push(colIndex + 1);
                 }
@@ -1269,9 +1269,9 @@ export default class Chonse2Extensions
                 //Verify that the left/right files contain no friendly pawns.
                 for (const fileIdx of filesToCheck)
                 {
-                    for (let row = 0; row < Chonse2.SIZE; row++)
+                    for (let row = 0; row < ChessConstants.SIZE; row++)
                     {
-                        if (board.pieceState[row][fileIdx] === pawnType)
+                        if (board.getPieceState()[row][fileIdx] === pawnType)
                         {
                             nearbyFileContainsFriendlyPawn = true;
                             break;
@@ -1298,7 +1298,7 @@ export default class Chonse2Extensions
     //#endregion
     
     //#region Pawn chain
-    public static getAllPawnChainsOnBoard(board: Chonse2): { white: Array<Array<string>>, black: Array<Array<string>>, whiteAttackSquares: Array<string>,  blackAttackSquares: Array<string> }
+    public static getAllPawnChainsOnBoard(board: IChessGame): { white: Array<Array<string>>, black: Array<Array<string>>, whiteAttackSquares: Array<string>,  blackAttackSquares: Array<string> }
     {
         const returnObj = 
         { 
@@ -1308,10 +1308,10 @@ export default class Chonse2Extensions
             blackAttackSquares: [] as Array<string> 
         };
 
-        const allPawns = Chonse2Extensions.getAllPieceCoordsOfType(board, PieceType.PAWN);
+        const allPawns = BoardScanner.getAllPieceCoordsOfType(board, PieceType.PAWN);
 
-        const vectorX = Chonse2._BISHOP_VECTOR_X;
-        const vectorY = Chonse2._BISHOP_VECTOR_Y;
+        const vectorX = ChessConstants.BISHOP_VECTOR_X;
+        const vectorY = ChessConstants.BISHOP_VECTOR_Y;
 
         const MIN_PAWN_CHAIN_SIZE = 3;
 
@@ -1336,7 +1336,7 @@ export default class Chonse2Extensions
             for(let i = 0; i < pawns.length; i++)
             {
                 const currentPawnCoord = pawns[i];
-                const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(currentPawnCoord);
+                const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(currentPawnCoord);
                 const currentPawnChain: Array<string> = [];
                 currentPawnChain.push(currentPawnCoord);
 
@@ -1358,12 +1358,12 @@ export default class Chonse2Extensions
                     //For each element in that vector branch
                     for(
                         let currentXOffset = dx, currentYOffset = dy; 
-                        runCount < Chonse2.SIZE;
+                        runCount < ChessConstants.SIZE;
                         currentXOffset += dx, currentYOffset += dy, runCount++
                     )
                     {
                         //the row the current square is in.
-                        const rowInQuestion = board.pieceState[rowIndex + currentXOffset];
+                        const rowInQuestion = board.getPieceState()[rowIndex + currentXOffset];
 
                         if (rowInQuestion)
                         {
@@ -1377,7 +1377,7 @@ export default class Chonse2Extensions
                                     const appliedRowIdx = rowIndex + currentXOffset;
                                     const appliedColIdx = colIndex + currentYOffset;
 
-                                    const c = Chonse2.COORDS[appliedRowIdx][appliedColIdx];
+                                    const c = ChessConstants.COORDS[appliedRowIdx][appliedColIdx];
                                     
                                     if (!currentPawnChain.includes(c))
                                     {
@@ -1404,7 +1404,7 @@ export default class Chonse2Extensions
                     const currentAttackSquares: Array<string> = [];
                     currentPawnChain.forEach( coord => 
                         {
-                            const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
+                            const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(coord);
 
                             let attackLeftRowIndex = -1;
                             let attackLeftColIndex = -1; 
@@ -1428,8 +1428,8 @@ export default class Chonse2Extensions
                             }
 
                             //Get the actual squares themselves.
-                            let leftAttackSquare = board.pieceState[attackLeftRowIndex][attackLeftColIndex];
-                            let rightAttackSquare = board.pieceState[attackRightRowIndex][attackRightColIndex];
+                            let leftAttackSquare = board.getPieceState()[attackLeftRowIndex][attackLeftColIndex];
+                            let rightAttackSquare = board.getPieceState()[attackRightRowIndex][attackRightColIndex];
 
                             //If the square is outside or has a piece already in it, don't push anything.
                             if (leftAttackSquare != undefined)
@@ -1437,7 +1437,7 @@ export default class Chonse2Extensions
                                 //An attacking square is only valid if it's in the board (obviously) and there's nothing in it.
                                 if (leftAttackSquare == PieceType.NONE)
                                 {
-                                    currentAttackSquares.push(Chonse2.COORDS[attackLeftRowIndex][attackLeftColIndex]);
+                                    currentAttackSquares.push(ChessConstants.COORDS[attackLeftRowIndex][attackLeftColIndex]);
                                 }
                             }
 
@@ -1445,7 +1445,7 @@ export default class Chonse2Extensions
                             {
                                 if (rightAttackSquare == PieceType.NONE)
                                 {
-                                    currentAttackSquares.push(Chonse2.COORDS[attackRightRowIndex][attackRightColIndex]);
+                                    currentAttackSquares.push(ChessConstants.COORDS[attackRightRowIndex][attackRightColIndex]);
                                 }    
                             }
                         }
@@ -1466,7 +1466,7 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Discovered check
-    public static wasMoveDiscoveredCheck(afterState: Chonse2, move: {from: string, to: string, promotion: string}): DiscoveredCheckType
+    public static wasMoveDiscoveredCheck(afterState: IChessGame, move: {from: string, to: string, promotion: string}): DiscoveredCheckType
     {
         const pieceInToSquare = afterState.findPieceAtCoordinate(move.to);
 
@@ -1480,12 +1480,12 @@ export default class Chonse2Extensions
         if (
             (pieceInToSquare === PieceType.WHITE_KING || pieceInToSquare === PieceType.BLACK_KING) &&
             (
-                (move.from === Chonse2.WHITE_KING_SQUARE &&
-                    (move.to === Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE ||
-                    move.to === Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE)) ||
-                (move.from === Chonse2.BLACK_KING_SQUARE &&
-                    (move.to === Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE ||
-                    move.to === Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE))
+                (move.from === ChessConstants.WHITE_KING_SQUARE &&
+                    (move.to === ChessConstants.WHITE_KINGSIDE_KNIGHT_SQUARE ||
+                    move.to === ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE)) ||
+                (move.from === ChessConstants.BLACK_KING_SQUARE &&
+                    (move.to === ChessConstants.BLACK_KINGSIDE_KNIGHT_SQUARE ||
+                    move.to === ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE))
             )
         )
         {
@@ -1493,7 +1493,7 @@ export default class Chonse2Extensions
         }
 
         //Will need to verify that the king is indeed in check
-        const colorToVerifyIsInCheck: string = afterState.turn ? PieceColor.WHITE : PieceColor.BLACK;
+        const colorToVerifyIsInCheck: string = afterState.getTurn() ? PieceColor.WHITE : PieceColor.BLACK;
         const isKingInCheck: boolean = afterState.isInCheck(colorToVerifyIsInCheck);
         if (!isKingInCheck)
         {
@@ -1528,9 +1528,9 @@ export default class Chonse2Extensions
     //#endregion
 
     //#region Knight outpost
-    public static getAllOutpostKnights(board: Chonse2): { white: string[]; black: string[] }
+    public static getAllOutpostKnights(board: IChessGame): { white: string[]; black: string[] }
     {
-        const knights = Chonse2Extensions.getAllPieceCoordsOfType(board, PieceType.KNIGHT);
+        const knights = BoardScanner.getAllPieceCoordsOfType(board, PieceType.KNIGHT);
 
         return {
             white: knights.white.filter(coord => this.isOutpostKnight(board, coord, true)),
@@ -1538,9 +1538,9 @@ export default class Chonse2Extensions
         };
     }
 
-    private static isOutpostKnight(board: Chonse2, coord: string, isWhite: boolean): boolean
+    private static isOutpostKnight(board: IChessGame, coord: string, isWhite: boolean): boolean
     {
-        const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coord);
+        const { rowIndex, colIndex } = ChessConstants.findIndexFromCoordinate(coord);
 
         if (!this._isInEnemyTerritory(rowIndex, isWhite))
             return false;
@@ -1563,7 +1563,7 @@ export default class Chonse2Extensions
 
     private static _isDefendedByPawn
     (
-        board: Chonse2,
+        board: IChessGame,
         row: number,
         col: number,
         isWhite: boolean
@@ -1576,14 +1576,14 @@ export default class Chonse2Extensions
             return false;
 
         return (
-            (col > 0 && board.pieceState[pawnRow][col - 1] === pawn) ||
-            (col < 7 && board.pieceState[pawnRow][col + 1] === pawn)
+            (col > 0 && board.getPieceState()[pawnRow][col - 1] === pawn) ||
+            (col < 7 && board.getPieceState()[pawnRow][col + 1] === pawn)
         );
     }
 
     private static _canEnemyPawnAttack
     (
-        board: Chonse2,
+        board: IChessGame,
         row: number,
         col: number,
         isWhite: boolean
@@ -1600,7 +1600,7 @@ export default class Chonse2Extensions
             {
                 for (let r = 0; r < row; r++)
                 {
-                    if (board.pieceState[r][attackCol] === enemyPawn)
+                    if (board.getPieceState()[r][attackCol] === enemyPawn)
                         return true;
                 }
             }
@@ -1608,7 +1608,7 @@ export default class Chonse2Extensions
             {
                 for (let r = 7; r > row; r--)
                 {
-                    if (board.pieceState[r][attackCol] === enemyPawn)
+                    if (board.getPieceState()[r][attackCol] === enemyPawn)
                         return true;
                 }
             }
@@ -1620,17 +1620,17 @@ export default class Chonse2Extensions
     //#region General board state
 
     //All open files on a given board
-    public static getAllOpenFiles(board: Chonse2): Array<string>
+    public static getAllOpenFiles(board: IChessGame): Array<string>
     {
         const openFiles: Array<string> = [];
 
         //check through every file
-        for(let file = 0; file < Chonse2.SIZE; file++)
+        for(let file = 0; file < ChessConstants.SIZE; file++)
         {
             let fileDoesContainPawn = false;
-            for(let rank = 0; rank < Chonse2.SIZE; rank++)
+            for(let rank = 0; rank < ChessConstants.SIZE; rank++)
             {
-                const pieceInSquare = board.pieceState[rank][file];
+                const pieceInSquare = board.getPieceState()[rank][file];
                 
                 //if the file contains a pawn, then it's not an open file.
                 if (pieceInSquare == PieceType.WHITE_PAWN || pieceInSquare == PieceType.BLACK_PAWN)
@@ -1642,7 +1642,7 @@ export default class Chonse2Extensions
 
             if (!fileDoesContainPawn)
             {
-                const fileCoord = Chonse2.COORDS[0][file];
+                const fileCoord = ChessConstants.COORDS[0][file];
 
                 //first letter of rank and file combo
                 openFiles.push(fileCoord[0]);
@@ -1651,7 +1651,7 @@ export default class Chonse2Extensions
         return openFiles;
     }
 
-    public static getAllPieceCoordsOfType(board: Chonse2, pieceType: PieceType): {white: Array<string>, black: Array<string>}
+    public static getAllPieceCoordsOfType(board: IChessGame, pieceType: PieceType): {white: Array<string>, black: Array<string>}
     {
         const returnObj: { white: string[], black: string[] } = { white: [], black: [] };
         const allWhitePieces = board.getAllPiecesAndCoordsByColor(PieceColor.WHITE);

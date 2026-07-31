@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import BoardState from '../chessboard/chessboard/board-state';
@@ -10,11 +10,9 @@ import { RouteConstants } from '../app.routes';
 import { PgnHeaders } from '../chessboard/chessboard/pgn-misc';
 import { LichessAPI } from '../../libs/server-api-lib/lichess-api';
 import ThemeService from '../themes/theme-service';
-import Chonse2, { PreviousStateCache } from '../../libs/chonse2-lib/chonse2';
-import { GameState } from '../../libs/chonse2-lib/game-state';
 import MoveResult from '../chessboard/chessboard/move-result';
 import LocalStorageHelper from '../../libs/local-storage-helper';
-import { compress } from 'lz-string';
+import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
 
 @Component({
   selector: 'app-analysis-page',
@@ -31,13 +29,12 @@ export class AnalysisPage implements OnInit{
   gameId: string | undefined;
   
   //Import from board editor
-  inputtedPosition: Chonse2 | undefined;
+  inputtedPosition: string | undefined;
 
   //Import from PGN link
   pgnFromLink: string | undefined;
 
-  vsAiStates: Array<Chonse2> | undefined;
-  vsAiGameStates: Array<GameState> | undefined;
+  vsAiStates: Array<string> | undefined;
   vsAiMoves: Array<MoveResult> | undefined;
   vsAiPgnHeaders: PgnHeaders | undefined;
 
@@ -70,7 +67,6 @@ export class AnalysisPage implements OnInit{
 
     //Game vs AI.
     this.vsAiStates = state[RouteConstants.ROUTE_VSAI_STATES];
-    this.vsAiGameStates = state[RouteConstants.ROUTE_VSAI_GAMESTATES];
     this.vsAiMoves = state[RouteConstants.ROUTE_VSAI_MOVES];
     this.vsAiPgnHeaders = state[RouteConstants.ROUTE_VSAI_PGNHEADERS];
 
@@ -158,10 +154,8 @@ export class AnalysisPage implements OnInit{
     }
     else if (this.inputtedPosition) //from board editor
     {
-      //Reconstructs the passed data into a Chonse2 object and reinitializes the game state.
-      const restoredPosition = Object.assign(new Chonse2(), this.inputtedPosition);
-      restoredPosition.gameState = new GameState();
-      restoredPosition.stateCache = new PreviousStateCache();
+      //Reconstruct from fen.
+      const restoredPosition = ChessGameFactory.createFromFen(this.inputtedPosition)
 
       restoredPosition.checkIsGameOver();
 
@@ -172,7 +166,7 @@ export class AnalysisPage implements OnInit{
       this.gameService.addGame(BoardNames.Analysis, boardState);
       boardState.doEvaluateGame.set(true);
     }
-    else if (this.vsAiMoves && this.vsAiStates && this.vsAiGameStates && this.vsAiPgnHeaders) //if it was imported from vs ai
+    else if (this.vsAiMoves && this.vsAiStates && this.vsAiPgnHeaders) //if it was imported from vs ai
     {
       //Set up board state.
       const bs = new BoardState();
@@ -180,19 +174,9 @@ export class AnalysisPage implements OnInit{
       bs.doEvaluateGame.set(true);
       
       //Set positions.
-      const restoredPositions = this.vsAiStates.map( s => Object.assign(new Chonse2, s) );
+      const restoredPositions = this.vsAiStates.map( fen => ChessGameFactory.createFromFen(fen) );
+      restoredPositions.at(-1)?.checkIsGameOver();
       bs.mainStateStack.set(restoredPositions);
-
-      //ensures that every state has a cache
-      restoredPositions.forEach(p => 
-        {
-          p.stateCache = new PreviousStateCache();  
-        }
-      )
-
-      //Set game states for the positions.
-      const restoredGameStates = this.vsAiGameStates?.map( s => Object.assign(new GameState, s) );
-      restoredPositions.forEach( (s: Chonse2, idx: number) => s.gameState = restoredGameStates[idx]);
   
       //Set move stack.
       const restoredMoveStack = this.vsAiMoves.map( m => Object.assign(new MoveResult, m) )

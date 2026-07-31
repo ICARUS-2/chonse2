@@ -1,12 +1,13 @@
-import Chonse2 from "../../chonse2-lib/chonse2";
-import Chonse2Extensions from "../../chonse2-lib/extensions";
-import { PieceColor } from "../../chonse2-lib/piece-color";
-import PieceMaterial from "../../chonse2-lib/piece-material";
-import { PieceType } from "../../chonse2-lib/piece-type";
+import BoardScanner from "../../chess-game-lib/helpers/board-scanner";
+import { PieceColor } from "../../chess-game-lib/types/piece-color";
+import PieceMaterial from "../../chess-game-lib/types/piece-material";
+import { PieceType } from "../../chess-game-lib/types/piece-type";
 import { LineEval } from "../types/eval";
 import { Square } from "./chess";
 import { ALTERNATIVES_COLLAPSE_SIGNIFICATLY_WIN_PERCENTAGE_CHANGE, concatenateUciParams } from "./moveClassification";
 import { getLineWinPercentage } from "./winPercentage";
+import ChessGameFactory from "../../chess-game-lib/chess-game-factory";
+import IChessGame from "../../chess-game-lib/i-chess-game";
 
 export default class LuminousDetector
 {
@@ -40,8 +41,8 @@ export default class LuminousDetector
         }
 
         //Board state before and after the candidate move.
-        const beforeState = Chonse2.instantiateFromFen(beforeFen);
-        const afterState = Chonse2.instantiateFromFen(afterFen);
+        const beforeState = ChessGameFactory.createFromFen(beforeFen);
+        const afterState = ChessGameFactory.createFromFen(afterFen);
 
         //Don't count a pawn hang as brilliant.
         const pieceMoved = afterState.findPieceAtCoordinate(uciPlayedMove.to)
@@ -111,7 +112,7 @@ export default class LuminousDetector
         return false;
     }
 
-    private static _wasSimplePieceCapture(beforeState: Chonse2, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;} ): boolean
+    private static _wasSimplePieceCapture(beforeState: IChessGame, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;} ): boolean
     {
         //Check the piece that moved and potentially the piece it captured.
         const pieceMoved: string = beforeState.findPieceAtCoordinate(uciPlayedMove.from);
@@ -134,10 +135,10 @@ export default class LuminousDetector
         return false;
     }
 
-    private static _didMoveLeavePieceVulnerable(afterState: Chonse2, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;} ): boolean 
+    private static _didMoveLeavePieceVulnerable(afterState: IChessGame, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;} ): boolean 
     {
         //If the piece isn't hanging, don't consider it a luminous sacrifice.
-        const isHangingPiece = Chonse2Extensions.doesSquareHaveHangingPiece(afterState, uciPlayedMove.to);
+        const isHangingPiece = BoardScanner.doesSquareHaveHangingPiece(afterState, uciPlayedMove.to);
         if (!isHangingPiece)
         {
             return false;
@@ -146,7 +147,7 @@ export default class LuminousDetector
         //Now we need to see if this hanging piece can actually be recaptured in any way.
         let canPieceActuallyBeRecaptured = false;
 
-        const sideThatCanPotentiallyRecapture = afterState.turn ? PieceColor.WHITE : PieceColor.BLACK;
+        const sideThatCanPotentiallyRecapture = afterState.getTurn() ? PieceColor.WHITE : PieceColor.BLACK;
         const pieceDataForOpponent = afterState.getAllPiecesAndCoordsByColor(sideThatCanPotentiallyRecapture);
 
         for(let i = 0; i < pieceDataForOpponent.coords.length; i++)

@@ -1,4 +1,4 @@
-import Chonse2 from "./chonse2";
+import IChessGame from "../i-chess-game";
 import { PieceColor } from "./piece-color";
 import { PieceType } from "./piece-type";
 
@@ -72,12 +72,12 @@ export default class AlgebraicNotationMaker
     }
 
     //get the minimal notation
-    getMinimal(board: Chonse2, toCoord: string, piece: string): string
+    getMinimal(board: IChessGame, toCoord: string, piece: string): string
     {
         return this._getInternal(board, toCoord, piece);
     }
 
-    private _getInternal(board: Chonse2 | undefined, toCoord: string | undefined, piece: string | undefined)
+    private _getInternal(board: IChessGame | undefined, toCoord: string | undefined, piece: string | undefined)
     {
         let str: string = "";
 
@@ -94,7 +94,7 @@ export default class AlgebraicNotationMaker
                 str += this._fromSquare;
 
             } //If we are doing minimal notation, only append the fromsquare if there is an overlap as to what piece can move to the tosquare.
-            else if (board instanceof(Chonse2) && toCoord != undefined && piece != undefined)
+            else if (board && toCoord != undefined && piece != undefined)
             {
                 let overlap: boolean = false;
                 const isPawn: boolean = piece == PieceType.WHITE_PAWN || piece == PieceType.BLACK_PAWN

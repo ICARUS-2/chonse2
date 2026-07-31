@@ -32,11 +32,11 @@ export class GameInfo {
 
   get turn(): string
   {
-      const state = this.boardState().getCurrentState().gameState;
+      const state = this.boardState().getCurrentState().getGameState();
 
       const translationKey = state.isGameOver
       ? `${state.reason} ${state.gameScore}`
-      : this.boardState().getCurrentState().turn
+      : this.boardState().getCurrentState().getTurn()
         ? 'chessboard.gameInfo.whiteToMove'
         : 'chessboard.gameInfo.blackToMove';
 

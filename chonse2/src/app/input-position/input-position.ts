@@ -3,10 +3,9 @@ import { BoardNames } from '../boards';
 import { InputPositionBoard } from "./input-position-board/input-position-board";
 import { InputPositionService } from './input-position-service';
 import InputPositionState from './input-position-state';
-import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import { RouteConstants } from '../app.routes';
-import Chonse2 from '../../libs/chonse2-lib/chonse2';
 import { ToastrService } from 'ngx-toastr';
+import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
 
 @Component({
   selector: 'app-input-position',
@@ -36,7 +35,7 @@ export class InputPosition implements OnInit {
       try 
       {
         const newState = new InputPositionState();
-        newState.game.set(Chonse2.instantiateFromFen(this.fen));
+        newState.game.set(ChessGameFactory.createFromFen(this.fen));
         this.ips.addGame(BoardNames.InputPosition, newState);
         this.toastrService.success("Successfully imported position");
       }

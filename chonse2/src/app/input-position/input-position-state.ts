@@ -1,10 +1,12 @@
 import { signal, WritableSignal } from "@angular/core";
 import { Arrow } from "../chessboard/chessboard/arrow";
-import Chonse2 from "../../libs/chonse2-lib/chonse2";
+import { ChessConstants } from "../../libs/chess-game-lib/types/constants";
+import IChessGame from "../../libs/chess-game-lib/i-chess-game";
+import ChessGameFactory from "../../libs/chess-game-lib/chess-game-factory";
 
 export default class InputPositionState
 {
-    game: WritableSignal<Chonse2> = signal<Chonse2>(new Chonse2());
+    game: WritableSignal<IChessGame> = signal<IChessGame>(ChessGameFactory.create());
     arrows: WritableSignal<Arrow[]> = signal<Arrow[]>([]);
     squareHighlightStatuses: WritableSignal<Array<Array<boolean>>> = signal<Array<Array<boolean>>>(InputPositionState.initializeHighlightStatuses());
     isFlipped: WritableSignal<boolean> = signal(false);
@@ -13,10 +15,10 @@ export default class InputPositionState
     {
         const highlightStatuses: Array<Array<boolean>> = [];
 
-        for(let i = 0; i < Chonse2.SIZE; i++)
+        for(let i = 0; i < ChessConstants.SIZE; i++)
         {
             const rank: Array<boolean> = [];
-            for(let j = 0; j < Chonse2.SIZE; j++)
+            for(let j = 0; j < ChessConstants.SIZE; j++)
             {
                 rank[j] = false;
             }

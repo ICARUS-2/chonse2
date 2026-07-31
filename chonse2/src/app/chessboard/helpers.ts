@@ -1,7 +1,7 @@
 import { computed } from "@angular/core";
 import { MoveClassification } from "../../libs/engine-lib/types/enums";
-import { PieceType } from "../../libs/chonse2-lib/piece-type";
 import LocalStorageHelper from "../../libs/local-storage-helper";
+import { IMoveResult } from "../../libs/chess-game-lib/types/move-result";
 
 export default class ChessboardHelper 
 {
@@ -30,7 +30,7 @@ export default class ChessboardHelper
 
     static DEFAULT_PIECE_SET = ChessboardHelper.PIECE_SETS[3];
 
-    static getIconSourceForPiece(p: PieceType)
+    static getIconSourceForPiece(p: string)
     {
         const selectedType = LocalStorageHelper.getString(LocalStorageHelper.CHESS_PIECES, ChessboardHelper.DEFAULT_PIECE_SET);
 

@@ -20,16 +20,11 @@ import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-
 import ThemeService from '../../themes/theme-service';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
 import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
-import Chonse2 from '../../../libs/chonse2-lib/chonse2';
-import { GameOverReason, GameScore } from '../../../libs/chonse2-lib/game-state';
-import { PieceColor } from '../../../libs/chonse2-lib/piece-color';
-import { PieceType } from '../../../libs/chonse2-lib/piece-type';
 import { getEvaluationBarValue2 } from '../../../libs/engine-lib/helpers/chessHelper';
 import { EngineName, EngineInformation, EngineType, MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { EvalSource } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 import MoveResult from './move-result';
-import Chonse2Extensions from '../../../libs/chonse2-lib/extensions';
 import { BoardArrowButtons } from '../board-arrow-buttons/board-arrow-buttons';
 import { BoardOptions } from '../board-options/board-options';
 import { MovesTable } from '../moves-table/moves-table';
@@ -44,6 +39,12 @@ import GameLinkHelper from './game-link-helper';
 import { DatabaseModal } from '../database-modal/database-modal';
 import { TranslateService } from '@ngx-translate/core';
 import { CoachAudio } from '../../../libs/coach-lib/coach-audio';
+import { ChessConstants } from '../../../libs/chess-game-lib/types/constants';
+import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
+import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
+import { GameOverReason } from '../../../libs/chess-game-lib/types/game-state';
+import { IMoveResult } from '../../../libs/chess-game-lib/types/move-result';
+import IChessGame from '../../../libs/chess-game-lib/i-chess-game';
 
 interface PieceAnimationState {
   piece: string;
@@ -85,13 +86,12 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   EngineInformation = EngineInformation;
   EngineType = EngineType;
   EvalSource = EvalSource;
-  Chonse2Extensions = Chonse2Extensions;
   Object = Object;
   MoveClassification = MoveClassification;
   Chessboard = Chessboard;
   Math = Math;
 
-  COORDS: Array<Array<string>> = Chonse2.COORDS;
+  COORDS: Array<Array<string>> = ChessConstants.COORDS;
 
   //Game service ID
   gameId = input<string>("")
@@ -126,7 +126,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   animatedPiece = computed(() => this.animationState()?.piece ?? '');
   animatedPieceX = computed(() => this.animationState()?.x ?? 0);
   animatedPieceY = computed(() => this.animationState()?.y ?? 0);
-  getSquarePixelSize = computed(() => this.boardPixelSize() / Chonse2.SIZE);
+  getSquarePixelSize = computed(() => this.boardPixelSize() / ChessConstants.SIZE);
 
   // Must match the transition-duration on the ghost piece element in CSS.
   public static readonly ANIMATION_DURATION_MS = 70;
@@ -218,7 +218,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       //If we aren't diverging:
       if (this.getMostCurrentMainState() == this.boardState().getCurrentState())
       {
-        if ((this.getMostCurrentMainState().turn && !this.boardState().humanPlayerIsWhite()) || (!this.getMostCurrentMainState().turn && this.boardState().humanPlayerIsWhite()))
+        if ((this.getMostCurrentMainState().getTurn() && !this.boardState().humanPlayerIsWhite()) || (!this.getMostCurrentMainState().getTurn() && this.boardState().humanPlayerIsWhite()))
         {
           return;
         }
@@ -231,8 +231,8 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     if (isClickToMove)
     {
-      const idx = Chonse2.findIndexFromCoordinate(fromSquare);
-      piece = this.boardState().getCurrentState().pieceState[idx.rowIndex][idx.colIndex];
+      const idx = ChessConstants.findIndexFromCoordinate(fromSquare);
+      piece = this.boardState().getCurrentState().getPieceState()[idx.rowIndex][idx.colIndex];
     }
     else 
     {
@@ -244,11 +244,11 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     
-    const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
+    const stateCopy = this.boardState().getCurrentState().clone();
 
     const isPromotion = (
-      piece == PieceType.WHITE_PAWN && this.toSquare().includes(Chonse2.WHITE_PAWN_PROMOTE_RANK.toString()) ||
-      piece == PieceType.BLACK_PAWN && this.toSquare().includes(Chonse2.BLACK_PAWN_PROMOTE_RANK.toString()))
+      piece == PieceType.WHITE_PAWN && this.toSquare().includes(ChessConstants.WHITE_PAWN_PROMOTE_RANK.toString()) ||
+      piece == PieceType.BLACK_PAWN && this.toSquare().includes(ChessConstants.BLACK_PAWN_PROMOTE_RANK.toString()))
 
     let moveResult: MoveResult = new MoveResult();
 
@@ -513,7 +513,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     if (e)
     {
-      const data = getEvaluationBarValue2(e, state.gameState.gameScore);
+      const data = getEvaluationBarValue2(e, state.getGameState().gameScore);
       return data;
     }
     else 
@@ -521,7 +521,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       const pe = this.boardState().getPreviousMostRecentEval();
       if (pe)
       {
-        const data = getEvaluationBarValue2(pe, state.gameState.gameScore);
+        const data = getEvaluationBarValue2(pe, state.getGameState().gameScore);
         return data;
       }
     }
@@ -547,9 +547,9 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const fromCoord: string = coord[0] + coord[1];
-    const idx = Chonse2.findIndexFromCoordinate(fromCoord);
+    const idx = ChessConstants.findIndexFromCoordinate(fromCoord);
 
-    const piece: string = this.boardState().getCurrentState().pieceState[idx.rowIndex][idx.colIndex];
+    const piece: string = this.boardState().getCurrentState().getPieceState()[idx.rowIndex][idx.colIndex];
 
     return ChessboardHelper.getIconSourceForPiece(piece);
   }) 
@@ -560,7 +560,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //#region Vs AI
   async playAIMove()
   {
-    if (this.getMostCurrentMainState().gameState.isGameOver)
+    if (this.getMostCurrentMainState().getGameState().isGameOver)
     {
       return;
     }
@@ -595,10 +595,10 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const promotion = engineResult[4] ? engineResult[4].toUpperCase() : PieceType.QUEEN;
 
     //The state to be pushed to the stack.
-    const stateCopy = this.boardState().getCurrentState().getFullDeepCopy();
+    const stateCopy = this.boardState().getCurrentState().clone();
     
-    const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
-    const pieceToAnimate = this.getMostCurrentMainState().pieceState[fromIdx.rowIndex][fromIdx.colIndex];
+    const fromIdx = ChessConstants.findIndexFromCoordinate(fromSquare);
+    const pieceToAnimate = this.getMostCurrentMainState().getPieceState()[fromIdx.rowIndex][fromIdx.colIndex];
     
     if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
     {
@@ -621,12 +621,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   resignVsAiClicked()
   {
-    const gameState = this.getMostCurrentMainState().gameState;
-
-    gameState.isGameOver = true;
-    gameState.reason = GameOverReason.Resignation;
-    gameState.gameScore = this.boardState().humanPlayerIsWhite() ? GameScore.BLACK_WON : GameScore.WHITE_WON;
-
+    this.boardState().playerDidResign.set(true);
     this.toastr.warning(this.translate.instant("chessboard.toastr.resign"));
   }
 
@@ -638,16 +633,17 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       this.toastr, 
       this.translate, 
       this);
+
   }
 
   analyzeAiGameClicked()
   {
-    const states = this.boardState().mainStateStack().map( s => s.getFullDeepCopy() );
-    const gameStates = this.boardState().mainStateStack().map( s => structuredClone(s.gameState) );
+
+    const states = this.boardState().mainStateStack().map( s => s.getFEN() );
     const moves = this.boardState().mainMoveStack().map(m => structuredClone(m));
     const pgnHeaders = structuredClone(this.boardState().pgnHeaders());
 
-    this.router.navigate(['/analysis'], {state: { "vsAiStates": states, "vsAiGameStates": gameStates, "vsAiMoves": moves, "vsAiPgnHeaders": pgnHeaders}});
+    this.router.navigate(['/analysis'], {state: { "vsAiStates": states, "vsAiMoves": moves, "vsAiPgnHeaders": pgnHeaders}});
   }
 
   getMostCurrentMainState()
@@ -655,7 +651,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     return this.boardState().mainStateStack()[this.boardState().mainStateStack().length - 1];
   }
 
-  forcePushState(state: Chonse2, moveResult: MoveResult)
+  forcePushState(state: IChessGame, moveResult: MoveResult)
   {
     this.boardState().mainStateStack.update( stack => [...stack, state]);
     
@@ -977,7 +973,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       if (this.fromRightClickSquare() == this.toRightClickSquare())
       {
         //Gets the index of the square to highlight.
-        const idx = Chonse2.findIndexFromCoordinate(this.toRightClickSquare());
+        const idx = ChessConstants.findIndexFromCoordinate(this.toRightClickSquare());
 
         //Sets the status telling it to change color.
         this.boardState().squareHighlightStatuses.update(grid =>
@@ -1039,7 +1035,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //For the coordinate, get whether it is right clicked or not.
   getRightClickedStatusForSquare = (coordinate: string) => computed( () =>
   {
-    const idx = Chonse2.findIndexFromCoordinate(coordinate);
+    const idx = ChessConstants.findIndexFromCoordinate(coordinate);
     
     return this.boardState().squareHighlightStatuses()[idx.rowIndex][idx.colIndex];
   } )
@@ -1049,10 +1045,10 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     if (this.boardState().squareHighlightStatuses().length == 0)
     {
-      for(let i = 0; i < Chonse2.SIZE; i++)
+      for(let i = 0; i < ChessConstants.SIZE; i++)
       {
         const rank: Array<boolean> = [];
-        for(let j = 0; j < Chonse2.SIZE; j++)
+        for(let j = 0; j < ChessConstants.SIZE; j++)
         {
           rank.push(false);
         }
@@ -1061,10 +1057,10 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
     else 
     {
-      for(let i = 0; i < Chonse2.SIZE; i++)
+      for(let i = 0; i < ChessConstants.SIZE; i++)
       {
         const rank = this.boardState().squareHighlightStatuses()[i];
-        for(let j = 0; j < Chonse2.SIZE; j++)
+        for(let j = 0; j < ChessConstants.SIZE; j++)
         {
           rank[j] = false;
         }
@@ -1105,17 +1101,17 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   _isSquareCheckmatedKing = (rankIndex: number, fileIndex: number) => computed( (): boolean =>
   {
-    return (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.BLACK) || (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.WHITE) && this.boardState().getCurrentState().gameState.reason == GameOverReason.Checkmate;
+    return (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().getGameState().winner == PieceColor.BLACK) || (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().getGameState().winner == PieceColor.WHITE) && this.boardState().getCurrentState().getGameState().reason == GameOverReason.Checkmate;
   })
 
   _isSquareWinningKing = (rankIndex: number, fileIndex: number) => computed( (): boolean => 
   {
-    return (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.WHITE) || (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().gameState.winner == PieceColor.BLACK); 
+    return (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().getGameState().winner == PieceColor.WHITE) || (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().getGameState().winner == PieceColor.BLACK); 
   } )
 
   _isSquareKingInDraw = (rankIndex: number, fileIndex: number) => computed( (): boolean => 
   {
-    return this.boardState().getCurrentState().gameState.isDraw() && (this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.WHITE_KING || this.boardState().getCurrentState().pieceState[rankIndex][fileIndex] == PieceType.BLACK_KING);
+    return this.boardState().getCurrentState().getGameState().isDraw() && (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING || this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING);
   })
 
   _getEndgameSquareBackgroundColor = (rankIndex: number, fileIndex: number) => computed( (): string => 
@@ -1263,7 +1259,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   private calculatePixelPosition(coordinate: string): { x: number, y: number } 
   {
-    const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coordinate);
+    const { rowIndex, colIndex } = ChessConstants.findIndexFromCoordinate(coordinate);
     const squareSize = this.getSquarePixelSize();
     return {
       x: colIndex * squareSize,

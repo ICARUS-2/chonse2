@@ -1,4 +1,5 @@
-import Chonse2 from "../../../libs/chonse2-lib/chonse2";
+import { ChessConstants } from "../../../libs/chess-game-lib/types/constants";
+
 
 export interface Arrow {
   fromFile: number; // 0–7
@@ -39,8 +40,8 @@ export function createArrow(fromCoordinate: string, toCoordinate: string, color:
   }
 
   //Get the indeces and create the arrow from that.
-  const fromIdx = Chonse2.findIndexFromCoordinate(fromCoordinate);
-  const toIdx = Chonse2.findIndexFromCoordinate(toCoordinate);
+  const fromIdx = ChessConstants.findIndexFromCoordinate(fromCoordinate);
+  const toIdx = ChessConstants.findIndexFromCoordinate(toCoordinate);
 
   return { 
     fromRank: fromIdx.rowIndex, 

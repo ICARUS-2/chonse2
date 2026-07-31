@@ -1,23 +1,26 @@
 import { Arrow, ArrowColors, ArrowContext, createArrow } from "../../app/chessboard/chessboard/arrow";
 import MoveResult from "../../app/chessboard/chessboard/move-result";
-import Chonse2 from "../chonse2-lib/chonse2";
-import Chonse2Extensions, { DiscoveredCheckType, Fork, Pin, Skewer } from "../chonse2-lib/extensions";
-import { PieceColor } from "../chonse2-lib/piece-color";
-import PieceMaterial from "../chonse2-lib/piece-material";
-import { PieceType } from "../chonse2-lib/piece-type";
 import { openings } from "../engine-lib/data/openings";
 import { MoveClassification } from "../engine-lib/types/enums";
 import { LineEval, PositionEval } from "../engine-lib/types/eval";
 import CoachText from "./coach-text";
 import {BLOCKED_BISHOPS, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType, CoachSentence } from "./coach-types";
-import AlgebraicNotationMaker from "../chonse2-lib/algebraic-notation-builder";
-import { GameOverReason } from "../chonse2-lib/game-state";
-import { CoachAudio } from "./coach-audio";
+import BoardScanner, { Skewer, Fork, Pin, DiscoveredCheckType } from "../chess-game-lib/helpers/board-scanner";
+import AlgebraicNotationMaker from "../chess-game-lib/types/algebraic-notation-builder";
+import { CastlingRightsType } from "../chess-game-lib/types/castling-rights-type";
+import { GameOverReason } from "../chess-game-lib/types/game-state";
+import { PieceColor } from "../chess-game-lib/types/piece-color";
+import PieceMaterial from "../chess-game-lib/types/piece-material";
+import { PieceType } from "../chess-game-lib/types/piece-type";
 import { uciMoveParams } from "../engine-lib/helpers/chessHelper";
+import { CoachAudio } from "./coach-audio";
+import { ChessConstants } from "../chess-game-lib/types/constants";
+import IChessGame from "../chess-game-lib/i-chess-game";
+
 export class CoachUtils
 {
-    public static performCoachAnalysis(states: Array<Chonse2>, moves: Array<MoveResult>, evals: Array<PositionEval>, isDivergenceStack: boolean = false)
+    public static performCoachAnalysis(states: Array<IChessGame>, moves: Array<MoveResult>, evals: Array<PositionEval>, isDivergenceStack: boolean = false)
     {
         //Main state and eval stacks are always the same length, with main move stack always being one shorter.
         //Divergence state, eval, and move stacks are always the same length.
@@ -45,25 +48,25 @@ export class CoachUtils
             //Verifying game end conditions first. 
             if (move && state && move.coachSentences.length === 0)
             {
-                const whiteToMove = state.turn;
+                const whiteToMove = state.getTurn();
                 const colorThatMovedText = whiteToMove ? "Black" : "White";
 
                 //Case: Player checkmated the king.
-                if (state.gameState.reason == GameOverReason.Checkmate)
+                if (state.getGameState().reason == GameOverReason.Checkmate)
                 {
                     CoachText.addCoachSentence(move, CoachText.CHECKMATE_SENTENCES, colorThatMovedText);
                     break;
                 }
 
-                if (state.gameState.reason == GameOverReason.Stalemate)
+                if (state.getGameState().reason == GameOverReason.Stalemate)
                 {
                     CoachText.addCoachSentence(move, CoachText.STALEMATE_SENTENCES, colorThatMovedText);
                     break;
                 }
 
-                if (state.gameState.reason == GameOverReason.InsufficientMaterial || 
-                    state.gameState.reason == GameOverReason.ThreefoldRepetition || 
-                    state.gameState.reason == GameOverReason.FiftyMoveNoPawnMovementsOrCaptures)
+                if (state.getGameState().reason == GameOverReason.InsufficientMaterial || 
+                    state.getGameState().reason == GameOverReason.ThreefoldRepetition || 
+                    state.getGameState().reason == GameOverReason.FiftyMoveNoPawnMovementsOrCaptures)
                 {
                     CoachText.addCoachSentence(move, CoachText.DRAW_SENTENCES, colorThatMovedText);
                     break;
@@ -74,15 +77,15 @@ export class CoachUtils
             if (state && move && posEval && posEval.bestMove)
             {
                 //What the next best state will be.
-                const nextBestMove = CoachMiscHelpers.convertUciToChonse2Move(posEval.bestMove);
-                const nextBestState = state.getFullDeepCopy();
+                const nextBestMove = CoachMiscHelpers.convertUciStringToParams(posEval.bestMove);
+                const nextBestState = state.clone();
                 nextBestState.completeMove(nextBestMove.fromSquare, nextBestMove.toSquare, nextBestMove.promotion);
                 
 
                 //play out the engine line
-                const currentFollowUp: Array<Chonse2> = CoachMiscHelpers.getEngineLineStates(state, posEval.lines[0]);
+                const currentFollowUp: Array<IChessGame> = CoachMiscHelpers.getEngineLineStates(state, posEval.lines[0]);
 
-                let previousFollowUp: Array<Chonse2> = [];
+                let previousFollowUp: Array<IChessGame> = [];
 
                 if (previousState && previousPosEval)
                 {
@@ -98,18 +101,18 @@ export class CoachUtils
                     continue;
                 }
 
-                const whiteToMove = state.turn;
+                const whiteToMove = state.getTurn();
 
                 const colorThatMovedText = whiteToMove ? "Black" : "White";
                 const oppositeColorText = whiteToMove ? "White" : "Black";
 
                 //misc stuff that can be reused
-                const allHangingPieceCoords = Chonse2Extensions.getHangingPieces(state);
+                const allHangingPieceCoords = BoardScanner.getHangingPieces(state);
                 const movedPiece = state.findPieceAtCoordinate(move.toCoord);
                 let allPreviousHangingPieceCoords:{ white: Array<string>; black: Array<string>;} | undefined = undefined
                 if (previousState)
                 {
-                    allPreviousHangingPieceCoords = Chonse2Extensions.getHangingPieces(previousState)
+                    allPreviousHangingPieceCoords = BoardScanner.getHangingPieces(previousState)
                 }
 
                 //=======Exclusively opening
@@ -141,13 +144,13 @@ export class CoachUtils
                 )
                 {
                     let previousBestMove: { fromSquare: string; toSquare: string; promotion: string} | null = null;
-                    let missedState: Chonse2 | null = null;
+                    let missedState: IChessGame | null = null;
                     let bestPieceToMove: string | null = null;
 
                     if (previousPosEval.bestMove && previousState)
                     {
-                        previousBestMove = CoachMiscHelpers.convertUciToChonse2Move(previousPosEval.bestMove);
-                        const previousStateCopy = previousState.getFullDeepCopy();
+                        previousBestMove = CoachMiscHelpers.convertUciStringToParams(previousPosEval.bestMove);
+                        const previousStateCopy = previousState.clone();
                         previousStateCopy.completeMove(previousBestMove.fromSquare, previousBestMove.toSquare, previousBestMove.promotion);  
                         missedState = previousStateCopy;
                         bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
@@ -155,7 +158,7 @@ export class CoachUtils
                     
                     //Case: Player leaves a piece hanging.
                     {
-                        const bestMove = CoachMiscHelpers.convertUciToChonse2Move(posEval.bestMove);
+                        const bestMove = CoachMiscHelpers.convertUciStringToParams(posEval.bestMove);
                         const hangingPiecesArrToCheck = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
 
                         let pieceToTake = PieceType.NONE;
@@ -188,7 +191,7 @@ export class CoachUtils
                                 if (bestMove.toSquare == hangingPieceCoord)
                                 {
                                     //In case of someone getting, say, their queen/king forked by a knight, don't tell them they blundered the queen if they moved the king to an inaccurate spot.
-                                    const bestMoveAlsoInvolvedHangingThisPiece = Chonse2Extensions.doesSquareHaveHangingPiece(missedState, hangingPieceCoord);
+                                    const bestMoveAlsoInvolvedHangingThisPiece = BoardScanner.doesSquareHaveHangingPiece(missedState, hangingPieceCoord);
                                     if (bestMoveAlsoInvolvedHangingThisPiece)
                                     {
                                         move.coachMoveFlags.push(CoachMoveFlagType.InevitablyHungPiece);
@@ -219,8 +222,8 @@ export class CoachUtils
                     {
                         if (nextBestState)
                         {
-                            const currentStateSkewers = Chonse2Extensions.getSkewersOnBoard(state, allHangingPieceCoords);
-                            const bestStateSkewers = Chonse2Extensions.getSkewersOnBoard(nextBestState);
+                            const currentStateSkewers = BoardScanner.getSkewersOnBoard(state, allHangingPieceCoords);
+                            const bestStateSkewers = BoardScanner.getSkewersOnBoard(nextBestState);
 
                             //Opponent's available skewers.
                             const currentAttackerSkewers = currentStateSkewers.filter( sk => 
@@ -293,7 +296,7 @@ export class CoachUtils
                             let allowedFork: boolean = false;
 
                             const attackerColor = whiteToMove ? PieceColor.WHITE : PieceColor.BLACK;
-                            const currentForksForOpponent: Array<Fork> = Chonse2Extensions.getForksOnBoard(state, attackerColor);
+                            const currentForksForOpponent: Array<Fork> = BoardScanner.getForksOnBoard(state, attackerColor);
 
                             //Subcase 1: Opponent moved one of their own pieces into a fork.
                             if (currentForksForOpponent.length > 0)
@@ -303,7 +306,7 @@ export class CoachUtils
                             //Subcase 2: Opponent failed to move one of their pieces out of the fork.
                             else
                             {
-                                const nextBestStateForks = Chonse2Extensions.getForksOnBoard(nextBestState, attackerColor);
+                                const nextBestStateForks = BoardScanner.getForksOnBoard(nextBestState, attackerColor);
 
                                 if (nextBestStateForks.length > 0)
                                 {
@@ -355,7 +358,7 @@ export class CoachUtils
                         if (previousState)
                         {
                             //Need to check that the piece was indeed pinned before it moved.
-                            const previousStatePins = Chonse2Extensions.getPinsOnBoard(previousState);
+                            const previousStatePins = BoardScanner.getPinsOnBoard(previousState);
 
                             let ignoredPin: Pin | null = null;
                             let playerDidMovePinnedPiece = false;
@@ -398,16 +401,16 @@ export class CoachUtils
                             !move.coachMoveFlags.includes(CoachMoveFlagType.InevitablyHungPiece)) //queen and king forked but king moved to the wrong square -> don't scold them for losing the queen.
                         {
                             //what white already had before the engine line
-                            const whiteCapturedBefore = currentFollowUp[0].piecesWhiteCaptured;
+                            const whiteCapturedBefore = currentFollowUp[0].getPiecesCapturedByPlayer(PieceColor.WHITE);
 
                             //what white had after all follow up moves were completed.
-                            const whiteCapturedAfter = currentFollowUp.at(-1)?.piecesWhiteCaptured;
+                            const whiteCapturedAfter = currentFollowUp.at(-1)?.getPiecesCapturedByPlayer(PieceColor.WHITE);
 
                             //what black already had before the engine line
-                            const blackCapturedBefore = currentFollowUp[0].piecesBlackCaptured;
+                            const blackCapturedBefore = currentFollowUp[0].getPiecesCapturedByPlayer(PieceColor.BLACK);
 
                             //what black had after all follow up moves were completed.
-                            const blackCapturedAfter = currentFollowUp.at(-1)?.piecesBlackCaptured;
+                            const blackCapturedAfter = currentFollowUp.at(-1)?.getPiecesCapturedByPlayer(PieceColor.BLACK);
 
 
                             //Only the NEW pieces gained after this engine line.
@@ -440,10 +443,10 @@ export class CoachUtils
                                 if (materialDifference != 0)
                                 {
                                     //who gained material - capture list
-                                    let gainingArray: Array<string> = [];
+                                    let gainingArray: Array<PieceType> = [];
 
                                     //who lost material - capture list
-                                    let losingArray: Array<string> = [];
+                                    let losingArray: Array<PieceType> = [];
 
                                     //It can't be relevant if the person moving slipped up but will still win material.
                                     let isRelevantMaterialLoss = false;
@@ -484,7 +487,7 @@ export class CoachUtils
 
                                         //What remains is the uncompensated material gain.
                                         let highestMaterial = 0;
-                                        let highestValueUncompensatedPiece = "";
+                                        let highestValueUncompensatedPiece: PieceType = PieceType.NONE;
 
                                         for(let i = 0; i < gainingArray.length; i++)
                                         {
@@ -498,7 +501,7 @@ export class CoachUtils
                                             }
                                         }
 
-                                        CoachText.addCoachSentence(move, CoachText.PIECE_LOSS_SENTENCES, colorThatMovedText, highestValueUncompensatedPiece);
+                                        CoachText.addCoachSentence(move, CoachText.PIECE_LOSS_SENTENCES, colorThatMovedText, highestValueUncompensatedPiece.toString());
                                         move.coachMoveFlags.push(CoachMoveFlagType.CausedMaterialLoss);
                                     }
                                 } 
@@ -514,7 +517,7 @@ export class CoachUtils
                             {
                                 const previousHangingPiecesArrToCheck = whiteToMove ? allPreviousHangingPieceCoords.white : allPreviousHangingPieceCoords.black;
                                 
-                                const previousBestMove = CoachMiscHelpers.convertUciToChonse2Move(previousPosEval.bestMove);
+                                const previousBestMove = CoachMiscHelpers.convertUciStringToParams(previousPosEval.bestMove);
 
                                 //For all the previously hanging pieces, check if the previous best move was to capture it. If it was, the coach should tell them.
                                 for (let i = 0; i < previousHangingPiecesArrToCheck.length; i++)
@@ -586,8 +589,8 @@ export class CoachUtils
                             let didMissFork: boolean = false;
 
                             const attackerColor = whiteToMove ? PieceColor.BLACK : PieceColor.WHITE;
-                            const currentForks: Array<Fork> = Chonse2Extensions.getForksOnBoard(state, attackerColor);
-                            const previousStateForks: Array<Fork> = Chonse2Extensions.getForksOnBoard(previousState, attackerColor);
+                            const currentForks: Array<Fork> = BoardScanner.getForksOnBoard(state, attackerColor);
+                            const previousStateForks: Array<Fork> = BoardScanner.getForksOnBoard(previousState, attackerColor);
                             
                             //If the person had the fork but moved the attacking piece elsewhere
                             if (currentForks.length < previousStateForks.length)
@@ -598,7 +601,7 @@ export class CoachUtils
                             //If the best move was to move to a position with a fork but it was overlooked
                             if (missedState)
                             {
-                                const missedStateForks = Chonse2Extensions.getForksOnBoard(missedState, attackerColor);
+                                const missedStateForks = BoardScanner.getForksOnBoard(missedState, attackerColor);
                                 
                                 if (currentForks.length < missedStateForks.length)
                                 {
@@ -619,7 +622,7 @@ export class CoachUtils
                         if (missedState && previousState && previousBestMove)
                         {
                             //must check if the best move in this position was to cause a skewer
-                            const missedStateSkewers = Chonse2Extensions.getSkewersOnBoard(missedState);
+                            const missedStateSkewers = BoardScanner.getSkewersOnBoard(missedState);
 
                             let bestMoveWasToCreateSkewer = false;
                             let correspondingSkewer: Skewer | null = null;
@@ -651,8 +654,8 @@ export class CoachUtils
                         if (missedState && previousState && previousBestMove)
                         {
                             //Must check if the best move in this position included pinning something
-                            const missedStatePins = Chonse2Extensions.getPinsOnBoard(missedState, true);
-                            const currentPins = Chonse2Extensions.getPinsOnBoard(state, true);
+                            const missedStatePins = BoardScanner.getPinsOnBoard(missedState, true);
+                            const currentPins = BoardScanner.getPinsOnBoard(state, true);
 
                             if (missedStatePins.length != currentPins.length)
                             {              
@@ -686,25 +689,49 @@ export class CoachUtils
                     {
                         if (previousBestMove)
                         {
-                            const castlingRights = whiteToMove ? previousState.blackCastlingRights : previousState.whiteCastlingRights;
+                            const hasCastlingRights = whiteToMove
+                                ? (
+                                    previousState.getCastlingRights(CastlingRightsType.BlackKingside) ||
+                                    previousState.getCastlingRights(CastlingRightsType.BlackQueenside)
+                                )
+                                : (
+                                    previousState.getCastlingRights(CastlingRightsType.WhiteKingside) ||
+                                    previousState.getCastlingRights(CastlingRightsType.WhiteQueenside)
+                                );
 
-                            //Via this, we will automatically know that it's the king that's supposed to move because if the king weren't on the starting square there would be no castling rights.
-                            if (castlingRights.kingSide || castlingRights.queenSide)
+                            // Via this, we will automatically know that it's the king that's supposed to move
+                            // because if the king weren't on the starting square there would be no castling rights.
+                            if (hasCastlingRights)
                             {
-                                const kingsideCastle = whiteToMove ? Chonse2Extensions.BLACK_KINGSIDE_CASTLE : Chonse2Extensions.WHITE_KINGSIDE_CASTLE;
-                                const queensideCastle = whiteToMove ? Chonse2Extensions.BLACK_QUEENSIDE_CASTLE : Chonse2Extensions.WHITE_QUEENSIDE_CASTLE;
+                                const kingsideCastle = whiteToMove
+                                    ? BoardScanner.BLACK_KINGSIDE_CASTLE
+                                    : BoardScanner.WHITE_KINGSIDE_CASTLE;
 
-                                if (previousBestMove.fromSquare == kingsideCastle.kingFrom && previousBestMove.toSquare == kingsideCastle.kingTo)
+                                const queensideCastle = whiteToMove
+                                    ? BoardScanner.BLACK_QUEENSIDE_CASTLE
+                                    : BoardScanner.WHITE_QUEENSIDE_CASTLE;
+
+                                if (previousBestMove.fromSquare == kingsideCastle.kingFrom &&
+                                    previousBestMove.toSquare == kingsideCastle.kingTo)
                                 {
-                                    CoachText.addCoachSentence(move, CoachText.MISSED_CASTLING_KINGSIDE, colorThatMovedText);
+                                    CoachText.addCoachSentence(
+                                        move,
+                                        CoachText.MISSED_CASTLING_KINGSIDE,
+                                        colorThatMovedText
+                                    );
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedCastle);
                                 }
 
-                                if (previousBestMove.fromSquare == queensideCastle.kingFrom && previousBestMove.toSquare == queensideCastle.kingTo)
+                                if (previousBestMove.fromSquare == queensideCastle.kingFrom &&
+                                    previousBestMove.toSquare == queensideCastle.kingTo)
                                 {
-                                    CoachText.addCoachSentence(move, CoachText.MISSED_CASTLING_QUEENSIDE, colorThatMovedText);
+                                    CoachText.addCoachSentence(
+                                        move,
+                                        CoachText.MISSED_CASTLING_QUEENSIDE,
+                                        colorThatMovedText
+                                    );
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedCastle);
-                                }               
+                                }
                             }
                         }
                     }
@@ -713,9 +740,9 @@ export class CoachUtils
                     {
                         if (previousState && missedState && !move.coachMoveFlags.includes(CoachMoveFlagType.MissedCastle))
                         {
-                            const currentRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(state);
-                            const previousRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(previousState);
-                            const missedRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(missedState);
+                            const currentRookState = BoardScanner.doesBoardHaveConnectedRooks(state);
+                            const previousRookState = BoardScanner.doesBoardHaveConnectedRooks(previousState);
+                            const missedRookState = BoardScanner.doesBoardHaveConnectedRooks(missedState);
                         
                             const areRooksCurrentlyConnected = whiteToMove ? currentRookState.black : currentRookState.white;
                             const wereRooksPreviouslyConnected = whiteToMove ? previousRookState.black : previousRookState.white;
@@ -734,9 +761,9 @@ export class CoachUtils
                     {
                         if (previousState && missedState)
                         {
-                            const currentRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(state);
-                            const previousRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(previousState);
-                            const missedRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(missedState);
+                            const currentRookState = BoardScanner.doesBoardHaveConnectedRooks(state);
+                            const previousRookState = BoardScanner.doesBoardHaveConnectedRooks(previousState);
+                            const missedRookState = BoardScanner.doesBoardHaveConnectedRooks(missedState);
                         
                             const areRooksCurrentlyConnected = whiteToMove ? currentRookState.black : currentRookState.white;
                             const wereRooksPreviouslyConnected = whiteToMove ? previousRookState.black : previousRookState.white;
@@ -758,10 +785,10 @@ export class CoachUtils
                             const knightPiece = whiteToMove ? PieceType.BLACK_KNIGHT : PieceType.WHITE_KNIGHT;
                             const bishopPiece = whiteToMove ? PieceType.BLACK_BISHOP : PieceType.WHITE_BISHOP;
                             
-                            const kingsideKnightSquare = whiteToMove ? Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE : Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE;
-                            const kingsideBishopSquare = whiteToMove ? Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE : Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE;
-                            const queensideKnightSquare = whiteToMove ? Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE : Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE;
-                            const queensideBishopSquare = whiteToMove ? Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE : Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE;
+                            const kingsideKnightSquare = whiteToMove ? ChessConstants.BLACK_KINGSIDE_KNIGHT_SQUARE : ChessConstants.WHITE_KINGSIDE_KNIGHT_SQUARE;
+                            const kingsideBishopSquare = whiteToMove ? ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE : ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE;
+                            const queensideKnightSquare = whiteToMove ? ChessConstants.BLACK_QUEENSIDE_KNIGHT_SQUARE : ChessConstants.WHITE_QUEENSIDE_KNIGHT_SQUARE;
+                            const queensideBishopSquare = whiteToMove ? ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE : ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE;
                         
                             let developmentPieceInQuestion = "";
                             let didPlayerMissDevelopment = false;
@@ -869,10 +896,10 @@ export class CoachUtils
                             if (bestMovePiece == rookPiece)
                             {
                                 //this is in case they moved the wrong rook.
-                                const rookOpenFiles = Chonse2Extensions.getOpenFilesWithRooks(state);
+                                const rookOpenFiles = BoardScanner.getOpenFilesWithRooks(state);
                                 const rookOpenFilesControlledByColor = whiteToMove ? rookOpenFiles.black : rookOpenFiles.white; 
                         
-                                const missedRookOpenFiles = Chonse2Extensions.getOpenFilesWithRooks(missedState);
+                                const missedRookOpenFiles = BoardScanner.getOpenFilesWithRooks(missedState);
                                 const missedRookOpenFilesControlledByColor = whiteToMove ? missedRookOpenFiles.black : missedRookOpenFiles.white;
 
                                 const fromFile = previousBestMove.fromSquare[0];
@@ -906,8 +933,8 @@ export class CoachUtils
                                 const laterMissedState = previousFollowUp[1];
                                 const laterState = currentFollowUp[1];
 
-                                const laterMissedStateDoubledPawns = Chonse2Extensions.getDoubledPawnFiles(laterMissedState);
-                                const laterStateDoubledPawns = Chonse2Extensions.getDoubledPawnFiles(laterState);
+                                const laterMissedStateDoubledPawns = BoardScanner.getDoubledPawnFiles(laterMissedState);
+                                const laterStateDoubledPawns = BoardScanner.getDoubledPawnFiles(laterState);
 
                                 const missDoubledPawnInstances = whiteToMove ? laterMissedStateDoubledPawns.white.length : laterMissedStateDoubledPawns.black.length;
                                 const laterDoubledPawnInstances = whiteToMove ? laterStateDoubledPawns.white.length : laterMissedStateDoubledPawns.black.length;
@@ -978,9 +1005,9 @@ export class CoachUtils
                     {
                         if (previousState && missedState)
                         {
-                            const currentPassedPawns = whiteToMove ? Chonse2Extensions.getAllPassedPawns(state).white : Chonse2Extensions.getAllPassedPawns(state).black;
-                            const previousPassedPawns = whiteToMove ? Chonse2Extensions.getAllPassedPawns(previousState).white : Chonse2Extensions.getAllPassedPawns(previousState).black;
-                            const bestStatePassedPawns = whiteToMove ? Chonse2Extensions.getAllPassedPawns(missedState).white : Chonse2Extensions.getAllPassedPawns(missedState).black;
+                            const currentPassedPawns = whiteToMove ? BoardScanner.getAllPassedPawns(state).white : BoardScanner.getAllPassedPawns(state).black;
+                            const previousPassedPawns = whiteToMove ? BoardScanner.getAllPassedPawns(previousState).white : BoardScanner.getAllPassedPawns(previousState).black;
+                            const bestStatePassedPawns = whiteToMove ? BoardScanner.getAllPassedPawns(missedState).white : BoardScanner.getAllPassedPawns(missedState).black;
 
                             const playerCreatedPassedPawnForOpponent = currentPassedPawns.length > previousPassedPawns.length;
                             const bestMoveDidNotCreatePassedPawnForOpponent = currentPassedPawns.length > bestStatePassedPawns.length;
@@ -1000,9 +1027,9 @@ export class CoachUtils
                     {
                         if (previousState && missedState)
                         {
-                            const currentIsolatedPawns = whiteToMove ? Chonse2Extensions.getAllIsolatedPawns(state).black : Chonse2Extensions.getAllIsolatedPawns(state).white;
-                            const prevIsolatedPawns = whiteToMove ? Chonse2Extensions.getAllIsolatedPawns(previousState).black : Chonse2Extensions.getAllIsolatedPawns(previousState).white;
-                            const missedIsolatedPawns = whiteToMove ? Chonse2Extensions.getAllIsolatedPawns(missedState).black : Chonse2Extensions.getAllIsolatedPawns(missedState).white;
+                            const currentIsolatedPawns = whiteToMove ? BoardScanner.getAllIsolatedPawns(state).black : BoardScanner.getAllIsolatedPawns(state).white;
+                            const prevIsolatedPawns = whiteToMove ? BoardScanner.getAllIsolatedPawns(previousState).black : BoardScanner.getAllIsolatedPawns(previousState).white;
+                            const missedIsolatedPawns = whiteToMove ? BoardScanner.getAllIsolatedPawns(missedState).black : BoardScanner.getAllIsolatedPawns(missedState).white;
 
                             const didPlayerIsolateOwnPawn = currentIsolatedPawns.length > prevIsolatedPawns.length;
                             const didBestMoveInvolveIsolatingOwnPawn = missedIsolatedPawns.length > prevIsolatedPawns.length;
@@ -1020,7 +1047,7 @@ export class CoachUtils
                     //Case: Player weakened their king with a b or g pawn push
                     {
                         //Check who is castled.
-                        const castle = Chonse2Extensions.didPlayersLikelyCastle(state);
+                        const castle = BoardScanner.didPlayersLikelyCastle(state);
                         const didCastleKingside = whiteToMove ? castle.blackKingside : castle.whiteKingside;
                         const didCastleQueenside = whiteToMove ? castle.blackQueenside : castle.whiteQueenside;
                         let didPawnPushWeakenKing = false;
@@ -1070,7 +1097,7 @@ export class CoachUtils
                     {
                         if (previousState && previousBestMove)
                         {
-                            const pawnChainData = Chonse2Extensions.getAllPawnChainsOnBoard(previousState);
+                            const pawnChainData = BoardScanner.getAllPawnChainsOnBoard(previousState);
                             const attackSquaresForPawnChain = whiteToMove ? pawnChainData.whiteAttackSquares : pawnChainData.blackAttackSquares;
                             const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
 
@@ -1125,7 +1152,7 @@ export class CoachUtils
                         {
                             const hanging = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
                             const prevHanging = whiteToMove ? allPreviousHangingPieceCoords.black : allPreviousHangingPieceCoords.white;
-                            const missedHanging = whiteToMove ? Chonse2Extensions.getHangingPieces(missedState).black : Chonse2Extensions.getHangingPieces(missedState).white
+                            const missedHanging = whiteToMove ? BoardScanner.getHangingPieces(missedState).black : BoardScanner.getHangingPieces(missedState).white
 
                             let didPlayerMoveHangingPiece = false;
                             let didPlayerDefendHangingPiece = false;
@@ -1214,8 +1241,8 @@ export class CoachUtils
                     {
                         if (missedState && previousBestMove)
                         {
-                            const discoveredCheckStatus = Chonse2Extensions.wasMoveDiscoveredCheck(state, {from: move.fromCoord, to: move.toCoord, promotion: PieceType.QUEEN});
-                            const didBestMoveInvolveDiscoveredCheck = Chonse2Extensions.wasMoveDiscoveredCheck(missedState, {from: previousBestMove.fromSquare, to: previousBestMove.toSquare, promotion: previousBestMove.promotion} );
+                            const discoveredCheckStatus = BoardScanner.wasMoveDiscoveredCheck(state, {from: move.fromCoord, to: move.toCoord, promotion: PieceType.QUEEN});
+                            const didBestMoveInvolveDiscoveredCheck = BoardScanner.wasMoveDiscoveredCheck(missedState, {from: previousBestMove.fromSquare, to: previousBestMove.toSquare, promotion: previousBestMove.promotion} );
 
                             if (discoveredCheckStatus == DiscoveredCheckType.None && didBestMoveInvolveDiscoveredCheck != DiscoveredCheckType.None)
                             {
@@ -1245,9 +1272,9 @@ export class CoachUtils
                         if (previousState && missedState)
                         {
                             const knightPiece = whiteToMove ? PieceType.BLACK_KNIGHT : PieceType.WHITE_KNIGHT;
-                            const outpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(state).black : Chonse2Extensions.getAllOutpostKnights(state).white;
-                            const prevOutpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(previousState).black : Chonse2Extensions.getAllOutpostKnights(previousState).white;
-                            const missedStateOutpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(missedState).black : Chonse2Extensions.getAllOutpostKnights(missedState).white;
+                            const outpostKnights = whiteToMove ? BoardScanner.getAllOutpostKnights(state).black : BoardScanner.getAllOutpostKnights(state).white;
+                            const prevOutpostKnights = whiteToMove ? BoardScanner.getAllOutpostKnights(previousState).black : BoardScanner.getAllOutpostKnights(previousState).white;
+                            const missedStateOutpostKnights = whiteToMove ? BoardScanner.getAllOutpostKnights(missedState).black : BoardScanner.getAllOutpostKnights(missedState).white;
 
                             if (bestPieceToMove == knightPiece)
                             {
@@ -1326,8 +1353,8 @@ export class CoachUtils
                     //Case: Player made a move that gives them a fork.
                     {
                         const attackerColor = whiteToMove ? PieceColor.BLACK : PieceColor.WHITE;
-                        const currentForks = Chonse2Extensions.getForksOnBoard(state, attackerColor);
-                        const previousForks = Chonse2Extensions.getForksOnBoard(previousState, attackerColor);
+                        const currentForks = BoardScanner.getForksOnBoard(state, attackerColor);
+                        const previousForks = BoardScanner.getForksOnBoard(previousState, attackerColor);
 
                         let displayPiece = PieceType.NONE;
                         let displayPieceValue = 0;
@@ -1386,8 +1413,8 @@ export class CoachUtils
                     {
                         if (previousState)
                         {
-                            const pins = Chonse2Extensions.getPinsOnBoard(state, true);
-                            const prevPins = Chonse2Extensions.getPinsOnBoard(previousState, true);
+                            const pins = BoardScanner.getPinsOnBoard(state, true);
+                            const prevPins = BoardScanner.getPinsOnBoard(previousState, true);
 
                             if (prevPins.length != pins.length)
                             {
@@ -1429,7 +1456,7 @@ export class CoachUtils
 
                     //Case: Player accurately set up a skewer
                     {
-                        const skewers = Chonse2Extensions.getSkewersOnBoard(state, allHangingPieceCoords);
+                        const skewers = BoardScanner.getSkewersOnBoard(state, allHangingPieceCoords);
 
                         let initiatedSkewer = null;
 
@@ -1469,8 +1496,8 @@ export class CoachUtils
                     {
                         if (previousState)
                         {
-                            const currentCastlingClearance = Chonse2Extensions.areSquaresClearForCastlingProvidedRightsAreThere(state);
-                            const previousCastlingClearance = Chonse2Extensions.areSquaresClearForCastlingProvidedRightsAreThere(previousState);
+                            const currentCastlingClearance = BoardScanner.areSquaresClearForCastlingProvidedRightsAreThere(state);
+                            const previousCastlingClearance = BoardScanner.areSquaresClearForCastlingProvidedRightsAreThere(previousState);
 
                             const currentKingside = whiteToMove ? currentCastlingClearance.blackKingside : currentCastlingClearance.whiteKingside;
                             const currentQueenside = whiteToMove ? currentCastlingClearance.blackQueenside : currentCastlingClearance.whiteQueenside;
@@ -1499,7 +1526,7 @@ export class CoachUtils
                             let opponentCastledOpposite = false;
 
                             //used for checking opposite side castling
-                            const castleStatus = Chonse2Extensions.didPlayersLikelyCastle(state);
+                            const castleStatus = BoardScanner.didPlayersLikelyCastle(state);
 
                             //player just castled queenside
                             if (move.notation.includes(AlgebraicNotationMaker.QUEENSIDE_CASTLE))
@@ -1530,8 +1557,8 @@ export class CoachUtils
                         //need to make sure we can see the previous state AND that the opponent didn't just castle (since we already know from those sentences that it connects rooks).
                         if (previousState && !move.coachMoveFlags.includes(CoachMoveFlagType.Castled))
                         {
-                            const currentRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(state);
-                            const previousRookState = Chonse2Extensions.doesBoardHaveConnectedRooks(previousState);
+                            const currentRookState = BoardScanner.doesBoardHaveConnectedRooks(state);
+                            const previousRookState = BoardScanner.doesBoardHaveConnectedRooks(previousState);
 
                             const areRooksCurrentlyConnected = whiteToMove ? currentRookState.black : currentRookState.white;
                             const wereRooksPreviouslyConnected = whiteToMove ? previousRookState.black : previousRookState.white;
@@ -1560,11 +1587,11 @@ export class CoachUtils
                                 if (pieceInToSquare == rookPiece)
                                 {
                                     //Get what open files are controlled by rooks of the color that just moved.
-                                    const rookOpenFiles = Chonse2Extensions.getOpenFilesWithRooks(state);
+                                    const rookOpenFiles = BoardScanner.getOpenFilesWithRooks(state);
                                     const rookOpenFilesControlledByColor = whiteToMove ? rookOpenFiles.black : rookOpenFiles.white; 
                                     
                                     //Get the same thing but for the previous state.
-                                    const prevRookOpenFiles = Chonse2Extensions.getOpenFilesWithRooks(previousState);
+                                    const prevRookOpenFiles = BoardScanner.getOpenFilesWithRooks(previousState);
                                     const prevRookOpenFilesControlledByColor = whiteToMove ? prevRookOpenFiles.black : prevRookOpenFiles.white;
 
                                     //If this rook just moved to the open file, say it.
@@ -1589,8 +1616,8 @@ export class CoachUtils
                             if (currentFollowUp.length > 1)
                             {
                                 const nextPosition = currentFollowUp[1];
-                                const currentDoubledPawnFiles = Chonse2Extensions.getDoubledPawnFiles(state);
-                                const nextDoubledPawnFiles = Chonse2Extensions.getDoubledPawnFiles(nextPosition);
+                                const currentDoubledPawnFiles = BoardScanner.getDoubledPawnFiles(state);
+                                const nextDoubledPawnFiles = BoardScanner.getDoubledPawnFiles(nextPosition);
 
                                 const opponentDoubledPawnsAmount = whiteToMove ? currentDoubledPawnFiles.white.length : currentDoubledPawnFiles.black.length;
                                 const opponentNextDoubledPawnsAmount = whiteToMove ? nextDoubledPawnFiles.white.length : nextDoubledPawnFiles.black.length;
@@ -1608,8 +1635,8 @@ export class CoachUtils
                     {
                         if (previousState)
                         {
-                            const currentPassedPawns = whiteToMove ? Chonse2Extensions.getAllPassedPawns(state).black : Chonse2Extensions.getAllPassedPawns(state).white;
-                            const previousPassedPawns = whiteToMove ? Chonse2Extensions.getAllPassedPawns(previousState).black : Chonse2Extensions.getAllPassedPawns(previousState).white;
+                            const currentPassedPawns = whiteToMove ? BoardScanner.getAllPassedPawns(state).black : BoardScanner.getAllPassedPawns(state).white;
+                            const previousPassedPawns = whiteToMove ? BoardScanner.getAllPassedPawns(previousState).black : BoardScanner.getAllPassedPawns(previousState).white;
 
                             if (currentPassedPawns.length > previousPassedPawns.length)
                             {
@@ -1626,8 +1653,8 @@ export class CoachUtils
                     {
                         if (previousState)
                         {
-                            const passedPawnStoppers = whiteToMove ? Chonse2Extensions.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(state).black : Chonse2Extensions.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(state).white;
-                            const previousPassedPawnStoppers = whiteToMove ? Chonse2Extensions.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(previousState).black : Chonse2Extensions.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(previousState).white;
+                            const passedPawnStoppers = whiteToMove ? BoardScanner.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(state).black : BoardScanner.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(state).white;
+                            const previousPassedPawnStoppers = whiteToMove ? BoardScanner.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(previousState).black : BoardScanner.getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(previousState).white;
                             const toCoordPiece = state.findPieceAtCoordinate(move.toCoord);
 
                             if (passedPawnStoppers.length > previousPassedPawnStoppers.length && !toCoordPiece.endsWith(PieceType.PAWN))
@@ -1642,8 +1669,8 @@ export class CoachUtils
                     {
                         if (previousState)
                         {
-                            const currentIsolatedPawns = Chonse2Extensions.getAllIsolatedPawns(state);
-                            const prevIsolatedPawns = Chonse2Extensions.getAllIsolatedPawns(previousState)
+                            const currentIsolatedPawns = BoardScanner.getAllIsolatedPawns(state);
+                            const prevIsolatedPawns = BoardScanner.getAllIsolatedPawns(previousState)
                         
                             const opponentCurrentIsolatedPawns = whiteToMove ? currentIsolatedPawns.white : currentIsolatedPawns.black;
                             const opponentPrevIsolatedPawns = whiteToMove ? prevIsolatedPawns.white : prevIsolatedPawns.black;
@@ -1669,7 +1696,7 @@ export class CoachUtils
                     {
                         if (previousState)
                         {
-                            const pawnChainData = Chonse2Extensions.getAllPawnChainsOnBoard(previousState);
+                            const pawnChainData = BoardScanner.getAllPawnChainsOnBoard(previousState);
                             const attackSquaresForPawnChain = whiteToMove ? pawnChainData.whiteAttackSquares : pawnChainData.blackAttackSquares;
                             const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
 
@@ -1739,7 +1766,7 @@ export class CoachUtils
 
                     //Case: Player used a discovered or double check
                     {
-                        const discoveredCheckStatus = Chonse2Extensions.wasMoveDiscoveredCheck(state, {from: move.fromCoord, to: move.toCoord, promotion: PieceType.QUEEN});
+                        const discoveredCheckStatus = BoardScanner.wasMoveDiscoveredCheck(state, {from: move.fromCoord, to: move.toCoord, promotion: PieceType.QUEEN});
                         
                         if (discoveredCheckStatus == DiscoveredCheckType.DoubleCheck)
                         {
@@ -1757,8 +1784,8 @@ export class CoachUtils
                     {
                         if (previousState)
                         {
-                            const castlingPreventions = Chonse2Extensions.isEnemyPieceBlockingCastlingPath(state);
-                            const prevCastlingPreventions = Chonse2Extensions.isEnemyPieceBlockingCastlingPath(previousState);
+                            const castlingPreventions = BoardScanner.isEnemyPieceBlockingCastlingPath(state);
+                            const prevCastlingPreventions = BoardScanner.isEnemyPieceBlockingCastlingPath(previousState);
 
                             const currentKingside = whiteToMove ? castlingPreventions.whiteKingside : castlingPreventions.blackKingside;
                             const currentQueenside = whiteToMove ? castlingPreventions.whiteQueenside : castlingPreventions.blackQueenside;
@@ -1795,7 +1822,7 @@ export class CoachUtils
                                 //we don't care if they attacked something with a pawn if the pawn itself just got hung.
                                 if (!hanging.includes(move.toCoord))
                                 {
-                                    const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(move.toCoord);
+                                    const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(move.toCoord);
         
                                     let attackLeftRowIndex = -1;
                                     let attackLeftColIndex = -1; 
@@ -1823,8 +1850,8 @@ export class CoachUtils
                                         [PieceType.BLACK_KNIGHT, PieceType.BLACK_BISHOP, PieceType.BLACK_ROOK, PieceType.BLACK_QUEEN];
 
                                     //Get the actual squares themselves.
-                                    let leftAttackSquare = state.pieceState[attackLeftRowIndex][attackLeftColIndex];
-                                    let rightAttackSquare = state.pieceState[attackRightRowIndex][attackRightColIndex];
+                                    let leftAttackSquare = state.getPieceState()[attackLeftRowIndex][attackLeftColIndex];
+                                    let rightAttackSquare = state.getPieceState()[attackRightRowIndex][attackRightColIndex];
                                     
                                     let kickedPiece = PieceType.NONE;
                                     if (piecesThatCanBeAttacked.includes(leftAttackSquare))
@@ -1854,8 +1881,8 @@ export class CoachUtils
 
                             if (movedPiece == knightPiece)
                             {
-                                const outpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(state).black : Chonse2Extensions.getAllOutpostKnights(state).white;
-                                const prevOutpostKnights = whiteToMove ? Chonse2Extensions.getAllOutpostKnights(previousState).black : Chonse2Extensions.getAllOutpostKnights(previousState).white;
+                                const outpostKnights = whiteToMove ? BoardScanner.getAllOutpostKnights(state).black : BoardScanner.getAllOutpostKnights(state).white;
+                                const prevOutpostKnights = whiteToMove ? BoardScanner.getAllOutpostKnights(previousState).black : BoardScanner.getAllOutpostKnights(previousState).white;
 
                                 if (outpostKnights.length > prevOutpostKnights.length)
                                 {
@@ -1878,10 +1905,10 @@ export class CoachUtils
                 {
                     //Case: Player developed a knight towards the center
                     if (
-                        (move.fromCoord == Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE && (move.toCoord == "f3" || move.toCoord == "e2")) ||
-                        (move.fromCoord == Chonse2.WHITE_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "c3" || move.toCoord == "d2")) || 
-                        (move.fromCoord == Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE && (move.toCoord == "f6" || move.toCoord == "e7")) || 
-                        (move.fromCoord == Chonse2.BLACK_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "d7" || move.toCoord == "c6"))
+                        (move.fromCoord == ChessConstants.WHITE_KINGSIDE_KNIGHT_SQUARE && (move.toCoord == "f3" || move.toCoord == "e2")) ||
+                        (move.fromCoord == ChessConstants.WHITE_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "c3" || move.toCoord == "d2")) || 
+                        (move.fromCoord == ChessConstants.BLACK_KINGSIDE_KNIGHT_SQUARE && (move.toCoord == "f6" || move.toCoord == "e7")) || 
+                        (move.fromCoord == ChessConstants.BLACK_QUEENSIDE_KNIGHT_SQUARE && (move.toCoord == "d7" || move.toCoord == "c6"))
                     )
                     {
                         CoachText.addCoachSentence(move, CoachText.KNIGHT_DEVELOPMENT_CENTER_CONTROL_SENTENCES, "");
@@ -1890,7 +1917,7 @@ export class CoachUtils
                         const potentiallyLegalKnightMoves = CoachMiscHelpers.getKnightSquareHits(state, move.toCoord);
                         const controlledCentralSquares: Array<string> = [];
 
-                        Chonse2.CENTER_SQUARES.forEach( centralSquare => 
+                        ChessConstants.CENTER_SQUARES.forEach( centralSquare => 
                             {
                                 potentiallyLegalKnightMoves.forEach( moveSquare => 
                                     {
@@ -1926,27 +1953,27 @@ export class CoachUtils
                     if 
                     (
                         (
-                            move.notation.startsWith(Chonse2.WHITE_KING_PAWN_SQUARE) 
+                            move.notation.startsWith(ChessConstants.WHITE_KING_PAWN_SQUARE) 
                             && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_PAWN 
-                            && state.findPieceAtCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                            && state.findPieceAtCoordinate(ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
                         )
                         ||
                         (
-                            move.notation.startsWith(Chonse2.WHITE_QUEEN_PAWN_SQUARE) 
+                            move.notation.startsWith(ChessConstants.WHITE_QUEEN_PAWN_SQUARE) 
                             && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_PAWN 
-                            && state.findPieceAtCoordinate(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                            && state.findPieceAtCoordinate(ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
                         )
                         ||
                         (
-                            move.notation.startsWith(Chonse2.BLACK_KING_PAWN_SQUARE) 
+                            move.notation.startsWith(ChessConstants.BLACK_KING_PAWN_SQUARE) 
                             && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_PAWN 
-                            && state.findPieceAtCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                            && state.findPieceAtCoordinate(ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
                         )
                         ||
                         (
-                            move.notation.startsWith(Chonse2.BLACK_QUEEN_PAWN_SQUARE) 
+                            move.notation.startsWith(ChessConstants.BLACK_QUEEN_PAWN_SQUARE) 
                             && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_PAWN 
-                            && state.findPieceAtCoordinate(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                            && state.findPieceAtCoordinate(ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
                         )
                     )
                     {
@@ -1954,37 +1981,37 @@ export class CoachUtils
                         CoachText.addCoachSentence(move, CoachText.PREPARES_BISHOP_FOR_DEVELOPMENT_SENTENCES, colorThatMovedText);
 
                         //Clones the board to check the legal moves.
-                        const boardCopy = state.getFullDeepCopy();
-                        boardCopy.turn = !boardCopy.turn;
+                        const boardCopy = state.clone();
+                        boardCopy.setTurn(!boardCopy.getTurn());
 
                         //Get the legal moves for the bishop that just got into the game.
                         let allLegalMovesForBishop: Array<string> = [];
                         let bishopSquare = "";
-                        if (boardCopy.turn)
+                        if (boardCopy.getTurn())
                         {
-                            if (move.notation.startsWith(Chonse2.WHITE_KING_PAWN_SQUARE))
+                            if (move.notation.startsWith(ChessConstants.WHITE_KING_PAWN_SQUARE))
                             {
-                                bishopSquare = Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE;
+                                bishopSquare = ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE;
                                 allLegalMovesForBishop.push(...["e2", "d3", "c4", "b5", "a6"]);
                             }
 
-                            if (move.notation.startsWith(Chonse2.WHITE_QUEEN_PAWN_SQUARE))
+                            if (move.notation.startsWith(ChessConstants.WHITE_QUEEN_PAWN_SQUARE))
                             {
-                                bishopSquare = Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE;
+                                bishopSquare = ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE;
                                 allLegalMovesForBishop.push(...["d2", "e3", "f4", "g5", "h6"]);
                             }
                         }
                         else 
                         {
-                            if (move.notation.startsWith(Chonse2.BLACK_KING_PAWN_SQUARE))
+                            if (move.notation.startsWith(ChessConstants.BLACK_KING_PAWN_SQUARE))
                             {
-                                bishopSquare = Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE;
+                                bishopSquare = ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE;
                                 allLegalMovesForBishop.push(...["e7", "d6", "c5", "b4", "a3"]);
                             }
 
-                            if (move.notation.startsWith(Chonse2.BLACK_QUEEN_PAWN_SQUARE))
+                            if (move.notation.startsWith(ChessConstants.BLACK_QUEEN_PAWN_SQUARE))
                             {
-                                bishopSquare = Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE;
+                                bishopSquare = ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE;
                                 allLegalMovesForBishop.push(...["d7", "e6", "f5", "g4", "h3"]);
                             }
                         }
@@ -1995,13 +2022,13 @@ export class CoachUtils
                         const movesThatDontHangTheBishop = allLegalMovesForBishop.filter( moveCoord => 
                             {
                                 //completes the move temporarily
-                                const moveResult = boardCopy.completeMove(bishopSquare, moveCoord);
+                                const moveResult = boardCopy.completeMove(bishopSquare, moveCoord, PieceType.QUEEN);
                                 
                                 if (moveResult.result)
                                 {
                                     //gets which hanging pieces it should check
-                                    const hangingPieces = Chonse2Extensions.getHangingPieces(boardCopy);
-                                    const hangingPiecesToCheck = boardCopy.turn ? hangingPieces.black : hangingPieces.white;
+                                    const hangingPieces = BoardScanner.getHangingPieces(boardCopy);
+                                    const hangingPiecesToCheck = boardCopy.getTurn() ? hangingPieces.black : hangingPieces.white;
 
                                     //undo the move so that we don't have to deep copy the whole ass object again.
                                     boardCopy.undoMostRecentMove();
@@ -2034,27 +2061,27 @@ export class CoachUtils
                     if 
                     (
                         (
-                            move.notation.startsWith(Chonse2.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE) 
+                            move.notation.startsWith(ChessConstants.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE) 
                             && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_PAWN 
-                            && state.findPieceAtCoordinate(Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                            && state.findPieceAtCoordinate(ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
                         )
                         ||
                         (
-                            move.notation.startsWith(Chonse2.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
+                            move.notation.startsWith(ChessConstants.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
                             && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_PAWN 
-                            && state.findPieceAtCoordinate(Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
+                            && state.findPieceAtCoordinate(ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE) == PieceType.WHITE_BISHOP
                         )
                         ||
                         (
-                            move.notation.startsWith(Chonse2.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE) 
+                            move.notation.startsWith(ChessConstants.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE) 
                             && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_PAWN 
-                            && state.findPieceAtCoordinate(Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                            && state.findPieceAtCoordinate(ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
                         )
                         ||
                         (
-                            move.notation.startsWith(Chonse2.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
+                            move.notation.startsWith(ChessConstants.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE) 
                             && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_PAWN 
-                            && state.findPieceAtCoordinate(Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
+                            && state.findPieceAtCoordinate(ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE) == PieceType.BLACK_BISHOP
                         )
                     )
                     {
@@ -2063,28 +2090,28 @@ export class CoachUtils
                         //Determine where the fianchetto square & bishop coord is
                         let fianchettoSquare = "";
                         let bishopSquare = "";
-                        if (move.notation.startsWith(Chonse2.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE))
+                        if (move.notation.startsWith(ChessConstants.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE))
                         {
                             fianchettoSquare = "g2";
-                            bishopSquare = Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE;
+                            bishopSquare = ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE;
                         }
 
-                        if (move.notation.startsWith(Chonse2.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE))
+                        if (move.notation.startsWith(ChessConstants.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE))
                         {
                             fianchettoSquare = "b2"
-                            bishopSquare = Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE;
+                            bishopSquare = ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE;
                         }
 
-                        if (move.notation.startsWith(Chonse2.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE))
+                        if (move.notation.startsWith(ChessConstants.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE))
                         {
                             fianchettoSquare = "g7"
-                            bishopSquare = Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE;
+                            bishopSquare = ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE;
                         }
 
-                        if (move.notation.startsWith(Chonse2.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE))
+                        if (move.notation.startsWith(ChessConstants.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE))
                         {
                             fianchettoSquare = "b7"
-                            bishopSquare = Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE;
+                            bishopSquare = ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE;
                         }
 
                         //then add the idea to the move.
@@ -2103,10 +2130,10 @@ export class CoachUtils
                     //Case: Player moved a bishop off its starting square
                     if 
                     (
-                        (move.fromCoord == Chonse2.WHITE_KINGSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_BISHOP) ||
-                        (move.fromCoord == Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_BISHOP ) ||
-                        (move.fromCoord == Chonse2.BLACK_KINGSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_BISHOP) ||
-                        (move.fromCoord == Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_BISHOP)
+                        (move.fromCoord == ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_BISHOP) ||
+                        (move.fromCoord == ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.WHITE_BISHOP ) ||
+                        (move.fromCoord == ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_BISHOP) ||
+                        (move.fromCoord == ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE && state.findPieceAtCoordinate(move.toCoord) == PieceType.BLACK_BISHOP)
                     )
                     {
                         if (CoachMiscHelpers.FIANCHETTOS.includes(move.toCoord))

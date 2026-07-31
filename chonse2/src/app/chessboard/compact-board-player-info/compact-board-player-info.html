@@ -6,7 +6,7 @@
         @let adv = getAdvantage();
 
         <div>
-            <span [style.text-decoration]="boardState().getCurrentState().turn ? 'underline' : ''">⚪: {{getShortenedName(boardState().pgnHeaders().white)}}</span>
+            <span [style.text-decoration]="boardState().getCurrentState().getTurn() ? 'underline' : ''">⚪: {{getShortenedName(boardState().pgnHeaders().white)}}</span>
             @if(boardState().pgnHeaders().whiteElo; as whiteElo)
             {
                 <span 
@@ -23,7 +23,7 @@
         </div>
 
         <div>
-            <span [style.text-decoration]="boardState().getCurrentState().turn ? '' : 'underline'">⚫: {{getShortenedName(boardState().pgnHeaders().black)}}</span>
+            <span [style.text-decoration]="boardState().getCurrentState().getTurn()  ? '' : 'underline'">⚫: {{getShortenedName(boardState().pgnHeaders().black)}}</span>
             @if(boardState().pgnHeaders().blackElo; as blackElo)
             {
                 <span 

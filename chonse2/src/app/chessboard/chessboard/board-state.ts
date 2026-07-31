@@ -4,10 +4,6 @@ import LocalStorageHelper from "../../../libs/local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
 import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
 import { Quote, Quotes } from "./quotes";
-import Chonse2 from "../../../libs/chonse2-lib/chonse2";
-import { GameScore } from "../../../libs/chonse2-lib/game-state";
-import { PieceColor } from "../../../libs/chonse2-lib/piece-color";
-import { PieceType } from "../../../libs/chonse2-lib/piece-type";
 import { MoveClassification, EngineName } from "../../../libs/engine-lib/types/enums";
 import { PositionEval, GameEval, EvaluateGameParams, EvalSource, LineEval, EvaluatePositionWithUpdateParams } from "../../../libs/engine-lib/types/eval";
 import { UciEngine } from "../../../libs/engine-lib/uciEngine";
@@ -17,18 +13,24 @@ import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
 import { getMovesClassification } from "../../../libs/engine-lib/helpers/moveClassification";
 import { AppInjector } from "../../app-injector";
 import { CoachAudio } from "../../../libs/coach-lib/coach-audio";
+import { ChessConstants } from "../../../libs/chess-game-lib/types/constants";
+import { GameScore } from "../../../libs/chess-game-lib/types/game-state";
+import { PieceColor } from "../../../libs/chess-game-lib/types/piece-color";
+import { PieceType } from "../../../libs/chess-game-lib/types/piece-type";
+import IChessGame from "../../../libs/chess-game-lib/i-chess-game";
+import ChessGameFactory from "../../../libs/chess-game-lib/chess-game-factory";
 
 export default class BoardState
 {
     pgnHeaders: WritableSignal<PgnHeaders>;
 
     //For the moves actually being performed.
-    mainStateStack: WritableSignal<Array<Chonse2>>;     
+    mainStateStack: WritableSignal<Array<IChessGame>>;     
     mainStackPointer: WritableSignal<number>;
     mainMoveStack: WritableSignal<Array<MoveResult>>;
     
     //For going back and playing out what move COULD have been made.
-    divergenceStateStack: WritableSignal<Array<Chonse2>>;
+    divergenceStateStack: WritableSignal<Array<IChessGame>>;
     divergenceMoveStack: WritableSignal<Array<MoveResult>>;
     divergenceEvalStack: WritableSignal<Array<PositionEval>>;
 
@@ -54,6 +56,7 @@ export default class BoardState
     isVsAi: WritableSignal<boolean> = signal(false);
     humanPlayerIsWhite: WritableSignal<boolean> = signal(true);
     aiElo: WritableSignal<number> = signal(UciEngine.MIN_ELO);
+    playerDidResign: WritableSignal <boolean> = signal(false);
 
     //Cosmetic stuff.
     squareHighlightStatuses: WritableSignal<Array<Array<boolean>>>;
@@ -67,7 +70,7 @@ export default class BoardState
     //Locked means no moves can take place.
     isLocked: WritableSignal<boolean> = signal(false);
 
-    constructor(startingStates: Array<Chonse2> = [new Chonse2()], headers: PgnHeaders = new PgnHeaders())
+    constructor(startingStates: Array<IChessGame> = [ChessGameFactory.create()], headers: PgnHeaders = new PgnHeaders())
     {
         this.pgnHeaders = signal(headers);
 
@@ -86,14 +89,14 @@ export default class BoardState
     }
 
     //#region STATES
-    async pushState(state: Chonse2, move: MoveResult, isCoachMove: boolean = false)
+    async pushState(state: IChessGame, move: MoveResult, isCoachMove: boolean = false)
     {
         const previousEval = this.getMostRecentEval();
 
         //If the pointer was moved back, diverge from the main path.
         if (this.mainStackPointer() != this.mainStateStack().length - 1 || this.isReadOnly() || isCoachMove)
         {
-            let previousState: Chonse2;
+            let previousState: IChessGame;
 
             if (this.divergenceMoveStack().length != 0)
             {
@@ -121,7 +124,7 @@ export default class BoardState
         }
     }
 
-    getCurrentState(): Chonse2
+    getCurrentState(): IChessGame
     {
         //If we are diverging from the main game, return what was pushed to the secondary stack.
         if (this.divergenceStateStack().length != 0)
@@ -153,7 +156,7 @@ export default class BoardState
         return new MoveResult();
     }
 
-    getPreviousMostRecentState(): Chonse2
+    getPreviousMostRecentState(): IChessGame
     {
         if (this.divergenceStateStack().length == 1)
         {
@@ -307,7 +310,7 @@ export default class BoardState
     }
     
     //Override for coach evals simply tells it to evaluate it at a lower depth (so the eval bar has a value), and make it best move no matter what (since the coach will always play the best move anyway)
-    private async performDivergenceEvaluation(previousState: Chonse2, state: Chonse2, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
+    private async performDivergenceEvaluation(previousState: IChessGame, state: IChessGame, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
     {
         const eng = this.engine();
 
@@ -503,7 +506,7 @@ export default class BoardState
     static parsePGN(pgn: string, setAnalyzeFlag: boolean = false): BoardState
     {
         //States and PGN headers to be returned.
-        const states: Array<Chonse2> = [];
+        const states: Array<IChessGame> = [];
         const moveStack: Array<MoveResult> = [];
         const pgnHeaders = new PgnHeaders();
         const boardState = new BoardState();
@@ -658,12 +661,12 @@ export default class BoardState
                         //If we got this far, start parsing the moves.
                         if (states.length == 0)
                         {
-                            states.push(new Chonse2());
+                            states.push(ChessGameFactory.create());
                         }
 
                         //Copy the state and get whose turn it is.
-                        const copyOfState: Chonse2 = states[states.length - 1].getFullDeepCopy();
-                        const turn = copyOfState.turn;
+                        const copyOfState: IChessGame = states[states.length - 1].clone();
+                        const turn = copyOfState.getTurn();
                         const colorToMove = turn ? PieceColor.WHITE : PieceColor.BLACK;
         
                         let moveResult = new MoveResult();
@@ -672,11 +675,11 @@ export default class BoardState
                         if (token == "O-O" || token == "O-O+" || token == "O-O#")
                         {
                             //From and to when castling kingside.
-                            const kingSquare = turn ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
-                            const toSquare = turn ? Chonse2.WHITE_KINGSIDE_KNIGHT_SQUARE : Chonse2.BLACK_KINGSIDE_KNIGHT_SQUARE;
+                            const kingSquare = turn ? ChessConstants.WHITE_KING_SQUARE : ChessConstants.BLACK_KING_SQUARE;
+                            const toSquare = turn ? ChessConstants.WHITE_KINGSIDE_KNIGHT_SQUARE : ChessConstants.BLACK_KINGSIDE_KNIGHT_SQUARE;
 
                             //Perform the move on the deep copy.
-                            moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(kingSquare, toSquare));      
+                            moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(kingSquare, toSquare, PieceType.QUEEN));      
                             
                             //Register the move on the board's stacks.
                             states.push(copyOfState);
@@ -690,11 +693,11 @@ export default class BoardState
                         if (token == "O-O-O" || token == "O-O-O+" || token == "O-O-O#")
                         {
                             //From and to when castling queenside.
-                            const kingSquare = turn ? Chonse2.WHITE_KING_SQUARE : Chonse2.BLACK_KING_SQUARE;
-                            const toSquare = turn ? Chonse2.WHITE_QUEENSIDE_BISHOP_SQUARE : Chonse2.BLACK_QUEENSIDE_BISHOP_SQUARE;
+                            const kingSquare = turn ? ChessConstants.WHITE_KING_SQUARE : ChessConstants.BLACK_KING_SQUARE;
+                            const toSquare = turn ? ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE : ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE;
 
                             //Perform the move on the deep copy.
-                            moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(kingSquare, toSquare));
+                            moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(kingSquare, toSquare, PieceType.QUEEN));
 
                             //Register the move on the board's stacks.
                             states.push(copyOfState);
@@ -735,10 +738,10 @@ export default class BoardState
                         const pieceThatWillMove = colorToMove + move.piece;
                         const candidateFromCoordinates: Array<string> = [];
                         //Loop through the ranks.
-                        for (let rank = 0; rank < copyOfState.pieceState.length; rank++)
+                        for (let rank = 0; rank < copyOfState.getPieceState().length; rank++)
                         {
                             //Get the current rank.
-                            const currentRank = copyOfState.pieceState[rank];
+                            const currentRank = copyOfState.getPieceState()[rank];
 
                             //Loop through this current rank.
                             for(let file = 0; file < currentRank.length; file++)
@@ -765,7 +768,7 @@ export default class BoardState
                                 //Rank is known but is not the right file we are looking for. Disregard it.
                                 if (move.fromRank != null)
                                 {
-                                    const rankChar = (Chonse2.SIZE - rank).toString();
+                                    const rankChar = (ChessConstants.SIZE - rank).toString();
 
                                     if (rankChar != move.fromRank)
                                     {
@@ -774,7 +777,7 @@ export default class BoardState
                                 }
 
                                 //If we got this far, it might be the right square.
-                                candidateFromCoordinates.push(Chonse2.COORDS[rank][file])
+                                candidateFromCoordinates.push(ChessConstants.COORDS[rank][file])
                             } 
                         }
 
@@ -797,7 +800,7 @@ export default class BoardState
                         }
 
                         //If we got this far, it's a valid move, push it.
-                        moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(passingCandidates[0], move.toCoordinate, move.promotion ?? undefined));
+                        moveResult = MoveResult.createMoveResultFromInterface(copyOfState.completeMove(passingCandidates[0], move.toCoordinate, move.promotion ?? PieceType.QUEEN));
                         moveResult.pgnComment = commentStr;
                         commentStr = "";
 
@@ -870,7 +873,7 @@ export default class BoardState
         })
 
         //Pushes the indeces of the moves to their correct arrays.
-        let turn = !this.mainStateStack()[0].turn;
+        let turn = !this.mainStateStack()[0].getTurn();
 
         this.eval()?.positions.forEach( (pos, idx) =>
         {
@@ -911,10 +914,10 @@ export default class BoardState
     {
         const highlightStatuses: Array<Array<boolean>> = [];
 
-        for(let i = 0; i < Chonse2.SIZE; i++)
+        for(let i = 0; i < ChessConstants.SIZE; i++)
         {
             const rank: Array<boolean> = [];
-            for(let j = 0; j < Chonse2.SIZE; j++)
+            for(let j = 0; j < ChessConstants.SIZE; j++)
             {
                 rank[j] = false;
             }

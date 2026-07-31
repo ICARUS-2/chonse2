@@ -119,7 +119,7 @@
                     </app-icon-button>
                   }
 
-                  @if (!boardState().getCurrentState().gameState.isGameOver) {
+                  @if (!boardState().getCurrentState().getGameState().isGameOver) {
                     <app-icon-button 
                       (buttonClick)="showFollowUpClicked()" 
                       [disabled]="boardState().coachButtonsDisabled()" 

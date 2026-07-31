@@ -5,9 +5,9 @@ import { ChessBoardService } from "../chessboard/chessboard/chess-board-service"
 import { BoardNames } from "../boards";
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { ToastrService } from "ngx-toastr";
-import Chonse2 from "../../libs/chonse2-lib/chonse2";
 import { EngineInformation, EngineName } from "../../libs/engine-lib/types/enums";
 import { TranslateService } from "@ngx-translate/core";
+import IChessGame from "../../libs/chess-game-lib/i-chess-game";
 
 export default class VsAiConfigurationModalHelper
 {
@@ -17,7 +17,7 @@ export default class VsAiConfigurationModalHelper
         toastr: ToastrService, 
         translate: TranslateService,
         componentInstance: Chessboard,
-        startingState: Chonse2 | undefined = undefined) =>
+        startingState: IChessGame | undefined = undefined) =>
     {
         const modalRef = modalService.open(VsAiConfigurationModal, {size: 'lg'})
 
@@ -66,7 +66,7 @@ export default class VsAiConfigurationModalHelper
                     //If stockfish is white (or if the board says it's stockfish's color to move), play the first move.
                     if (startingState)
                     {
-                        if ((!startingState.turn && isHumanWhite) || (startingState.turn && !isHumanWhite))
+                        if ((!startingState.getTurn() && isHumanWhite) || (startingState.getTurn() && !isHumanWhite))
                         {
                             componentInstance.playAIMove();
                         }

@@ -1,4 +1,4 @@
-import { GameScore, GameOverReason } from "../chonse2-lib/game-state";
+import { GameOverReason, GameScore } from "../chess-game-lib/types/game-state";
 import { PositionEval, LineEval, EvalSource } from "../engine-lib/types/eval";
 
 
