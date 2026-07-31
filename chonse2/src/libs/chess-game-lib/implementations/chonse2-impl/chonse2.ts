@@ -14,7 +14,6 @@ export default class Chonse2 implements IChessGame
 {
   //Draw condition thresholds
   static readonly DRAW_BY_REPETITION_THRESHOLD: number = 3;
-  static readonly DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD = 100; //50 full moves * 2
   
   //To check draw by repetition, object internally stores a fen key split at index 2 (state + castling + en passant if possible) in a hashmap and checks how many times this key has appeared.
   private static readonly _FEN_SPLIT_POSKEY_INDEX = 2
@@ -549,7 +548,7 @@ export default class Chonse2 implements IChessGame
       }
 
     //fifty moves with no pawn movements or captures
-    if (this._halfMovesWithoutPawnMovementsOrCaptures >= Chonse2.DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD)
+    if (this._halfMovesWithoutPawnMovementsOrCaptures >= ChessConstants.DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD)
     {
       this._gameState.isGameOver = true;
       this._gameState.reason = GameOverReason.FiftyMoveNoPawnMovementsOrCaptures;

@@ -104,7 +104,7 @@ export default class ChessopsBoard implements IChessGame
     }
 
     //Gets all the pieces pointed at a given square.
-    getPiecesThatHitSquare(coord: string): { whiteCoords: Array<string>, whitePieces: Array<string>, blackCoords: Array<string>, blackPieces: Array<string> }
+    public getPiecesThatHitSquare(coord: string): { whiteCoords: Array<string>, whitePieces: Array<string>, blackCoords: Array<string>, blackPieces: Array<string> }
     {
         //Initial array.
         const attackers = [];
@@ -225,20 +225,20 @@ export default class ChessopsBoard implements IChessGame
         //If we are verifying the black king:
         if (kingColor == PieceColor.BLACK)
         {
-        const blackKingSquare = board.kingOf('black');
+            const blackKingSquare = board.kingOf('black');
 
-        //If the king is actually there.
-        if (blackKingSquare !== undefined) 
-        {
-            //Get what attacks it.
-            const attackers = this.getPiecesThatHitSquare(makeSquare(blackKingSquare));
-
-            //If something attacks it, it's in check.
-            if (attackers.whiteCoords.length > 0) 
+            //If the king is actually there.
+            if (blackKingSquare !== undefined) 
             {
-            return true;
+                //Get what attacks it.
+                const attackers = this.getPiecesThatHitSquare(makeSquare(blackKingSquare));
+
+                //If something attacks it, it's in check.
+                if (attackers.whiteCoords.length > 0) 
+                {
+                return true;
+                }
             }
-        }
         }
 
         return false;
@@ -253,20 +253,20 @@ export default class ChessopsBoard implements IChessGame
 
         for (const [_, piece] of board) 
         {
-        const convertedPiece = this._convertPiece(piece)
-        if (convertedPiece !== PieceType.WHITE_KING && convertedPiece !== PieceType.BLACK_KING)
-        {
-            const value = PieceMaterial.getMaterialFromPiece(convertedPiece);
+            const convertedPiece = this._convertPiece(piece)
+            if (convertedPiece !== PieceType.WHITE_KING && convertedPiece !== PieceType.BLACK_KING)
+            {
+                const value = PieceMaterial.getMaterialFromPiece(convertedPiece);
 
-            if (piece.color === 'white') 
-            {
-            whiteValue += value;
-            } 
-            else 
-            {
-            blackValue += value;
+                if (piece.color === 'white') 
+                {
+                    whiteValue += value;
+                } 
+                else 
+                {
+                    blackValue += value;
+                }
             }
-        }
         }
 
         return whiteValue - blackValue;  // Positive = white advantage, negative = black advantage
@@ -362,38 +362,49 @@ export default class ChessopsBoard implements IChessGame
     //Set true for white to move, false for black to move.
     public setTurn(val: boolean): void 
     {
+        //Turn of the game currently
         const currentTurn = this.getTurn();
 
+        //Don't do the computationally expensive shit if nothing changes.
         if (currentTurn === val)
         {
             return;
         }
 
+        //Get the current fen and split it.
         const currentFen = this.getFEN();
         const parts = currentFen.split(' ');
+
+        //Switch the turn portion.
         parts[1] = val === true ? PieceColor.WHITE : PieceColor.BLACK;
 
+        //Create a new fen by joining it.
         const newFen = parts.join(' ');
-        const setup = parseFen(newFen).unwrap();
-        this._inst = Chess.fromSetup(setup).unwrap();
+        this._instantiateFromFen(newFen);
     }
 
     //Resets the board to its default.
     public reset(): void
     {
-        throw new Error("Not implemented.");
+        this._inst = Chess.default();
     }
 
     //Clears board except the kings.
-    public clear(): void
+    public clear(): void 
     {
-        throw new Error("Not implemented.");
+        this._instantiateFromFen("4k3/8/8/8/8/8/8/4K3 w - - 0 1");
     }
 
     //Places a piece at a given coord.
     public setPieceOnBoard(coord: string, piece: string): void
     {
         throw new Error("Not implemented.");
+    }
+
+    private _instantiateFromFen(fen: string)
+    {
+        const setup = parseFen(fen).unwrap();
+        this._inst = Chess.fromSetup(setup).unwrap();
     }
 
     //#endregion
