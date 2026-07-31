@@ -13,7 +13,6 @@ import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
 import { getMovesClassification } from "../../../libs/engine-lib/helpers/moveClassification";
 import { AppInjector } from "../../app-injector";
 import { CoachAudio } from "../../../libs/coach-lib/coach-audio";
-import Chonse2 from "../../../libs/chess-game-lib/implementations/chonse2-impl/chonse2";
 import { ChessConstants } from "../../../libs/chess-game-lib/types/constants";
 import { GameScore } from "../../../libs/chess-game-lib/types/game-state";
 import { PieceColor } from "../../../libs/chess-game-lib/types/piece-color";

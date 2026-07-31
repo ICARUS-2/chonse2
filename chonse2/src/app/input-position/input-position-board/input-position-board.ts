@@ -16,7 +16,6 @@ import { ToastrService } from 'ngx-toastr';
 import { IconButton } from "../../ui/icon-button/icon-button";
 import GameLinkHelper from '../../chessboard/chessboard/game-link-helper';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import Chonse2 from '../../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
 import { CastlingRightsType } from '../../../libs/chess-game-lib/types/castling-rights-type';
 import { ChessConstants } from '../../../libs/chess-game-lib/types/constants';
 import { GameOverReason } from '../../../libs/chess-game-lib/types/game-state';

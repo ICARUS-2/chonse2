@@ -8,7 +8,7 @@ import VsAiConfigurationModalHelper from './vs-ai-configuration-modal-helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
-import Chonse2 from '../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
+import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
 
 @Component({
   selector: 'app-vs-ai',
@@ -35,7 +35,7 @@ export class VsAi implements OnInit, AfterViewInit{
 
     if (this.inputtedPosition) 
     {
-      const restoredPosition = Chonse2.instantiateFromFen(this.inputtedPosition);
+      const restoredPosition = ChessGameFactory.createFromFen(this.inputtedPosition);
       restoredPosition.checkIsGameOver();
 
       VsAiConfigurationModalHelper.doModal(

@@ -7,7 +7,7 @@ import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { ToastrService } from "ngx-toastr";
 import { EngineInformation, EngineName } from "../../libs/engine-lib/types/enums";
 import { TranslateService } from "@ngx-translate/core";
-import Chonse2 from "../../libs/chess-game-lib/implementations/chonse2-impl/chonse2";
+import IChessGame from "../../libs/chess-game-lib/i-chess-game";
 
 export default class VsAiConfigurationModalHelper
 {
@@ -17,7 +17,7 @@ export default class VsAiConfigurationModalHelper
         toastr: ToastrService, 
         translate: TranslateService,
         componentInstance: Chessboard,
-        startingState: Chonse2 | undefined = undefined) =>
+        startingState: IChessGame | undefined = undefined) =>
     {
         const modalRef = modalService.open(VsAiConfigurationModal, {size: 'lg'})
 

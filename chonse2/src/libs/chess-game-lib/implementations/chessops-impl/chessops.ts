@@ -143,6 +143,18 @@ export default class ChessopsBoard implements IChessGame
         throw new Error("Not implemented.");
     }
 
+    //Retrieves the coord of the en passant square
+    public getEnPassantSquare(): string 
+    {
+        throw new Error("Method not implemented.");
+    }
+
+    //Sets en passant square to the passed coord.
+    public setEnPassantSquare(coord: string): void 
+    {
+        throw new Error("Method not implemented.");
+    }
+
     //#endregion
 
     //#region Instantiation

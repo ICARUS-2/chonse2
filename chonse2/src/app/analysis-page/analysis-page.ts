@@ -12,7 +12,7 @@ import { LichessAPI } from '../../libs/server-api-lib/lichess-api';
 import ThemeService from '../themes/theme-service';
 import MoveResult from '../chessboard/chessboard/move-result';
 import LocalStorageHelper from '../../libs/local-storage-helper';
-import Chonse2 from '../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
+import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
 
 @Component({
   selector: 'app-analysis-page',
@@ -155,7 +155,7 @@ export class AnalysisPage implements OnInit{
     else if (this.inputtedPosition) //from board editor
     {
       //Reconstruct from fen.
-      const restoredPosition = Chonse2.instantiateFromFen(this.inputtedPosition);
+      const restoredPosition = ChessGameFactory.createFromFen(this.inputtedPosition)
 
       restoredPosition.checkIsGameOver();
 
@@ -174,7 +174,7 @@ export class AnalysisPage implements OnInit{
       bs.doEvaluateGame.set(true);
       
       //Set positions.
-      const restoredPositions = this.vsAiStates.map( fen => Chonse2.instantiateFromFen(fen) );
+      const restoredPositions = this.vsAiStates.map( fen => ChessGameFactory.createFromFen(fen) );
       restoredPositions.at(-1)?.checkIsGameOver();
       bs.mainStateStack.set(restoredPositions);
   

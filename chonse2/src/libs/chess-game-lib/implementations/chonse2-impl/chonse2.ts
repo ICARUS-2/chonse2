@@ -1479,13 +1479,13 @@ export default class Chonse2 implements IChessGame
   //Castling and en passant
 
   //Retrieves the coord of the en passant square
-  public getEnPassantSquare()
+  public getEnPassantSquare(): string
   {
     return this._enPassantSquare;
   }
 
   //Sets en passant square to the passed coord.
-  public setEnPassantSquare(coord: string)
+  public setEnPassantSquare(coord: string): void
   {
     this._enPassantSquare = coord;
   }

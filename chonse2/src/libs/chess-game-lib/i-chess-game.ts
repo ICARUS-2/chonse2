@@ -73,6 +73,13 @@ export default interface IChessGame
 
     //Sets the castling rights for one of the four types
     setCastlingRights(type: CastlingRightsType, val: boolean): void
+
+    //Retrieves en passant square coord.
+    getEnPassantSquare(): string
+
+    //Sets en passant square to the passed coord.
+    setEnPassantSquare(coord: string): void
+    
     //#endregion
 
     //#region Instantiation

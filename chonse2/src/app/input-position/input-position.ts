@@ -5,7 +5,7 @@ import { InputPositionService } from './input-position-service';
 import InputPositionState from './input-position-state';
 import { RouteConstants } from '../app.routes';
 import { ToastrService } from 'ngx-toastr';
-import Chonse2 from '../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
+import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
 
 @Component({
   selector: 'app-input-position',
@@ -35,7 +35,7 @@ export class InputPosition implements OnInit {
       try 
       {
         const newState = new InputPositionState();
-        newState.game.set(Chonse2.instantiateFromFen(this.fen));
+        newState.game.set(ChessGameFactory.createFromFen(this.fen));
         this.ips.addGame(BoardNames.InputPosition, newState);
         this.toastrService.success("Successfully imported position");
       }
