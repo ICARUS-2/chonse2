@@ -1,12 +1,12 @@
-import AlgebraicNotationMaker from "./types/algebraic-notation-builder";
-import { CastlingRightsType } from "./types/castling-rights-type";
-import Chonse2 from "./implementations/chonse2-impl/chonse2";
-import { PieceColor } from "./types/piece-color";
-import { PieceType } from "./types/piece-type";
-import { ChessConstants } from "./types/constants";
-import PieceMaterial from "./types/piece-material";
+import AlgebraicNotationMaker from "../types/algebraic-notation-builder";
+import { CastlingRightsType } from "../types/castling-rights-type";
+import Chonse2 from "../implementations/chonse2-impl/chonse2";
+import { PieceColor } from "../types/piece-color";
+import { PieceType } from "../types/piece-type";
+import { ChessConstants } from "../types/constants";
+import PieceMaterial from "../types/piece-material";
 
-export default class BoardScannerLibrary
+export default class BoardScanner
 {
     //#region Hanging pieces
 
@@ -48,7 +48,7 @@ export default class BoardScannerLibrary
     //Simple hanging piece checker (doesn't account for xray tho)
     public static doesSquareHaveHangingPiece(board: Chonse2, squareCoord: string): boolean
     {        
-        const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(squareCoord);
+        const { rowIndex, colIndex } = ChessConstants.findIndexFromCoordinate(squareCoord);
         const pieceInSquare = board.getPieceState()[rowIndex][colIndex];
 
         //A square with no piece in it isn't hanging.
@@ -115,7 +115,7 @@ export default class BoardScannerLibrary
         const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board.getAllPiecesAndCoordsByColor(attackerColor);
         
         //All of the hanging pieces on the board regardless of color.
-        const allHangingPieces = _precomputedHangingPieceArr == null ? BoardScannerLibrary.getHangingPieces(boardCopy) : _precomputedHangingPieceArr;
+        const allHangingPieces = _precomputedHangingPieceArr == null ? BoardScanner.getHangingPieces(boardCopy) : _precomputedHangingPieceArr;
     
         //Need to check through every piece to find which ones might be forking.
         for(let i = 0; i < piecesAndCoords.coords.length; i++)
@@ -335,7 +335,7 @@ export default class BoardScannerLibrary
             }
         )
 
-        const hangingPieceCoords = BoardScannerLibrary.getHangingPieces(board);
+        const hangingPieceCoords = BoardScanner.getHangingPieces(board);
 
         for( let i = 0; i < candidateAttackers.pieces.length; i++ )
         {
@@ -379,7 +379,7 @@ export default class BoardScannerLibrary
             }
 
             //This is the current index within the piece state array that the coordinate lies in. Need this for checking the squares it sees.
-            const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(currentCoord);
+            const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(currentCoord);
 
             for(let offsetIndex = 0; offsetIndex < vectorX.length; offsetIndex++)
             {
@@ -515,12 +515,12 @@ export default class BoardScannerLibrary
         //It's impossible to have castled if castling rights are still there.
         if (!board.getCastlingRights(CastlingRightsType.WhiteKingside) && !board.getCastlingRights(CastlingRightsType.WhiteQueenside) )
         {
-            if (BoardScannerLibrary.WHITE_KINGSIDE_CASTLE_SQUARES.includes(whiteKingCoord))
+            if (BoardScanner.WHITE_KINGSIDE_CASTLE_SQUARES.includes(whiteKingCoord))
             {
                 returnObj.whiteKingside = true;
             }
 
-            if (BoardScannerLibrary.WHITE_QUEENSIDE_CASTLE_SQUARES.includes(whiteKingCoord))
+            if (BoardScanner.WHITE_QUEENSIDE_CASTLE_SQUARES.includes(whiteKingCoord))
             {
                 returnObj.whiteQueenside = true;
             }
@@ -528,12 +528,12 @@ export default class BoardScannerLibrary
 
         if (!board.getCastlingRights(CastlingRightsType.BlackKingside)  && !board.getCastlingRights(CastlingRightsType.BlackQueenside) )
         {
-            if (BoardScannerLibrary.BLACK_KINGSIDE_CASTLE_SQUARES.includes(blackKingCoord))
+            if (BoardScanner.BLACK_KINGSIDE_CASTLE_SQUARES.includes(blackKingCoord))
             {
                 returnObj.blackKingside = true;
             }
 
-            if (BoardScannerLibrary.BLACK_QUEENSIDE_CASTLE_SQUARES.includes(blackKingCoord))
+            if (BoardScanner.BLACK_QUEENSIDE_CASTLE_SQUARES.includes(blackKingCoord))
             {
                 returnObj.blackQueenside = true;
             }
@@ -607,7 +607,7 @@ export default class BoardScannerLibrary
         blackQueenside: boolean
     }
     {
-        const clear = BoardScannerLibrary.areSquaresClearForCastlingProvidedRightsAreThere(board);
+        const clear = BoardScanner.areSquaresClearForCastlingProvidedRightsAreThere(board);
 
         const returnObj = {
             whiteKingside: false,
@@ -754,7 +754,7 @@ export default class BoardScannerLibrary
             }
 
             //Loop through the possible vector coords
-            const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(currentCoord);
+            const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(currentCoord);
 
             for(let offsetIndex = 0; offsetIndex < vectorX.length; offsetIndex++)
             {
@@ -860,7 +860,7 @@ export default class BoardScannerLibrary
                     //if the opponent can be checked without hanging the piece, don't count this as a valid skewer.
                     if (isOpponentInCheck)
                     {
-                        if (!BoardScannerLibrary.doesSquareHaveHangingPiece(boardCopy,r.toCoord))
+                        if (!BoardScanner.doesSquareHaveHangingPiece(boardCopy,r.toCoord))
                         {
                             canHighValuePieceGiveCheckWithoutHanging = true;
                             boardCopy.undoMostRecentMove();
@@ -869,8 +869,8 @@ export default class BoardScannerLibrary
                     }
 
                     //If both pieces could be defended, don't count this as a valid skewer.
-                    const isLowerValuePieceHanging = BoardScannerLibrary.doesSquareHaveHangingPiece(boardCopy,r.toCoord);
-                    const isHigherValuePieceHanging = BoardScannerLibrary.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
+                    const isLowerValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy,r.toCoord);
+                    const isHigherValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
 
                     if (!isLowerValuePieceHanging && !isHigherValuePieceHanging)
                     {
@@ -916,7 +916,7 @@ export default class BoardScannerLibrary
                 boardCopy.setPieceOnBoard(sk.highValuePieceCoordinate, "");
 
                 //check if the piece is hanging.
-                isLowValuePieceHanging = BoardScannerLibrary.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
+                isLowValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
                 
                 //Put the piece back after
                 boardCopy.setPieceOnBoard(sk.highValuePieceCoordinate, highValuePiece);
@@ -1028,7 +1028,7 @@ export default class BoardScannerLibrary
             black: [] as string[]
         };
 
-        const openFiles = BoardScannerLibrary.getAllOpenFiles(board);
+        const openFiles = BoardScanner.getAllOpenFiles(board);
 
         for (const fileLetter of openFiles)
         {
@@ -1109,13 +1109,13 @@ export default class BoardScannerLibrary
         //return object with the passed pawn coords. 
         const returnObj: { white: string[], black: string[] } = { white: [], black: [] };
 
-        const allPawns = BoardScannerLibrary.getAllPieceCoordsOfType(board, PieceType.PAWN);
+        const allPawns = BoardScanner.getAllPieceCoordsOfType(board, PieceType.PAWN);
         const whitePawns: Array<string> = allPawns.white;
         const blackPawns: Array<string> = allPawns.black;
 
         whitePawns.forEach( whitePawnCoord => 
             {
-                const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(whitePawnCoord);
+                const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(whitePawnCoord);
 
                 let isPassed = true;
 
@@ -1144,7 +1144,7 @@ export default class BoardScannerLibrary
 
         blackPawns.forEach( blackPawnCoord => 
             {
-                const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(blackPawnCoord);
+                const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(blackPawnCoord);
 
                 let isPassed = true;
 
@@ -1178,12 +1178,12 @@ export default class BoardScannerLibrary
     {
         const returnObj = {white: [] as Array<string>, black: [] as Array<string>}
         
-        const passedPawns = BoardScannerLibrary.getAllPassedPawns(board);
+        const passedPawns = BoardScanner.getAllPassedPawns(board);
         
         //For each of the passed pawns, check if there is a piece of the opponent color sitting on the spot, actively preventing it from promotion.
         passedPawns.white.forEach( wppCoord => 
             {
-                const {colIndex} = Chonse2.findIndexFromCoordinate(wppCoord);
+                const {colIndex} = ChessConstants.findIndexFromCoordinate(wppCoord);
 
                 const promotionSquare = ChessConstants.COORDS[0][colIndex];
 
@@ -1204,7 +1204,7 @@ export default class BoardScannerLibrary
 
         passedPawns.black.forEach( bpp => 
             {
-                const {colIndex} = Chonse2.findIndexFromCoordinate(bpp);
+                const {colIndex} = ChessConstants.findIndexFromCoordinate(bpp);
 
                 const promotionSquare = ChessConstants.COORDS[7][colIndex];
 
@@ -1231,7 +1231,7 @@ export default class BoardScannerLibrary
     public static getAllIsolatedPawns(board: Chonse2): { white: Array<string>, black: Array<string> }
     {
         const returnObj = { white: [] as Array<string>, black: [] as Array<string> };
-        const allPawns = BoardScannerLibrary.getAllPieceCoordsOfType(board, PieceType.PAWN);
+        const allPawns = BoardScanner.getAllPieceCoordsOfType(board, PieceType.PAWN);
 
         [
             {
@@ -1249,7 +1249,7 @@ export default class BoardScannerLibrary
             //Check every pawn for its isolation status.
             pawns.forEach(pawnCoord =>
             {
-                const { colIndex } = Chonse2.findIndexFromCoordinate(pawnCoord);
+                const { colIndex } = ChessConstants.findIndexFromCoordinate(pawnCoord);
 
                 const filesToCheck: number[] = [];
 
@@ -1308,7 +1308,7 @@ export default class BoardScannerLibrary
             blackAttackSquares: [] as Array<string> 
         };
 
-        const allPawns = BoardScannerLibrary.getAllPieceCoordsOfType(board, PieceType.PAWN);
+        const allPawns = BoardScanner.getAllPieceCoordsOfType(board, PieceType.PAWN);
 
         const vectorX = ChessConstants.BISHOP_VECTOR_X;
         const vectorY = ChessConstants.BISHOP_VECTOR_Y;
@@ -1336,7 +1336,7 @@ export default class BoardScannerLibrary
             for(let i = 0; i < pawns.length; i++)
             {
                 const currentPawnCoord = pawns[i];
-                const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(currentPawnCoord);
+                const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(currentPawnCoord);
                 const currentPawnChain: Array<string> = [];
                 currentPawnChain.push(currentPawnCoord);
 
@@ -1404,7 +1404,7 @@ export default class BoardScannerLibrary
                     const currentAttackSquares: Array<string> = [];
                     currentPawnChain.forEach( coord => 
                         {
-                            const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
+                            const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(coord);
 
                             let attackLeftRowIndex = -1;
                             let attackLeftColIndex = -1; 
@@ -1530,7 +1530,7 @@ export default class BoardScannerLibrary
     //#region Knight outpost
     public static getAllOutpostKnights(board: Chonse2): { white: string[]; black: string[] }
     {
-        const knights = BoardScannerLibrary.getAllPieceCoordsOfType(board, PieceType.KNIGHT);
+        const knights = BoardScanner.getAllPieceCoordsOfType(board, PieceType.KNIGHT);
 
         return {
             white: knights.white.filter(coord => this.isOutpostKnight(board, coord, true)),
@@ -1540,7 +1540,7 @@ export default class BoardScannerLibrary
 
     private static isOutpostKnight(board: Chonse2, coord: string, isWhite: boolean): boolean
     {
-        const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coord);
+        const { rowIndex, colIndex } = ChessConstants.findIndexFromCoordinate(coord);
 
         if (!this._isInEnemyTerritory(rowIndex, isWhite))
             return false;

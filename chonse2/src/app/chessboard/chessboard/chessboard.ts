@@ -43,7 +43,7 @@ import { ChessConstants } from '../../../libs/chess-game-lib/types/constants';
 import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
 import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
 import { GameOverReason } from '../../../libs/chess-game-lib/types/game-state';
-import BoardScannerLibrary from '../../../libs/chess-game-lib/extensions';
+import BoardScanner from '../../../libs/chess-game-lib/helpers/board-scanner';
 import Chonse2 from '../../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
 import { IMoveResult } from '../../../libs/chess-game-lib/types/move-result';
 
@@ -232,7 +232,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     if (isClickToMove)
     {
-      const idx = Chonse2.findIndexFromCoordinate(fromSquare);
+      const idx = ChessConstants.findIndexFromCoordinate(fromSquare);
       piece = this.boardState().getCurrentState().getPieceState()[idx.rowIndex][idx.colIndex];
     }
     else 
@@ -548,7 +548,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const fromCoord: string = coord[0] + coord[1];
-    const idx = Chonse2.findIndexFromCoordinate(fromCoord);
+    const idx = ChessConstants.findIndexFromCoordinate(fromCoord);
 
     const piece: string = this.boardState().getCurrentState().getPieceState()[idx.rowIndex][idx.colIndex];
 
@@ -598,7 +598,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     //The state to be pushed to the stack.
     const stateCopy = this.boardState().getCurrentState().clone();
     
-    const fromIdx = Chonse2.findIndexFromCoordinate(fromSquare);
+    const fromIdx = ChessConstants.findIndexFromCoordinate(fromSquare);
     const pieceToAnimate = this.getMostCurrentMainState().getPieceState()[fromIdx.rowIndex][fromIdx.colIndex];
     
     if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
@@ -974,7 +974,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       if (this.fromRightClickSquare() == this.toRightClickSquare())
       {
         //Gets the index of the square to highlight.
-        const idx = Chonse2.findIndexFromCoordinate(this.toRightClickSquare());
+        const idx = ChessConstants.findIndexFromCoordinate(this.toRightClickSquare());
 
         //Sets the status telling it to change color.
         this.boardState().squareHighlightStatuses.update(grid =>
@@ -1036,7 +1036,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //For the coordinate, get whether it is right clicked or not.
   getRightClickedStatusForSquare = (coordinate: string) => computed( () =>
   {
-    const idx = Chonse2.findIndexFromCoordinate(coordinate);
+    const idx = ChessConstants.findIndexFromCoordinate(coordinate);
     
     return this.boardState().squareHighlightStatuses()[idx.rowIndex][idx.colIndex];
   } )
@@ -1260,7 +1260,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   private calculatePixelPosition(coordinate: string): { x: number, y: number } 
   {
-    const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coordinate);
+    const { rowIndex, colIndex } = ChessConstants.findIndexFromCoordinate(coordinate);
     const squareSize = this.getSquarePixelSize();
     return {
       x: colIndex * squareSize,

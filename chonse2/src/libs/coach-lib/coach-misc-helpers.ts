@@ -13,7 +13,7 @@ export class CoachMiscHelpers
     //#region Misc. helpers
     public static getKnightSquareHits(board: Chonse2, coordinate: string): Array<string>
     {
-        const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
+        const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(coordinate);
         const legalMoves: Array<string> = [];
 
         //A knight can only move two ahead and one to the side. These are the offsets for the eight possible squares a knight can go to relative to its current position

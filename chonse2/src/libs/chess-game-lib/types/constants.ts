@@ -40,6 +40,26 @@ export class ChessConstants
       ["a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"],
       ["a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"]
   ];
+  
+  //Gets the index from a piece array.
+  static findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
+  {
+    //Finds the row that includes this coordinate.
+    const rIdx = ChessConstants.COORDS.findIndex( row => row.includes(coordinate) );
+
+    //If it doesn't exist, it should return -1.
+    if (rIdx === -1)
+    {
+      return { rowIndex: -1, colIndex: -1 };
+    }
+
+    //The column index is the place in the rank where that exact coordinate is found.
+    const cIdx = ChessConstants.COORDS[rIdx].findIndex( col => col === coordinate );
+
+    //Both row and column indeces are returned.
+    return {rowIndex: rIdx, colIndex: cIdx};
+  }
+  
   static readonly SIZE: number = 8;
 
   //ranks

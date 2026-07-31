@@ -276,7 +276,7 @@ export class InputPositionBoard {
       if (this.fromRightClickSquare == this.toRightClickSquare)
       {
         //Gets the index of the square to highlight.
-        const idx = Chonse2.findIndexFromCoordinate(this.toRightClickSquare());
+        const idx = ChessConstants.findIndexFromCoordinate(this.toRightClickSquare());
 
         //Sets the status telling it to change color.
         this.model().squareHighlightStatuses()[idx.rowIndex][idx.colIndex] = !this.model().squareHighlightStatuses()[idx.rowIndex][idx.colIndex];
@@ -399,7 +399,7 @@ export class InputPositionBoard {
     if (king && ( isWhite ? king == ChessConstants.WHITE_KING_SQUARE : king == ChessConstants.BLACK_KING_SQUARE ))
     {
       const rookCoord = isWhite ? (isKingside ? ChessConstants.WHITE_KINGSIDE_ROOK_SQUARE : ChessConstants.WHITE_QUEENSIDE_ROOK_SQUARE) : (isKingside ? ChessConstants.BLACK_KINGSIDE_ROOK_SQUARE : ChessConstants.BLACK_QUEENSIDE_ROOK_SQUARE);
-      const rookSquareIndex = Chonse2.findIndexFromCoordinate(rookCoord);
+      const rookSquareIndex = ChessConstants.findIndexFromCoordinate(rookCoord);
       const rookSquareContent = this.model().game().getPieceState()[rookSquareIndex.rowIndex][rookSquareIndex.colIndex];
       const rookPiece = isWhite ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
 
@@ -474,7 +474,7 @@ export class InputPositionBoard {
 
     //Kings are not adjacent.
     const whiteKing = game().getKingCoordinate(PieceColor.WHITE);
-    const whiteKingIdx = Chonse2.findIndexFromCoordinate(whiteKing);
+    const whiteKingIdx = ChessConstants.findIndexFromCoordinate(whiteKing);
     for(let i = 0; i < InputPositionBoard.X_VECTOR.length; i++)
     {
       const xComponent = InputPositionBoard.X_VECTOR[i] + whiteKingIdx.rowIndex;
@@ -538,7 +538,7 @@ export class InputPositionBoard {
   //For the coordinate, get whether it is right clicked or not.
   getRightClickedStatusForSquare(coordinate: string)
   {
-    const idx = Chonse2.findIndexFromCoordinate(coordinate);
+    const idx = ChessConstants.findIndexFromCoordinate(coordinate);
     
     return this.model().squareHighlightStatuses()[idx.rowIndex][idx.colIndex];
   }
@@ -610,8 +610,8 @@ export class InputPositionBoard {
     }
 
     //Get the indeces and create the arrow from that.
-    const fromIdx = Chonse2.findIndexFromCoordinate(fromCoordinate);
-    const toIdx = Chonse2.findIndexFromCoordinate(toCoordinate);
+    const fromIdx = ChessConstants.findIndexFromCoordinate(fromCoordinate);
+    const toIdx = ChessConstants.findIndexFromCoordinate(toCoordinate);
 
     return { 
       fromRank: fromIdx.rowIndex, 

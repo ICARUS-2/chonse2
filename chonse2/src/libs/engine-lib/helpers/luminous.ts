@@ -1,5 +1,5 @@
 import Chonse2 from "../../chess-game-lib/implementations/chonse2-impl/chonse2";
-import BoardScannerLibrary from "../../chess-game-lib/extensions";
+import BoardScanner from "../../chess-game-lib/helpers/board-scanner";
 import { PieceColor } from "../../chess-game-lib/types/piece-color";
 import PieceMaterial from "../../chess-game-lib/types/piece-material";
 import { PieceType } from "../../chess-game-lib/types/piece-type";
@@ -137,7 +137,7 @@ export default class LuminousDetector
     private static _didMoveLeavePieceVulnerable(afterState: Chonse2, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;} ): boolean 
     {
         //If the piece isn't hanging, don't consider it a luminous sacrifice.
-        const isHangingPiece = BoardScannerLibrary.doesSquareHaveHangingPiece(afterState, uciPlayedMove.to);
+        const isHangingPiece = BoardScanner.doesSquareHaveHangingPiece(afterState, uciPlayedMove.to);
         if (!isHangingPiece)
         {
             return false;

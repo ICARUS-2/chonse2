@@ -15,7 +15,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CoachMiscHelpers } from '../../../libs/coach-lib/coach-misc-helpers';
 import { CoachMoveFlagType, CoachMoveSequenceType, CoachIdeaFlagType, CoachIdea, CoachResourceFlagType } from '../../../libs/coach-lib/coach-types';
 import { CoachAudio } from '../../../libs/coach-lib/coach-audio';
-import Chonse2 from '../../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
+import { ChessConstants } from '../../../libs/chess-game-lib/types/constants';
 
 @Component({
   selector: 'app-coach-display',
@@ -172,7 +172,7 @@ export class CoachDisplay {
             const {fromSquare, toSquare, promotion } = CoachMiscHelpers.convertUciToChonse2Move(engineMove);
 
             const currentState = this.boardState().getCurrentState();
-            const rawPieceIndex = Chonse2.findIndexFromCoordinate(fromSquare);
+            const rawPieceIndex = ChessConstants.findIndexFromCoordinate(fromSquare);
             const piece = currentState.getPieceState()[rawPieceIndex.rowIndex][rawPieceIndex.colIndex];
 
             
@@ -458,7 +458,7 @@ export class CoachDisplay {
   {
     const highlightIndices = coords.map( coord => 
       {
-        return Chonse2.findIndexFromCoordinate(coord);
+        return ChessConstants.findIndexFromCoordinate(coord);
       }
     )
 

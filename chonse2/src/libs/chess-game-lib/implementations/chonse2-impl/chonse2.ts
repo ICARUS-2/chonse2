@@ -93,29 +93,10 @@ export default class Chonse2 implements IChessGame
     return this._pieceState.map(row => [...row]);
   }
 
-  //Gets the index from a piece array.
-  static findIndexFromCoordinate(coordinate: string) : { rowIndex: number, colIndex: number }
-  {
-      //Finds the row that includes this coordinate.
-      const rIdx = ChessConstants.COORDS.findIndex( row => row.includes(coordinate) );
-
-      //If it doesn't exist, it should return -1.
-      if (rIdx === -1)
-      {
-        return { rowIndex: -1, colIndex: -1 };
-      }
-
-      //The column index is the place in the rank where that exact coordinate is found.
-      const cIdx = ChessConstants.COORDS[rIdx].findIndex( col => col === coordinate );
-
-      //Both row and column indeces are returned.
-      return {rowIndex: rIdx, colIndex: cIdx};
-  }
-
   //Gets a piece based off the coordinates.
   public findPieceAtCoordinate(coord: string): string
   {
-      const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
+      const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(coord);
 
       return this._pieceState[rowIndex][colIndex];
   }   
@@ -144,7 +125,7 @@ export default class Chonse2 implements IChessGame
   public getPiecesThatHitSquare(square: string): {whiteCoords: Array<string>, whitePieces: Array<string>, blackCoords: Array<string>, blackPieces: Array<string>} 
   {
       const boardCopy = this.clone();
-      const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(square);
+      const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(square);
       const o: { whiteCoords: string[], whitePieces: string[], blackCoords: string[], blackPieces: string[] } = { whiteCoords: [], whitePieces: [], blackCoords: [], blackPieces: [] };
 
       const colors = [PieceColor.WHITE, PieceColor.BLACK]; 
@@ -283,7 +264,7 @@ export default class Chonse2 implements IChessGame
   //Places a piece on the board at any coord.
   public setPieceOnBoard(coord: string, piece: string): void
   {
-    const { rowIndex, colIndex } = Chonse2.findIndexFromCoordinate(coord);
+    const { rowIndex, colIndex } = ChessConstants.findIndexFromCoordinate(coord);
     
     if (rowIndex >= 0 && colIndex >= 0)
     {
@@ -358,7 +339,7 @@ export default class Chonse2 implements IChessGame
       return false;
     }
 
-    const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
+    const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(coord);
 
     //The legal moves of the given piece types in this position.
     const rookMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), ChessConstants.ROOK_VECTOR_X, ChessConstants.ROOK_VECTOR_Y);
@@ -371,7 +352,7 @@ export default class Chonse2 implements IChessGame
     const rookPiece = attackerColor + PieceType.ROOK;
     for(let seenSquare of rookMoves)
     {
-      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      const seenSquareIndex = ChessConstants.findIndexFromCoordinate(seenSquare);
       if (this._pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == rookPiece)
       {
         return true;
@@ -382,7 +363,7 @@ export default class Chonse2 implements IChessGame
     const queenPiece = attackerColor + PieceType.QUEEN;
     for(let seenSquare of queenMoves)
     {
-      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      const seenSquareIndex = ChessConstants.findIndexFromCoordinate(seenSquare);
       if (this._pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == queenPiece)
       {
         return true;
@@ -393,7 +374,7 @@ export default class Chonse2 implements IChessGame
     const kingPiece = attackerColor + PieceType.KING;
     for(let seenSquare of kingMoves)
     {
-      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      const seenSquareIndex = ChessConstants.findIndexFromCoordinate(seenSquare);
       if (this._pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == kingPiece)
       {
         return true;
@@ -404,7 +385,7 @@ export default class Chonse2 implements IChessGame
     const bishopPiece = attackerColor + PieceType.BISHOP;
     for(let seenSquare of bishopMoves)
     {
-      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      const seenSquareIndex = ChessConstants.findIndexFromCoordinate(seenSquare);
       if (this._pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == bishopPiece)
       {
         return true;
@@ -415,7 +396,7 @@ export default class Chonse2 implements IChessGame
     const knightPiece = attackerColor + PieceType.KNIGHT;
     for(let seenSquare of knightMoves)
     {
-      const seenSquareIndex = Chonse2.findIndexFromCoordinate(seenSquare);
+      const seenSquareIndex = ChessConstants.findIndexFromCoordinate(seenSquare);
       if (this._pieceState[seenSquareIndex.rowIndex][seenSquareIndex.colIndex] == knightPiece)
       {
         return true;
@@ -538,11 +519,11 @@ export default class Chonse2 implements IChessGame
     {
       //Where the white bishop is on the board.
       const whiteBishopCoord: string = whitePieceData.coords[whitePieceData.pieces.findIndex( p => p === PieceType.WHITE_BISHOP )];
-      const whiteBishopIndex = Chonse2.findIndexFromCoordinate(whiteBishopCoord);
+      const whiteBishopIndex = ChessConstants.findIndexFromCoordinate(whiteBishopCoord);
 
       //Where the black bishop is on the board.
       const blackBishopCoord: string = blackPieceData.coords[blackPieceData.pieces.findIndex( p => p === PieceType.BLACK_BISHOP )];
-      const blackBishopIndex = Chonse2.findIndexFromCoordinate(blackBishopCoord);
+      const blackBishopIndex = ChessConstants.findIndexFromCoordinate(blackBishopCoord);
       
       //What colors the bishops are on.
       const wbIsDark: boolean = this._isDarkColoredSquare(whiteBishopIndex.rowIndex, whiteBishopIndex.colIndex);
@@ -605,7 +586,7 @@ export default class Chonse2 implements IChessGame
     }
 
     //The place within the piece state that the en passant square can be found
-    let enPassantSquareIndex = Chonse2.findIndexFromCoordinate(this._enPassantSquare);
+    let enPassantSquareIndex = ChessConstants.findIndexFromCoordinate(this._enPassantSquare);
     
     //Only run the necessary checks if there is an en passant square.
     if (enPassantSquareIndex)
@@ -713,7 +694,7 @@ export default class Chonse2 implements IChessGame
     }
 
     //Where the piece is within the state.
-    const index = Chonse2.findIndexFromCoordinate(coordinate);
+    const index = ChessConstants.findIndexFromCoordinate(coordinate);
 
     //The piece that is being moved.
     const piece = this._pieceState[index.rowIndex][index.colIndex];
@@ -763,10 +744,10 @@ export default class Chonse2 implements IChessGame
     let isPromotion = false;
 
     //In piece state, where the current piece is moving to.
-    const toSquareIndex = Chonse2.findIndexFromCoordinate(toCoordinate);
+    const toSquareIndex = ChessConstants.findIndexFromCoordinate(toCoordinate);
 
     //In the piece state, where the current piece is moving from.
-    const fromSquareIndex = Chonse2.findIndexFromCoordinate(fromCoordinate);
+    const fromSquareIndex = ChessConstants.findIndexFromCoordinate(fromCoordinate);
 
     //Extract the piece from the square that is being moved from.
     let piece = this._pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex];
@@ -880,10 +861,10 @@ export default class Chonse2 implements IChessGame
       if (piece == PieceType.WHITE_KING ? this._whiteCastlingRights.kingSide : this._blackCastlingRights.kingSide)
       {
         //Where the rook will when the player castles.
-        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE) : Chonse2.findIndexFromCoordinate(ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE);
+        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? ChessConstants.findIndexFromCoordinate(ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE) : ChessConstants.findIndexFromCoordinate(ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE);
         
         //Where the old rook will be cleared.
-        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(ChessConstants.WHITE_KINGSIDE_ROOK_SQUARE) : Chonse2.findIndexFromCoordinate(ChessConstants.BLACK_KINGSIDE_ROOK_SQUARE);
+        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? ChessConstants.findIndexFromCoordinate(ChessConstants.WHITE_KINGSIDE_ROOK_SQUARE) : ChessConstants.findIndexFromCoordinate(ChessConstants.BLACK_KINGSIDE_ROOK_SQUARE);
         
         //The piece to replace it with (a white rook if white is castling, black otherwise).
         const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
@@ -911,10 +892,10 @@ export default class Chonse2 implements IChessGame
       if (piece == PieceType.WHITE_KING ? this._whiteCastlingRights.queenSide : this._blackCastlingRights.queenSide)
       {
         //Where the rook will when the player castles.
-        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(ChessConstants.WHITE_QUEEN_SQUARE) : Chonse2.findIndexFromCoordinate(ChessConstants.BLACK_QUEEN_SQUARE);
+        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? ChessConstants.findIndexFromCoordinate(ChessConstants.WHITE_QUEEN_SQUARE) : ChessConstants.findIndexFromCoordinate(ChessConstants.BLACK_QUEEN_SQUARE);
         
         //Where the old rook will be cleared.
-        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(ChessConstants.WHITE_QUEENSIDE_ROOK_SQUARE) : Chonse2.findIndexFromCoordinate(ChessConstants.BLACK_QUEENSIDE_ROOK_SQUARE);
+        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? ChessConstants.findIndexFromCoordinate(ChessConstants.WHITE_QUEENSIDE_ROOK_SQUARE) : ChessConstants.findIndexFromCoordinate(ChessConstants.BLACK_QUEENSIDE_ROOK_SQUARE);
         
         //The piece to replace it with (a white rook if white is castling, black otherwise).
         const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
@@ -1085,7 +1066,7 @@ export default class Chonse2 implements IChessGame
   //Pseudolegal moves (not validated).
   private _getPotentiallyLegalMoves(coordinate: string): Array<string>
   {
-    const index = Chonse2.findIndexFromCoordinate(coordinate);
+    const index = ChessConstants.findIndexFromCoordinate(coordinate);
     const piece = this._pieceState[index.rowIndex][index.colIndex];
     let potentiallyLegalMoves: Array<string> = [];
 
@@ -1131,7 +1112,7 @@ export default class Chonse2 implements IChessGame
   //Pawn pseudolegal moves (not validated)
   private _getPotentiallyLegalPawnMoves(coordinate: string, color: string): Array<string>
   {
-    const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
+    const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(coordinate);
     const legalMoves:Array<string> = [];
 
     //rank ahead of this one
@@ -1207,7 +1188,7 @@ export default class Chonse2 implements IChessGame
   //Knight pseudolegal moves (not validated)
   private _getPotentiallyLegalKnightMoves(coordinate: string, color: string) : Array<string>
   {
-    const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
+    const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(coordinate);
     const legalMoves: Array<string> = [];
 
     //A knight can only move two ahead and one to the side. These are the offsets for the eight possible squares a knight can go to relative to its current position
@@ -1278,8 +1259,8 @@ export default class Chonse2 implements IChessGame
       if (this._turn == true ? this._whiteCastlingRights.kingSide : this._blackCastlingRights.kingSide)
       {
         //These two squares need to be free in order to castle kingside.
-        const kingsideKnightSquare = Chonse2.findIndexFromCoordinate(this._turn == true ? ChessConstants.WHITE_KINGSIDE_KNIGHT_SQUARE : ChessConstants.BLACK_KINGSIDE_KNIGHT_SQUARE);
-        const kingsideBishopSquare = Chonse2.findIndexFromCoordinate(this._turn == true ? ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE : ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE);
+        const kingsideKnightSquare = ChessConstants.findIndexFromCoordinate(this._turn == true ? ChessConstants.WHITE_KINGSIDE_KNIGHT_SQUARE : ChessConstants.BLACK_KINGSIDE_KNIGHT_SQUARE);
+        const kingsideBishopSquare = ChessConstants.findIndexFromCoordinate(this._turn == true ? ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE : ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE);
         const kingSquare = this._turn == true ? ChessConstants.WHITE_KING_SQUARE : ChessConstants.BLACK_KING_SQUARE;
 
         //Check if they're clear and that the king is not castling through an attacked square, and if so, push the castling square as a legal move.
@@ -1298,9 +1279,9 @@ export default class Chonse2 implements IChessGame
       if (this._turn == true ? this._whiteCastlingRights.queenSide : this._blackCastlingRights.queenSide)
       {
         //These three squares need to be free in order to castle queenside.
-        const queensideKnightSquare = Chonse2.findIndexFromCoordinate(this._turn == true ? ChessConstants.WHITE_QUEENSIDE_KNIGHT_SQUARE : ChessConstants.BLACK_QUEENSIDE_KNIGHT_SQUARE);
-        const queensideBishopSquare = Chonse2.findIndexFromCoordinate(this._turn == true ? ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE : ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE);
-        const queenSquare = Chonse2.findIndexFromCoordinate(this._turn == true ? ChessConstants.WHITE_QUEEN_SQUARE : ChessConstants.BLACK_QUEEN_SQUARE);
+        const queensideKnightSquare = ChessConstants.findIndexFromCoordinate(this._turn == true ? ChessConstants.WHITE_QUEENSIDE_KNIGHT_SQUARE : ChessConstants.BLACK_QUEENSIDE_KNIGHT_SQUARE);
+        const queensideBishopSquare = ChessConstants.findIndexFromCoordinate(this._turn == true ? ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE : ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE);
+        const queenSquare = ChessConstants.findIndexFromCoordinate(this._turn == true ? ChessConstants.WHITE_QUEEN_SQUARE : ChessConstants.BLACK_QUEEN_SQUARE);
         const kingSquare = this._turn == true ? ChessConstants.WHITE_KING_SQUARE : ChessConstants.BLACK_KING_SQUARE;
 
         //Check if they're clear and that the king is not castling through an attacked square, and if so, push the castling square as a legal move.
@@ -1323,7 +1304,7 @@ export default class Chonse2 implements IChessGame
   //Generates moves for vector-moving pieces (any sliding one)
   private _getVectorMoves(coordinate: string, color: string, vectorX: Array<number>, vectorY: Array<number>, distance = ChessConstants.SIZE): Array<string>
   {
-    const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coordinate);
+    const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(coordinate);
     //Extract the piece from the square that is being moved from.
       const legalMoves: Array<string> = [];
   
@@ -1417,10 +1398,10 @@ export default class Chonse2 implements IChessGame
     inst._cacheState();
 
     //In piece state, where the current piece is moving to.
-    const toSquareIndex = Chonse2.findIndexFromCoordinate(toCoordinate);
+    const toSquareIndex = ChessConstants.findIndexFromCoordinate(toCoordinate);
 
     //In the piece state, where the current piece is moving from.
-    const fromSquareIndex = Chonse2.findIndexFromCoordinate(fromCoordinate);
+    const fromSquareIndex = ChessConstants.findIndexFromCoordinate(fromCoordinate);
 
     //Extract the piece from the square that is being moved from.
     let piece = inst._pieceState[fromSquareIndex.rowIndex][fromSquareIndex.colIndex];
@@ -1450,10 +1431,10 @@ export default class Chonse2 implements IChessGame
       if (piece == PieceType.WHITE_KING ? inst._whiteCastlingRights.kingSide : inst._blackCastlingRights.kingSide)
       {
         //Where the rook will when the player castles.
-        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE) : Chonse2.findIndexFromCoordinate(ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE);
+        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? ChessConstants.findIndexFromCoordinate(ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE) : ChessConstants.findIndexFromCoordinate(ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE);
         
         //Where the old rook will be cleared.
-        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(ChessConstants.WHITE_KINGSIDE_ROOK_SQUARE) : Chonse2.findIndexFromCoordinate(ChessConstants.BLACK_KINGSIDE_ROOK_SQUARE);
+        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? ChessConstants.findIndexFromCoordinate(ChessConstants.WHITE_KINGSIDE_ROOK_SQUARE) : ChessConstants.findIndexFromCoordinate(ChessConstants.BLACK_KINGSIDE_ROOK_SQUARE);
         
         //The piece to replace it with (a white rook if white is castling, black otherwise).
         const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
@@ -1475,10 +1456,10 @@ export default class Chonse2 implements IChessGame
       if (piece == PieceType.WHITE_KING ? inst._whiteCastlingRights.queenSide : inst._blackCastlingRights.queenSide)
       {
         //Where the rook will when the player castles.
-        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(ChessConstants.WHITE_QUEEN_SQUARE) : Chonse2.findIndexFromCoordinate(ChessConstants.BLACK_QUEEN_SQUARE);
+        const newRookPlaceIndex = piece == PieceType.WHITE_KING ? ChessConstants.findIndexFromCoordinate(ChessConstants.WHITE_QUEEN_SQUARE) : ChessConstants.findIndexFromCoordinate(ChessConstants.BLACK_QUEEN_SQUARE);
         
         //Where the old rook will be cleared.
-        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? Chonse2.findIndexFromCoordinate(ChessConstants.WHITE_QUEENSIDE_ROOK_SQUARE) : Chonse2.findIndexFromCoordinate(ChessConstants.BLACK_QUEENSIDE_ROOK_SQUARE);
+        const oldRookPlaceIndex = piece == PieceType.WHITE_KING ? ChessConstants.findIndexFromCoordinate(ChessConstants.WHITE_QUEENSIDE_ROOK_SQUARE) : ChessConstants.findIndexFromCoordinate(ChessConstants.BLACK_QUEENSIDE_ROOK_SQUARE);
         
         //The piece to replace it with (a white rook if white is castling, black otherwise).
         const newRook = piece == PieceType.WHITE_KING ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
