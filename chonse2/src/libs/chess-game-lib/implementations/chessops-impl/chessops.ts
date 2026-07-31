@@ -8,6 +8,7 @@ import { Chess } from 'chessops/chess';
 import { parseFen } from 'chessops/fen'
 import { PieceType } from "../../types/piece-type";
 import { ChessConstants } from "../../types/constants";
+import PieceMaterial from "../../types/piece-material";
 
 export default class ChessopsBoard implements IChessGame
 {
@@ -143,44 +144,132 @@ export default class ChessopsBoard implements IChessGame
 
         //Then divide up the data by piece color.
         attackers.forEach( a => 
-        {
-            //Get the piece to our standard.
-            const convertedPiece = this._convertPiece(a.piece);
-
-            if (convertedPiece.startsWith("w"))
             {
-                //Converts square to number (ex: 12 -> e4)
-                whiteCoords.push(makeSquare(square));
-                whitePieces.push(convertedPiece);
-            }
+                //Get the piece to our standard.
+                const convertedPiece = this._convertPiece(a.piece);
 
-            if (convertedPiece.startsWith("b"))
-            {
-                blackCoords.push(makeSquare(square));
-                blackPieces.push(convertedPiece);
+                if (convertedPiece.startsWith("w"))
+                {
+                    //Converts square to number (ex: 12 -> e4)
+                    whiteCoords.push(makeSquare(a.square));
+                    whitePieces.push(convertedPiece);
+                }
+
+                if (convertedPiece.startsWith("b"))
+                {
+                    blackCoords.push(makeSquare(a.square));
+                    blackPieces.push(convertedPiece);
+                }
             }
-        }
         )
 
         return {whiteCoords, whitePieces, blackCoords, blackPieces};
     }
 
     //Retrieves parallel arrays of all pieces/coords of the passed color.
-    public getAllPiecesAndCoordsByColor(color: string): { pieces: Array<string>, coords: Array<string> }
+    public getAllPiecesAndCoordsByColor(color: string): {pieces: Array<string>, coords: Array<string>}
     {
-        throw new Error("Not implemented.");
+        if (color != PieceColor.WHITE && color != PieceColor.BLACK)
+        {
+        return { pieces: [], coords: [] };
+        }
+
+        const pieces = [];
+        const coordinates = [];
+
+        const _pieceState = this.getPieceState()
+
+        //Loop through each of these to get the coordinates + pieces.
+        for(let i = 0; i < ChessConstants.COORDS.length; i++)
+        {
+        for(let j = 0; j < ChessConstants.COORDS[i].length; j++)
+        {
+            const piece = _pieceState[i][j];
+
+            if ( piece.startsWith(color))
+            {
+            pieces.push(piece);
+            coordinates.push(ChessConstants.COORDS[i][j])
+            }
+        }
+        }
+
+        return { pieces: pieces, coords : coordinates};
     }
 
     //If the passed color's king is in check.
     public isInCheck(kingColor: string): boolean
     {
-        throw new Error("Not implemented.");
+        const board = this._inst.board;
+
+        //If we are verifying the white king:
+        if (kingColor == PieceColor.WHITE)
+        {
+        //Get the king.
+        const whiteKingSquare = board.kingOf('white');
+
+        //If the king is actually there.
+        if (whiteKingSquare !== undefined) 
+        {
+            //Get what attacks it.
+            const attackers = this.getPiecesThatHitSquare(makeSquare(whiteKingSquare));
+
+            //If something attacks it, it's in check.
+            if (attackers.blackCoords.length > 0) 
+            {
+            return true;
+            }
+        }
+        }
+
+        //If we are verifying the black king:
+        if (kingColor == PieceColor.BLACK)
+        {
+        const blackKingSquare = board.kingOf('black');
+
+        //If the king is actually there.
+        if (blackKingSquare !== undefined) 
+        {
+            //Get what attacks it.
+            const attackers = this.getPiecesThatHitSquare(makeSquare(blackKingSquare));
+
+            //If something attacks it, it's in check.
+            if (attackers.whiteCoords.length > 0) 
+            {
+            return true;
+            }
+        }
+        }
+
+        return false;
     }
 
     //Positive number signifies that white is up, negative signifies black is up.
-    public getMaterialAdvantage(): number
+    public getMaterialAdvantage(): number 
     {
-        throw new Error("Not implemented.");
+        const board = this._inst.board; 
+        let whiteValue = 0;
+        let blackValue = 0;
+
+        for (const [_, piece] of board) 
+        {
+        const convertedPiece = this._convertPiece(piece)
+        if (convertedPiece !== PieceType.WHITE_KING && convertedPiece !== PieceType.BLACK_KING)
+        {
+            const value = PieceMaterial.getMaterialFromPiece(convertedPiece);
+
+            if (piece.color === 'white') 
+            {
+            whiteValue += value;
+            } 
+            else 
+            {
+            blackValue += value;
+            }
+        }
+        }
+
+        return whiteValue - blackValue;  // Positive = white advantage, negative = black advantage
     }
 
     //Get captured pieces by color
