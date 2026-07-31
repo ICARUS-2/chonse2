@@ -1,35 +1,168 @@
+import { Piece, attacks, makeSquare, parseSquare } from "chessops";
 import IChessGame from "../../i-chess-game";
 import { CastlingRightsType } from "../../types/castling-rights-type";
 import { GameState } from "../../types/game-state";
 import { IMoveResult } from "../../types/move-result";
 import { PieceColor } from "../../types/piece-color";
+import { Chess } from 'chessops/chess';
+import { parseFen } from 'chessops/fen'
+import { PieceType } from "../../types/piece-type";
+import { ChessConstants } from "../../types/constants";
 
 export default class ChessopsBoard implements IChessGame
 {
+    _inst: Chess;
+
+    constructor(fen: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+    {
+        const setup = parseFen(fen).unwrap();
+        this._inst = Chess.fromSetup(setup).unwrap();
+    }
+
     //#region Pieces and squares.
 
     //Should retrieve an 8x8 array representing the board with its pieces (wP, wK, bN, etc).
     public getPieceState(): string[][]
     {
-        throw new Error("Not implemented.");
+        const arr = [];
+
+        //Loop through rank
+        for (let rank = ChessConstants.SIZE - 1; rank >= 0; rank--) 
+        {
+            const row = [];
+            for (let file = 0; file < ChessConstants.SIZE; file++) 
+            {
+                //Square code in board.
+                const square = rank * ChessConstants.SIZE + file;
+
+                //Piece object inside the square.
+                const squareContent: Piece | undefined = this._inst.board.get(square);
+                
+                //Convert piece to use piece code (ex wP for white pawn.)
+                const convertedPiece = this._convertPiece(squareContent);
+
+                //Add to rank.
+                row.push(convertedPiece);
+            }
+
+            //Add rank.
+            arr.push(row);
+        }
+
+        return arr
     }
 
     //Takes in a coordinate and returns the type of piece that's in it.
     public findPieceAtCoordinate(coord: string): string
     {
-        throw new Error("Not implemented.");
+        //Parse the square into its internal number code.
+        const sqr = parseSquare(coord);
+
+        //If it doesn't exist, don't return any piece.
+        if (sqr === undefined)
+        {
+            throw new Error("Invalid square for coord " + coord);
+        }
+
+        //Get piece object on board.
+        const piece = this._inst.board.get(sqr);
+
+        //Convert it to our standard.
+        const convertedPiece = this._convertPiece(piece);
+
+        //And return it.
+        return convertedPiece;
     }
 
     //Retrieves the king coordinate for the passed color.
     public getKingCoordinate(kingColor: string): string
     {
-        throw new Error("Not implemented.");
+        //White king.
+        if (kingColor == PieceColor.WHITE)
+        {
+            const whiteKing = this._inst.board.kingOf("white");
+
+            if (whiteKing)
+            {
+                return makeSquare(whiteKing);
+            }
+        }
+
+        //Black king.
+        if (kingColor == PieceColor.BLACK)
+        {
+            const blackKing = this._inst.board.kingOf("black");
+
+            if (blackKing)
+            {
+                return makeSquare(blackKing);
+            }
+        }
+
+        return "";
     }
 
     //Gets all the pieces pointed at a given square.
-    public getPiecesThatHitSquare(square: string): { whiteCoords: Array<string>, whitePieces: Array<string>, blackCoords: Array<string>, blackPieces: Array<string> }
+    getPiecesThatHitSquare(coord: string): { whiteCoords: Array<string>, whitePieces: Array<string>, blackCoords: Array<string>, blackPieces: Array<string> }
     {
-        throw new Error("Not implemented.");
+        //Initial array.
+        const attackers = [];
+
+        //Final arrays.
+        const whiteCoords: Array<string> = [];
+        const whitePieces: Array<string> = [];
+        const blackCoords: Array<string> = [];
+        const blackPieces: Array<string> = [];
+        const square = parseSquare(coord);
+
+        if (!square)
+        {
+            return {whiteCoords, whitePieces, blackCoords, blackPieces};    
+        }
+
+        const board = this._inst.board;
+
+
+        //Each square in the board.
+        for (const attackerSquare of board) 
+        {
+            //Get what's in it.
+            const piece = board.get(attackerSquare[0]);
+
+            //If there's actually anything in it:
+            if (piece) 
+            {
+                //Check if it attacks anything.
+                if (attacks(piece, attackerSquare[0], board.occupied).has(square)) 
+                {
+                    //If it does, push its data.
+                    attackers.push({ square: attackerSquare[0], piece });
+                }
+            }
+        }
+
+        //Then divide up the data by piece color.
+        attackers.forEach( a => 
+        {
+            //Get the piece to our standard.
+            const convertedPiece = this._convertPiece(a.piece);
+
+            if (convertedPiece.startsWith("w"))
+            {
+                //Converts square to number (ex: 12 -> e4)
+                whiteCoords.push(makeSquare(square));
+                whitePieces.push(convertedPiece);
+            }
+
+            if (convertedPiece.startsWith("b"))
+            {
+                blackCoords.push(makeSquare(square));
+                blackPieces.push(convertedPiece);
+            }
+        }
+        )
+
+        return {whiteCoords, whitePieces, blackCoords, blackPieces};
     }
 
     //Retrieves parallel arrays of all pieces/coords of the passed color.
@@ -66,6 +199,67 @@ export default class ChessopsBoard implements IChessGame
     public setTurn(val: boolean): void
     {
         throw new Error("Not implemented.");
+    }
+
+    private _convertPiece(squareContent: Piece | undefined)
+    {
+      let pieceCode = "";
+
+      if (squareContent) {
+        switch (`${squareContent.color}-${squareContent.role}`) {
+          // White pieces
+          case "white-pawn":
+            pieceCode = PieceType.WHITE_PAWN;
+            break;
+
+          case "white-rook":
+            pieceCode = PieceType.WHITE_ROOK;
+            break;
+
+          case "white-knight":
+            pieceCode = PieceType.WHITE_KNIGHT;
+            break;
+
+          case "white-bishop":
+            pieceCode = PieceType.WHITE_BISHOP;
+            break;
+
+          case "white-queen":
+            pieceCode = PieceType.WHITE_QUEEN;
+            break;
+
+          case "white-king":
+            pieceCode = PieceType.WHITE_KING;
+            break;
+
+          // Black pieces
+          case "black-pawn":
+            pieceCode = PieceType.BLACK_PAWN;
+            break;
+
+          case "black-rook":
+            pieceCode = PieceType.BLACK_ROOK;
+            break;
+
+          case "black-knight":
+            pieceCode = PieceType.BLACK_KNIGHT;
+            break;
+
+          case "black-bishop":
+            pieceCode = PieceType.BLACK_BISHOP;
+            break;
+
+          case "black-queen":
+            pieceCode = PieceType.BLACK_QUEEN;
+            break;
+
+          case "black-king":
+            pieceCode = PieceType.BLACK_KING;
+            break;
+        }
+      }
+
+      return pieceCode
     }
 
     //#endregion
@@ -160,11 +354,6 @@ export default class ChessopsBoard implements IChessGame
     //#region Instantiation
 
     public clone(): IChessGame
-    {
-        throw new Error("Not implemented.");
-    }
-
-    public static instantiateFromFen(fen: string): IChessGame
     {
         throw new Error("Not implemented.");
     }
