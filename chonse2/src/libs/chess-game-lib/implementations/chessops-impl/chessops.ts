@@ -5,7 +5,7 @@ import { GameState } from "../../types/game-state";
 import { IMoveResult } from "../../types/move-result";
 import { PieceColor } from "../../types/piece-color";
 import { Chess } from 'chessops/chess';
-import { parseFen } from 'chessops/fen'
+import { makeFen, parseFen } from 'chessops/fen'
 import { PieceType } from "../../types/piece-type";
 import { ChessConstants } from "../../types/constants";
 import PieceMaterial from "../../types/piece-material";
@@ -275,19 +275,23 @@ export default class ChessopsBoard implements IChessGame
     //Get captured pieces by color
     public getPiecesCapturedByPlayer(color: PieceColor): Array<string>
     {
-        throw new Error("Not implemented.");
+        if (color == PieceColor.WHITE)
+        {
+            return [];
+        }
+
+        if (color == PieceColor.BLACK)
+        {
+            return [];
+        }
+
+        return [];
     }
 
     //Returns true if white to move, false if black to move.
     public getTurn(): boolean
     {
-        throw new Error("Not implemented.");
-    }
-
-    //Set true for white to move, false for black to move.
-    public setTurn(val: boolean): void
-    {
-        throw new Error("Not implemented.");
+        return this._inst.turn === 'white';
     }
 
     private _convertPiece(squareContent: Piece | undefined)
@@ -354,6 +358,25 @@ export default class ChessopsBoard implements IChessGame
     //#endregion
 
     //#region Manipulation of state
+
+    //Set true for white to move, false for black to move.
+    public setTurn(val: boolean): void 
+    {
+        const currentTurn = this.getTurn();
+
+        if (currentTurn === val)
+        {
+            return;
+        }
+
+        const currentFen = this.getFEN();
+        const parts = currentFen.split(' ');
+        parts[1] = val === true ? PieceColor.WHITE : PieceColor.BLACK;
+
+        const newFen = parts.join(' ');
+        const setup = parseFen(newFen).unwrap();
+        this._inst = Chess.fromSetup(setup).unwrap();
+    }
 
     //Resets the board to its default.
     public reset(): void
@@ -450,10 +473,11 @@ export default class ChessopsBoard implements IChessGame
     //#endregion
 
     //#region FEN
-
-    public getFEN(): string
+    public getFEN(): string 
     {
-        throw new Error("Not implemented.");
+        const currentFen = makeFen(this._inst.toSetup());
+
+        return currentFen;
     }
 
     //#endregion
