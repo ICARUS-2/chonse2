@@ -1,17 +1,17 @@
 import AlgebraicNotationMaker from "../types/algebraic-notation-builder";
 import { CastlingRightsType } from "../types/castling-rights-type";
-import Chonse2 from "../implementations/chonse2-impl/chonse2";
 import { PieceColor } from "../types/piece-color";
 import { PieceType } from "../types/piece-type";
 import { ChessConstants } from "../types/constants";
 import PieceMaterial from "../types/piece-material";
+import IChessGame from "../i-chess-game";
 
 export default class BoardScanner
 {
     //#region Hanging pieces
 
     //Sorts hanging pieces by color.
-    public static getHangingPieces(board: Chonse2): { white: Array<string>, black: Array<string> }
+    public static getHangingPieces(board: IChessGame): { white: Array<string>, black: Array<string> }
     {
         const o: { white: Array<string>, black: Array<string> } = {
             white: [],
@@ -46,7 +46,7 @@ export default class BoardScanner
     }
 
     //Simple hanging piece checker (doesn't account for xray tho)
-    public static doesSquareHaveHangingPiece(board: Chonse2, squareCoord: string): boolean
+    public static doesSquareHaveHangingPiece(board: IChessGame, squareCoord: string): boolean
     {        
         const { rowIndex, colIndex } = ChessConstants.findIndexFromCoordinate(squareCoord);
         const pieceInSquare = board.getPieceState()[rowIndex][colIndex];
@@ -96,7 +96,7 @@ export default class BoardScanner
 
     //#region Forks
     public static getForksOnBoard(
-        board: Chonse2, 
+        board: IChessGame, 
         attackerColor: string, 
         _precomputedHangingPieceArr: { white: Array<string>, black: Array<string> } | null = null //Array of all hanging pieces. 
                          // For efficiency in cases where the hanging pieces have already been computed, don't compute them again
@@ -189,7 +189,7 @@ export default class BoardScanner
 
                             //verify if there is a check.
                             boardCopy.setTurn(attackerColor == PieceColor.WHITE ? false : true);
-                            boardCopy.completeMove(coord, move);
+                            boardCopy.completeMove(coord, move, PieceType.QUEEN);
 
                             
                             const attackerIsInCheck = boardCopy.isInCheck(attackerColor);
@@ -274,7 +274,7 @@ export default class BoardScanner
                             //Clone the object and complete the move (this is horribly inefficient but all I can think of right now, fix this shit later).
                             //const clone = boardCopy.getFullDeepCopy();
                             boardCopy.setTurn(!boardCopy.getTurn());
-                            boardCopy.completeMove(defenderPieceCoord, legalMove);
+                            boardCopy.completeMove(defenderPieceCoord, legalMove, PieceType.QUEEN);
                             boardCopy.setTurn(!boardCopy.getTurn());
 
                             //Get the pieces that defend the forked square.
@@ -306,7 +306,7 @@ export default class BoardScanner
     //#endregion
 
     //#region Pins
-    static getPinsOnBoard(board: Chonse2, excludePawns: boolean = false)
+    static getPinsOnBoard(board: IChessGame, excludePawns: boolean = false)
     {
         const pins: Array<Pin> = [];
 
@@ -501,7 +501,7 @@ export default class BoardScanner
     };
 
     //Checks if the kings are in or around the castling position.
-    public static didPlayersLikelyCastle(board:Chonse2): {
+    public static didPlayersLikelyCastle(board:IChessGame): {
         whiteKingside: boolean, 
         whiteQueenside: boolean,
         blackKingside: boolean,
@@ -543,7 +543,7 @@ export default class BoardScanner
     }
 
     //If the player has castling rights, check that the squares are clear.
-    public static areSquaresClearForCastlingProvidedRightsAreThere(board: Chonse2): {whiteKingside: boolean, whiteQueenside: boolean, blackKingside: boolean, blackQueenside: boolean}
+    public static areSquaresClearForCastlingProvidedRightsAreThere(board: IChessGame): {whiteKingside: boolean, whiteQueenside: boolean, blackKingside: boolean, blackQueenside: boolean}
     {
         const returnObj = 
         {
@@ -599,7 +599,7 @@ export default class BoardScanner
     // Checks if any enemy piece is preventing the king from castling.
     // Assumes the castling path is already clear of pieces.
     public static isEnemyPieceBlockingCastlingPath(
-        board: Chonse2
+        board: IChessGame
     ): {
         whiteKingside: boolean,
         whiteQueenside: boolean,
@@ -661,7 +661,7 @@ export default class BoardScanner
     //#endregion
     
     //#region Skewers
-    public static getSkewersOnBoard(board: Chonse2, optionalExistingHangingPieceArray: { white: Array<string>, black: Array<string> } | null = null): Array<Skewer>
+    public static getSkewersOnBoard(board: IChessGame, optionalExistingHangingPieceArray: { white: Array<string>, black: Array<string> } | null = null): Array<Skewer>
     {
         let candidateSkewers: Array<Skewer> = [];
 
@@ -854,7 +854,7 @@ export default class BoardScanner
                 {
                     const mv = legalMovesForHighValuePiece[i];
 
-                    const r = boardCopy.completeMove(sk.highValuePieceCoordinate, mv);
+                    const r = boardCopy.completeMove(sk.highValuePieceCoordinate, mv, PieceType.QUEEN);
                     const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
 
                     //if the opponent can be checked without hanging the piece, don't count this as a valid skewer.
@@ -885,7 +885,7 @@ export default class BoardScanner
                 {
                     const mv = legalMovesForLowValuePiece[i];
 
-                    const r = boardCopy.completeMove(sk.lowValuePieceBehindCoordinate, mv);
+                    const r = boardCopy.completeMove(sk.lowValuePieceBehindCoordinate, mv, PieceType.QUEEN);
                     const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
 
                     if (isOpponentInCheck)
@@ -940,7 +940,7 @@ export default class BoardScanner
     //#endregion
 
     //#region Connecting rooks
-    public static doesBoardHaveConnectedRooks(board: Chonse2):{white: boolean, black: boolean}
+    public static doesBoardHaveConnectedRooks(board: IChessGame):{white: boolean, black: boolean}
     {
         const returnObj = {white: false, black: false};
 
@@ -1020,7 +1020,7 @@ export default class BoardScanner
     //#endregion
 
     //#region Rooks on open files
-    public static getOpenFilesWithRooks(board: Chonse2): { white: string[], black: string[] }
+    public static getOpenFilesWithRooks(board: IChessGame): { white: string[], black: string[] }
     {
         const returnObj = 
         {
@@ -1061,7 +1061,7 @@ export default class BoardScanner
     //#endregion
 
     //#region Doubled pawns
-    public static getDoubledPawnFiles(board: Chonse2): {white: Array<string>, black: Array<string>}
+    public static getDoubledPawnFiles(board: IChessGame): {white: Array<string>, black: Array<string>}
     {
         const returnObj = {white: [] as Array<string>, black: [] as Array<string>}
 
@@ -1104,7 +1104,7 @@ export default class BoardScanner
     //#endregion
 
     //#region Passed pawns
-    public static getAllPassedPawns(board: Chonse2): {white: Array<string>, black: Array<string>}
+    public static getAllPassedPawns(board: IChessGame): {white: Array<string>, black: Array<string>}
     {
         //return object with the passed pawn coords. 
         const returnObj: { white: string[], black: string[] } = { white: [], black: [] };
@@ -1174,7 +1174,7 @@ export default class BoardScanner
     //#endregion
 
     //#region Piece sitting on passed pawn promotion square.
-    public static getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(board: Chonse2): {white: Array<string>, black: Array<string>}
+    public static getCoordsOfPiecesSittingOnPassedPawnPromotionSquares(board: IChessGame): {white: Array<string>, black: Array<string>}
     {
         const returnObj = {white: [] as Array<string>, black: [] as Array<string>}
         
@@ -1228,7 +1228,7 @@ export default class BoardScanner
     //#endregion
 
     //#region Isolated pawns
-    public static getAllIsolatedPawns(board: Chonse2): { white: Array<string>, black: Array<string> }
+    public static getAllIsolatedPawns(board: IChessGame): { white: Array<string>, black: Array<string> }
     {
         const returnObj = { white: [] as Array<string>, black: [] as Array<string> };
         const allPawns = BoardScanner.getAllPieceCoordsOfType(board, PieceType.PAWN);
@@ -1298,7 +1298,7 @@ export default class BoardScanner
     //#endregion
     
     //#region Pawn chain
-    public static getAllPawnChainsOnBoard(board: Chonse2): { white: Array<Array<string>>, black: Array<Array<string>>, whiteAttackSquares: Array<string>,  blackAttackSquares: Array<string> }
+    public static getAllPawnChainsOnBoard(board: IChessGame): { white: Array<Array<string>>, black: Array<Array<string>>, whiteAttackSquares: Array<string>,  blackAttackSquares: Array<string> }
     {
         const returnObj = 
         { 
@@ -1466,7 +1466,7 @@ export default class BoardScanner
     //#endregion
 
     //#region Discovered check
-    public static wasMoveDiscoveredCheck(afterState: Chonse2, move: {from: string, to: string, promotion: string}): DiscoveredCheckType
+    public static wasMoveDiscoveredCheck(afterState: IChessGame, move: {from: string, to: string, promotion: string}): DiscoveredCheckType
     {
         const pieceInToSquare = afterState.findPieceAtCoordinate(move.to);
 
@@ -1528,7 +1528,7 @@ export default class BoardScanner
     //#endregion
 
     //#region Knight outpost
-    public static getAllOutpostKnights(board: Chonse2): { white: string[]; black: string[] }
+    public static getAllOutpostKnights(board: IChessGame): { white: string[]; black: string[] }
     {
         const knights = BoardScanner.getAllPieceCoordsOfType(board, PieceType.KNIGHT);
 
@@ -1538,7 +1538,7 @@ export default class BoardScanner
         };
     }
 
-    private static isOutpostKnight(board: Chonse2, coord: string, isWhite: boolean): boolean
+    private static isOutpostKnight(board: IChessGame, coord: string, isWhite: boolean): boolean
     {
         const { rowIndex, colIndex } = ChessConstants.findIndexFromCoordinate(coord);
 
@@ -1563,7 +1563,7 @@ export default class BoardScanner
 
     private static _isDefendedByPawn
     (
-        board: Chonse2,
+        board: IChessGame,
         row: number,
         col: number,
         isWhite: boolean
@@ -1583,7 +1583,7 @@ export default class BoardScanner
 
     private static _canEnemyPawnAttack
     (
-        board: Chonse2,
+        board: IChessGame,
         row: number,
         col: number,
         isWhite: boolean
@@ -1620,7 +1620,7 @@ export default class BoardScanner
     //#region General board state
 
     //All open files on a given board
-    public static getAllOpenFiles(board: Chonse2): Array<string>
+    public static getAllOpenFiles(board: IChessGame): Array<string>
     {
         const openFiles: Array<string> = [];
 
@@ -1651,7 +1651,7 @@ export default class BoardScanner
         return openFiles;
     }
 
-    public static getAllPieceCoordsOfType(board: Chonse2, pieceType: PieceType): {white: Array<string>, black: Array<string>}
+    public static getAllPieceCoordsOfType(board: IChessGame, pieceType: PieceType): {white: Array<string>, black: Array<string>}
     {
         const returnObj: { white: string[], black: string[] } = { white: [], black: [] };
         const allWhitePieces = board.getAllPiecesAndCoordsByColor(PieceColor.WHITE);

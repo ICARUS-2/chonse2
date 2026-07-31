@@ -6,7 +6,6 @@ import { LineEval, PositionEval } from "../engine-lib/types/eval";
 import CoachText from "./coach-text";
 import {BLOCKED_BISHOPS, CENTER_STRIKE_MOVEMENTS, CoachMiscHelpers, CoachResourceLinks, PAWN_PUSH_KING_WEAKNESSES} from "./coach-misc-helpers";
 import { CoachIdea, CoachIdeaFlagType, CoachMoveFlagType, CoachResourceFlagType, CoachSentence } from "./coach-types";
-import Chonse2 from "../chess-game-lib/implementations/chonse2-impl/chonse2";
 import BoardScanner, { Skewer, Fork, Pin, DiscoveredCheckType } from "../chess-game-lib/helpers/board-scanner";
 import AlgebraicNotationMaker from "../chess-game-lib/types/algebraic-notation-builder";
 import { CastlingRightsType } from "../chess-game-lib/types/castling-rights-type";
@@ -17,10 +16,11 @@ import { PieceType } from "../chess-game-lib/types/piece-type";
 import { uciMoveParams } from "../engine-lib/helpers/chessHelper";
 import { CoachAudio } from "./coach-audio";
 import { ChessConstants } from "../chess-game-lib/types/constants";
+import IChessGame from "../chess-game-lib/i-chess-game";
 
 export class CoachUtils
 {
-    public static performCoachAnalysis(states: Array<Chonse2>, moves: Array<MoveResult>, evals: Array<PositionEval>, isDivergenceStack: boolean = false)
+    public static performCoachAnalysis(states: Array<IChessGame>, moves: Array<MoveResult>, evals: Array<PositionEval>, isDivergenceStack: boolean = false)
     {
         //Main state and eval stacks are always the same length, with main move stack always being one shorter.
         //Divergence state, eval, and move stacks are always the same length.
@@ -83,9 +83,9 @@ export class CoachUtils
                 
 
                 //play out the engine line
-                const currentFollowUp: Array<Chonse2> = CoachMiscHelpers.getEngineLineStates(state, posEval.lines[0]);
+                const currentFollowUp: Array<IChessGame> = CoachMiscHelpers.getEngineLineStates(state, posEval.lines[0]);
 
-                let previousFollowUp: Array<Chonse2> = [];
+                let previousFollowUp: Array<IChessGame> = [];
 
                 if (previousState && previousPosEval)
                 {
@@ -144,7 +144,7 @@ export class CoachUtils
                 )
                 {
                     let previousBestMove: { fromSquare: string; toSquare: string; promotion: string} | null = null;
-                    let missedState: Chonse2 | null = null;
+                    let missedState: IChessGame | null = null;
                     let bestPieceToMove: string | null = null;
 
                     if (previousPosEval.bestMove && previousState)
@@ -2022,7 +2022,7 @@ export class CoachUtils
                         const movesThatDontHangTheBishop = allLegalMovesForBishop.filter( moveCoord => 
                             {
                                 //completes the move temporarily
-                                const moveResult = boardCopy.completeMove(bishopSquare, moveCoord);
+                                const moveResult = boardCopy.completeMove(bishopSquare, moveCoord, PieceType.QUEEN);
                                 
                                 if (moveResult.result)
                                 {

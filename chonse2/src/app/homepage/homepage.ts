@@ -9,6 +9,7 @@ import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 import Chonse2 from '../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
+import IChessGame from '../../libs/chess-game-lib/i-chess-game';
 
 @Component({
   selector: 'app-homepage',
@@ -20,7 +21,7 @@ import Chonse2 from '../../libs/chess-game-lib/implementations/chonse2-impl/chon
 export class Homepage {
   BoardState = BoardState;
 
-  readonly DEMO_STATE: Chonse2 = Chonse2.instantiateFromFen("6k1/5pp1/7p/p1pP4/2P5/5Q1P/P2R1PP1/4r1K1 w - - 0 1");
+  readonly DEMO_STATE: IChessGame = Chonse2.instantiateFromFen("6k1/5pp1/7p/p1pP4/2P5/5Q1P/P2R1PP1/4r1K1 w - - 0 1");
 
   lastPgnBoardState: BoardState | null = null;
 

@@ -43,9 +43,8 @@ import { ChessConstants } from '../../../libs/chess-game-lib/types/constants';
 import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
 import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
 import { GameOverReason } from '../../../libs/chess-game-lib/types/game-state';
-import BoardScanner from '../../../libs/chess-game-lib/helpers/board-scanner';
-import Chonse2 from '../../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
 import { IMoveResult } from '../../../libs/chess-game-lib/types/move-result';
+import IChessGame from '../../../libs/chess-game-lib/i-chess-game';
 
 interface PieceAnimationState {
   piece: string;
@@ -652,7 +651,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     return this.boardState().mainStateStack()[this.boardState().mainStateStack().length - 1];
   }
 
-  forcePushState(state: Chonse2, moveResult: MoveResult)
+  forcePushState(state: IChessGame, moveResult: MoveResult)
   {
     this.boardState().mainStateStack.update( stack => [...stack, state]);
     

@@ -1,6 +1,6 @@
 import Chonse2 from "./implementations/chonse2-impl/chonse2"
-import ChessopsBoard from "./implementations/chessops-impl/chessops";
 import IChessGame from "./i-chess-game";
+import ChessopsBoard from "./implementations/chessops-impl/chessops";
 
 enum ChessImplementation 
 {
@@ -8,7 +8,7 @@ enum ChessImplementation
     Chessops
 }
 
-export class ChessGameFactory 
+export default class ChessGameFactory 
 {
     //Choose which implementation you would like to use by switching the enum val.
     private static readonly SELECTED_IMPL: ChessImplementation = ChessImplementation.Chonse2

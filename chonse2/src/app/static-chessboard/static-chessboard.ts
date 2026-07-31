@@ -1,7 +1,8 @@
 import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { Square } from '../chessboard/square/square';
 import { ChessConstants } from '../../libs/chess-game-lib/types/constants';
-import Chonse2 from '../../libs/chess-game-lib/implementations/chonse2-impl/chonse2';
+import IChessGame from '../../libs/chess-game-lib/i-chess-game';
+import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
 
 @Component({
   selector: 'app-static-chessboard',
@@ -13,6 +14,6 @@ import Chonse2 from '../../libs/chess-game-lib/implementations/chonse2-impl/chon
 export class StaticChessboard {
   COORDS = ChessConstants.COORDS;
 
-  state = input<Chonse2>(new Chonse2());
+  state = input<IChessGame>(ChessGameFactory.create());
   size = input<string>("30vmin");  
 }

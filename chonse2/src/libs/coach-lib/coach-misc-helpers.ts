@@ -1,5 +1,5 @@
 
-import Chonse2 from "../chess-game-lib/implementations/chonse2-impl/chonse2";
+import IChessGame from "../chess-game-lib/i-chess-game";
 import { CastlingRightsType } from "../chess-game-lib/types/castling-rights-type";
 import { ChessConstants } from "../chess-game-lib/types/constants";
 import { PieceType } from "../chess-game-lib/types/piece-type";
@@ -11,7 +11,7 @@ export class CoachMiscHelpers
     public static readonly FIANCHETTOS = ["g2", "b2", "g7", "b7"];   
 
     //#region Misc. helpers
-    public static getKnightSquareHits(board: Chonse2, coordinate: string): Array<string>
+    public static getKnightSquareHits(board: IChessGame, coordinate: string): Array<string>
     {
         const {rowIndex, colIndex} = ChessConstants.findIndexFromCoordinate(coordinate);
         const legalMoves: Array<string> = [];
@@ -44,9 +44,9 @@ export class CoachMiscHelpers
     }
 
     //gets all of the follow up states in an engine line.
-    public static getEngineLineStates(board: Chonse2, line: LineEval): Array<Chonse2>
+    public static getEngineLineStates(board: IChessGame, line: LineEval): Array<IChessGame>
     {
-        const followUp: Array<Chonse2> = [board];
+        const followUp: Array<IChessGame> = [board];
 
         line.pv.forEach( engineLineMove => 
             {
@@ -70,8 +70,8 @@ export class CoachMiscHelpers
     }
 
     public static didForceLossOfCastlingRights(
-        state: Chonse2, 
-        nextBestState: Chonse2, 
+        state: IChessGame, 
+        nextBestState: IChessGame, 
         whiteToMove: boolean, 
         nextBestMove: { fromSquare: string; toSquare: string; promotion: string;}
     ) : boolean
