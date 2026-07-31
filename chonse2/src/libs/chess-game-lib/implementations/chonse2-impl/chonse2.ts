@@ -19,14 +19,6 @@ export default class Chonse2 implements IChessGame
   //To check draw by repetition, object internally stores a fen key split at index 2 (state + castling + en passant if possible) in a hashmap and checks how many times this key has appeared.
   private static readonly _FEN_SPLIT_POSKEY_INDEX = 2
 
-  //Move vectors.
-  public static readonly BISHOP_VECTOR_X = [-1, -1, 1, 1];
-  public static readonly BISHOP_VECTOR_Y = [-1, 1, -1, 1];
-  public static readonly ROOK_VECTOR_X = [-1, 1, 0, 0];
-  public static readonly ROOK_VECTOR_Y = [0, 0, -1, 1];
-  public static readonly QUEEN_KING_VECTOR_X = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
-  public static readonly QUEEN_KING_VECTOR_Y = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
-
   //En passant coords - O(1)
   private static readonly _WHITE_EP_TRIGGERS = new Map<string, string>([
     ["a2-a4", "a3"],
@@ -369,10 +361,10 @@ export default class Chonse2 implements IChessGame
     const {rowIndex, colIndex} = Chonse2.findIndexFromCoordinate(coord);
 
     //The legal moves of the given piece types in this position.
-    const rookMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2.ROOK_VECTOR_X, Chonse2.ROOK_VECTOR_Y);
-    const queenMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2.QUEEN_KING_VECTOR_X, Chonse2.QUEEN_KING_VECTOR_Y);
-    const kingMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2.QUEEN_KING_VECTOR_X, Chonse2.QUEEN_KING_VECTOR_Y, 1);
-    const bishopMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), Chonse2.BISHOP_VECTOR_X, Chonse2.BISHOP_VECTOR_Y);
+    const rookMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), ChessConstants.ROOK_VECTOR_X, ChessConstants.ROOK_VECTOR_Y);
+    const queenMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), ChessConstants.QUEEN_KING_VECTOR_X, ChessConstants.QUEEN_KING_VECTOR_Y);
+    const kingMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), ChessConstants.QUEEN_KING_VECTOR_X, ChessConstants.QUEEN_KING_VECTOR_Y, 1);
+    const bishopMoves = this._getVectorMoves(coord, PieceColor.getOpposite(attackerColor), ChessConstants.BISHOP_VECTOR_X, ChessConstants.BISHOP_VECTOR_Y);
     const knightMoves = this._getPotentiallyLegalKnightMoves(coord, PieceColor.getOpposite(attackerColor));
 
     //Check if a rook can attack the square
@@ -1258,26 +1250,26 @@ export default class Chonse2 implements IChessGame
   //Bishop pseudolegal moves (not validated)
   private _getPotentiallyLegalBishopMoves(coordinate: string, color: string): Array<string>
   {
-    return this._getVectorMoves(coordinate, color, Chonse2.BISHOP_VECTOR_X, Chonse2.BISHOP_VECTOR_Y);
+    return this._getVectorMoves(coordinate, color, ChessConstants.BISHOP_VECTOR_X, ChessConstants.BISHOP_VECTOR_Y);
   }
   
   //Rook pseudolegal moves (not validated)
   private _getPotentiallyLegalRookMoves(coordinate: string, color: string): Array<string>
   {
-    return this._getVectorMoves(coordinate, color, Chonse2.ROOK_VECTOR_X, Chonse2.ROOK_VECTOR_Y);
+    return this._getVectorMoves(coordinate, color, ChessConstants.ROOK_VECTOR_X, ChessConstants.ROOK_VECTOR_Y);
   }
   
   //Queen pseudolegal moves (not validated)
   private _getPotentiallyLegalQueenMoves(coordinate: string, color: string) : Array<string>
   {
-    return this._getVectorMoves(coordinate, color, Chonse2.QUEEN_KING_VECTOR_X, Chonse2.QUEEN_KING_VECTOR_Y);
+    return this._getVectorMoves(coordinate, color, ChessConstants.QUEEN_KING_VECTOR_X, ChessConstants.QUEEN_KING_VECTOR_Y);
   }
   
   //King pseudolegal moves (not validated)
   private _getPotentiallyLegalKingMoves(coordinate: string, color: string): Array<string>
   {
     //Base moves.
-    let legalMoves = this._getVectorMoves(coordinate, color, Chonse2.QUEEN_KING_VECTOR_X, Chonse2.QUEEN_KING_VECTOR_Y, 1);
+    let legalMoves = this._getVectorMoves(coordinate, color, ChessConstants.QUEEN_KING_VECTOR_X, ChessConstants.QUEEN_KING_VECTOR_Y, 1);
 
     //King cannot castle while in check
     if (!this.isInCheck(color))

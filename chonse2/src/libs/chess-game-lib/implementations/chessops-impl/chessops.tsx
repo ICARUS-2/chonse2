@@ -152,7 +152,7 @@ export default class ChessopsBoard implements IChessGame
         throw new Error("Not implemented.");
     }
 
-    public static instantiateFromFen(): IChessGame
+    public static instantiateFromFen(fen: string): IChessGame
     {
         throw new Error("Not implemented.");
     }

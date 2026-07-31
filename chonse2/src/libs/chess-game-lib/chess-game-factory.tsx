@@ -34,7 +34,7 @@ export class ChessGameFactory
                 return Chonse2.instantiateFromFen(fen);
 
             case ChessImplementation.Chessops:
-                return new ChessopsBoard();
+                return ChessopsBoard.instantiateFromFen(fen);
         }
     }
 }

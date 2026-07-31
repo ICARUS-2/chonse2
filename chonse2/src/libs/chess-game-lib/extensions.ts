@@ -364,18 +364,18 @@ export default class BoardScannerLibrary
             switch(lastCharOfPiece)
             {
                 case PieceType.BISHOP:
-                    vectorX = Chonse2.BISHOP_VECTOR_X;
-                    vectorY = Chonse2.BISHOP_VECTOR_Y;
+                    vectorX = ChessConstants.BISHOP_VECTOR_X;
+                    vectorY = ChessConstants.BISHOP_VECTOR_Y;
                     break;
 
                 case PieceType.ROOK:
-                    vectorX = Chonse2.ROOK_VECTOR_X;
-                    vectorY = Chonse2.ROOK_VECTOR_Y;
+                    vectorX = ChessConstants.ROOK_VECTOR_X;
+                    vectorY = ChessConstants.ROOK_VECTOR_Y;
                     break;
 
                 case PieceType.QUEEN:
-                    vectorX = Chonse2.QUEEN_KING_VECTOR_X;
-                    vectorY = Chonse2.QUEEN_KING_VECTOR_Y;
+                    vectorX = ChessConstants.QUEEN_KING_VECTOR_X;
+                    vectorY = ChessConstants.QUEEN_KING_VECTOR_Y;
             }
 
             //This is the current index within the piece state array that the coordinate lies in. Need this for checking the squares it sees.
@@ -739,18 +739,18 @@ export default class BoardScannerLibrary
             switch(lastCharOfPiece)
             {
                 case PieceType.BISHOP:
-                    vectorX = Chonse2.BISHOP_VECTOR_X;
-                    vectorY = Chonse2.BISHOP_VECTOR_Y;
+                    vectorX = ChessConstants.BISHOP_VECTOR_X;
+                    vectorY = ChessConstants.BISHOP_VECTOR_Y;
                     break;
 
                 case PieceType.ROOK:
-                    vectorX = Chonse2.ROOK_VECTOR_X;
-                    vectorY = Chonse2.ROOK_VECTOR_Y;
+                    vectorX = ChessConstants.ROOK_VECTOR_X;
+                    vectorY = ChessConstants.ROOK_VECTOR_Y;
                     break;
 
                 case PieceType.QUEEN:
-                    vectorX = Chonse2.QUEEN_KING_VECTOR_X;
-                    vectorY = Chonse2.QUEEN_KING_VECTOR_Y;
+                    vectorX = ChessConstants.QUEEN_KING_VECTOR_X;
+                    vectorY = ChessConstants.QUEEN_KING_VECTOR_Y;
             }
 
             //Loop through the possible vector coords
@@ -1310,8 +1310,8 @@ export default class BoardScannerLibrary
 
         const allPawns = BoardScannerLibrary.getAllPieceCoordsOfType(board, PieceType.PAWN);
 
-        const vectorX = Chonse2.BISHOP_VECTOR_X;
-        const vectorY = Chonse2.BISHOP_VECTOR_Y;
+        const vectorX = ChessConstants.BISHOP_VECTOR_X;
+        const vectorY = ChessConstants.BISHOP_VECTOR_Y;
 
         const MIN_PAWN_CHAIN_SIZE = 3;
 
