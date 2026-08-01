@@ -1,4 +1,4 @@
-import { Piece, attacks, makeSquare, parseSquare } from "chessops";
+import { Piece, Role, attacks, makeSquare, parseSquare } from "chessops";
 import IChessGame from "../../i-chess-game";
 import { CastlingRightsType } from "../../types/castling-rights-type";
 import { GameState } from "../../types/game-state";
@@ -9,6 +9,7 @@ import { makeFen, parseFen } from 'chessops/fen'
 import { PieceType } from "../../types/piece-type";
 import { ChessConstants } from "../../types/constants";
 import PieceMaterial from "../../types/piece-material";
+import { makeSan } from "chessops/san";
 
 export default class ChessopsBoard implements IChessGame
 {
@@ -511,15 +512,163 @@ export default class ChessopsBoard implements IChessGame
     //Fully validated legal moves that a certain coordinate's piece can make
     public getLegalMoves(coordinate: string): Array<string>
     {
-        throw new Error("Not implemented.");
+        const sqr = parseSquare(coordinate);
+
+        if (!sqr)
+        {
+        return [];
+        }
+
+        const legalSquares = this._inst.dests(sqr);
+        const legalMoves: Array<string> = [];
+
+        for(const dest of legalSquares)
+        {
+        legalMoves.push(makeSquare(dest));
+        }
+
+        return legalMoves;
     }
 
     //Moves a piece from one spot to another and accounting for promotion if applicable.
-    public completeMove(fromCoordinate: string, toCoordinate: string, promotionPiece: string): IMoveResult
+    public completeMove(
+        fromCoordinate: string, 
+        toCoordinate: string, 
+        promotionPiece: string = PieceType.QUEEN
+    ): IMoveResult 
     {
-        throw new Error("Not implemented.");
+        //Object to return.
+        const result: IMoveResult = 
+        {
+            result: false,
+            notation: '',
+            notationMinimal: '',
+            fromCoord: fromCoordinate,
+            toCoord: toCoordinate,
+            promotion: '',
+            piece: '',
+            pgnComment: ''
+        };
+
+        //Parse from and to squares.
+        const fromSquare = parseSquare(fromCoordinate);
+        const toSquare = parseSquare(toCoordinate);
+
+        //Don't make a move that has a missing square.
+        if (fromSquare === undefined || toSquare === undefined) 
+        {
+            return result;
+        }
+
+        //Check what piece is in the from square.
+        const piece = this._inst.board.get(fromSquare);
+
+        //Don't consider moving anything if there is no piece there.
+        if (!piece) 
+        {
+            return result;
+        }
+
+        //Create move object.
+        const move: any = 
+        {
+            from: fromSquare,
+            to: toSquare
+        };
+
+        //Only apply promotion if this is actually a pawn reaching the last rank
+        let actualPromotion = "";
+        if (piece.role === "pawn") 
+        {
+            const rank = Math.floor(toSquare / ChessConstants.SIZE);
+
+            const isPromotionRank =
+                (piece.color === "white" && rank === 7) ||
+                (piece.color === "black" && rank === 0);
+
+            if (isPromotionRank)
+            {
+                const promotionRole = this._convertPromotionPiece(promotionPiece);
+
+                if (promotionRole)
+                {
+                    move.promotion = promotionRole;
+                    actualPromotion = promotionPiece.toUpperCase();
+                }
+            }
+        }
+
+        if (!this._inst.isLegal(move)) 
+        {
+            return result;
+        }
+
+        //Detect capture before playing the move
+        const isCapture = this._inst.board.has(toSquare);
+
+        //Generate SAN before playing the move
+        const san = makeSan(this._inst, move);
+
+        //Play move
+        this._inst.play(move);
+
+        const inCheck = this._inst.isCheck();
+        const inCheckmate = this._inst.isCheckmate();
+
+        //Build LAN
+        let lan = fromCoordinate + toCoordinate;
+
+        if (isCapture) 
+        {
+            lan += "x";
+        }
+
+        if (actualPromotion) 
+        {
+            lan += "=" + actualPromotion;
+        }
+
+        if (inCheckmate) 
+        {
+            lan += "#";
+        }
+        else if (inCheck) 
+        {
+            lan += "+";
+        }
+
+        //Set fields
+        result.result = true;
+        result.notation = lan;
+        result.notationMinimal = san;
+        result.piece = piece.role;
+
+        //Only populate this when promotion happened
+        result.promotion = actualPromotion;
+
+        return result;
     }
 
+    private _convertPromotionPiece(promotionPiece: string): Role | undefined
+    {
+        switch (promotionPiece.toUpperCase())
+        {
+            case "Q":
+                return "queen";
+
+            case "R":
+                return "rook";
+
+            case "B":
+                return "bishop";
+
+            case "N":
+                return "knight";
+
+            default:
+                return undefined;
+        }
+    }
     //Clears state cache and reverts it completely to that of the previous move.
     public undoMostRecentMove(): void
     {
@@ -530,15 +679,65 @@ export default class ChessopsBoard implements IChessGame
 
     //#region Castling and en passant
 
-    public getCastlingRights(type: CastlingRightsType): boolean
+    //Gets castling rights by type.
+    public getCastlingRights(type: CastlingRightsType): boolean 
     {
-        throw new Error("Not implemented.");
+        const castles = this._inst.castles;
+        
+        const sideMap: Record<CastlingRightsType, 'a' | 'h'> = {
+        [CastlingRightsType.WhiteKingside]: 'h',
+        [CastlingRightsType.WhiteQueenside]: 'a',
+        [CastlingRightsType.BlackKingside]: 'h',
+        [CastlingRightsType.BlackQueenside]: 'a'
+        };
+        
+        const colorMap: Record<CastlingRightsType, 'white' | 'black'> = {
+        [CastlingRightsType.WhiteKingside]: 'white',
+        [CastlingRightsType.WhiteQueenside]: 'white',
+        [CastlingRightsType.BlackKingside]: 'black',
+        [CastlingRightsType.BlackQueenside]: 'black'
+        };
+        
+        const rook = castles.rook[colorMap[type]][sideMap[type]];
+        return rook !== undefined && castles.castlingRights.has(rook);
     }
 
-    //Sets the castling rights for one of the four types
-    public setCastlingRights(type: CastlingRightsType, val: boolean): void
+    //Sets type of castling rights.
+    public setCastlingRights(type: CastlingRightsType, allowed: boolean): void 
     {
-        throw new Error("Not implemented.");
+        const setup = this._inst.toSetup();
+        const castles = this._inst.castles;
+        
+        //Map castling type to color and side
+        const colorMap: Record<CastlingRightsType, 'white' | 'black'> = {
+        [CastlingRightsType.WhiteKingside]: 'white',
+        [CastlingRightsType.WhiteQueenside]: 'white',
+        [CastlingRightsType.BlackKingside]: 'black',
+        [CastlingRightsType.BlackQueenside]: 'black'
+        };
+        
+        const sideMap: Record<CastlingRightsType, 'a' | 'h'> = {
+        [CastlingRightsType.WhiteKingside]: 'h',
+        [CastlingRightsType.WhiteQueenside]: 'a',
+        [CastlingRightsType.BlackKingside]: 'h',
+        [CastlingRightsType.BlackQueenside]: 'a'
+        };
+        
+        const rook = castles.rook[colorMap[type]][sideMap[type]];
+        
+        if (rook !== undefined) 
+        {
+        if (allowed) 
+        {
+            setup.castlingRights = setup.castlingRights.with(rook);
+        } 
+        else 
+        {
+            setup.castlingRights = setup.castlingRights.without(rook);
+        }
+        
+        this._inst = Chess.fromSetup(setup).unwrap();
+        }
     }
 
     //Retrieves the coord of the en passant square
