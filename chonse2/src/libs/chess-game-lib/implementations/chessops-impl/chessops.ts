@@ -307,6 +307,7 @@ export default class ChessopsBoard implements IChessGame
         return this._inst.turn === 'white';
     }
 
+    //Takes in a chessops piece and converts it to our standard.
     private _convertChessopsPieceToPieceType(squareContent: Piece | undefined)
     {
       let pieceCode = "";
@@ -368,6 +369,7 @@ export default class ChessopsBoard implements IChessGame
       return pieceCode
     }
 
+    //Takes in our piece object and converts it to an internal chessops piece
     private _convertPieceTypeToChessopsPiece(pieceCode: string): Piece | undefined 
     {
         const pieceMap: Record<string, Piece> = 
@@ -437,6 +439,7 @@ export default class ChessopsBoard implements IChessGame
         }
     }
 
+    //Creaetes a new chessops from fen.
     private _instantiateFromFen(fen: string)
     {
         const setup = parseFen(fen).unwrap();
@@ -657,11 +660,27 @@ export default class ChessopsBoard implements IChessGame
 
 
     //Clears state cache and reverts it completely to that of the previous move.
-    public undoMostRecentMove(): void
+    public undoMostRecentMove()
     {
-        throw new Error("Not implemented.");
+        this._inst = this._stateCache.chessInstance;
+
+        //Piece captures
+        this._piecesWhiteCaptured.length = 0;
+        this._piecesBlackCaptured.length = 0;
+        this._stateCache.piecesWhiteCaptured.forEach(p => { this._piecesWhiteCaptured.push(p); });
+        this._stateCache.piecesBlackCaptured.forEach(p => { this._piecesBlackCaptured.push(p); });
+
+        
+        //Previous fen key
+        this._previousPositionMap.clear();
+
+        for(const [k, v] of this._stateCache._previousStateMap)
+        {
+        this._previousPositionMap.set(k, v);
+        }
     }
 
+    //Converts our standard to the standard chessops needs for promotions.
     private _convertPromotionPiece(promotionPiece: string): Role | undefined
     {
         switch (promotionPiece.toUpperCase())
@@ -683,6 +702,7 @@ export default class ChessopsBoard implements IChessGame
         }
     }
 
+    //Keep a copy of everything so a move can be undone.
     private _cacheState()
     {
         //Instance.
@@ -736,34 +756,36 @@ export default class ChessopsBoard implements IChessGame
         const castles = this._inst.castles;
         
         //Map castling type to color and side
-        const colorMap: Record<CastlingRightsType, 'white' | 'black'> = {
-        [CastlingRightsType.WhiteKingside]: 'white',
-        [CastlingRightsType.WhiteQueenside]: 'white',
-        [CastlingRightsType.BlackKingside]: 'black',
-        [CastlingRightsType.BlackQueenside]: 'black'
+        const colorMap: Record<CastlingRightsType, 'white' | 'black'> = 
+        {
+            [CastlingRightsType.WhiteKingside]: 'white',
+            [CastlingRightsType.WhiteQueenside]: 'white',
+            [CastlingRightsType.BlackKingside]: 'black',
+            [CastlingRightsType.BlackQueenside]: 'black'
         };
         
-        const sideMap: Record<CastlingRightsType, 'a' | 'h'> = {
-        [CastlingRightsType.WhiteKingside]: 'h',
-        [CastlingRightsType.WhiteQueenside]: 'a',
-        [CastlingRightsType.BlackKingside]: 'h',
-        [CastlingRightsType.BlackQueenside]: 'a'
+        const sideMap: Record<CastlingRightsType, 'a' | 'h'> = 
+        {
+            [CastlingRightsType.WhiteKingside]: 'h',
+            [CastlingRightsType.WhiteQueenside]: 'a',
+            [CastlingRightsType.BlackKingside]: 'h',
+            [CastlingRightsType.BlackQueenside]: 'a'
         };
         
         const rook = castles.rook[colorMap[type]][sideMap[type]];
         
         if (rook !== undefined) 
         {
-        if (allowed) 
-        {
-            setup.castlingRights = setup.castlingRights.with(rook);
-        } 
-        else 
-        {
-            setup.castlingRights = setup.castlingRights.without(rook);
-        }
-        
-        this._inst = Chess.fromSetup(setup).unwrap();
+            if (allowed) 
+            {
+                setup.castlingRights = setup.castlingRights.with(rook);
+            } 
+            else 
+            {
+                setup.castlingRights = setup.castlingRights.without(rook);
+            }
+            
+            this._inst = Chess.fromSetup(setup).unwrap();
         }
     }
 
