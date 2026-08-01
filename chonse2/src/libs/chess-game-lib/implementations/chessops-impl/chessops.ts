@@ -12,7 +12,16 @@ import PieceMaterial from "../../types/piece-material";
 
 export default class ChessopsBoard implements IChessGame
 {
-    _inst: Chess;
+    //Game instance
+    private _inst: Chess;
+
+    //Used to track repetition
+    private static readonly _FEN_SPLIT_POSKEY_INDEX = 2
+    private _previousPositionMap: Map<string, number> = new Map<string, number>();
+
+    //Piece captures
+    private _piecesWhiteCaptured: string[] = [];
+    private _piecesBlackCaptured: string[] = [];
 
     constructor(fen: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
     {
@@ -422,7 +431,8 @@ export default class ChessopsBoard implements IChessGame
                 this._inst.board.set(square, chessopsPiece);
             }
         }
-}
+    }
+
     private _instantiateFromFen(fen: string)
     {
         const setup = parseFen(fen).unwrap();
@@ -443,6 +453,55 @@ export default class ChessopsBoard implements IChessGame
     public checkIsGameOver(): void
     {
         throw new Error("Not implemented.");
+    }
+
+    //Will need this for the sake of tracking draw by repetition since it needs to take 
+    //into account whether an EP capture is possible, not just that there is an EP square.
+    private _isEnPassantCaptureActuallyPossible(): boolean
+    {
+        //If there is no en passant square then obviously it isn't possible.
+        const epSquare = this._inst.epSquare;
+        if (epSquare === undefined)
+        {
+            return false;
+        }
+
+        //First check all legal moves.
+        for (const [from, destinations] of this._inst.allDests())
+        {
+            //Get the piece in the from square.
+            const piece = this._inst.board.get(from);
+
+            //If it's a pawn and it can move to EP square, then EP capture is possible.
+            if (
+                piece &&
+                piece.role === "pawn" &&
+                destinations.has(epSquare)
+            )
+            {
+                return true;
+            }
+        }
+
+        //If a pawn cannot move to EP square, not possible.
+        return false;
+    }
+
+    //Position key for tracking draw by repetition
+    private _getPositionKey()
+    {
+        const fenSplit = this.getFEN().split(" ");
+        let posKey = "";
+
+        for(let i = 0; i <= ChessopsBoard._FEN_SPLIT_POSKEY_INDEX; i++)
+        {
+            posKey += fenSplit[i];
+            posKey += " ";
+        }
+
+        this._isEnPassantCaptureActuallyPossible() ? posKey += this.getEnPassantSquare() : posKey += "-"
+
+        return posKey
     }
 
     //#endregion
@@ -485,13 +544,39 @@ export default class ChessopsBoard implements IChessGame
     //Retrieves the coord of the en passant square
     public getEnPassantSquare(): string 
     {
-        throw new Error("Method not implemented.");
+        //If it doesn't exist, don't return a coord.
+        const ep = this._inst.epSquare;
+        if (!ep)
+        {
+            return "";
+        }
+
+        //Return corresponding coord if exists.
+        return makeSquare(ep);
     }
 
-    //Sets en passant square to the passed coord.
+    //Set en passant square to passed coord
     public setEnPassantSquare(coord: string): void 
     {
-        throw new Error("Method not implemented.");
+        //Get current setup from Chess object
+        const setup = this._inst.toSetup();
+
+        //If erasing, set undefined.
+        if (coord == "")
+        {
+            setup.epSquare = undefined;
+        }
+        else 
+        {
+            //Parse the coordinate to a square number (e.g., "e3" -> 20)
+            const square = parseSquare(coord);
+            
+            //Update the epSquare
+            setup.epSquare = square;
+        }
+        
+        //Recreate Chess object with modified setup
+        this._inst = Chess.fromSetup(setup).unwrap();
     }
 
     //#endregion
