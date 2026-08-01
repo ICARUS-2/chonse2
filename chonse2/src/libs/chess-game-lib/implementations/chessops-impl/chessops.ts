@@ -24,6 +24,9 @@ export default class ChessopsBoard implements IChessGame
     private _piecesWhiteCaptured: string[] = [];
     private _piecesBlackCaptured: string[] = [];
 
+    //State cache
+    private _stateCache: ChessopsStateCache = new ChessopsStateCache();
+
     constructor(fen: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
     {
         const setup = parseFen(fen).unwrap();
@@ -540,14 +543,14 @@ export default class ChessopsBoard implements IChessGame
         //Object to return.
         const result: IMoveResult = 
         {
-            result: false,
-            notation: '',
-            notationMinimal: '',
-            fromCoord: fromCoordinate,
-            toCoord: toCoordinate,
-            promotion: '',
-            piece: '',
-            pgnComment: ''
+        result: false,
+        notation: '',
+        notationMinimal: '',
+        fromCoord: fromCoordinate,
+        toCoord: toCoordinate,
+        promotion: '',
+        piece: '',
+        pgnComment: ''
         };
 
         //Parse from and to squares.
@@ -580,28 +583,31 @@ export default class ChessopsBoard implements IChessGame
         let actualPromotion = "";
         if (piece.role === "pawn") 
         {
-            const rank = Math.floor(toSquare / ChessConstants.SIZE);
+        const rank = Math.floor(toSquare / ChessConstants.SIZE);
 
-            const isPromotionRank =
-                (piece.color === "white" && rank === 7) ||
-                (piece.color === "black" && rank === 0);
+        const isPromotionRank =
+            (piece.color === "white" && rank === 7) ||
+            (piece.color === "black" && rank === 0);
 
-            if (isPromotionRank)
+        if (isPromotionRank)
+        {
+            const promotionRole = this._convertPromotionPiece(promotionPiece);
+
+            if (promotionRole)
             {
-                const promotionRole = this._convertPromotionPiece(promotionPiece);
-
-                if (promotionRole)
-                {
-                    move.promotion = promotionRole;
-                    actualPromotion = promotionPiece.toUpperCase();
-                }
+                move.promotion = promotionRole;
+                actualPromotion = promotionPiece.toUpperCase();
             }
+        }
         }
 
         if (!this._inst.isLegal(move)) 
         {
-            return result;
+        return result;
         }
+
+        //Cache move so it can be undone later.
+        this._cacheState();
 
         //Detect capture before playing the move
         const isCapture = this._inst.board.has(toSquare);
@@ -649,6 +655,13 @@ export default class ChessopsBoard implements IChessGame
         return result;
     }
 
+
+    //Clears state cache and reverts it completely to that of the previous move.
+    public undoMostRecentMove(): void
+    {
+        throw new Error("Not implemented.");
+    }
+
     private _convertPromotionPiece(promotionPiece: string): Role | undefined
     {
         switch (promotionPiece.toUpperCase())
@@ -669,10 +682,24 @@ export default class ChessopsBoard implements IChessGame
                 return undefined;
         }
     }
-    //Clears state cache and reverts it completely to that of the previous move.
-    public undoMostRecentMove(): void
+
+    private _cacheState()
     {
-        throw new Error("Not implemented.");
+        //Instance.
+        this._stateCache.chessInstance = this._inst.clone();
+
+        //Piece captures
+        this._stateCache.piecesWhiteCaptured.length = 0;
+        this._stateCache.piecesBlackCaptured.length = 0;
+        this._piecesWhiteCaptured.forEach( p => {this._stateCache.piecesWhiteCaptured.push(p)} );
+        this._piecesBlackCaptured.forEach( p => {this._stateCache.piecesBlackCaptured.push(p)} );
+
+        //Previous fen key
+        this._stateCache._previousStateMap.clear();
+        for(const [k, v] of this._previousPositionMap)
+        {
+            this._stateCache._previousStateMap.set(k, v);
+        }
     }
 
     //#endregion
@@ -798,4 +825,33 @@ export default class ChessopsBoard implements IChessGame
     }
 
     //#endregion
+}
+
+class ChessopsStateCache
+{
+  chessInstance: Chess = Chess.default();
+
+  //captures
+  piecesWhiteCaptured: string[] = [];
+  piecesBlackCaptured: string[] = [];
+
+  //true: White's turn, false: black's turn
+  turn: boolean = true; 
+
+  //used to track repetition
+  _previousStateMap: Map<string, number> = new Map<string, number>();
+
+  deepCopy(): ChessopsStateCache 
+  {
+    const copy = new ChessopsStateCache();
+
+    //arrays
+    copy.piecesWhiteCaptured = [...this.piecesWhiteCaptured];
+    copy.piecesBlackCaptured = [...this.piecesBlackCaptured];
+
+    //Map deep copy
+    copy._previousStateMap = new Map(this._previousStateMap);
+
+    return copy;
+  }
 }
