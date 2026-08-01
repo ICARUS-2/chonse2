@@ -41,9 +41,6 @@ export default interface IChessGame
     //Resets the board to its default.
     reset(): void
 
-    //Clears board except the kings.
-    clear(): void
-
     //Places a piece at a given coord.
     setPieceOnBoard(coord: string, piece: string): void
 

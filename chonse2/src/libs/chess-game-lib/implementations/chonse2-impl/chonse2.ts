@@ -279,13 +279,6 @@ export default class Chonse2 implements IChessGame
     this._reinitializeInternal();
   }
 
-  //Clears board except the kings.
-  public clear(): void 
-  {
-    this._pieceState = ChessConstants.CLEARED_BOARD.map(rank => [...rank]);
-    this._reinitializeInternal();
-  }
-
   //Get captured pieces by color.
   public getPiecesCapturedByPlayer(color: string): Array<string>
   {

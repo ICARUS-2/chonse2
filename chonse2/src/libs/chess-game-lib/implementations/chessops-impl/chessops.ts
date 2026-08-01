@@ -40,7 +40,7 @@ export default class ChessopsBoard implements IChessGame
                 const squareContent: Piece | undefined = this._inst.board.get(square);
                 
                 //Convert piece to use piece code (ex wP for white pawn.)
-                const convertedPiece = this._convertPiece(squareContent);
+                const convertedPiece = this._convertChessopsPieceToPieceType(squareContent);
 
                 //Add to rank.
                 row.push(convertedPiece);
@@ -69,7 +69,7 @@ export default class ChessopsBoard implements IChessGame
         const piece = this._inst.board.get(sqr);
 
         //Convert it to our standard.
-        const convertedPiece = this._convertPiece(piece);
+        const convertedPiece = this._convertChessopsPieceToPieceType(piece);
 
         //And return it.
         return convertedPiece;
@@ -146,7 +146,7 @@ export default class ChessopsBoard implements IChessGame
         attackers.forEach( a => 
             {
                 //Get the piece to our standard.
-                const convertedPiece = this._convertPiece(a.piece);
+                const convertedPiece = this._convertChessopsPieceToPieceType(a.piece);
 
                 if (convertedPiece.startsWith("w"))
                 {
@@ -171,7 +171,7 @@ export default class ChessopsBoard implements IChessGame
     {
         if (color != PieceColor.WHITE && color != PieceColor.BLACK)
         {
-        return { pieces: [], coords: [] };
+            return { pieces: [], coords: [] };
         }
 
         const pieces = [];
@@ -182,16 +182,16 @@ export default class ChessopsBoard implements IChessGame
         //Loop through each of these to get the coordinates + pieces.
         for(let i = 0; i < ChessConstants.COORDS.length; i++)
         {
-        for(let j = 0; j < ChessConstants.COORDS[i].length; j++)
-        {
-            const piece = _pieceState[i][j];
-
-            if ( piece.startsWith(color))
+            for(let j = 0; j < ChessConstants.COORDS[i].length; j++)
             {
-            pieces.push(piece);
-            coordinates.push(ChessConstants.COORDS[i][j])
+                const piece = _pieceState[i][j];
+
+                if ( piece.startsWith(color))
+                {
+                    pieces.push(piece);
+                    coordinates.push(ChessConstants.COORDS[i][j])
+                }
             }
-        }
         }
 
         return { pieces: pieces, coords : coordinates};
@@ -205,21 +205,21 @@ export default class ChessopsBoard implements IChessGame
         //If we are verifying the white king:
         if (kingColor == PieceColor.WHITE)
         {
-        //Get the king.
-        const whiteKingSquare = board.kingOf('white');
+            //Get the king.
+            const whiteKingSquare = board.kingOf('white');
 
-        //If the king is actually there.
-        if (whiteKingSquare !== undefined) 
-        {
-            //Get what attacks it.
-            const attackers = this.getPiecesThatHitSquare(makeSquare(whiteKingSquare));
-
-            //If something attacks it, it's in check.
-            if (attackers.blackCoords.length > 0) 
+            //If the king is actually there.
+            if (whiteKingSquare !== undefined) 
             {
-            return true;
+                //Get what attacks it.
+                const attackers = this.getPiecesThatHitSquare(makeSquare(whiteKingSquare));
+
+                //If something attacks it, it's in check.
+                if (attackers.blackCoords.length > 0) 
+                {
+                    return true;
+                }
             }
-        }
         }
 
         //If we are verifying the black king:
@@ -253,7 +253,7 @@ export default class ChessopsBoard implements IChessGame
 
         for (const [_, piece] of board) 
         {
-            const convertedPiece = this._convertPiece(piece)
+            const convertedPiece = this._convertChessopsPieceToPieceType(piece)
             if (convertedPiece !== PieceType.WHITE_KING && convertedPiece !== PieceType.BLACK_KING)
             {
                 const value = PieceMaterial.getMaterialFromPiece(convertedPiece);
@@ -294,7 +294,7 @@ export default class ChessopsBoard implements IChessGame
         return this._inst.turn === 'white';
     }
 
-    private _convertPiece(squareContent: Piece | undefined)
+    private _convertChessopsPieceToPieceType(squareContent: Piece | undefined)
     {
       let pieceCode = "";
 
@@ -355,6 +355,27 @@ export default class ChessopsBoard implements IChessGame
       return pieceCode
     }
 
+    private _convertPieceTypeToChessopsPiece(pieceCode: string): Piece | undefined 
+    {
+        const pieceMap: Record<string, Piece> = 
+        {
+            [PieceType.WHITE_PAWN]: { color: 'white', role: 'pawn' },
+            [PieceType.WHITE_ROOK]: { color: 'white', role: 'rook' },
+            [PieceType.WHITE_KNIGHT]: { color: 'white', role: 'knight' },
+            [PieceType.WHITE_BISHOP]: { color: 'white', role: 'bishop' },
+            [PieceType.WHITE_QUEEN]: { color: 'white', role: 'queen' },
+            [PieceType.WHITE_KING]: { color: 'white', role: 'king' },
+            [PieceType.BLACK_PAWN]: { color: 'black', role: 'pawn' },
+            [PieceType.BLACK_ROOK]: { color: 'black', role: 'rook' },
+            [PieceType.BLACK_KNIGHT]: { color: 'black', role: 'knight' },
+            [PieceType.BLACK_BISHOP]: { color: 'black', role: 'bishop' },
+            [PieceType.BLACK_QUEEN]: { color: 'black', role: 'queen' },
+            [PieceType.BLACK_KING]: { color: 'black', role: 'king' },
+        };
+
+        return pieceMap[pieceCode];
+    }
+
     //#endregion
 
     //#region Manipulation of state
@@ -389,18 +410,19 @@ export default class ChessopsBoard implements IChessGame
         this._inst = Chess.default();
     }
 
-    //Clears board except the kings.
-    public clear(): void 
-    {
-        this._instantiateFromFen("4k3/8/8/8/8/8/8/4K3 w - - 0 1");
-    }
-
     //Places a piece at a given coord.
     public setPieceOnBoard(coord: string, piece: string): void
     {
-        throw new Error("Not implemented.");
-    }
+        const chessopsPiece = this._convertPieceTypeToChessopsPiece(piece);
 
+        if (chessopsPiece) 
+        {
+            const square = parseSquare(coord);
+            if (square !== undefined) {
+                this._inst.board.set(square, chessopsPiece);
+            }
+        }
+}
     private _instantiateFromFen(fen: string)
     {
         const setup = parseFen(fen).unwrap();
