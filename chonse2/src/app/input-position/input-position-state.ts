@@ -1,12 +1,11 @@
 import { signal, WritableSignal } from "@angular/core";
 import { Arrow } from "../chessboard/chessboard/arrow";
 import { ChessConstants } from "../../libs/chess-game-lib/types/constants";
-import IChessGame from "../../libs/chess-game-lib/i-chess-game";
-import ChessGameFactory from "../../libs/chess-game-lib/chess-game-factory";
+import EditorState from "./editor-state/editor-state";
 
 export default class InputPositionState
 {
-    game: WritableSignal<IChessGame> = signal<IChessGame>(ChessGameFactory.create());
+    editorState: WritableSignal<EditorState> = signal<EditorState>(new EditorState());
     arrows: WritableSignal<Arrow[]> = signal<Arrow[]>([]);
     squareHighlightStatuses: WritableSignal<Array<Array<boolean>>> = signal<Array<Array<boolean>>>(InputPositionState.initializeHighlightStatuses());
     isFlipped: WritableSignal<boolean> = signal(false);

@@ -1,17 +1,17 @@
 <div class="componentContainer">
 
     <div class="d-flex pieceSelectors">
-        <app-piece-selector [for]="PieceColor.BLACK" [isKingActive]="model().game().getKingCoordinate(PieceColor.BLACK) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
-        <app-piece-selector [for]="PieceColor.WHITE" [isKingActive]="model().game().getKingCoordinate(PieceColor.WHITE) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
+        <app-piece-selector [for]="PieceColor.BLACK" [isKingActive]="inputPositionState().editorState().getKingCoordinate(PieceColor.BLACK) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
+        <app-piece-selector [for]="PieceColor.WHITE" [isKingActive]="inputPositionState().editorState().getKingCoordinate(PieceColor.WHITE) == ''" (pieceSquareMouseDownEvent)="onPieceSelectorMouseDown($event)" (deleteSquareMouseUpEvent)="onPieceSelectorDeleteMouseUp()"></app-piece-selector>
     </div>
-    <div class="boardOuterContainer" [class]="model().isFlipped() ? 'boardOuterContainerFlipped' : ''">
-        <div #board class="boardContainerInner" [class]="model().isFlipped() ? 'boardContainerInnerFlipped' : ''">
+    <div class="boardOuterContainer" [class]="inputPositionState().isFlipped() ? 'boardOuterContainerFlipped' : ''">
+        <div #board class="boardContainerInner" [class]="inputPositionState().isFlipped() ? 'boardContainerInnerFlipped' : ''">
             <!-- ARROW OVERLAY -->
             <svg
                 class="arrowOverlay"
                 [attr.viewBox]="'0 0 8 8'"
                 preserveAspectRatio="none">
-                @for( arrow of model().arrows(); track $index )
+                @for( arrow of inputPositionState().arrows(); track $index )
                 {
                     <ng-container>
                         <line
@@ -38,7 +38,7 @@
                 </defs>
             </svg>
 
-            @for( rank of model().game().getPieceState(); let rankIndex = $index; track rankIndex)
+            @for( rank of inputPositionState().editorState().getPieceState(); let rankIndex = $index; track rankIndex)
             {
                 <ng-container>
                     @for ( piece of rank; let fileIndex = $index; track fileIndex; )
@@ -49,14 +49,14 @@
                         >
                             <app-square 
                                 [coordinate]="this.COORDS[rankIndex][fileIndex]" 
-                                [piece]="model().game().getPieceState()[rankIndex][fileIndex]"
+                                [piece]="inputPositionState().editorState().getPieceState()[rankIndex][fileIndex]"
                                 [isDark]="(rankIndex + fileIndex) % 2 == 1"
                                 [showFile]="rankIndex == rank.length - 1"
                                 [showRank]="fileIndex == 0"
                                 [showPiece]="this.COORDS[rankIndex][fileIndex] != fromSquare()"
-                                [isFlipped]="model().isFlipped()"
+                                [isFlipped]="inputPositionState().isFlipped()"
                                 [isLegalMove]="false"
-                                [isInCheck]="(model().game().getPieceState()[rankIndex][fileIndex] == pieceType.WHITE_KING && model().game().isInCheck(PieceColor.WHITE)) || (model().game().getPieceState()[rankIndex][fileIndex] == pieceType.BLACK_KING && model().game().isInCheck(PieceColor.BLACK)) "
+                                [isInCheck]="(inputPositionState().editorState().getPieceState()[rankIndex][fileIndex] == pieceType.WHITE_KING && inputPositionState().editorState().isInCheck(PieceColor.WHITE)) || (inputPositionState().editorState().getPieceState()[rankIndex][fileIndex] == pieceType.BLACK_KING && inputPositionState().editorState().isInCheck(PieceColor.BLACK)) "
                                 [isClicked]="getRightClickedStatusForSquare(this.COORDS[rankIndex][fileIndex])"
                                 [moveClassification]="MoveClassification.None"
                                 (mouseDown)="onSquareMouseDown($event)"
@@ -86,7 +86,7 @@
         <hr>
 
         <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'inputPosition.board.turn' | translate }}</h4>
-        <select [ngModel]="this.model().game().getTurn()" (ngModelChange)="onTurnChanged($event)">
+        <select [ngModel]="this.inputPositionState().editorState().getTurn()" (ngModelChange)="onTurnChanged($event)">
             <option [ngValue]="true">{{ 'inputPosition.board.whiteToMove' | translate }}</option>
             <option [ngValue]="false">{{ 'inputPosition.board.blackToMove' | translate }}</option>
         </select>
@@ -110,8 +110,8 @@
                         <input
                             class="form-check-input custom-switch"
                             type="checkbox"
-                            [ngModel]="model().game().getCastlingRights(CastlingRightsType.WhiteKingside)"
-                            (ngModelChange)="model().game().setCastlingRights(CastlingRightsType.WhiteKingside, $event)">
+                            [ngModel]="inputPositionState().editorState().getCastlingRights(CastlingRightsType.WhiteKingside)"
+                            (ngModelChange)="inputPositionState().editorState().setCastlingRights(CastlingRightsType.WhiteKingside, $event)">
                     </div>
                 }
 
@@ -126,8 +126,8 @@
                         <input
                             class="form-check-input custom-switch"
                             type="checkbox"
-                            [ngModel]="model().game().getCastlingRights(CastlingRightsType.WhiteQueenside)"
-                            (ngModelChange)="model().game().setCastlingRights(CastlingRightsType.WhiteQueenside, $event)">
+                            [ngModel]="inputPositionState().editorState().getCastlingRights(CastlingRightsType.WhiteQueenside)"
+                            (ngModelChange)="inputPositionState().editorState().setCastlingRights(CastlingRightsType.WhiteQueenside, $event)">
                     </div>
                 }
             </div>
@@ -147,8 +147,8 @@
                         <input
                             class="form-check-input custom-switch"
                             type="checkbox"
-                            [ngModel]="model().game().getCastlingRights(CastlingRightsType.BlackKingside)"
-                            (ngModelChange)="model().game().setCastlingRights(CastlingRightsType.BlackKingside, $event)">
+                            [ngModel]="inputPositionState().editorState().getCastlingRights(CastlingRightsType.BlackKingside)"
+                            (ngModelChange)="inputPositionState().editorState().setCastlingRights(CastlingRightsType.BlackKingside, $event)">
                     </div>
                 }
 
@@ -163,8 +163,8 @@
                         <input
                             class="form-check-input custom-switch"
                             type="checkbox"
-                            [ngModel]="model().game().getCastlingRights(CastlingRightsType.BlackQueenside)"
-                            (ngModelChange)="model().game().setCastlingRights(CastlingRightsType.BlackQueenside, $event)">
+                            [ngModel]="inputPositionState().editorState().getCastlingRights(CastlingRightsType.BlackQueenside)"
+                            (ngModelChange)="inputPositionState().editorState().setCastlingRights(CastlingRightsType.BlackQueenside, $event)">
                     </div>
                 }
             </div>
@@ -180,8 +180,8 @@
                 {
                     <div>{{ 'inputPosition.board.select' | translate }}</div>
                     <select 
-                        [ngModel]="this.model().game().getEnPassantSquare()"
-                        (ngModelChange)="this.model().game().setEnPassantSquare($event)">
+                        [ngModel]="this.inputPositionState().editorState().getEnPassantSquare()"
+                        (ngModelChange)="this.inputPositionState().editorState().setEnPassantSquare($event)">
                         @for(square of potentialEpSquares; track $index)
                         {
                             <option [ngValue]="square">{{square}}</option>
@@ -200,7 +200,7 @@
         <!--FEN display-->
         <h4 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'inputPosition.board.fen' | translate }}</h4>
         <div>
-            {{this.model().game().getFEN()}}
+            {{this.inputPositionState().editorState().getFEN()}}
             <app-bootstrap-button label="📋" (buttonClick)="copyFenClicked()"></app-bootstrap-button>
         </div>
 

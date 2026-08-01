@@ -47,7 +47,7 @@ export class InputPositionBoard {
   stateId = input<string>('');
 
   //State
-  model: WritableSignal<InputPositionState>;
+  inputPositionState: WritableSignal<InputPositionState>;
 
   //Move properties
   currentlyHeldPiece = signal<string>('');
@@ -76,7 +76,7 @@ export class InputPositionBoard {
     //Board state stored in service to persist across routerlink changes.
     const boardState: InputPositionState = this.ips.getGame(this.stateId());
 
-    this.model = signal<InputPositionState>(boardState);
+    this.inputPositionState = signal<InputPositionState>(boardState);
   }
 
   ngOnInit(): void {
@@ -87,7 +87,7 @@ export class InputPositionBoard {
         console.warn(`Game ${this.stateId} not found yet`);
         return;
     }
-    this.model.set(modelState);
+    this.inputPositionState.set(modelState);
   }
 
   async completeMove(fromSquare: string, toSquare: string)
@@ -121,18 +121,18 @@ export class InputPositionBoard {
   //#region Controls
   handleFlipClicked()
   {
-    this.model().isFlipped.update( f => !f);
+    this.inputPositionState().isFlipped.update( f => !f);
   }
 
   handleResetClicked()
   {
-    this.model().game().reset();
+    this.inputPositionState().editorState().reset();
     this._afterStateChanged();
   }
 
   handleClearClicked()
   {
-    this.model().game().clear();
+    this.inputPositionState().editorState().clear();
     this._afterStateChanged();
   }
 
@@ -143,7 +143,7 @@ export class InputPositionBoard {
       return;
     }
 
-    const fen = this.model().game().getFEN();
+    const fen = this.inputPositionState().editorState().getFEN();
 
     this.router.navigate(['/analysis'], {state: { "inputtedPosition" : fen }})
   }
@@ -155,14 +155,14 @@ export class InputPositionBoard {
       return;
     }
 
-    const fen = this.model().game().getFEN();
+    const fen = this.inputPositionState().editorState().getFEN();
 
     this.router.navigate(['/vs-ai'], {state: { "inputtedPosition" : fen }})
   }
 
   flipButtonClicked()
   {
-    this.model().isFlipped.update( v => !v );
+    this.inputPositionState().isFlipped.update( v => !v );
   }
   //#endregion
 
@@ -181,11 +181,11 @@ export class InputPositionBoard {
         }
 
         const newState = new InputPositionState();
-        newState.game.set(result);
+        newState.editorState.set(result);
 
         this.ips.deleteGame(this.stateId());
         this.ips.addGame(this.stateId() ,newState);
-        this.model.set(newState);
+        this.inputPositionState.set(newState);
 
         this.toastrService.success(this.translate.instant("inputPosition.board.toastr.importSuccess"));
       }
@@ -197,7 +197,7 @@ export class InputPositionBoard {
   {
     try 
     {
-      navigator.clipboard.writeText(this.model().game().getFEN());
+      navigator.clipboard.writeText(this.inputPositionState().editorState().getFEN());
       this.toastrService.info(this.translate.instant("inputPosition.board.toastr.copyFenSuccess"));
     }
     catch(ex)
@@ -210,7 +210,7 @@ export class InputPositionBoard {
   {
     try 
     {
-      navigator.clipboard.writeText(GameLinkHelper.generateFenLink(this.model().game().getFEN()));
+      navigator.clipboard.writeText(GameLinkHelper.generateFenLink(this.inputPositionState().editorState().getFEN()));
       this.toastrService.info(this.translate.instant("inputPosition.board.toastr.copyLinkSuccess"));
     }
     catch(ex)
@@ -224,7 +224,7 @@ export class InputPositionBoard {
   onSquareLeftClick = () =>
   {
     this.resetClickedSquares();
-    this.model().arrows.set([]);
+    this.inputPositionState().arrows.set([]);
   }
 
   onSquareMouseDown(event: { coordinate: string, piece: string, mouse: PointerEvent })
@@ -278,7 +278,7 @@ export class InputPositionBoard {
         const idx = ChessConstants.findIndexFromCoordinate(this.toRightClickSquare());
 
         //Sets the status telling it to change color.
-        this.model().squareHighlightStatuses()[idx.rowIndex][idx.colIndex] = !this.model().squareHighlightStatuses()[idx.rowIndex][idx.colIndex];
+        this.inputPositionState().squareHighlightStatuses()[idx.rowIndex][idx.colIndex] = !this.inputPositionState().squareHighlightStatuses()[idx.rowIndex][idx.colIndex];
       }
       else //If the squares are different, they are drawing an arrow.
       {
@@ -286,7 +286,7 @@ export class InputPositionBoard {
         
         if (arrow)
         {
-          this.model().arrows().push(arrow); 
+          this.inputPositionState().arrows().push(arrow); 
         }
       }
 
@@ -352,8 +352,8 @@ export class InputPositionBoard {
 
   onTurnChanged(event: boolean)
   {
-    this.model().game().setTurn(event);
-    this.model().game().setEnPassantSquare("");
+    this.inputPositionState().editorState().setTurn(event);
+    this.inputPositionState().editorState().setEnPassantSquare("");
   }
 
   //#region Board
@@ -362,12 +362,12 @@ export class InputPositionBoard {
     const arr: string[] = [];
 
     //The indeces of both the ranks the pawn moves to and the ones where the capture takes place.
-    const rankIndex = this.model().game().getTurn() ? 3 : 4;
-    const previousRankIndex = this.model().game().getTurn() ? 2 : 5;
+    const rankIndex = this.inputPositionState().editorState().getTurn() ? 3 : 4;
+    const previousRankIndex = this.inputPositionState().editorState().getTurn() ? 2 : 5;
 
     //The ranks where the pawn is located (two spaces) and the en passant rank beneath it.
-    const pawnRank = this.model().game().getPieceState()[rankIndex];
-    const enPassantSquareRank = this.model().game().getPieceState()[previousRankIndex];
+    const pawnRank = this.inputPositionState().editorState().getPieceState()[rankIndex];
+    const enPassantSquareRank = this.inputPositionState().editorState().getPieceState()[previousRankIndex];
 
     //Check every possible space for en passant.
     for(let i = 0; i < pawnRank.length; i++)
@@ -377,7 +377,7 @@ export class InputPositionBoard {
       const potentialEnPassantSquareContent = enPassantSquareRank[i];
 
       //If there is a pawn that has moved two spaces AND there is nothing underneath it.
-      if (this.model().game().getTurn() ? pawnRankSquareContent == PieceType.BLACK_PAWN : pawnRankSquareContent == PieceType.WHITE_PAWN)
+      if (this.inputPositionState().editorState().getTurn() ? pawnRankSquareContent == PieceType.BLACK_PAWN : pawnRankSquareContent == PieceType.WHITE_PAWN)
       {
         if (potentialEnPassantSquareContent == "")
         {
@@ -392,14 +392,14 @@ export class InputPositionBoard {
   getPotentialForCastlingRights(isWhite: boolean, isKingside: boolean): boolean
   {
     //Where the king is on the board.
-    const king = this.model().game().getKingCoordinate( isWhite ? PieceColor.WHITE : PieceColor.BLACK );
+    const king = this.inputPositionState().editorState().getKingCoordinate( isWhite ? PieceColor.WHITE : PieceColor.BLACK );
     
     //To have castling rights you need to have a king on the board (obviously) and the rook needs to be in its place.
     if (king && ( isWhite ? king == ChessConstants.WHITE_KING_SQUARE : king == ChessConstants.BLACK_KING_SQUARE ))
     {
       const rookCoord = isWhite ? (isKingside ? ChessConstants.WHITE_KINGSIDE_ROOK_SQUARE : ChessConstants.WHITE_QUEENSIDE_ROOK_SQUARE) : (isKingside ? ChessConstants.BLACK_KINGSIDE_ROOK_SQUARE : ChessConstants.BLACK_QUEENSIDE_ROOK_SQUARE);
       const rookSquareIndex = ChessConstants.findIndexFromCoordinate(rookCoord);
-      const rookSquareContent = this.model().game().getPieceState()[rookSquareIndex.rowIndex][rookSquareIndex.colIndex];
+      const rookSquareContent = this.inputPositionState().editorState().getPieceState()[rookSquareIndex.rowIndex][rookSquareIndex.colIndex];
       const rookPiece = isWhite ? PieceType.WHITE_ROOK : PieceType.BLACK_ROOK;
 
       //If there is no rook in that place, no castling rights can potentially exist there.
@@ -408,13 +408,13 @@ export class InputPositionBoard {
         isWhite ? 
           //White
           (isKingside ?
-            this.model().game().setCastlingRights(CastlingRightsType.WhiteKingside, false) : 
-            this.model().game().setCastlingRights(CastlingRightsType.WhiteQueenside, false)) : 
+            this.inputPositionState().editorState().setCastlingRights(CastlingRightsType.WhiteKingside, false) : 
+            this.inputPositionState().editorState().setCastlingRights(CastlingRightsType.WhiteQueenside, false)) : 
 
           //Black
           (isKingside ? 
-            this.model().game().setCastlingRights(CastlingRightsType.BlackKingside, false) : 
-            this.model().game().setCastlingRights(CastlingRightsType.BlackQueenside, false));
+            this.inputPositionState().editorState().setCastlingRights(CastlingRightsType.BlackKingside, false) : 
+            this.inputPositionState().editorState().setCastlingRights(CastlingRightsType.BlackQueenside, false));
       }
       else 
       {
@@ -427,13 +427,13 @@ export class InputPositionBoard {
       //If there is no king or the king has moved, strip both.
       if (isWhite)
       {
-        this.model().game().setCastlingRights(CastlingRightsType.WhiteKingside, false);
-        this.model().game().setCastlingRights(CastlingRightsType.WhiteQueenside, false);
+        this.inputPositionState().editorState().setCastlingRights(CastlingRightsType.WhiteKingside, false);
+        this.inputPositionState().editorState().setCastlingRights(CastlingRightsType.WhiteQueenside, false);
       }
       else 
       {
-        this.model().game().setCastlingRights(CastlingRightsType.BlackKingside, false);
-        this.model().game().setCastlingRights(CastlingRightsType.BlackQueenside, false);
+        this.inputPositionState().editorState().setCastlingRights(CastlingRightsType.BlackKingside, false);
+        this.inputPositionState().editorState().setCastlingRights(CastlingRightsType.BlackQueenside, false);
       }
     }
 
@@ -443,7 +443,7 @@ export class InputPositionBoard {
 
   setPieceOnBoard(coord: string, piece: string)
   {
-    this.model().game().setPieceOnBoard(coord, piece);
+    this.inputPositionState().editorState().setPieceOnBoard(coord, piece);
     this._afterStateChanged();
   }
 
@@ -451,15 +451,15 @@ export class InputPositionBoard {
   {
     const epArr = this.getPotentialEnPassantSquares();
 
-    if (!epArr.includes(this.model().game().getEnPassantSquare()))
+    if (!epArr.includes(this.inputPositionState().editorState().getEnPassantSquare()))
     {
-      this.model().game().setEnPassantSquare("");
+      this.inputPositionState().editorState().setEnPassantSquare("");
     }
   }
 
   doesValidationPass(): boolean
   {
-    const game = this.model().game;
+    const game = this.inputPositionState().editorState;
 
     //One king per side.
     const flattenedPieceState = game().getPieceState().flat();
@@ -539,13 +539,13 @@ export class InputPositionBoard {
   {
     const idx = ChessConstants.findIndexFromCoordinate(coordinate);
     
-    return this.model().squareHighlightStatuses()[idx.rowIndex][idx.colIndex];
+    return this.inputPositionState().squareHighlightStatuses()[idx.rowIndex][idx.colIndex];
   }
 
   //Sets all the right clicked statuses to false, clearing any right clicked squares.
   resetClickedSquares()
   {
-    if (this.model().squareHighlightStatuses().length == 0)
+    if (this.inputPositionState().squareHighlightStatuses().length == 0)
     {
       for(let i = 0; i < ChessConstants.SIZE; i++)
       {
@@ -554,19 +554,19 @@ export class InputPositionBoard {
         {
           rank.push(false);
         }
-        this.model().squareHighlightStatuses().push(rank);
+        this.inputPositionState().squareHighlightStatuses().push(rank);
       }
     }
     else 
     {
       for(let i = 0; i < ChessConstants.SIZE; i++)
       {
-        const rank = this.model().squareHighlightStatuses()[i];
+        const rank = this.inputPositionState().squareHighlightStatuses()[i];
         for(let j = 0; j < ChessConstants.SIZE; j++)
         {
           rank[j] = false;
         }
-        this.model().squareHighlightStatuses().push(rank);
+        this.inputPositionState().squareHighlightStatuses().push(rank);
       }
     }
   }

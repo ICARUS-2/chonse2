@@ -6,6 +6,7 @@ import InputPositionState from './input-position-state';
 import { RouteConstants } from '../app.routes';
 import { ToastrService } from 'ngx-toastr';
 import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
+import EditorState from './editor-state/editor-state';
 
 @Component({
   selector: 'app-input-position',
@@ -35,7 +36,7 @@ export class InputPosition implements OnInit {
       try 
       {
         const newState = new InputPositionState();
-        newState.game.set(ChessGameFactory.createFromFen(this.fen));
+        newState.editorState.set(EditorState.instantiateFromFen(this.fen));
         this.ips.addGame(BoardNames.InputPosition, newState);
         this.toastrService.success("Successfully imported position");
       }
