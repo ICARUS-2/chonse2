@@ -3,8 +3,6 @@ import { Chess, PieceSymbol, Square } from "../helpers/chess";
 import { getPositionWinPercentage } from "../helpers/winPercentage";
 import { GameScore } from "../../chess-game-lib/types/game-state";
 import ChessGameFactory from "../../chess-game-lib/chess-game-factory";
-import AlgebraicNotationMaker from "../../chess-game-lib/types/algebraic-notation-builder";
-import PieceMaterial from "../../chess-game-lib/types/piece-material";
 import BoardScanner from "../../chess-game-lib/helpers/board-scanner";
 
 export const getEvaluateGameParams = (game: Chess): EvaluateGameParams => {
@@ -128,69 +126,6 @@ export const uciMoveParams = (
   to: uciMove.slice(2, 4) as Square,
   promotion: uciMove.slice(4, 5) || undefined,
 });
-
-export const getIsPieceSacrifice = (
-  fen: string,
-  playedMove: string,
-  bestLinePvToPlay: string[]
-): boolean => {
-  if (!bestLinePvToPlay.length) return false;
-
-  const game = new Chess(fen);
-  const whiteToPlay = game.turn() === "w";
-  const startingMaterialDifference = getMaterialDifference(fen);
-
-  let moves = [playedMove, ...bestLinePvToPlay];
-  if (moves.length % 2 === 1) {
-    moves = moves.slice(0, -1);
-  }
-  let nonCapturingMovesTemp = 1;
-
-  const capturedPieces: { w: PieceSymbol[]; b: PieceSymbol[] } = {
-    w: [],
-    b: [],
-  };
-
-  for (let move of moves) {
-    try {
-
-      move = normalizeLichessMove(move, game);
-
-      const fullMove = game.move(uciMoveParams(move));
-      if (fullMove.captured) {
-        capturedPieces[fullMove.color].push(fullMove.captured);
-        nonCapturingMovesTemp = 1;
-      } else {
-        nonCapturingMovesTemp--;
-        if (nonCapturingMovesTemp < 0) break;
-      }
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
-  }
-
-  for (const p of capturedPieces["w"].slice(0)) {
-    if (capturedPieces["b"].includes(p)) {
-      capturedPieces["b"].splice(capturedPieces["b"].indexOf(p), 1);
-      capturedPieces["w"].splice(capturedPieces["w"].indexOf(p), 1);
-    }
-  }
-
-  if (
-    Math.abs(capturedPieces["w"].length - capturedPieces["b"].length) <= 1 &&
-    capturedPieces["w"].concat(capturedPieces["b"]).every((p) => p === "p")
-  ) {
-    return false;
-  }
-
-  const endingMaterialDifference = getMaterialDifference(game.fen());
-
-  const materialDiff = endingMaterialDifference - startingMaterialDifference;
-  const materialDiffPlayerRelative = whiteToPlay ? materialDiff : -materialDiff;
-
-  return materialDiffPlayerRelative < 0;
-};
 
 export const getMaterialDifference = (fen: string): number => {
   const game = new Chess(fen);
