@@ -598,7 +598,7 @@ export default class ChessopsBoard implements IChessGame
 
         if (!sqr)
         {
-        return [];
+            return [];
         }
 
         const legalSquares = this._inst.dests(sqr);
@@ -606,7 +606,7 @@ export default class ChessopsBoard implements IChessGame
 
         for(const dest of legalSquares)
         {
-        legalMoves.push(makeSquare(dest));
+            legalMoves.push(makeSquare(dest));
         }
 
         return legalMoves;

@@ -2,6 +2,10 @@ import { EvaluateGameParams, LineEval, PositionEval } from "../types/eval";
 import { Chess, PieceSymbol, Square } from "../helpers/chess";
 import { getPositionWinPercentage } from "../helpers/winPercentage";
 import { GameScore } from "../../chess-game-lib/types/game-state";
+import ChessGameFactory from "../../chess-game-lib/chess-game-factory";
+import AlgebraicNotationMaker from "../../chess-game-lib/types/algebraic-notation-builder";
+import PieceMaterial from "../../chess-game-lib/types/piece-material";
+import BoardScanner from "../../chess-game-lib/helpers/board-scanner";
 
 export const getEvaluateGameParams = (game: Chess): EvaluateGameParams => {
   const history = game.history({ verbose: true });
@@ -305,17 +309,22 @@ export const isHangingPieceCapture = (
   fen: string,
   playedMove: string
 ): boolean => {
-  const chess = new Chess(fen);
-  const move = chess.move(uciMoveParams(normalizeLichessMove(playedMove, chess)));
+  const chess = ChessGameFactory.createFromFen(fen);
 
-  if (!move.captured) return false;
+  //Get move to coord.
+  const paramaterizedMove = uciMoveParams(playedMove);
 
-  const capturedValue = getPieceValue(move.captured);
-  const capturingValue = getPieceValue(move.piece);
+  //Check if there's a piece to be captured.
+  const capturedPiece = chess.findPieceAtCoordinate(paramaterizedMove.to);
 
-  if (capturingValue < capturedValue) return true;
+  //If there was no piece to be captured, this isn't a hanging piece capture.
+  if (!capturedPiece)
+  {
+    return false;
+  }
 
-  const isDefended = chess.moves({ verbose: true }).some((m) => m.to === move.to);
+  //If there was a piece, check if it was hanging.
+  const doesSquareHaveHangingPiece = BoardScanner.doesSquareHaveHangingPiece(chess, paramaterizedMove.to);
 
-  return !isDefended;
+  return doesSquareHaveHangingPiece;
 };
