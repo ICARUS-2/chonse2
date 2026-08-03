@@ -888,7 +888,7 @@ export default class BoardState
         const ev = this.eval();
         if (ev != undefined)
         {            
-            CoachUtils.performCoachAnalysis(this.mainStateStack(), this.mainMoveStack(), ev.positions)
+            //CoachUtils.performCoachAnalysis(this.mainStateStack(), this.mainMoveStack(), ev.positions)
         }
     }
 

@@ -660,9 +660,17 @@ export default class ChessopsBoard implements IChessGame
             return result;
         }
 
+        //If one coord is missing, don't do anything.
+        if (!fromCoordinate || !toCoordinate)
+        {
+            //return result;
+        }
+
         //Parse from and to squares.
+        console.log(fromCoordinate + " -> " + toCoordinate)
         const fromSquare = parseSquare(fromCoordinate);
         const toSquare = parseSquare(toCoordinate);
+        console.log(this.getFEN());
 
         //Don't make a move that has a missing square.
         if (fromSquare === undefined || toSquare === undefined) 
