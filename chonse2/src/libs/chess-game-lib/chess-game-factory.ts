@@ -1,4 +1,3 @@
-import Chonse2 from "./implementations/chonse2-impl/chonse2"
 import IChessGame from "./i-chess-game";
 import ChessopsBoard from "./implementations/chessops-impl/chessops";
 import MoveResult from "../../app/chessboard/chessboard/move-result";
@@ -6,8 +5,8 @@ import { PgnHeaders } from "../../app/chessboard/chessboard/pgn-misc";
 
 enum ChessImplementation 
 {
-    Chonse2,
     Chessops
+    //Add your own implementation here and create a wrapper implementing IChessGame.
 }
 
 export default class ChessGameFactory 
@@ -20,9 +19,6 @@ export default class ChessGameFactory
     {
         switch(ChessGameFactory.SELECTED_IMPL)
         {
-            case ChessImplementation.Chonse2:
-                return new Chonse2();
-
             case ChessImplementation.Chessops:
                 return new ChessopsBoard();
         }
@@ -33,21 +29,16 @@ export default class ChessGameFactory
     {
         switch(ChessGameFactory.SELECTED_IMPL)
         {
-            case ChessImplementation.Chonse2:
-                return Chonse2.instantiateFromFen(fen);
-
             case ChessImplementation.Chessops:
                 return new ChessopsBoard(fen);
         }
     }
 
+    //Returns the required components from a PGN.
     static createFromPgn(pgn: string): {states: Array<IChessGame>, moveStack: Array<MoveResult>, pgnHeaders: PgnHeaders}
     {
         switch(ChessGameFactory.SELECTED_IMPL)
         {
-            case ChessImplementation.Chonse2:
-                return Chonse2.parsePGN(pgn);
-
             case ChessImplementation.Chessops:
                 return ChessopsBoard.parsePGN(pgn);
         }
