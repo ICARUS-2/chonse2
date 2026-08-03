@@ -690,14 +690,13 @@ export default class ChessopsBoard implements IChessGame
         const movedPiece = this.findPieceAtCoordinate(fromCoordinate);
         const pieceToBeCapturedIfExists = this.findPieceAtCoordinate(toCoordinate);
 
-        if (this._isEnPassantCaptureActuallyPossible())
-        {
-            if (toCoordinate == this.getEnPassantSquare() && movedPiece.endsWith(PieceType.PAWN))
-            {
-                const capturedPawnPiece = this.getTurn() ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
+        const didEnPassantCaptureHappen = this._isEnPassantCaptureActuallyPossible() && toCoordinate == this.getEnPassantSquare() && movedPiece.endsWith(PieceType.PAWN)
 
-                this._addCapture(capturedPawnPiece);
-            }
+        if (didEnPassantCaptureHappen)
+        {
+            const capturedPawnPiece = this.getTurn() ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
+
+            this._addCapture(capturedPawnPiece);
         }
 
         //Only apply promotion if this is actually a pawn reaching the last rank
@@ -731,7 +730,7 @@ export default class ChessopsBoard implements IChessGame
         this._cacheState();
 
         //Detect capture before playing the move
-        const isCapture = this._inst.board.has(toSquare);
+        const isCapture = this._inst.board.has(toSquare) || didEnPassantCaptureHappen;
 
         //Generate SAN before playing the move
         const san = makeSan(this._inst, move);
@@ -752,12 +751,14 @@ export default class ChessopsBoard implements IChessGame
         const inCheckmate = this._inst.isCheckmate();
 
         //Build LAN
-        let lan = fromCoordinate + toCoordinate;
+        let lan = fromCoordinate;
 
         if (isCapture) 
         {
             lan += "x";
         }
+
+        lan += toCoordinate;
 
         if (actualPromotion) 
         {
@@ -815,7 +816,7 @@ export default class ChessopsBoard implements IChessGame
 
         for(const [k, v] of this._stateCache._previousStateMap)
         {
-        this._previousPositionMap.set(k, v);
+            this._previousPositionMap.set(k, v);
         }
     }
 
