@@ -94,213 +94,80 @@ export default class BoardScanner
     }
     //#endregion
 
-    //#region Forks
+//#region Forks
     public static getForksOnBoard(
         board: IChessGame, 
         attackerColor: string, 
-        _precomputedHangingPieceArr: { white: Array<string>, black: Array<string> } | null = null //Array of all hanging pieces. 
-                         // For efficiency in cases where the hanging pieces have already been computed, don't compute them again
+        _precomputedHangingPieceArr: { white: Array<string>, black: Array<string> } | null = null
     ): Array<Fork>
     {
-        //Will contain the forks on the board for that specific color.
         const allForks: Array<Fork> = [];
+        const oppositeColor = PieceColor.getOpposite(attackerColor);
 
-        //Need to copy the board in order to simulate the correct turn.
-        const boardCopy = board.clone();
-
-        //Need to set the turn accordingly so legal moves register.
-        boardCopy.setTurn(attackerColor == PieceColor.WHITE ? true : false);
-
-        //All of the pieces/coords belonging to the attacker.
-        const piecesAndCoords: { pieces: Array<string>, coords: Array<string> } = board.getAllPiecesAndCoordsByColor(attackerColor);
+        //Get hanging pieces directly from the current board state without cloning
+        const allHangingPieces = _precomputedHangingPieceArr == null 
+            ? BoardScanner.getHangingPieces(board) 
+            : _precomputedHangingPieceArr;
         
-        //All of the hanging pieces on the board regardless of color.
-        const allHangingPieces = _precomputedHangingPieceArr == null ? BoardScanner.getHangingPieces(boardCopy) : _precomputedHangingPieceArr;
-    
-        //Need to check through every piece to find which ones might be forking.
-        for(let i = 0; i < piecesAndCoords.coords.length; i++)
+        const opponentHangingPieceCoords = attackerColor == PieceColor.WHITE ? allHangingPieces.black : allHangingPieces.white;
+
+        //Find the opponent's king coordinate
+        let opponentKingCoord: string | null = null;
+        const opponentPiecesAndCoords = board.getAllPiecesAndCoordsByColor(oppositeColor);
+        
+        for (let i = 0; i < opponentPiecesAndCoords.pieces.length; i++)
         {
-            const currentPieceCoordinate = piecesAndCoords.coords[i];
-
-            const squareHits = boardCopy.getPiecesThatHitSquare(currentPieceCoordinate);
-            const squareHitsToCheck = attackerColor == PieceColor.WHITE ? squareHits.blackPieces : squareHits.whitePieces;
-
-            if (squareHitsToCheck.length > 0)
+            if (opponentPiecesAndCoords.pieces[i].endsWith(PieceType.KING))
             {
-                continue;
+                opponentKingCoord = opponentPiecesAndCoords.coords[i];
+                break;
             }
+        }
 
-            //Need to know where the current piece can go.
-            const legalMoveCoordinatesForPiece = boardCopy.getLegalMoves(currentPieceCoordinate);
+        // Combine all valid fork targets (hanging pieces + the king) into a unique Set
+        const validTargets = new Set<string>(opponentHangingPieceCoords);
+        if (opponentKingCoord !== null)
+        {
+            validTargets.add(opponentKingCoord);
+        }
 
-            //List of candidate piece captures
-            const candidatePieceCoordinatesToFork = [];
-            const oppositeColor = PieceColor.getOpposite(attackerColor);
+        // Map to keep track of which attacking pieces are hitting which target coordinates
+        const attackerHitsMap = new Map<string, Array<string>>();
 
-            //For each of the legal moves of the current piece, a candidate capture is a piece of the opposite color that can be captured on the next turn.
-            for(let i = 0; i < legalMoveCoordinatesForPiece.length; i++)
+        // For each valid target, see which of the attacker's pieces are hitting it
+        validTargets.forEach(targetCoord => 
+        {
+            const hitsOnTarget = board.getPiecesThatHitSquare(targetCoord);
+            const hittingCoords = attackerColor == PieceColor.WHITE ? hitsOnTarget.whiteCoords : hitsOnTarget.blackCoords;
+
+            for (const attackerCoord of hittingCoords)
             {
-                const currentLegalMove = legalMoveCoordinatesForPiece[i];
-                const pieceInThatCoordinate = boardCopy.findPieceAtCoordinate(currentLegalMove);
-
-                //If there is a piece that can be captured, add it to the candidate list.
-                if (pieceInThatCoordinate.startsWith(oppositeColor))
+                if (!attackerHitsMap.has(attackerCoord))
                 {
-                    candidatePieceCoordinatesToFork.push(currentLegalMove);
+                    attackerHitsMap.set(attackerCoord, []);
                 }
+                attackerHitsMap.get(attackerCoord)!.push(targetCoord);
             }
+        });
 
-            //Filter out the potential candidates to find the pieces that are either hanging or are the king.
-            const opponentHangingPieceCoords = attackerColor == PieceColor.WHITE ? allHangingPieces.black : allHangingPieces.white;
-            const filteredCandidatesForCheckAndCapturePotential = candidatePieceCoordinatesToFork.filter( coord =>
-                {
-                    //If the piece is the king (aka the most important piece) and can't be "defended" by anything, it's a filtered candidate.
-                    const pieceInCoord = boardCopy.findPieceAtCoordinate(coord);
-                    const pieceInCoordMaterialValue = PieceMaterial.getMaterialFromPiece(pieceInCoord);
-
-                    if (pieceInCoord.endsWith(PieceType.KING))
-                    {
-                        return true;
-                    }
-
-                    //If the piece is hanging, it might be a filtered candidate.
-                    if (opponentHangingPieceCoords.includes(coord))
-                    {
-                        //One thing barring it from being a filtered candidate is if this piece can give a check stopping the fork.
-                        boardCopy.setTurn(attackerColor == PieceColor.WHITE ? false : true);
-                        const legalMoves = boardCopy.getLegalMoves(coord);
-                        boardCopy.setTurn(attackerColor == PieceColor.WHITE ? true : false);
-
-                        let attackedPlayerHasCheckWithPiece = false;
-
-                        //Check every legal move of that piece to see if a check is possible. If not, not a forked piece.
-                        for (const move of legalMoves)
-                        {
-                            //Also, if the piece can capture something greater than or equal to in value, it isn't a fork.
-                            const pieceInLegalMoveSpot = boardCopy.findPieceAtCoordinate(move);
-                            if (pieceInLegalMoveSpot)
-                            {
-                                const materialValueOfPieceInLegalMoveSpot = PieceMaterial.getMaterialFromPiece(pieceInLegalMoveSpot);
-                                if (materialValueOfPieceInLegalMoveSpot >= pieceInCoordMaterialValue)
-                                {
-                                    return false;
-                                }
-                            }
-
-                            //verify if there is a check.
-                            boardCopy.setTurn(attackerColor == PieceColor.WHITE ? false : true);
-                            boardCopy.completeMove(coord, move, PieceType.QUEEN);
-
-                            
-                            const attackerIsInCheck = boardCopy.isInCheck(attackerColor);
-                            boardCopy.setTurn(attackerColor == PieceColor.WHITE ? true : false);
-                            boardCopy.undoMostRecentMove();
-                            if (attackerIsInCheck)
-                            {
-                                attackedPlayerHasCheckWithPiece = true;
-                                break;
-                            }
-                        }
-
-                        //If there is no check here, 
-                        if (!attackedPlayerHasCheckWithPiece)
-                        {
-                            return true;
-                        }
-                    }
-
-                    return false;
-                }
-            )
-
-            //If there are more than two candidates, it's definitely a fork.
-            if (filteredCandidatesForCheckAndCapturePotential.length > 2)
+        //Evaluate every piece that hits at least one target
+        for (const [attackerCoord, forkedCoords] of attackerHitsMap.entries())
+        {
+            //If the piece hits 2 or more targets, it's a candidate for a fork
+            if (forkedCoords.length >= 2)
             {
-                allForks.push( new Fork(currentPieceCoordinate, filteredCandidatesForCheckAndCapturePotential) );
-            }
-            //If there are only two candidates, it's definitely a fork if no king is involved. It might not be a fork if:
-            //The king and another piece are hit but the player can move a piece to block the check AND defend the piece.
-            else if (filteredCandidatesForCheckAndCapturePotential.length == 2)
-            {
-                let containsKing: boolean = false;
-                filteredCandidatesForCheckAndCapturePotential.forEach( c => 
+                //Ensure the attacking piece itself is not currently under attack
+                const attackerSquareHits = board.getPiecesThatHitSquare(attackerCoord);
+                const threatsToAttacker = attackerColor == PieceColor.WHITE ? attackerSquareHits.blackPieces : attackerSquareHits.whitePieces;
+
+                //If nothing is threatening the attacker, it's a solid fork
+                if (threatsToAttacker.length === 0)
                 {
-                    const p = boardCopy.findPieceAtCoordinate(c);
-
-                    if (p.endsWith(PieceType.KING))
-                    {
-                        containsKing = true;
-                    }
-                }
-                )
-
-                //If it's a fork of two non-king pieces, it's a valid fork.
-                if (!containsKing)
-                {
-                    allForks.push( new Fork(currentPieceCoordinate, filteredCandidatesForCheckAndCapturePotential) );
-                }
-                else //If it does contain a king, verify that the defender cannot move a piece to block the check and defend the other piece at the same time. 
-                {
-                    //Get the coordinate of the non-king piece.
-                    const nonKingPieceCoordinate = filteredCandidatesForCheckAndCapturePotential.filter( c =>
-                    {
-                        const p = boardCopy.findPieceAtCoordinate(c);
-
-                        return (!p.endsWith(PieceType.KING));
-                    }
-                    )[0];
-
-                    //Must get the defender pieces to check each other one to ensure that it cannot move to block the check and defend the other piece.
-                    const defenderColor = attackerColor == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-                    const defenderPieces = boardCopy.getAllPiecesAndCoordsByColor(defenderColor);
-                    
-                    //Get the list of every defender piece that isn't the one being hit in the potential fork.
-                    const filteredDefenderPieceCoords = defenderPieces.coords.filter( c => 
-                        {
-                            return nonKingPieceCoordinate != c;
-                        }
-                    )
-
-                    //Check that any of the defender pieces cannot block the check and defend the piece at the same time.
-                    let pieceCanBlockCheckAndDefendForkedPiece: boolean = false;
-                    for(const defenderPieceCoord of filteredDefenderPieceCoords )
-                    {
-                        const legalMovesForDefenderPiece = boardCopy.getLegalMoves(defenderPieceCoord);
-                        boardCopy.setTurn(!boardCopy.getTurn());
-
-                        //For each of the legal moves of the defender pieces, check if it can hit the forked piece and defend it.
-                        for(const legalMove of legalMovesForDefenderPiece)
-                        {
-                            //Clone the object and complete the move (this is horribly inefficient but all I can think of right now, fix this shit later).
-                            //const clone = boardCopy.getFullDeepCopy();
-                            boardCopy.setTurn(!boardCopy.getTurn());
-                            boardCopy.completeMove(defenderPieceCoord, legalMove, PieceType.QUEEN);
-                            boardCopy.setTurn(!boardCopy.getTurn());
-
-                            //Get the pieces that defend the forked square.
-                            const piecesThatHitForkedPieceSquare = boardCopy.getPiecesThatHitSquare(nonKingPieceCoordinate);
-                            boardCopy.undoMostRecentMove();
-                            const piecesDefendingForkedPieceSquare = attackerColor == PieceColor.WHITE ? piecesThatHitForkedPieceSquare.blackPieces : piecesThatHitForkedPieceSquare.whitePieces;
-
-                            //If the moved piece defends the forked square, it's not a fork.                            
-                            if (piecesDefendingForkedPieceSquare.length > 0)
-                            {
-                                pieceCanBlockCheckAndDefendForkedPiece = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    //If no other piece can block the check and defend at the same time, it's a fork.
-                    if (!pieceCanBlockCheckAndDefendForkedPiece)
-                    {
-                        allForks.push( new Fork(currentPieceCoordinate, filteredCandidatesForCheckAndCapturePotential) );
-                    }
+                    allForks.push(new Fork(attackerCoord, forkedCoords));
                 }
             }
         }
 
-        //And then return all the forks.
         return allForks;
     }
     //#endregion
@@ -835,71 +702,79 @@ export default class BoardScanner
         //Now, need to check if the skewered high value piece or the piece behind it cannot just check the king without hanging, or move and defend both.
         candidateSkewers = candidateSkewers.filter( sk => 
             {
-                const attackerPiece = board.findPieceAtCoordinate(sk.attackerCoordinate);
-                const attackerColor = attackerPiece[0];
-
-                //Sets the turn to the defender.
-                attackerColor == PieceColor.WHITE ? boardCopy.setTurn(false) : boardCopy.setTurn(true);
-
-                //Gotta check each legal move for the high value piece.
-                const legalMovesForHighValuePiece = boardCopy.getLegalMoves(sk.highValuePieceCoordinate);
-                const legalMovesForLowValuePiece = boardCopy.getLegalMoves(sk.lowValuePieceBehindCoordinate);
-
-                let canHighValuePieceGiveCheckWithoutHanging: boolean = false;
-                let canHighValuePieceDefendWithoutHanging: boolean = false;
-                let canLowValuePieceGiveCheck: boolean = false;
-
-                //check that the high value piece can't move to either check the king without hanging or defend both pieces.
-                for(let i = 0; i < legalMovesForHighValuePiece.length; i++)
+                try 
                 {
-                    const mv = legalMovesForHighValuePiece[i];
+                    const attackerPiece = board.findPieceAtCoordinate(sk.attackerCoordinate);
+                    const attackerColor = attackerPiece[0];
 
-                    const r = boardCopy.completeMove(sk.highValuePieceCoordinate, mv, PieceType.QUEEN);
-                    const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
+                    //Sets the turn to the defender.
+                    attackerColor == PieceColor.WHITE ? boardCopy.setTurn(false) : boardCopy.setTurn(true);
 
-                    //if the opponent can be checked without hanging the piece, don't count this as a valid skewer.
-                    if (isOpponentInCheck)
+                    //Gotta check each legal move for the high value piece.
+                    const legalMovesForHighValuePiece = boardCopy.getLegalMoves(sk.highValuePieceCoordinate);
+                    const legalMovesForLowValuePiece = boardCopy.getLegalMoves(sk.lowValuePieceBehindCoordinate);
+
+                    let canHighValuePieceGiveCheckWithoutHanging: boolean = false;
+                    let canHighValuePieceDefendWithoutHanging: boolean = false;
+                    let canLowValuePieceGiveCheck: boolean = false;
+
+                    //check that the high value piece can't move to either check the king without hanging or defend both pieces.
+                    for(let i = 0; i < legalMovesForHighValuePiece.length; i++)
                     {
-                        if (!BoardScanner.doesSquareHaveHangingPiece(boardCopy,r.toCoord))
+                        const mv = legalMovesForHighValuePiece[i];
+
+                        const r = boardCopy.completeMove(sk.highValuePieceCoordinate, mv, PieceType.QUEEN);
+                        const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
+
+                        //if the opponent can be checked without hanging the piece, don't count this as a valid skewer.
+                        if (isOpponentInCheck)
                         {
-                            canHighValuePieceGiveCheckWithoutHanging = true;
+                            if (!BoardScanner.doesSquareHaveHangingPiece(boardCopy,r.toCoord))
+                            {
+                                canHighValuePieceGiveCheckWithoutHanging = true;
+                                boardCopy.undoMostRecentMove();
+                                break;
+                            }
+                        }
+
+                        //If both pieces could be defended, don't count this as a valid skewer.
+                        const isLowerValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy,r.toCoord);
+                        const isHigherValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
+
+                        if (!isLowerValuePieceHanging && !isHigherValuePieceHanging)
+                        {
+                            canHighValuePieceDefendWithoutHanging = true;
+                        }
+
+                        boardCopy.undoMostRecentMove();
+                    }
+
+                    //Verify that the low value piece can't check the king and escape.
+                    for(let i = 0; i < legalMovesForLowValuePiece.length; i++)
+                    {
+                        const mv = legalMovesForLowValuePiece[i];
+
+                        const r = boardCopy.completeMove(sk.lowValuePieceBehindCoordinate, mv, PieceType.QUEEN);
+                        const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
+
+                        if (isOpponentInCheck)
+                        {
+                            canLowValuePieceGiveCheck = true;
                             boardCopy.undoMostRecentMove();
                             break;
                         }
-                    }
-
-                    //If both pieces could be defended, don't count this as a valid skewer.
-                    const isLowerValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy,r.toCoord);
-                    const isHigherValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
-
-                    if (!isLowerValuePieceHanging && !isHigherValuePieceHanging)
-                    {
-                        canHighValuePieceDefendWithoutHanging = true;
-                    }
-
-                    boardCopy.undoMostRecentMove();
-                }
-
-                //Verify that the low value piece can't check the king and escape.
-                for(let i = 0; i < legalMovesForLowValuePiece.length; i++)
-                {
-                    const mv = legalMovesForLowValuePiece[i];
-
-                    const r = boardCopy.completeMove(sk.lowValuePieceBehindCoordinate, mv, PieceType.QUEEN);
-                    const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
-
-                    if (isOpponentInCheck)
-                    {
-                        canLowValuePieceGiveCheck = true;
                         boardCopy.undoMostRecentMove();
-                        break;
                     }
-                    boardCopy.undoMostRecentMove();
-                }
 
-                //If the opponent can't use the high value piece to check the king without hanging it, protect both pieces, or the lower value piece can't give a check, consider it valid so far.
-                return !canHighValuePieceGiveCheckWithoutHanging && !canHighValuePieceDefendWithoutHanging && !canLowValuePieceGiveCheck;
+                    //If the opponent can't use the high value piece to check the king without hanging it, protect both pieces, or the lower value piece can't give a check, consider it valid so far.
+                    return !canHighValuePieceGiveCheckWithoutHanging && !canHighValuePieceDefendWithoutHanging && !canLowValuePieceGiveCheck;
+                }
+                catch(e)
+                {
+                    return false;
+                }
             }
+            
         )
 
         //Reset the turn so that it's correct.

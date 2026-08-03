@@ -10,6 +10,9 @@ import { PieceType } from "../../types/piece-type";
 import { ChessConstants } from "../../types/constants";
 import PieceMaterial from "../../types/piece-material";
 import { makeSan } from "chessops/san";
+import MoveResult from "../../../../app/chessboard/chessboard/move-result";
+import { PgnHeaders } from "../../../../app/chessboard/chessboard/pgn-misc";
+import { parsePgn, startingPosition } from "chessops/pgn";
 
 export default class ChessopsBoard implements IChessGame
 {
@@ -667,10 +670,8 @@ export default class ChessopsBoard implements IChessGame
         }
 
         //Parse from and to squares.
-        console.log(fromCoordinate + " -> " + toCoordinate)
         const fromSquare = parseSquare(fromCoordinate);
         const toSquare = parseSquare(toCoordinate);
-        console.log(this.getFEN());
 
         //Don't make a move that has a missing square.
         if (fromSquare === undefined || toSquare === undefined) 
@@ -729,6 +730,7 @@ export default class ChessopsBoard implements IChessGame
             }
         }
 
+        //Don't even try to play a legal move.
         if (!this._inst.isLegal(move)) 
         {
             return result;
@@ -1018,7 +1020,189 @@ export default class ChessopsBoard implements IChessGame
 
         return currentFen;
     }
+    //#endregion
 
+    //#region PGN
+    public static parsePGN(pgn: string): 
+    {
+        states: Array<IChessGame>, 
+        moveStack: Array<MoveResult>, 
+        pgnHeaders: PgnHeaders
+    }
+    {
+        //Pgn node data from parser.
+        const games = parsePgn(pgn);
+
+        if (games.length === 0)
+        {
+            return {
+                states: [],
+                moveStack: [],
+                pgnHeaders: new PgnHeaders()
+            };
+        }
+
+        const game = games[0];
+
+        const headers = new PgnHeaders();
+
+        //Convert chessops headers Map into your header object.
+        for (const [key, value] of game.headers)
+        {
+            switch(key)
+            {
+                case "Event":
+                    headers.event = value;
+                    break;
+
+                case "Site":
+                    headers.site = value;
+                    break;
+
+                case "Date":
+                    headers.date = value;
+                    break;
+
+                case "Round":
+                    headers.round = value;
+                    break;
+
+                case "White":
+                    headers.white = value;
+                    break;
+
+                case "Black":
+                    headers.black = value;
+                    break;
+
+                case "Result":
+                    headers.result = value;
+                    break;
+
+                case "WhiteElo":
+                    headers.whiteElo = value;
+                    break;
+
+                case "BlackElo":
+                    headers.blackElo = value;
+                    break;
+
+                case "ECO":
+                    headers.eco = value;
+                    break;
+
+                case "Termination":
+                    headers.termination = value;
+                    break;
+
+                case "TimeControl":
+                    headers.timeControl = value;
+                    break;
+
+                default:
+                    headers.otherFields.set(key, value);
+                    break;
+            }
+        }
+
+        //Create initial board.
+        const initialPosition = startingPosition(game.headers).unwrap();
+
+        const startingFen = makeFen(initialPosition.toSetup());
+
+        let board = new ChessopsBoard(startingFen);
+
+        const states: Array<IChessGame> = [];
+        const moveStack: Array<MoveResult> = [];
+
+        // Store initial state.
+        states.push(board.clone());
+
+
+        // Replay moves.
+        for (const node of game.moves.mainline())
+        {
+            const san = node.san;
+
+            const move = this._playSanMove(board, san);
+
+            if (!move.result)
+            {
+                break;
+            }
+
+            move.pgnComment = this._extractComments(node);
+
+            moveStack.push(move);
+
+            states.push(board.clone());
+        }
+
+
+        return {
+            states,
+            moveStack,
+            pgnHeaders: headers
+        };
+    }
+
+    private static _playSanMove(
+        board: ChessopsBoard,
+        san: string
+    ): MoveResult
+    {
+        const result = new MoveResult();
+
+        const legalMoves = board._inst.allDests();
+
+        for (const [from, destinations] of legalMoves)
+        {
+            for (const to of destinations)
+            {
+                const move =
+                {
+                    from,
+                    to
+                };
+
+                const generatedSan = makeSan(
+                    board._inst,
+                    move
+                );
+
+                if (generatedSan === san)
+                {
+                    const fromCoord = makeSquare(from);
+                    const toCoord = makeSquare(to);
+
+                    const promotion =
+                        san.includes("=")
+                            ? san.charAt(san.indexOf("=") + 1)
+                            : "";
+
+                    return MoveResult.createMoveResultFromInterface(
+                        board.completeMove(
+                            fromCoord,
+                            toCoord,
+                            promotion || PieceType.QUEEN
+                        )
+                    );
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private static _extractComments(node: any): string
+    {
+        if (!node.comments)
+        {
+            return "";
+        }
+
+        return node.comments.join("\n");
+    }
     //#endregion
 }
 
