@@ -3,6 +3,11 @@
     <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'home.heading' | translate }}</h1>
     <h4 [style.color]="themeService.getThemeInstance().getTextColor()">{{ 'home.subtitle' | translate }}</h4>
 
+    <h4 class="alert alert-warning" [style.color]="'darkorange'">
+        {{ 'home.960Supported.desc' | translate }}
+        <a routerLink="/pgn/NoUQbgpgdgLgBAIgLQILoChgGUCWMKIobAAiAhvoWpgEoD2ArlACZXEDqAFngQgJqNqwAEIAbMgGMA1oiww60gGY4AzpzgBGABxwAMjyE0IKhqPgIAVELGSpIUXUQaAzACYADNXQaAdHGYALHAQAGxwrn7CikHCAEYBANRwzn4SznDCZACscAF+8RmxYVmpQdlwIak5AOY5AOypAB5FcNWN0XBafgCKzOnMOQCcfhDpZM1BGu4j7UEAchJhGr5w3bE5NGRLEXBzzK4ZzHWaKbux6RLNS3m75TSN5Rolqw85sa+alXAA8ki-33AyJMGnAaH1dtUIMdtH5Nul3mR0hphnAANISA7dCQ6Dx+dHpXo4lao8FrMKuHb41axVxJVynEkE2IaOk3KndB4HVzPRnU5x0r4kg5kLkg9EaVZpOldNHMCUWIA" [style.color]="'darkorange'">{{ 'home.960Supported.link' | translate }}</a>
+    </h4>
+
     <div class="m-5"></div>
 
     <div class="middleContainer d-flex justify-content-between align-items-center">

@@ -95,6 +95,17 @@
                         <p>{{ game.white.username }} [{{game.white.rating}}] vs {{game.black.username}} [{{game.black.rating}}] <span class="badge rounded-pill" [ngClass]="getResultClassForChessComGame(game)">{{game.getScore()}} {{game.getReason()}}</span></p>
                         
                         <div class="d-flex align-items-center">
+
+                            @if (game.rules.includes("960"))
+                            {
+                                <div class="badge rounded-pill" [style.background-color]="'darkorange'">
+                                    <i class="bi bi-shuffle"></i>
+                                    <p class="d-inline">&nbsp;960</p>
+                                </div>
+
+                                <div class="m-1"></div>
+                            }
+
                             <div class="badge rounded-pill" [style.background-color]="`${themeService.getThemeInstance().getPrimaryColor()}`">
                                 <i class="bi bi-clock"></i>
                                 <p class="d-inline">&nbsp;&nbsp;{{game.formatTimeControl()}} {{game.time_class}}</p>

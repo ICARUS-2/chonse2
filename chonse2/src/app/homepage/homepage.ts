@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { StaticChessboard } from '../static-chessboard/static-chessboard';
 import ThemeService from '../themes/theme-service';
 import { IconButton } from "../ui/icon-button/icon-button";
@@ -13,7 +13,7 @@ import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
 
 @Component({
   selector: 'app-homepage',
-  imports: [StaticChessboard, IconButton, NgbTooltip, TranslatePipe],
+  imports: [StaticChessboard, IconButton, NgbTooltip, TranslatePipe, RouterLink],
   templateUrl: './homepage.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './homepage.css',
