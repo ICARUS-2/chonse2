@@ -118,7 +118,7 @@ export const classifyByWinPctChange = (winPctChange: number): MoveClassification
   return MoveClassification.Excellent;
 };
 
-export function concatenateUciParams(uciParamsMove: {from: Square; to: Square; promotion?: string | undefined;})
+export function concatenateUciParams(uciParamsMove: {from: string; to: string; promotion?: string | undefined;})
 {
   return uciParamsMove.from + uciParamsMove.to + (uciParamsMove.promotion == undefined ? "" : uciParamsMove.promotion);
 }
