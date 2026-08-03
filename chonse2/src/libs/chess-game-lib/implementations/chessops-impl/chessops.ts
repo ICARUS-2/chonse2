@@ -401,31 +401,6 @@ export default class ChessopsBoard implements IChessGame
     //#endregion
 
     //#region Manipulation of state
-
-    //Set true for white to move, false for black to move.
-    public setTurn(val: boolean): void 
-    {
-        //Turn of the game currently
-        const currentTurn = this.getTurn();
-
-        //Don't do the computationally expensive shit if nothing changes.
-        if (currentTurn === val)
-        {
-            return;
-        }
-
-        //Get the current fen and split it.
-        const currentFen = this.getFEN();
-        const parts = currentFen.split(' ');
-
-        //Switch the turn portion.
-        parts[1] = val === true ? PieceColor.WHITE : PieceColor.BLACK;
-
-        //Create a new fen by joining it.
-        const newFen = parts.join(' ');
-        this._instantiateFromFen(newFen);
-    }
-
     //Resets the board to its default.
     public reset(): void
     {
@@ -921,46 +896,6 @@ export default class ChessopsBoard implements IChessGame
         return rook !== undefined && castles.castlingRights.has(rook);
     }
 
-    //Sets type of castling rights.
-    public setCastlingRights(type: CastlingRightsType, allowed: boolean): void 
-    {
-        const setup = this._inst.toSetup();
-        const castles = this._inst.castles;
-        
-        //Map castling type to color and side
-        const colorMap: Record<CastlingRightsType, 'white' | 'black'> = 
-        {
-            [CastlingRightsType.WhiteKingside]: 'white',
-            [CastlingRightsType.WhiteQueenside]: 'white',
-            [CastlingRightsType.BlackKingside]: 'black',
-            [CastlingRightsType.BlackQueenside]: 'black'
-        };
-        
-        const sideMap: Record<CastlingRightsType, 'a' | 'h'> = 
-        {
-            [CastlingRightsType.WhiteKingside]: 'h',
-            [CastlingRightsType.WhiteQueenside]: 'a',
-            [CastlingRightsType.BlackKingside]: 'h',
-            [CastlingRightsType.BlackQueenside]: 'a'
-        };
-        
-        const rook = castles.rook[colorMap[type]][sideMap[type]];
-        
-        if (rook !== undefined) 
-        {
-            if (allowed) 
-            {
-                setup.castlingRights = setup.castlingRights.with(rook);
-            } 
-            else 
-            {
-                setup.castlingRights = setup.castlingRights.without(rook);
-            }
-            
-            this._inst = Chess.fromSetup(setup).unwrap();
-        }
-    }
-
     //Retrieves the coord of the en passant square
     public getEnPassantSquare(): string 
     {
@@ -974,31 +909,6 @@ export default class ChessopsBoard implements IChessGame
         //Return corresponding coord if exists.
         return makeSquare(ep);
     }
-
-    //Set en passant square to passed coord
-    public setEnPassantSquare(coord: string): void 
-    {
-        //Get current setup from Chess object
-        const setup = this._inst.toSetup();
-
-        //If erasing, set undefined.
-        if (coord == "")
-        {
-            setup.epSquare = undefined;
-        }
-        else 
-        {
-            //Parse the coordinate to a square number (e.g., "e3" -> 20)
-            const square = parseSquare(coord);
-            
-            //Update the epSquare
-            setup.epSquare = square;
-        }
-        
-        //Recreate Chess object with modified setup
-        this._inst = Chess.fromSetup(setup).unwrap();
-    }
-
     //#endregion
 
     //#region Instantiation

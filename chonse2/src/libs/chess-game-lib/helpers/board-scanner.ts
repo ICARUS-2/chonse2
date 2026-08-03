@@ -4,6 +4,7 @@ import { PieceType } from "../types/piece-type";
 import { ChessConstants } from "../types/constants";
 import PieceMaterial from "../types/piece-material";
 import IChessGame from "../i-chess-game";
+import AlgebraicNotationMaker from "../types/algebraic-notation-builder";
 
 export default class BoardScanner
 {
@@ -701,17 +702,11 @@ export default class BoardScanner
 
         const boardCopy = board.clone();
 
-        /*
-        const turnInCurrentState = board.getTurn();
 
         //Now, need to check if the skewered high value piece or the piece behind it cannot just check the king without hanging, or move and defend both.
         candidateSkewers = candidateSkewers.filter( sk => 
             {
                 const attackerPiece = board.findPieceAtCoordinate(sk.attackerCoordinate);
-                const attackerColor = attackerPiece[0];
-
-                //Sets the turn to the defender.
-                attackerColor == PieceColor.WHITE ? boardCopy.setTurn(false) : boardCopy.setTurn(true);
 
                 //Gotta check each legal move for the high value piece.
                 const legalMovesForHighValuePiece = boardCopy.getLegalMoves(sk.highValuePieceCoordinate);
@@ -773,10 +768,7 @@ export default class BoardScanner
                 return !canHighValuePieceGiveCheckWithoutHanging && !canHighValuePieceDefendWithoutHanging && !canLowValuePieceGiveCheck;
             }
         )
-
-        //Reset the turn so that it's correct.
-        boardCopy.setTurn(turnInCurrentState);
-        */
+    
 
         //And need to check that the skewered piece is hanging without the high value piece on the board (aka that the piece can even be viably captured).
         candidateSkewers = candidateSkewers.filter( sk =>

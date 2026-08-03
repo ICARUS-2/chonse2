@@ -32,9 +32,6 @@ export default interface IChessGame
 
     //Returns true if white to move, false if black to move.
     getTurn(): boolean
-
-    //Set true for white to move, false for black to move.
-    setTurn(val: boolean): void
     //#endregion
 
     //#region Manipulation of state
@@ -68,14 +65,8 @@ export default interface IChessGame
     //#region Castling and en passant
     getCastlingRights(type: CastlingRightsType): boolean
 
-    //Sets the castling rights for one of the four types
-    setCastlingRights(type: CastlingRightsType, val: boolean): void
-
     //Retrieves en passant square coord.
     getEnPassantSquare(): string
-
-    //Sets en passant square to the passed coord.
-    setEnPassantSquare(coord: string): void
     
     //#endregion
 

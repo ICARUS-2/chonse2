@@ -222,13 +222,8 @@ export class CoachUtils
                     {
                         if (nextBestState)
                         {
-                            console.log("Computing current skewers")
                             const currentStateSkewers = BoardScanner.getSkewersOnBoard(state, allHangingPieceCoords);
-                            console.log(currentStateSkewers)
-
-                            console.log("Computing next best skewers");
                             const bestStateSkewers = BoardScanner.getSkewersOnBoard(nextBestState); 
-                            console.log(bestStateSkewers)
 
                             //Opponent's available skewers.
                             const currentAttackerSkewers = currentStateSkewers.filter( sk => 
