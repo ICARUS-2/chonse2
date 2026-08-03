@@ -676,7 +676,7 @@ export default class BoardState
                 str += `${moveNumber}. `;
             }
 
-            str += `${mv.notation} `;
+            str += `${mv.notationMinimal} `;
 
         });
 

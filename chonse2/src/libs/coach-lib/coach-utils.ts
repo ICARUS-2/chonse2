@@ -222,8 +222,13 @@ export class CoachUtils
                     {
                         if (nextBestState)
                         {
+                            console.log("Computing current skewers")
                             const currentStateSkewers = BoardScanner.getSkewersOnBoard(state, allHangingPieceCoords);
-                            const bestStateSkewers = BoardScanner.getSkewersOnBoard(nextBestState);
+                            console.log(currentStateSkewers)
+
+                            console.log("Computing next best skewers");
+                            const bestStateSkewers = BoardScanner.getSkewersOnBoard(nextBestState); 
+                            console.log(bestStateSkewers)
 
                             //Opponent's available skewers.
                             const currentAttackerSkewers = currentStateSkewers.filter( sk => 
@@ -1979,82 +1984,6 @@ export class CoachUtils
                     {
                         //Add the comment saying they can develop the bishop.
                         CoachText.addCoachSentence(move, CoachText.PREPARES_BISHOP_FOR_DEVELOPMENT_SENTENCES, colorThatMovedText);
-
-                        //Clones the board to check the legal moves.
-                        const boardCopy = state.clone();
-                        boardCopy.setTurn(!boardCopy.getTurn());
-
-                        //Get the legal moves for the bishop that just got into the game.
-                        let allLegalMovesForBishop: Array<string> = [];
-                        let bishopSquare = "";
-                        if (boardCopy.getTurn())
-                        {
-                            if (move.notation.startsWith(ChessConstants.WHITE_KING_PAWN_SQUARE))
-                            {
-                                bishopSquare = ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE;
-                                allLegalMovesForBishop.push(...["e2", "d3", "c4", "b5", "a6"]);
-                            }
-
-                            if (move.notation.startsWith(ChessConstants.WHITE_QUEEN_PAWN_SQUARE))
-                            {
-                                bishopSquare = ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE;
-                                allLegalMovesForBishop.push(...["d2", "e3", "f4", "g5", "h6"]);
-                            }
-                        }
-                        else 
-                        {
-                            if (move.notation.startsWith(ChessConstants.BLACK_KING_PAWN_SQUARE))
-                            {
-                                bishopSquare = ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE;
-                                allLegalMovesForBishop.push(...["e7", "d6", "c5", "b4", "a3"]);
-                            }
-
-                            if (move.notation.startsWith(ChessConstants.BLACK_QUEEN_PAWN_SQUARE))
-                            {
-                                bishopSquare = ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE;
-                                allLegalMovesForBishop.push(...["d7", "e6", "f5", "g4", "h3"]);
-                            }
-                        }
-
-                        const idea = new CoachIdea();
-
-                        //Need to check that the move it is suggesting doesn't just straight up hang a bishop
-                        const movesThatDontHangTheBishop = allLegalMovesForBishop.filter( moveCoord => 
-                            {
-                                //completes the move temporarily
-                                const moveResult = boardCopy.completeMove(bishopSquare, moveCoord, PieceType.QUEEN);
-                                
-                                if (moveResult.result)
-                                {
-                                    //gets which hanging pieces it should check
-                                    const hangingPieces = BoardScanner.getHangingPieces(boardCopy);
-                                    const hangingPiecesToCheck = boardCopy.getTurn() ? hangingPieces.black : hangingPieces.white;
-
-                                    //undo the move so that we don't have to deep copy the whole ass object again.
-                                    boardCopy.undoMostRecentMove();
-
-                                    //if this move hangs the bishop, don't suggest it.
-                                    return !hangingPiecesToCheck.includes(moveCoord);
-                                }
-
-                                return false;
-                            }
-                        )
-
-                        if (movesThatDontHangTheBishop.length > 0)
-                        {
-                            const arrowToCoord = movesThatDontHangTheBishop[movesThatDontHangTheBishop.length - 1];
-                            const arrow = createArrow(bishopSquare, arrowToCoord, ArrowColors.IDEA, ArrowContext.Coach);
-
-                            if (arrow)
-                            {
-                                idea.arrows.push(arrow);
-                            }
-                        }
-
-                        //set coach idea data.
-                        idea.highlightedSquares.push(...movesThatDontHangTheBishop);
-                        move.coachIdeas.set(CoachIdeaFlagType.DevelopmentIdea, idea);
                     }
 
                     //Case: Player moved a pawn allowing the bishop to be developed (fianchetto)
@@ -2187,4 +2116,3 @@ export class CoachUtils
 
 
 //#endregion
-

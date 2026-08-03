@@ -13,6 +13,7 @@ import { makeSan } from "chessops/san";
 import MoveResult from "../../../../app/chessboard/chessboard/move-result";
 import { PgnHeaders } from "../../../../app/chessboard/chessboard/pgn-misc";
 import { parsePgn, startingPosition } from "chessops/pgn";
+import AlgebraicNotationMaker from "../../types/algebraic-notation-builder";
 
 export default class ChessopsBoard implements IChessGame
 {
@@ -739,11 +740,11 @@ export default class ChessopsBoard implements IChessGame
         //Cache move so it can be undone later.
         this._cacheState();
 
-        //Detect capture before playing the move
-        const isCapture = this._inst.board.has(toSquare) || didEnPassantCaptureHappen;
-
         //Generate SAN before playing the move
         const san = makeSan(this._inst, move);
+
+        //Detect capture before playing the move
+        const isCapture = san.includes(AlgebraicNotationMaker.CAPTURE)
 
         //Add capture if exists.
         if (pieceToBeCapturedIfExists)
@@ -758,27 +759,36 @@ export default class ChessopsBoard implements IChessGame
         const inCheckmate = this._inst.isCheckmate();
 
         //Build LAN
-        let lan = fromCoordinate;
-
-        if (isCapture) 
+        let lan = "";
+        if (san.includes("O-"))
         {
-            lan += "x";
+            lan = san;
         }
-
-        lan += toCoordinate;
-
-        if (actualPromotion) 
+        else 
         {
-            lan += "=" + actualPromotion;
-        }
+            lan = movedPiece[1] != PieceType.PAWN ? movedPiece[1] : "";
+            lan += fromCoordinate;
 
-        if (inCheckmate) 
-        {
-            lan += "#";
-        }
-        else if (inCheck) 
-        {
-            lan += "+";
+            if (isCapture) 
+            {
+                lan += "x";
+            }
+
+            lan += toCoordinate;
+
+            if (actualPromotion) 
+            {
+                lan += "=" + actualPromotion;
+            }
+
+            if (inCheckmate) 
+            {
+                lan += "#";
+            }
+            else if (inCheck) 
+            {
+                lan += "+";
+            }
         }
 
         //Set fields
@@ -1115,11 +1125,11 @@ export default class ChessopsBoard implements IChessGame
         const states: Array<IChessGame> = [];
         const moveStack: Array<MoveResult> = [];
 
-        // Store initial state.
+        //Store initial state.
         states.push(board.clone());
 
 
-        // Replay moves.
+        //Replay moves.
         for (const node of game.moves.mainline())
         {
             const san = node.san;

@@ -1,4 +1,3 @@
-import AlgebraicNotationMaker from "../types/algebraic-notation-builder";
 import { CastlingRightsType } from "../types/castling-rights-type";
 import { PieceColor } from "../types/piece-color";
 import { PieceType } from "../types/piece-type";
@@ -94,7 +93,7 @@ export default class BoardScanner
     }
     //#endregion
 
-//#region Forks
+    //#region Forks
     public static getForksOnBoard(
         board: IChessGame, 
         attackerColor: string, 
@@ -124,17 +123,17 @@ export default class BoardScanner
             }
         }
 
-        // Combine all valid fork targets (hanging pieces + the king) into a unique Set
+        //Combine all valid fork targets (hanging pieces + the king) into a unique Set
         const validTargets = new Set<string>(opponentHangingPieceCoords);
         if (opponentKingCoord !== null)
         {
             validTargets.add(opponentKingCoord);
         }
 
-        // Map to keep track of which attacking pieces are hitting which target coordinates
+        //Map to keep track of which attacking pieces are hitting which target coordinates
         const attackerHitsMap = new Map<string, Array<string>>();
 
-        // For each valid target, see which of the attacker's pieces are hitting it
+        //For each valid target, see which of the attacker's pieces are hitting it
         validTargets.forEach(targetCoord => 
         {
             const hitsOnTarget = board.getPiecesThatHitSquare(targetCoord);
@@ -686,99 +685,98 @@ export default class BoardScanner
                                 newSkewer.highValuePieceCoordinate = highValuePieceCoord;
                                 newSkewer.lowValuePieceBehindCoordinate = ChessConstants.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
                                 
-                                candidateSkewers.push(newSkewer);
+                                //Do not include pawns in skewers
+                                if (!newSkewer.lowValuePieceBehindCoordinate.endsWith(PieceType.PAWN))
+                                {
+                                    candidateSkewers.push(newSkewer);
+                                }
                             }
                         }
                     }
                 }
             }
         }
-
+        
         //Time to check some additional edge cases
 
         const boardCopy = board.clone();
+
+        /*
         const turnInCurrentState = board.getTurn();
 
         //Now, need to check if the skewered high value piece or the piece behind it cannot just check the king without hanging, or move and defend both.
         candidateSkewers = candidateSkewers.filter( sk => 
             {
-                try 
+                const attackerPiece = board.findPieceAtCoordinate(sk.attackerCoordinate);
+                const attackerColor = attackerPiece[0];
+
+                //Sets the turn to the defender.
+                attackerColor == PieceColor.WHITE ? boardCopy.setTurn(false) : boardCopy.setTurn(true);
+
+                //Gotta check each legal move for the high value piece.
+                const legalMovesForHighValuePiece = boardCopy.getLegalMoves(sk.highValuePieceCoordinate);
+                const legalMovesForLowValuePiece = boardCopy.getLegalMoves(sk.lowValuePieceBehindCoordinate);
+
+                let canHighValuePieceGiveCheckWithoutHanging: boolean = false;
+                let canHighValuePieceDefendWithoutHanging: boolean = false;
+                let canLowValuePieceGiveCheck: boolean = false;
+
+                //check that the high value piece can't move to either check the king without hanging or defend both pieces.
+                for(let i = 0; i < legalMovesForHighValuePiece.length; i++)
                 {
-                    const attackerPiece = board.findPieceAtCoordinate(sk.attackerCoordinate);
-                    const attackerColor = attackerPiece[0];
+                    const mv = legalMovesForHighValuePiece[i];
 
-                    //Sets the turn to the defender.
-                    attackerColor == PieceColor.WHITE ? boardCopy.setTurn(false) : boardCopy.setTurn(true);
+                    const r = boardCopy.completeMove(sk.highValuePieceCoordinate, mv, PieceType.QUEEN);
+                    const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
 
-                    //Gotta check each legal move for the high value piece.
-                    const legalMovesForHighValuePiece = boardCopy.getLegalMoves(sk.highValuePieceCoordinate);
-                    const legalMovesForLowValuePiece = boardCopy.getLegalMoves(sk.lowValuePieceBehindCoordinate);
-
-                    let canHighValuePieceGiveCheckWithoutHanging: boolean = false;
-                    let canHighValuePieceDefendWithoutHanging: boolean = false;
-                    let canLowValuePieceGiveCheck: boolean = false;
-
-                    //check that the high value piece can't move to either check the king without hanging or defend both pieces.
-                    for(let i = 0; i < legalMovesForHighValuePiece.length; i++)
+                    //if the opponent can be checked without hanging the piece, don't count this as a valid skewer.
+                    if (isOpponentInCheck)
                     {
-                        const mv = legalMovesForHighValuePiece[i];
-
-                        const r = boardCopy.completeMove(sk.highValuePieceCoordinate, mv, PieceType.QUEEN);
-                        const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
-
-                        //if the opponent can be checked without hanging the piece, don't count this as a valid skewer.
-                        if (isOpponentInCheck)
+                        if (!BoardScanner.doesSquareHaveHangingPiece(boardCopy,r.toCoord))
                         {
-                            if (!BoardScanner.doesSquareHaveHangingPiece(boardCopy,r.toCoord))
-                            {
-                                canHighValuePieceGiveCheckWithoutHanging = true;
-                                boardCopy.undoMostRecentMove();
-                                break;
-                            }
-                        }
-
-                        //If both pieces could be defended, don't count this as a valid skewer.
-                        const isLowerValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy,r.toCoord);
-                        const isHigherValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
-
-                        if (!isLowerValuePieceHanging && !isHigherValuePieceHanging)
-                        {
-                            canHighValuePieceDefendWithoutHanging = true;
-                        }
-
-                        boardCopy.undoMostRecentMove();
-                    }
-
-                    //Verify that the low value piece can't check the king and escape.
-                    for(let i = 0; i < legalMovesForLowValuePiece.length; i++)
-                    {
-                        const mv = legalMovesForLowValuePiece[i];
-
-                        const r = boardCopy.completeMove(sk.lowValuePieceBehindCoordinate, mv, PieceType.QUEEN);
-                        const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
-
-                        if (isOpponentInCheck)
-                        {
-                            canLowValuePieceGiveCheck = true;
+                            canHighValuePieceGiveCheckWithoutHanging = true;
                             boardCopy.undoMostRecentMove();
                             break;
                         }
-                        boardCopy.undoMostRecentMove();
                     }
 
-                    //If the opponent can't use the high value piece to check the king without hanging it, protect both pieces, or the lower value piece can't give a check, consider it valid so far.
-                    return !canHighValuePieceGiveCheckWithoutHanging && !canHighValuePieceDefendWithoutHanging && !canLowValuePieceGiveCheck;
+                    //If both pieces could be defended, don't count this as a valid skewer.
+                    const isLowerValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy,r.toCoord);
+                    const isHigherValuePieceHanging = BoardScanner.doesSquareHaveHangingPiece(boardCopy, sk.lowValuePieceBehindCoordinate);
+
+                    if (!isLowerValuePieceHanging && !isHigherValuePieceHanging)
+                    {
+                        canHighValuePieceDefendWithoutHanging = true;
+                    }
+
+                    boardCopy.undoMostRecentMove();
                 }
-                catch(e)
+
+                //Verify that the low value piece can't check the king and escape.
+                for(let i = 0; i < legalMovesForLowValuePiece.length; i++)
                 {
-                    return false;
+                    const mv = legalMovesForLowValuePiece[i];
+
+                    const r = boardCopy.completeMove(sk.lowValuePieceBehindCoordinate, mv, PieceType.QUEEN);
+                    const isOpponentInCheck = r.notation.includes(AlgebraicNotationMaker.CHECK);
+
+                    if (isOpponentInCheck)
+                    {
+                        canLowValuePieceGiveCheck = true;
+                        boardCopy.undoMostRecentMove();
+                        break;
+                    }
+                    boardCopy.undoMostRecentMove();
                 }
+
+                //If the opponent can't use the high value piece to check the king without hanging it, protect both pieces, or the lower value piece can't give a check, consider it valid so far.
+                return !canHighValuePieceGiveCheckWithoutHanging && !canHighValuePieceDefendWithoutHanging && !canLowValuePieceGiveCheck;
             }
-            
         )
 
         //Reset the turn so that it's correct.
         boardCopy.setTurn(turnInCurrentState);
+        */
 
         //And need to check that the skewered piece is hanging without the high value piece on the board (aka that the piece can even be viably captured).
         candidateSkewers = candidateSkewers.filter( sk =>
@@ -786,6 +784,12 @@ export default class BoardScanner
                 let isLowValuePieceHanging = false;
 
                 const highValuePiece = boardCopy.findPieceAtCoordinate(sk.highValuePieceCoordinate);
+
+                //Cannot allow an invalid state by removing the king.
+                if (highValuePiece.endsWith(PieceType.KING))
+                {
+                    return true;
+                }
                 
                 //Temporarily remove the piece.
                 boardCopy.setPieceOnBoard(sk.highValuePieceCoordinate, "");
@@ -798,15 +802,6 @@ export default class BoardScanner
 
                 //if the piece is hanging without the high value piece, it's a valid skewer.
                 return isLowValuePieceHanging;
-            }
-        )
-
-        //For now don't count pawns in skewers
-        candidateSkewers = candidateSkewers.filter( sk => 
-            {
-                const lowValuePiece = boardCopy.findPieceAtCoordinate(sk.lowValuePieceBehindCoordinate);
-
-                return lowValuePiece != PieceType.WHITE_PAWN && lowValuePiece != PieceType.BLACK_PAWN;
             }
         )
 
