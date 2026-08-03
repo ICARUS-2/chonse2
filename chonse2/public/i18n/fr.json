@@ -12,6 +12,12 @@
     {
         "heading": "Analyse de chess lumineuse.",
         "subtitle": "Code ouvert. Illimité. Aucun compte requis.",
+
+        "960Supported":
+        {
+            "desc": "Désormais compatible avec Chess960!",
+            "link": "Essayez maintenant"
+        },
         
         "leftBtns": 
         {

@@ -3,8 +3,7 @@
 import { openings } from "../data/openings";
 import { MoveClassification } from "../types/enums";
 import { PositionEval } from "../types/eval";
-import { Square } from "./chess";
-import { getIsPieceSacrifice, isHangingPieceCapture, uciMoveParams } from "./chessHelper";
+import { isHangingPieceCapture, uciMoveParams } from "./chessHelper";
 import LuminousDetector from "./luminous";
 import { getLineWinPercentage, getPositionWinPercentage } from "./winPercentage";
 
@@ -82,13 +81,8 @@ export const getMovesClassification = (
       const alternativesCollapseSignificantly = alternativeWinPctChange < winPctChange - ALTERNATIVES_COLLAPSE_SIGNIFICATLY_WIN_PERCENTAGE_CHANGE;
       const hangingPieceCapture = isHangingPieceCapture(fens[index - 1], playedMove);
 
-      // Sometimes close to checkmate winPctChange becomes a bad metric, so we also use:
-      const alternativeIsUselessSacrifice =
-        getIsPieceSacrifice(fens[index - 1], alternativeLine.pv[0], alternativeLine.pv.slice(1)) &&
-        alternativeWinPctChange < BLUNDER_THRESHOLD;
-
       // Best: The move played is the engine's top choice, but not necessarily a brilliant move
-      if (hangingPieceCapture || !alternativesCollapseSignificantly || alternativeIsUselessSacrifice) {
+      if (hangingPieceCapture || !alternativesCollapseSignificantly) {
         return {
           ...rawPosition,
           opening: currentOpening,
@@ -123,7 +117,7 @@ export const classifyByWinPctChange = (winPctChange: number): MoveClassification
   return MoveClassification.Excellent;
 };
 
-export function concatenateUciParams(uciParamsMove: {from: Square; to: Square; promotion?: string | undefined;})
+export function concatenateUciParams(uciParamsMove: {from: string; to: string; promotion?: string | undefined;})
 {
   return uciParamsMove.from + uciParamsMove.to + (uciParamsMove.promotion == undefined ? "" : uciParamsMove.promotion);
 }

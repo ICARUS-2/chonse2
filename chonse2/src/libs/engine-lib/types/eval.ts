@@ -1,4 +1,3 @@
-import { Move } from "../helpers/chess";
 import { EngineName, MoveClassification } from "./enums";
 
 export interface PositionEval {
@@ -47,14 +46,6 @@ export interface EvaluatePositionWithUpdateParams {
   multiPv?: number;
   setPartialEval?: (positionEval: PositionEval) => void;
   setCompletedEval?: (positionEval: PositionEval) => void;
-}
-
-export interface CurrentPosition {
-  lastMove?: Move;
-  eval?: PositionEval;
-  lastEval?: PositionEval;
-  currentMoveIdx?: number;
-  opening?: string;
 }
 
 export interface EvaluateGameParams {

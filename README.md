@@ -14,6 +14,7 @@
 - Easily link to and share games/analyses with friends.
 - Display move classifications (Luminous, perfect, blunder, etc), engine hierarchy, accuracies, elo estimations, graphs and evaluation bar.
 - Multithreading + Cloud Hybrid eval options.
+- Chess960 analysis support.
 
 
 ## Editor

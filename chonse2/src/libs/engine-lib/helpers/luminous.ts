@@ -3,7 +3,6 @@ import { PieceColor } from "../../chess-game-lib/types/piece-color";
 import PieceMaterial from "../../chess-game-lib/types/piece-material";
 import { PieceType } from "../../chess-game-lib/types/piece-type";
 import { LineEval } from "../types/eval";
-import { Square } from "./chess";
 import { ALTERNATIVES_COLLAPSE_SIGNIFICATLY_WIN_PERCENTAGE_CHANGE, concatenateUciParams } from "./moveClassification";
 import { getLineWinPercentage } from "./winPercentage";
 import ChessGameFactory from "../../chess-game-lib/chess-game-factory";
@@ -22,7 +21,7 @@ export default class LuminousDetector
         lastWinPct: number,
         currentWinPct: number,
 
-        uciPlayedMove: {from: Square; to: Square; promotion?: string | undefined;},
+        uciPlayedMove: {from: string; to: string; promotion?: string | undefined;},
 
     ): boolean
     {
@@ -112,7 +111,7 @@ export default class LuminousDetector
         return false;
     }
 
-    private static _wasSimplePieceCapture(beforeState: IChessGame, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;} ): boolean
+    private static _wasSimplePieceCapture(beforeState: IChessGame, uciPlayedMove:{from: string; to: string; promotion?: string | undefined;} ): boolean
     {
         //Check the piece that moved and potentially the piece it captured.
         const pieceMoved: string = beforeState.findPieceAtCoordinate(uciPlayedMove.from);
@@ -135,7 +134,7 @@ export default class LuminousDetector
         return false;
     }
 
-    private static _didMoveLeavePieceVulnerable(afterState: IChessGame, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;} ): boolean 
+    private static _didMoveLeavePieceVulnerable(afterState: IChessGame, uciPlayedMove:{from: string; to: string; promotion?: string | undefined;} ): boolean 
     {
         //If the piece isn't hanging, don't consider it a luminous sacrifice.
         const isHangingPiece = BoardScanner.doesSquareHaveHangingPiece(afterState, uciPlayedMove.to);
@@ -164,7 +163,7 @@ export default class LuminousDetector
         return canPieceActuallyBeRecaptured;
     }
 
-    private static _shouldOpponentRecaptureIfMateNotForced(afterFen: string, uciPlayedMove:{from: Square; to: Square; promotion?: string | undefined;}, currentLines: Array<LineEval>)
+    private static _shouldOpponentRecaptureIfMateNotForced(afterFen: string, uciPlayedMove:{from: string; to: string; promotion?: string | undefined;}, currentLines: Array<LineEval>)
     {
         let recaptureIndex = -1;
 

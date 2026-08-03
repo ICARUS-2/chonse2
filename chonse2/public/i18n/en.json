@@ -12,6 +12,12 @@
     {
         "heading": "Luminous chess analytics.",
         "subtitle": "Open-source. Unlimited. No account required.",
+
+        "960Supported": 
+        {
+            "desc": "Chess960 now supported!",
+            "link": "Try Now!"
+        },
         
         "leftBtns": 
         {
