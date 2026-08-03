@@ -11,10 +11,7 @@ import { ChessConstants } from "../../types/constants";
 import PieceMaterial from "../../types/piece-material";
 
 export default class Chonse2 implements IChessGame
-{
-  //Draw condition thresholds
-  static readonly DRAW_BY_REPETITION_THRESHOLD: number = 3;
-  
+{  
   //To check draw by repetition, object internally stores a fen key split at index 2 (state + castling + en passant if possible) in a hashmap and checks how many times this key has appeared.
   private static readonly _FEN_SPLIT_POSKEY_INDEX = 2
 
@@ -555,7 +552,7 @@ export default class Chonse2 implements IChessGame
 
       if (val)
       {
-        if (val >= Chonse2.DRAW_BY_REPETITION_THRESHOLD)
+        if (val >= ChessConstants.DRAW_BY_REPETITION_THRESHOLD)
         {
           this._gameState.isGameOver = true;
           this._gameState.reason = GameOverReason.ThreefoldRepetition;

@@ -1,7 +1,7 @@
 import { Piece, Role, attacks, makeSquare, parseSquare } from "chessops";
 import IChessGame from "../../i-chess-game";
 import { CastlingRightsType } from "../../types/castling-rights-type";
-import { GameState } from "../../types/game-state";
+import { GameOverReason, GameScore, GameState } from "../../types/game-state";
 import { IMoveResult } from "../../types/move-result";
 import { PieceColor } from "../../types/piece-color";
 import { Chess } from 'chessops/chess';
@@ -31,6 +31,9 @@ export default class ChessopsBoard implements IChessGame
     {
         const setup = parseFen(fen).unwrap();
         this._inst = Chess.fromSetup(setup).unwrap();
+
+        //Starting position always counts towards the repetition.
+        this._previousPositionMap.set(this._getPositionKey(), 1);
     }
 
     //#region Pieces and squares.
@@ -423,6 +426,7 @@ export default class ChessopsBoard implements IChessGame
     public reset(): void
     {
         this._inst = Chess.default();
+        this._resetInternal();
     }
 
     //Places a piece at a given coord.
@@ -446,6 +450,19 @@ export default class ChessopsBoard implements IChessGame
         this._inst = Chess.fromSetup(setup).unwrap();
     }
 
+    //Reinitializes subfields.
+    private _resetInternal()
+    {
+        //Remove all captures.
+        this._piecesBlackCaptured.length = 0;
+        this._piecesWhiteCaptured.length = 0;
+
+        //Remove entries in repetition map.
+        this._previousPositionMap.clear();
+
+        //Starting position always counts towards the repetition.
+        this._previousPositionMap.set(this._getPositionKey(), 1);
+    }
     //#endregion
 
     //#region Game state
@@ -453,13 +470,93 @@ export default class ChessopsBoard implements IChessGame
     //Gets game state object.
     public getGameState(): GameState
     {
-        throw new Error("Not implemented.");
+        const state = new GameState();
+
+        const turn = this._inst.turn;
+
+        //Checkmate
+        if (this._inst.isCheckmate())
+        {
+            state.isGameOver = true;
+            state.reason = GameOverReason.Checkmate;
+
+            state.winner = turn === "white" ? "black" : "white";
+            state.gameScore = turn === "white"
+                ? GameScore.BLACK_WON
+                : GameScore.WHITE_WON;
+
+            return state;
+        }
+
+        //Stalemate
+        if (this._inst.isStalemate())
+        {
+            state.isGameOver = true;
+            state.reason = GameOverReason.Stalemate;
+            state.gameScore = GameScore.DRAW;
+
+            return state;
+        }
+
+        //Insufficient material
+        if (this._inst.isInsufficientMaterial())
+        {
+            state.isGameOver = true;
+            state.reason = GameOverReason.InsufficientMaterial;
+            state.gameScore = GameScore.DRAW;
+
+            return state;
+        }
+
+        //50 move rule
+        if (this._inst.halfmoves >= ChessConstants.DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD)
+        {
+            state.isGameOver = true;
+            state.reason = GameOverReason.FiftyMoveNoPawnMovementsOrCaptures;
+            state.gameScore = GameScore.DRAW;
+
+            return state;
+        }
+
+        //Threefold repetition requires history tracking
+        if (this._isThreefoldRepetition())
+        {
+            state.isGameOver = true;
+            state.reason = GameOverReason.ThreefoldRepetition;
+            state.gameScore = GameScore.DRAW;
+
+            return state;
+        }
+
+        return state;
     }
 
     //Triggers game over check from outside if necessary
     public checkIsGameOver(): void
     {
-        throw new Error("Not implemented.");
+        //pass
+    }
+
+    //Verifies if a threefold repetition has taken place.
+    private _isThreefoldRepetition(): boolean
+    {
+        //Check every position in the cache.
+        for( let posKey of this._previousPositionMap.keys() )
+        {
+            //Get number of occurrences
+            const val = this._previousPositionMap.get(posKey);
+
+            //If any position has occurred at least three times, instant draw by reChessConstantspetition.
+            if (val)
+            {
+                if (val >= ChessConstants.DRAW_BY_REPETITION_THRESHOLD)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     //Will need this for the sake of tracking draw by repetition since it needs to take 
@@ -537,6 +634,7 @@ export default class ChessopsBoard implements IChessGame
     }
 
     //Moves a piece from one spot to another and accounting for promotion if applicable.
+    //Perform a move on the board: from -> to + promotion
     public completeMove(
         fromCoordinate: string, 
         toCoordinate: string, 
@@ -546,15 +644,21 @@ export default class ChessopsBoard implements IChessGame
         //Object to return.
         const result: IMoveResult = 
         {
-        result: false,
-        notation: '',
-        notationMinimal: '',
-        fromCoord: fromCoordinate,
-        toCoord: toCoordinate,
-        promotion: '',
-        piece: '',
-        pgnComment: ''
+            result: false,
+            notation: '',
+            notationMinimal: '',
+            fromCoord: fromCoordinate,
+            toCoord: toCoordinate,
+            promotion: '',
+            piece: '',
+            pgnComment: ''
         };
+
+        //Don't make a move if the game is over.
+        if (this.getGameState().isGameOver)
+        {
+            return result;
+        }
 
         //Parse from and to squares.
         const fromSquare = parseSquare(fromCoordinate);
@@ -582,31 +686,34 @@ export default class ChessopsBoard implements IChessGame
             to: toSquare
         };
 
+        //Check what piece exists in the to square.
+        const pieceToBeCapturedIfExists = this.findPieceAtCoordinate(toCoordinate);
+
         //Only apply promotion if this is actually a pawn reaching the last rank
         let actualPromotion = "";
         if (piece.role === "pawn") 
         {
-        const rank = Math.floor(toSquare / ChessConstants.SIZE);
+            const rank = Math.floor(toSquare / ChessConstants.SIZE);
 
-        const isPromotionRank =
-            (piece.color === "white" && rank === 7) ||
-            (piece.color === "black" && rank === 0);
+            const isPromotionRank =
+                (piece.color === "white" && rank === 7) ||
+                (piece.color === "black" && rank === 0);
 
-        if (isPromotionRank)
-        {
-            const promotionRole = this._convertPromotionPiece(promotionPiece);
-
-            if (promotionRole)
+            if (isPromotionRank)
             {
-                move.promotion = promotionRole;
-                actualPromotion = promotionPiece.toUpperCase();
+                const promotionRole = this._convertPromotionPiece(promotionPiece);
+
+                if (promotionRole)
+                {
+                    move.promotion = promotionRole;
+                    actualPromotion = promotionPiece.toUpperCase();
+                }
             }
-        }
         }
 
         if (!this._inst.isLegal(move)) 
         {
-        return result;
+            return result;
         }
 
         //Cache move so it can be undone later.
@@ -617,6 +724,21 @@ export default class ChessopsBoard implements IChessGame
 
         //Generate SAN before playing the move
         const san = makeSan(this._inst, move);
+
+        if (pieceToBeCapturedIfExists)
+        {
+            const whiteToMove = this.getTurn();
+
+            if (whiteToMove && pieceToBeCapturedIfExists.startsWith(PieceColor.BLACK))
+            {
+                this._piecesWhiteCaptured.push(pieceToBeCapturedIfExists);
+            }
+
+            if (!whiteToMove && pieceToBeCapturedIfExists.startsWith(PieceColor.WHITE))
+            {
+                this._piecesBlackCaptured.push(pieceToBeCapturedIfExists);
+            }
+        }
 
         //Play move
         this._inst.play(move);
@@ -654,6 +776,18 @@ export default class ChessopsBoard implements IChessGame
 
         //Only populate this when promotion happened
         result.promotion = actualPromotion;
+
+        //Register in position map for threefold repetition checking.
+        const currentPosKey = this._getPositionKey()
+        const currentStateCount: number | undefined = this._previousPositionMap.get(currentPosKey);
+        if (!currentStateCount)
+        {
+            this._previousPositionMap.set(currentPosKey, 1);
+        }
+        else
+        {
+            this._previousPositionMap.set(currentPosKey, currentStateCount + 1);
+        }
 
         return result;
     }
