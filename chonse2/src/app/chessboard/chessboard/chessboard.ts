@@ -1096,17 +1096,29 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   //#region Endgame square animation
   _isSquareEndgameKingSquare = (rankIndex: number, fileIndex: number) => computed((): boolean  => 
   {
-    return this._isSquareCheckmatedKing(rankIndex, fileIndex)() || this._isSquareWinningKing(rankIndex, fileIndex)() || this._isSquareKingInDraw(rankIndex, fileIndex)();
+    return this._isSquareCheckmatedKing(rankIndex, fileIndex)() || 
+            this._isSquareWinningKing(rankIndex, fileIndex)() || 
+            this._isSquareKingInDraw(rankIndex, fileIndex)();
   })
 
   _isSquareCheckmatedKing = (rankIndex: number, fileIndex: number) => computed( (): boolean =>
   {
-    return (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().getGameState().winner == PieceColor.BLACK) || (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().getGameState().winner == PieceColor.WHITE) && this.boardState().getCurrentState().getGameState().reason == GameOverReason.Checkmate;
+    return (
+      this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING && 
+      this.boardState().getCurrentState().getGameState().winner == PieceColor.BLACK) || 
+      
+      (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING 
+      && this.boardState().getCurrentState().getGameState().winner == PieceColor.WHITE) 
+      && this.boardState().getCurrentState().getGameState().reason == GameOverReason.Checkmate;
   })
 
   _isSquareWinningKing = (rankIndex: number, fileIndex: number) => computed( (): boolean => 
   {
-    return (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING && this.boardState().getCurrentState().getGameState().winner == PieceColor.WHITE) || (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING && this.boardState().getCurrentState().getGameState().winner == PieceColor.BLACK); 
+    return (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.WHITE_KING && 
+            this.boardState().getCurrentState().getGameState().winner == PieceColor.WHITE) || 
+            
+            (this.boardState().getCurrentState().getPieceState()[rankIndex][fileIndex] == PieceType.BLACK_KING && 
+            this.boardState().getCurrentState().getGameState().winner == PieceColor.BLACK); 
   } )
 
   _isSquareKingInDraw = (rankIndex: number, fileIndex: number) => computed( (): boolean => 

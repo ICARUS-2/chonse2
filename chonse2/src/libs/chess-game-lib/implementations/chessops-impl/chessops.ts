@@ -480,7 +480,7 @@ export default class ChessopsBoard implements IChessGame
             state.isGameOver = true;
             state.reason = GameOverReason.Checkmate;
 
-            state.winner = turn === "white" ? "black" : "white";
+            state.winner = turn === "white" ? PieceColor.BLACK : PieceColor.WHITE;
             state.gameScore = turn === "white"
                 ? GameScore.BLACK_WON
                 : GameScore.WHITE_WON;
@@ -736,13 +736,10 @@ export default class ChessopsBoard implements IChessGame
         const san = makeSan(this._inst, move);
 
         //Add capture if exists.
-        console.log(pieceToBeCapturedIfExists);
         if (pieceToBeCapturedIfExists)
         {
             this._addCapture(pieceToBeCapturedIfExists);
         }
-        console.log(this._piecesWhiteCaptured);
-        console.log(this._piecesBlackCaptured);
 
         //Play move
         this._inst.play(move);
