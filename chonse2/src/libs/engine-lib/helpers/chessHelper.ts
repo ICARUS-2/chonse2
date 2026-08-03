@@ -1,23 +1,9 @@
-import { EvaluateGameParams, LineEval, PositionEval } from "../types/eval";
-import { Chess, PieceSymbol, Square } from "../helpers/chess";
+import { PositionEval } from "../types/eval";
 import { getPositionWinPercentage } from "../helpers/winPercentage";
 import { GameOverReason, GameScore } from "../../chess-game-lib/types/game-state";
 import ChessGameFactory from "../../chess-game-lib/chess-game-factory";
 import BoardScanner from "../../chess-game-lib/helpers/board-scanner";
 import { PieceColor } from "../../chess-game-lib/types/piece-color";
-
-export const getEvaluateGameParams = (game: Chess): EvaluateGameParams => {
-  const history = game.history({ verbose: true });
-
-  const fens = history.map((move) => move.before);
-  fens.push(history[history.length - 1].after);
-
-  const uciMoves = history.map(
-    (move: any) => move.from + move.to + (move.promotion || "")
-  );
-
-  return { fens, uciMoves };
-};
 
 //Redesigned to account for score.
 export const getEvaluationBarValue2 = (

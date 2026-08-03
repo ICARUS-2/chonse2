@@ -3,7 +3,6 @@
 import { openings } from "../data/openings";
 import { MoveClassification } from "../types/enums";
 import { PositionEval } from "../types/eval";
-import { Square } from "./chess";
 import { isHangingPieceCapture, uciMoveParams } from "./chessHelper";
 import LuminousDetector from "./luminous";
 import { getLineWinPercentage, getPositionWinPercentage } from "./winPercentage";
