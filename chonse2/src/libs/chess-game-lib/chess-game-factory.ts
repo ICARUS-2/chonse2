@@ -11,7 +11,7 @@ enum ChessImplementation
 export default class ChessGameFactory 
 {
     //Choose which implementation you would like to use by switching the enum val.
-    private static readonly SELECTED_IMPL: ChessImplementation = ChessImplementation.Chonse2
+    private static readonly SELECTED_IMPL: ChessImplementation = ChessImplementation.Chessops
 
     //Instantiate a base object.
     static create(): IChessGame   

@@ -687,7 +687,18 @@ export default class ChessopsBoard implements IChessGame
         };
 
         //Check what piece exists in the to square.
+        const movedPiece = this.findPieceAtCoordinate(fromCoordinate);
         const pieceToBeCapturedIfExists = this.findPieceAtCoordinate(toCoordinate);
+
+        if (this._isEnPassantCaptureActuallyPossible())
+        {
+            if (toCoordinate == this.getEnPassantSquare() && movedPiece.endsWith(PieceType.PAWN))
+            {
+                const capturedPawnPiece = this.getTurn() ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
+
+                this._addCapture(capturedPawnPiece);
+            }
+        }
 
         //Only apply promotion if this is actually a pawn reaching the last rank
         let actualPromotion = "";
@@ -725,20 +736,14 @@ export default class ChessopsBoard implements IChessGame
         //Generate SAN before playing the move
         const san = makeSan(this._inst, move);
 
+        //Add capture if exists.
+        console.log(pieceToBeCapturedIfExists);
         if (pieceToBeCapturedIfExists)
         {
-            const whiteToMove = this.getTurn();
-
-            if (whiteToMove && pieceToBeCapturedIfExists.startsWith(PieceColor.BLACK))
-            {
-                this._piecesWhiteCaptured.push(pieceToBeCapturedIfExists);
-            }
-
-            if (!whiteToMove && pieceToBeCapturedIfExists.startsWith(PieceColor.WHITE))
-            {
-                this._piecesBlackCaptured.push(pieceToBeCapturedIfExists);
-            }
+            this._addCapture(pieceToBeCapturedIfExists);
         }
+        console.log(this._piecesWhiteCaptured);
+        console.log(this._piecesBlackCaptured);
 
         //Play move
         this._inst.play(move);
@@ -772,7 +777,7 @@ export default class ChessopsBoard implements IChessGame
         result.result = true;
         result.notation = lan;
         result.notationMinimal = san;
-        result.piece = piece.role;
+        result.piece = this._convertChessopsPieceToPieceType(piece);
 
         //Only populate this when promotion happened
         result.promotion = actualPromotion;
@@ -833,6 +838,21 @@ export default class ChessopsBoard implements IChessGame
 
             default:
                 return undefined;
+        }
+    }
+
+    private _addCapture(piece: string)
+    {
+        const whiteToMove = this.getTurn();
+
+        if (whiteToMove && piece.startsWith(PieceColor.BLACK))
+        {
+            this._piecesWhiteCaptured.push(piece);
+        }
+
+        if (!whiteToMove && piece.startsWith(PieceColor.WHITE))
+        {
+            this._piecesBlackCaptured.push(piece);
         }
     }
 
