@@ -967,7 +967,20 @@ export default class ChessopsBoard implements IChessGame
 
     public clone(): IChessGame
     {
-        throw new Error("Not implemented.");
+        //Create a fresh board from the current position.
+        const cloned = new ChessopsBoard(this.getFEN());
+
+        //Deep copy captured pieces.
+        cloned._piecesWhiteCaptured = [...this._piecesWhiteCaptured];
+        cloned._piecesBlackCaptured = [...this._piecesBlackCaptured];
+
+        //Deep copy repetition history.
+        cloned._previousPositionMap = new Map(this._previousPositionMap);
+
+        //Deep copy cached state.
+        cloned._stateCache = this._stateCache.deepCopy();
+
+        return cloned;
     }
 
     //#endregion
