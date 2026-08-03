@@ -21,7 +21,6 @@ export default class Sound
 
     static playSoundForMove(notation: string)
     {
-        console.log(notation);
         if (notation.includes(AlgebraicNotationMaker.CHECKMATE))
         {
             Sound.playSound(Sound.CHECK);

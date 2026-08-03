@@ -293,12 +293,12 @@ export default class ChessopsBoard implements IChessGame
     {
         if (color == PieceColor.WHITE)
         {
-            return [];
+            return [...this._piecesWhiteCaptured];
         }
 
         if (color == PieceColor.BLACK)
         {
-            return [];
+            return [...this._piecesBlackCaptured];
         }
 
         return [];
