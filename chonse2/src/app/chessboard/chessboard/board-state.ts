@@ -2,7 +2,7 @@ import { computed, signal, WritableSignal } from "@angular/core";
 import { Arrow } from "./arrow";
 import LocalStorageHelper from "../../../libs/local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
-import { PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
+import { PgnComments, PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
 import { Quote, Quotes } from "./quotes";
 import { MoveClassification, EngineName } from "../../../libs/engine-lib/types/enums";
 import { PositionEval, GameEval, EvaluateGameParams, EvalSource, LineEval, EvaluatePositionWithUpdateParams } from "../../../libs/engine-lib/types/eval";
@@ -677,6 +677,11 @@ export default class BoardState
             }
 
             str += `${mv.notationMinimal} `;
+
+            if (mv.pgnComment)
+            {
+                str += `{${mv.pgnComment}} `
+            }
 
         });
 
