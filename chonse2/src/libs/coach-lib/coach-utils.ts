@@ -77,9 +77,9 @@ export class CoachUtils
             if (state && move && posEval && posEval.bestMove)
             {
                 //What the next best state will be.
-                const nextBestMove = CoachMiscHelpers.convertUciStringToParams(posEval.bestMove);
+                const nextBestMove = uciMoveParams(posEval.bestMove);
                 const nextBestState = state.clone();
-                nextBestState.completeMove(nextBestMove.fromSquare, nextBestMove.toSquare, nextBestMove.promotion);
+                nextBestState.completeMove(nextBestMove.from, nextBestMove.to, nextBestMove.promotion ?? PieceType.QUEEN);
                 
 
                 //play out the engine line
@@ -143,22 +143,22 @@ export class CoachUtils
                     posEval.moveClassification == MoveClassification.Miss
                 )
                 {
-                    let previousBestMove: { fromSquare: string; toSquare: string; promotion: string} | null = null;
+                    let previousBestMove: { from: string; to: string; promotion?: string | undefined} | null = null;
                     let missedState: IChessGame | null = null;
                     let bestPieceToMove: string | null = null;
 
                     if (previousPosEval.bestMove && previousState)
                     {
-                        previousBestMove = CoachMiscHelpers.convertUciStringToParams(previousPosEval.bestMove);
+                        previousBestMove = uciMoveParams(previousPosEval.bestMove);
                         const previousStateCopy = previousState.clone();
-                        previousStateCopy.completeMove(previousBestMove.fromSquare, previousBestMove.toSquare, previousBestMove.promotion);  
+                        previousStateCopy.completeMove(previousBestMove.from, previousBestMove.to, previousBestMove.promotion?? PieceType.QUEEN);  
                         missedState = previousStateCopy;
-                        bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
+                        bestPieceToMove = previousState.findPieceAtCoordinate(previousBestMove.from);
                     }
                     
                     //Case: Player leaves a piece hanging.
                     {
-                        const bestMove = CoachMiscHelpers.convertUciStringToParams(posEval.bestMove);
+                        const bestMove = uciMoveParams(posEval.bestMove);
                         const hangingPiecesArrToCheck = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
 
                         let pieceToTake = PieceType.NONE;
@@ -188,7 +188,7 @@ export class CoachUtils
                                 }
 
                                 //If the best move in this position is to capture the vulnerable piece, have the coach say this.
-                                if (bestMove.toSquare == hangingPieceCoord)
+                                if (bestMove.to == hangingPieceCoord)
                                 {
                                     //In case of someone getting, say, their queen/king forked by a knight, don't tell them they blundered the queen if they moved the king to an inaccurate spot.
                                     const bestMoveAlsoInvolvedHangingThisPiece = BoardScanner.doesSquareHaveHangingPiece(missedState, hangingPieceCoord);
@@ -246,7 +246,7 @@ export class CoachUtils
                             //Check if a new skewer is introduces because of the best move.
                             if (bestStateAttackerSkewers.length > currentAttackerSkewers.length)
                             {
-                                const bestMoveToCoord = nextBestMove.toSquare;
+                                const bestMoveToCoord = nextBestMove.to;
                                 let bestSkewer: Skewer | null = null;
 
                                 for(let i = 0; i < bestStateAttackerSkewers.length; i++)
@@ -266,7 +266,7 @@ export class CoachUtils
 
                                     const idea = new CoachIdea();
 
-                                    const bestMoveArrow = createArrow(nextBestMove.fromSquare, nextBestMove.toSquare, ArrowColors.IDEA, ArrowContext.Coach);
+                                    const bestMoveArrow = createArrow(nextBestMove.from, nextBestMove.to, ArrowColors.IDEA, ArrowContext.Coach);
                                     const skewerArrow = createArrow(bestSkewer.attackerCoordinate, bestSkewer.lowValuePieceBehindCoordinate, ArrowColors.IDEA, ArrowContext.Coach);
                                     const highlights = [bestSkewer.highValuePieceCoordinate, bestSkewer.lowValuePieceBehindCoordinate];
 
@@ -314,7 +314,7 @@ export class CoachUtils
 
                                     //We want to show the possible fork with the coach arrows.
                                     const arrowsArr: Array<Arrow> = [];
-                                    const moveToForkArrow = createArrow(nextBestMove.fromSquare, nextBestMove.toSquare, ArrowColors.IDEA, ArrowContext.Coach);
+                                    const moveToForkArrow = createArrow(nextBestMove.from, nextBestMove.to, ArrowColors.IDEA, ArrowContext.Coach);
                                     
                                     //First, add the move that the piece takes to fork the other 2+ pieces.
                                     if (moveToForkArrow)
@@ -517,18 +517,18 @@ export class CoachUtils
                             {
                                 const previousHangingPiecesArrToCheck = whiteToMove ? allPreviousHangingPieceCoords.white : allPreviousHangingPieceCoords.black;
                                 
-                                const previousBestMove = CoachMiscHelpers.convertUciStringToParams(previousPosEval.bestMove);
+                                const previousBestMove = uciMoveParams(previousPosEval.bestMove);
 
                                 //For all the previously hanging pieces, check if the previous best move was to capture it. If it was, the coach should tell them.
                                 for (let i = 0; i < previousHangingPiecesArrToCheck.length; i++)
                                 {
                                     const coord = previousHangingPiecesArrToCheck[i];
-                                    const pieceToCapture = previousState.findPieceAtCoordinate(previousBestMove.toSquare);
+                                    const pieceToCapture = previousState.findPieceAtCoordinate(previousBestMove.to);
                                     
-                                    if (coord === previousBestMove.toSquare)
+                                    if (coord === previousBestMove.to)
                                     {                  
                                         //Subcase 1: If they correctly captured the piece but did so with the wrong attacker.
-                                        if (previousBestMove.toSquare === move.toCoord)
+                                        if (previousBestMove.to === move.toCoord)
                                         {
                                             CoachText.addCoachSentence(move, CoachText.CAPTURED_WITH_WRONG_PIECE_SENTENCES, colorThatMovedText, pieceToCapture);
                                             move.coachMoveFlags.push(CoachMoveFlagType.CapturedPieceWithWrongAttacker);
@@ -631,7 +631,7 @@ export class CoachUtils
                             for (const sk of missedStateSkewers)
                             {
                                 //if the best move in that position was to skewer a piece, show it.
-                                if (previousBestMove.toSquare == sk.attackerCoordinate)
+                                if (previousBestMove.to == sk.attackerCoordinate)
                                 {
                                     bestMoveWasToCreateSkewer = true;
                                     correspondingSkewer = sk;
@@ -666,7 +666,7 @@ export class CoachUtils
                                 for(const pin of missedStatePins)
                                 {
                                     //If the best move in that position was to pin a piece, show it.
-                                    if (previousBestMove.toSquare == pin.attackerCoordinate)
+                                    if (previousBestMove.to == pin.attackerCoordinate)
                                     {
                                         bestMoveWasToPinPiece = true;
                                         correspondingPin = pin;
@@ -711,8 +711,8 @@ export class CoachUtils
                                     ? BoardScanner.BLACK_QUEENSIDE_CASTLE
                                     : BoardScanner.WHITE_QUEENSIDE_CASTLE;
 
-                                if (previousBestMove.fromSquare == kingsideCastle.kingFrom &&
-                                    previousBestMove.toSquare == kingsideCastle.kingTo)
+                                if (previousBestMove.from == kingsideCastle.kingFrom &&
+                                    previousBestMove.to == kingsideCastle.kingTo)
                                 {
                                     CoachText.addCoachSentence(
                                         move,
@@ -722,8 +722,8 @@ export class CoachUtils
                                     move.coachMoveFlags.push(CoachMoveFlagType.MissedCastle);
                                 }
 
-                                if (previousBestMove.fromSquare == queensideCastle.kingFrom &&
-                                    previousBestMove.toSquare == queensideCastle.kingTo)
+                                if (previousBestMove.from == queensideCastle.kingFrom &&
+                                    previousBestMove.to == queensideCastle.kingTo)
                                 {
                                     CoachText.addCoachSentence(
                                         move,
@@ -796,7 +796,7 @@ export class CoachUtils
 
                             //kingside knight
                             if (
-                                previousBestMove.fromSquare == kingsideKnightSquare //Best move in previous position was to move a piece from the kingside knight square.
+                                previousBestMove.from == kingsideKnightSquare //Best move in previous position was to move a piece from the kingside knight square.
                                 && previousState.findPieceAtCoordinate(kingsideKnightSquare) == knightPiece //Confirms that there was indeed a knight there.
                             ) 
                             {
@@ -815,7 +815,7 @@ export class CoachUtils
 
                             //kingside bishop
                             if (
-                                previousBestMove.fromSquare == kingsideBishopSquare
+                                previousBestMove.from == kingsideBishopSquare
                                 && previousState.findPieceAtCoordinate(kingsideBishopSquare) == bishopPiece
                             )
                             {
@@ -833,7 +833,7 @@ export class CoachUtils
 
                             //queenside knight
                             if (
-                                previousBestMove.fromSquare == queensideKnightSquare
+                                previousBestMove.from == queensideKnightSquare
                                 && previousState.findPieceAtCoordinate(queensideKnightSquare) == knightPiece
                             )
                             {
@@ -851,7 +851,7 @@ export class CoachUtils
 
                             //queenside bishop
                             if (
-                                previousBestMove.fromSquare == queensideBishopSquare
+                                previousBestMove.from == queensideBishopSquare
                                 && previousState.findPieceAtCoordinate(queensideBishopSquare) == bishopPiece
                             )
                             {
@@ -890,7 +890,7 @@ export class CoachUtils
                         {
                             //need to check if the best thing was for the person to move their rook.
                             const rookPiece = whiteToMove ? PieceType.BLACK_ROOK : PieceType.WHITE_ROOK;
-                            const bestMovePiece = previousState.findPieceAtCoordinate(previousBestMove.fromSquare);
+                            const bestMovePiece = previousState.findPieceAtCoordinate(previousBestMove.from);
 
                             //if the best bet was to indeed move the rook, check if it was to place it on an open file.
                             if (bestMovePiece == rookPiece)
@@ -902,8 +902,8 @@ export class CoachUtils
                                 const missedRookOpenFiles = BoardScanner.getOpenFilesWithRooks(missedState);
                                 const missedRookOpenFilesControlledByColor = whiteToMove ? missedRookOpenFiles.black : missedRookOpenFiles.white;
 
-                                const fromFile = previousBestMove.fromSquare[0];
-                                const toFile = previousBestMove.toSquare[0];
+                                const fromFile = previousBestMove.from[0];
+                                const toFile = previousBestMove.to[0];
 
                                 //If the rook was moved to any open file (Accounts for if they took the right file with the wrong rook).
                                 const wasRookMovedToOpenFile = rookOpenFilesControlledByColor.includes(move.toCoord[0]) && movedPiece == rookPiece;
@@ -913,7 +913,7 @@ export class CoachUtils
                                 
 
                                 //If the player should have moved a rook to the open file in question.
-                                const wasBestMoveToPlaceRookOnOpenFile = missedRookOpenFilesControlledByColor.includes(previousBestMove.toSquare[0]);
+                                const wasBestMoveToPlaceRookOnOpenFile = missedRookOpenFilesControlledByColor.includes(previousBestMove.to[0]);
 
                                 if (!wasRookMovedToOpenFile && !wasRookPreviouslyOnBestOpenFile && wasBestMoveToPlaceRookOnOpenFile)
                                 {
@@ -1065,7 +1065,7 @@ export class CoachUtils
                                 {
                                     const kingsideWeakenedPawn = whiteToMove ? PAWN_PUSH_KING_WEAKNESSES.blackKingside : PAWN_PUSH_KING_WEAKNESSES.whiteKingside;
 
-                                    if (move.fromCoord == kingsideWeakenedPawn && previousBestMove?.fromSquare != kingsideWeakenedPawn)
+                                    if (move.fromCoord == kingsideWeakenedPawn && previousBestMove?.from != kingsideWeakenedPawn)
                                     {
                                         didPawnPushWeakenKing = true;
                                     }
@@ -1076,7 +1076,7 @@ export class CoachUtils
                                 {
                                     const queensideWeakenedPawn = whiteToMove ? PAWN_PUSH_KING_WEAKNESSES.blackQueenside : PAWN_PUSH_KING_WEAKNESSES.whiteQueenside;
 
-                                    if (move.fromCoord == queensideWeakenedPawn && previousBestMove?.fromSquare != queensideWeakenedPawn)
+                                    if (move.fromCoord == queensideWeakenedPawn && previousBestMove?.from != queensideWeakenedPawn)
                                     {
                                         didPawnPushWeakenKing = true;
                                     }
@@ -1102,7 +1102,7 @@ export class CoachUtils
                             const pawnPiece = whiteToMove ? PieceType.BLACK_PAWN : PieceType.WHITE_PAWN;
 
                             const didPlayerAttackPawnChain = (movedPiece == pawnPiece && attackSquaresForPawnChain.includes(move.toCoord));
-                            const wasBestMoveToAttackPawnChain = (bestPieceToMove == pawnPiece && attackSquaresForPawnChain.includes(previousBestMove.toSquare))
+                            const wasBestMoveToAttackPawnChain = (bestPieceToMove == pawnPiece && attackSquaresForPawnChain.includes(previousBestMove.to))
 
                             //if the player outright missed the chance to attack a pawn chain.
                             if (!didPlayerAttackPawnChain && wasBestMoveToAttackPawnChain)
@@ -1129,7 +1129,7 @@ export class CoachUtils
                             const centerMovements = whiteToMove ? CENTER_STRIKE_MOVEMENTS.black : CENTER_STRIKE_MOVEMENTS.white;
 
                             const didAttackCenter = movedPiece == pawnPiece && centerMovements.some(cm => move.fromCoord == cm.from && move.toCoord == cm.to);
-                            const wasBestMoveToAttackCenter = bestPieceToMove == pawnPiece && centerMovements.some(cm => previousBestMove.fromSquare == cm.from && previousBestMove.toSquare == cm.to);
+                            const wasBestMoveToAttackCenter = bestPieceToMove == pawnPiece && centerMovements.some(cm => previousBestMove.from == cm.from && previousBestMove.to == cm.to);
                         
                             if (wasBestMoveToAttackCenter && !didAttackCenter)
                             {
@@ -1147,7 +1147,7 @@ export class CoachUtils
                             !move.coachMoveFlags.includes(CoachMoveFlagType.LeftPieceHanging) && //don't care about this if they straight up hung a piece.
                             previousBestMove && //Need to know what the previous best move was.
                             !move.notation.includes(AlgebraicNotationMaker.CAPTURE) &&//The played move being a capture isn't really moving a piece to safety.
-                            previousState.findPieceAtCoordinate(previousBestMove.toSquare) == "" //Same goes for prev best move.
+                            previousState.findPieceAtCoordinate(previousBestMove.to) == "" //Same goes for prev best move.
                         )
                         {
                             const hanging = whiteToMove ? allHangingPieceCoords.black : allHangingPieceCoords.white;
@@ -1170,7 +1170,7 @@ export class CoachUtils
                                     {
                                         didPlayerMoveHangingPiece = true;
 
-                                        if (hpCoord == previousBestMove.fromSquare)
+                                        if (hpCoord == previousBestMove.from)
                                         {
                                             shouldPlayerHaveMovedHangingPiece = true;
                                         }
@@ -1222,7 +1222,7 @@ export class CoachUtils
                                     {
                                         const formattedMove = uciMoveParams(bestMoveInMissedState);
 
-                                        const wasBestMoveToForceLossOfCastlingRights = CoachMiscHelpers.didForceLossOfCastlingRights(missedState, previousLineTwoMovesDeepState , whiteToMove, {fromSquare: formattedMove.from, toSquare: formattedMove.to, promotion: "q"});
+                                        const wasBestMoveToForceLossOfCastlingRights = CoachMiscHelpers.didForceLossOfCastlingRights(missedState, previousLineTwoMovesDeepState , whiteToMove, {from: formattedMove.from, to: formattedMove.to});
 
                                         //If we got to this point, we don't have to check the previous boolean because it's already confirmed castling rights weren't erroneously lost.
                                         //If the best move involved forcing the loss of castling rights, flag it. 
@@ -1242,7 +1242,7 @@ export class CoachUtils
                         if (missedState && previousBestMove)
                         {
                             const discoveredCheckStatus = BoardScanner.wasMoveDiscoveredCheck(state, {from: move.fromCoord, to: move.toCoord, promotion: PieceType.QUEEN});
-                            const didBestMoveInvolveDiscoveredCheck = BoardScanner.wasMoveDiscoveredCheck(missedState, {from: previousBestMove.fromSquare, to: previousBestMove.toSquare, promotion: previousBestMove.promotion} );
+                            const didBestMoveInvolveDiscoveredCheck = BoardScanner.wasMoveDiscoveredCheck(missedState, {from: previousBestMove.from, to: previousBestMove.to, promotion: previousBestMove.promotion ?? PieceType.QUEEN} );
 
                             if (discoveredCheckStatus == DiscoveredCheckType.None && didBestMoveInvolveDiscoveredCheck != DiscoveredCheckType.None)
                             {

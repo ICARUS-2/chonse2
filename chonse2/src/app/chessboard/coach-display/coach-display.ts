@@ -16,6 +16,8 @@ import { CoachMiscHelpers } from '../../../libs/coach-lib/coach-misc-helpers';
 import { CoachMoveFlagType, CoachMoveSequenceType, CoachIdeaFlagType, CoachIdea, CoachResourceFlagType } from '../../../libs/coach-lib/coach-types';
 import { CoachAudio } from '../../../libs/coach-lib/coach-audio';
 import { ChessConstants } from '../../../libs/chess-game-lib/types/constants';
+import { uciMoveParams } from '../../../libs/engine-lib/helpers/chessHelper';
+import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
 
 @Component({
   selector: 'app-coach-display',
@@ -169,10 +171,10 @@ export class CoachDisplay {
             const stateCopy = this.boardState().getCurrentState().clone();
 
             //Converts the move.
-            const {fromSquare, toSquare, promotion } = CoachMiscHelpers.convertUciStringToParams(engineMove);
+            const {from, to, promotion } = uciMoveParams(engineMove);
 
             const currentState = this.boardState().getCurrentState();
-            const rawPieceIndex = ChessConstants.findIndexFromCoordinate(fromSquare);
+            const rawPieceIndex = ChessConstants.findIndexFromCoordinate(from);
             const piece = currentState.getPieceState()[rawPieceIndex.rowIndex][rawPieceIndex.colIndex];
 
             
@@ -180,15 +182,15 @@ export class CoachDisplay {
             {
               //First, do the animation
               this.animateMove.emit({
-                from: fromSquare,
-                to: toSquare,
+                from: from,
+                to: to,
                 piece
               });
               await this.delay(Chessboard.ANIMATION_DURATION_MS);
             }
 
             //Then play the move.
-            const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
+            const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(from, to, promotion?? PieceType.QUEEN));
             moveResult.isCoachMove = true;
             moveResult.coachSentences.push({text: this.translate.instant('chessboard.coachDisplay.comments.topMove'), audioPath: CoachAudio.SKIP});
 

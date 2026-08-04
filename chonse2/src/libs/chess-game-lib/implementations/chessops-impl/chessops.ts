@@ -1058,7 +1058,6 @@ export default class ChessopsBoard implements IChessGame
             states.push(board.clone());
         }
 
-        console.log(moveStack);
         return {
             states,
             moveStack,

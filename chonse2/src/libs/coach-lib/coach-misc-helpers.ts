@@ -3,6 +3,7 @@ import IChessGame from "../chess-game-lib/i-chess-game";
 import { CastlingRightsType } from "../chess-game-lib/types/castling-rights-type";
 import { ChessConstants } from "../chess-game-lib/types/constants";
 import { PieceType } from "../chess-game-lib/types/piece-type";
+import { uciMoveParams } from "../engine-lib/helpers/chessHelper";
 import { LineEval } from "../engine-lib/types/eval";
 
 export class CoachMiscHelpers 
@@ -52,11 +53,11 @@ export class CoachMiscHelpers
             {
                 const stateCopy = followUp.at(-1)?.clone();
 
-                const {fromSquare, toSquare, promotion } = CoachMiscHelpers.convertUciStringToParams(engineLineMove);
+                const {from, to, promotion } = uciMoveParams(engineLineMove);
 
                 if (stateCopy)
                 {
-                    stateCopy.completeMove(fromSquare, toSquare, promotion);
+                    stateCopy.completeMove(from, to, promotion?? PieceType.QUEEN);
                     followUp.push(stateCopy);
                 }   
                 else 
@@ -73,7 +74,7 @@ export class CoachMiscHelpers
         state: IChessGame, 
         nextBestState: IChessGame, 
         whiteToMove: boolean, 
-        nextBestMove: { fromSquare: string; toSquare: string; promotion: string;}
+        nextBestMove: { from: string; to: string }
     ) : boolean
     {
         const doesOpponentHaveCastlingRights = whiteToMove
@@ -100,7 +101,7 @@ export class CoachMiscHelpers
         //If the opponent will not have castling rights after that move, make sure it wasn't cause they castled.
         if (doesOpponentHaveCastlingRights && !willOpponentHaveCastlingRights )
         {
-            const bestPieceToMove = state.findPieceAtCoordinate(nextBestMove.fromSquare);
+            const bestPieceToMove = state.findPieceAtCoordinate(nextBestMove.from);
             const shouldMoveKing = bestPieceToMove == PieceType.WHITE_KING || bestPieceToMove == PieceType.BLACK_KING;
 
             //If the player should indeed move their king here.
@@ -111,8 +112,8 @@ export class CoachMiscHelpers
                 const queenside = whiteToMove ? CASTLING_MOVES.whiteQueenside : CASTLING_MOVES.blackQueenside;
 
                 //Need to check if the next best move is for the opponent to castle. 
-                const shouldOpponentCastleKingside = nextBestMove.fromSquare == kingside.fromSquare && nextBestMove.toSquare == kingside.toSquare;
-                const shouldOpponentCastleQueenside = nextBestMove.fromSquare == queenside.fromSquare && nextBestMove.toSquare == queenside.toSquare;
+                const shouldOpponentCastleKingside = nextBestMove.from == kingside.fromSquare && nextBestMove.to == kingside.toSquare;
+                const shouldOpponentCastleQueenside = nextBestMove.from == queenside.fromSquare && nextBestMove.to == queenside.toSquare;
 
                 //If the next best move is not to castle, but in the next best state the player does not have castling rights,
                 //the only implication is that they lost the right to castle.  
@@ -121,18 +122,7 @@ export class CoachMiscHelpers
         }
 
         return false;
-    }
-
-    //Converts a UCI move to the format in which it can be used to move in the interface.
-    public static convertUciStringToParams(uci: string) : {fromSquare: string, toSquare: string, promotion: string}
-    {
-        const fromSquare = uci[0] + uci[1];
-        const toSquare = uci[2] + uci[3];
-        const promotion = uci[4] ? uci[4].toUpperCase() : PieceType.QUEEN;
-
-        return {fromSquare, toSquare, promotion};
-    }
-    
+    }    
 }
 
 export class CoachResourceLinks 
