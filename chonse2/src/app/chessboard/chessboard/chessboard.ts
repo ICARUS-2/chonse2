@@ -20,7 +20,7 @@ import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-
 import ThemeService from '../../themes/theme-service';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
 import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
-import { getEvaluationBarValue2 } from '../../../libs/engine-lib/helpers/chessHelper';
+import { getEvaluationBarValue } from '../../../libs/engine-lib/helpers/chessHelper';
 import { EngineName, EngineInformation, EngineType, MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { EvalSource } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
@@ -513,7 +513,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     if (e)
     {
-      const data = getEvaluationBarValue2(e, state.getGameState().gameScore);
+      const data = getEvaluationBarValue(e, state.getGameState().gameScore);
       return data;
     }
     else 
@@ -521,7 +521,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       const pe = this.boardState().getPreviousMostRecentEval();
       if (pe)
       {
-        const data = getEvaluationBarValue2(pe, state.getGameState().gameScore);
+        const data = getEvaluationBarValue(pe, state.getGameState().gameScore);
         return data;
       }
     }

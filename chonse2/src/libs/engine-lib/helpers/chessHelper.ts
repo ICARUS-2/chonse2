@@ -6,7 +6,7 @@ import BoardScanner from "../../chess-game-lib/helpers/board-scanner";
 import { PieceColor } from "../../chess-game-lib/types/piece-color";
 
 //Redesigned to account for score.
-export const getEvaluationBarValue2 = (
+export const getEvaluationBarValue = (
   position: PositionEval,
   gameScore: GameScore
 ): { whiteBarPercentage: number; label: string } => {
