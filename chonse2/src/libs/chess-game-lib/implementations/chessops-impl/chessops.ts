@@ -1058,7 +1058,6 @@ export default class ChessopsBoard implements IChessGame
             states.push(board.clone());
         }
 
-
         return {
             states,
             moveStack,
@@ -1073,8 +1072,10 @@ export default class ChessopsBoard implements IChessGame
     {
         const result = new MoveResult();
 
+        //Get all legal moves.
         const legalMoves = board._inst.allDests();
 
+        //Check through them.
         for (const [from, destinations] of legalMoves)
         {
             for (const to of destinations)
@@ -1085,11 +1086,13 @@ export default class ChessopsBoard implements IChessGame
                     to
                 };
 
+                //Generate the SAN for from + to.
                 const generatedSan = makeSan(
                     board._inst,
                     move
                 );
 
+                //If the san matches what we have generated, play the move.
                 if (generatedSan === san)
                 {
                     const fromCoord = makeSquare(from);
