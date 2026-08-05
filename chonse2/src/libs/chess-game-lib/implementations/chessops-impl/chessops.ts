@@ -136,7 +136,7 @@ export default class ChessopsBoard implements IChessGame
         const blackPieces: Array<string> = [];
         const square = parseSquare(coord);
 
-        if (!square)
+        if (square === undefined)
         {
             return {whiteCoords, whitePieces, blackCoords, blackPieces};    
         }
@@ -901,7 +901,7 @@ export default class ChessopsBoard implements IChessGame
     {
         //If it doesn't exist, don't return a coord.
         const ep = this._inst.epSquare;
-        if (!ep)
+        if (ep === undefined)
         {
             return "";
         }
