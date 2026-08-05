@@ -596,7 +596,7 @@ export default class ChessopsBoard implements IChessGame
     {
         const sqr = parseSquare(coordinate);
 
-        if (!sqr)
+        if (sqr === undefined)
         {
             return [];
         }
