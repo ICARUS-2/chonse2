@@ -186,6 +186,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       await this.boardState().evaluateGame();
       this.boardState().divergenceStateStack.set([]);
       this.boardState().divergenceMoveStack.set([]);
+      this.boardState().divergenceEvalStack.set([]);
     }
   }
 
@@ -841,6 +842,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     await this.boardState().evaluateGame();
     this.boardState().divergenceStateStack.set([]);
     this.boardState().divergenceMoveStack.set([]);
+    this.boardState().divergenceEvalStack.set([]);
     this.boardState().isReadOnly.set(true);
   }
 

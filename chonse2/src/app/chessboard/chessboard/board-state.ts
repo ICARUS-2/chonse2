@@ -314,7 +314,7 @@ export default class BoardState
     {
         const eng = this.engine();
 
-        if (eng != undefined)
+        if (eng != undefined && this.eval())
         {
             //Creates a new eval object where the fields will be set.
             const newEval: PositionEval = { bestMove: "", moveClassification: MoveClassification.None, opening: "", lines: [ {pv: [""], cp: 0} as LineEval ], source: EvalSource.Local };
