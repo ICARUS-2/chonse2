@@ -256,7 +256,7 @@ export default class ChessopsBoard implements IChessGame
                 //If something attacks it, it's in check.
                 if (attackers.whiteCoords.length > 0) 
                 {
-                return true;
+                    return true;
                 }
             }
         }
@@ -1083,14 +1083,22 @@ export default class ChessopsBoard implements IChessGame
                 const move =
                 {
                     from,
-                    to
+                    to,
                 };
 
                 //Generate the SAN for from + to.
-                const generatedSan = makeSan(
+                let generatedSan = makeSan(
                     board._inst,
                     move
                 );
+            
+                //Promotion edge case, promotion needs to be manually appended.
+                const isPromotion = san.includes("=");
+                if (isPromotion)
+                {
+                    const promotionPiece = san.charAt(san.indexOf("=") + 1);
+                    generatedSan += `=${promotionPiece}`
+                }
 
                 //If the san matches what we have generated, play the move.
                 if (generatedSan === san)
@@ -1113,7 +1121,8 @@ export default class ChessopsBoard implements IChessGame
                 }
             }
         }
-
+        console.log("San not found " + san)
+        console.log(result);
         return result;
     }
 

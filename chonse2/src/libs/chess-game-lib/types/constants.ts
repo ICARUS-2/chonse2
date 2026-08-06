@@ -119,4 +119,7 @@ export class ChessConstants
   //Draw conditions
   public static readonly DRAW_BY_NO_CAPTURES_OR_PAWN_MOVEMENTS_THRESHOLD = 100; //50 full moves * 2
   public static readonly DRAW_BY_REPETITION_THRESHOLD: number = 3;
+
+  //Promotions
+  public static readonly PROMOTIONS = [PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT];
 }
