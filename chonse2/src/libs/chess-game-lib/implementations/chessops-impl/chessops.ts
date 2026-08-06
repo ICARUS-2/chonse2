@@ -1121,9 +1121,8 @@ export default class ChessopsBoard implements IChessGame
                 }
             }
         }
-        console.log("San not found " + san)
-        console.log(result);
-        return result;
+
+        throw new Error("Invalid move " + san);
     }
 
     private static _extractComments(node: any): string
