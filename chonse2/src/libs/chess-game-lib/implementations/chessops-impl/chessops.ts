@@ -1037,8 +1037,7 @@ export default class ChessopsBoard implements IChessGame
 
         //Store initial state.
         states.push(board.clone());
-
-
+    
         //Replay moves.
         for (const node of game.moves.mainline())
         {
