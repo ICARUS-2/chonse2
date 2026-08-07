@@ -27,9 +27,7 @@ export class CopyPgnModal {
   {
     try 
     {
-      console.log("Copy PGN clicked");
-      navigator.clipboard.writeText(this.pgn);
-      navigator.clipboard.writeText(this.pgn);
+     navigator.clipboard.writeText(this.pgn);
 
       this.toastr.info(this.translate.instant("chessboard.copyPgnModal.toastr.copyRawSuccess"));
     }
@@ -43,8 +41,6 @@ export class CopyPgnModal {
   {
     try 
     {
-      console.log("PGN link clicked");
-      navigator.clipboard.writeText(this.pgn);
       const pgnGameLink = GameLinkHelper.generatePgnGameLink(this.pgn);
 
       navigator.clipboard.writeText(pgnGameLink);
