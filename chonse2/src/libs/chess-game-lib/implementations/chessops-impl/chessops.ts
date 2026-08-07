@@ -1098,6 +1098,16 @@ export default class ChessopsBoard implements IChessGame
                 {
                     const promotionPiece = san.charAt(san.indexOf("=") + 1);
                     generatedSan += `=${promotionPiece}`
+
+                    if (san.includes(AlgebraicNotationMaker.CHECK))
+                    {
+                        generatedSan += AlgebraicNotationMaker.CHECK;
+                    }
+
+                    if (san.includes(AlgebraicNotationMaker.CHECKMATE))
+                    {
+                        generatedSan += AlgebraicNotationMaker.CHECKMATE;
+                    }
                 }
 
                 //If the san matches what we have generated, play the move.
