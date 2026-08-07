@@ -35,12 +35,15 @@
               <span class="badge bg-info ms-1 text-secondary">{{ 'chessboard.coachDisplay.cloudHybrid' | translate }}</span>
             }
 
-            -
-
             @if (mostRecentEval(); as evalData) {
               @if (evalData.lines[0]) {
-                <span>
-                  {{ 'chessboard.coachDisplay.depth' | translate }} {{ evalData.lines[0].depth }}
+                <span class="text-end">
+                  - {{ 'chessboard.coachDisplay.depth' | translate }} {{ evalData.lines[0].depth }}
+
+                  @if (evalData.isPartial)
+                  {
+                    / {{LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH)}}
+                  }
 
                   @if (evalData.source === EvalSource.Cloud) {
                     <span class="badge bg-info ms-1 text-secondary">{{ 'chessboard.coachDisplay.cloud' | translate }}</span>

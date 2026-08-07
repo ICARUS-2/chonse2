@@ -7,6 +7,7 @@ export const parseEvaluationResults = (
 ): PositionEval => {
   const parsedResults: PositionEval = {
     lines: [],
+    isPartial: false
   };
   const tempResults: Record<string, LineEval> = {};
 

@@ -317,7 +317,7 @@ export default class BoardState
         if (eng != undefined && this.eval())
         {
             //Creates a new eval object where the fields will be set.
-            const newEval: PositionEval = { bestMove: "", moveClassification: MoveClassification.None, opening: "", lines: [ {pv: [""], cp: 0} as LineEval ], source: EvalSource.Local };
+            const newEval: PositionEval = { bestMove: "", moveClassification: MoveClassification.None, opening: "", lines: [ {pv: [""], cp: 0} as LineEval ], source: EvalSource.Local, isPartial: true };
             
             //Register change detection.
             this.divergenceEvalStack.update( d => [...d, newEval] );
@@ -385,6 +385,7 @@ export default class BoardState
                             }
                             //copy fields first
                             this.copyPosEvalFields(classificationEval[1], newEval);
+                            newEval.isPartial = false;
                             
                             if (previousEval && !overrideForCoachEvals)
                             {

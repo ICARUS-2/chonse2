@@ -75,7 +75,8 @@ export class LichessAPI
 
                     return e;
                 },),
-                source: EvalSource.Cloud
+                source: EvalSource.Cloud,
+                isPartial: false
             };
 
             if (posEval.lines.length < 2)

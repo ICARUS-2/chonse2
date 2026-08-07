@@ -6,6 +6,7 @@ export interface PositionEval {
   opening?: string;
   lines: LineEval[];
   source?: EvalSource;
+  isPartial: boolean;
 }
 
 export interface LineEval {

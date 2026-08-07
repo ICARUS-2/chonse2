@@ -301,18 +301,20 @@ export class UciEngine {
       setEvaluationProgress?.(99 - Math.exp(-4 * progress) * 99);
     };
 
+    //If cloud hybrid (aka also single thread), evaluate sequentially, calling lichess cloud eval API whenever possible.
     if (this.isCloudHybridMode)
     {
       for (let i = 0; i < fens.length; i++) {
         const fen = fens[i];
 
-        //TODO: See if the lack of this is what is causing the endgame eval not to work.
+        //Hardcoded eval for mate.
         const whoIsCheckmated = getWhoIsCheckmated(fen);
         if (whoIsCheckmated) {
           updateEval(i, this.getEvalForCheckmate(whoIsCheckmated));
           continue;
         }
 
+        //Hardcoded eval for stalemate
         const isStalemate = getIsStalemate(fen);
         if (isStalemate) {
           updateEval(i, this.getEvalForStalemate());
@@ -324,7 +326,7 @@ export class UciEngine {
       updateEval(i, result);
       }
     }
-
+    //Otherwise, evaluate in parallel.
     else 
     {
       await Promise.all(
@@ -378,7 +380,6 @@ export class UciEngine {
   private async evaluatePosition(
     fen: string,
     depth = UciEngine.DEFAULT_DEPTH,
-    //workersNb: number
   ): Promise<PositionEval> {
 
     if (this.isCloudHybridMode)
@@ -503,6 +504,7 @@ export class UciEngine {
             mate: whoIsCheckmated === "w" ? -1 : 1,
           },
         ],
+        isPartial: false,
         source: EvalSource.Local
       }
     }
@@ -515,6 +517,7 @@ export class UciEngine {
           multiPv: 1,
         },
       ],
+      isPartial: false,
       source: EvalSource.Local
     }
   }
@@ -530,6 +533,7 @@ export class UciEngine {
           cp: 0,
         },
       ],
+      isPartial: false,
       source: EvalSource.Local
     }
   }
