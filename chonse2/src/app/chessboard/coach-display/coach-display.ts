@@ -12,12 +12,12 @@ import LocalStorageHelper from '../../../libs/local-storage-helper';
 import Sound from '../chessboard/sound';
 import { Chessboard } from '../chessboard/chessboard';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { CoachMiscHelpers } from '../../../libs/coach-lib/coach-misc-helpers';
 import { CoachMoveFlagType, CoachMoveSequenceType, CoachIdeaFlagType, CoachIdea, CoachResourceFlagType } from '../../../libs/coach-lib/coach-types';
 import { CoachAudio } from '../../../libs/coach-lib/coach-audio';
 import { ChessConstants } from '../../../libs/chess-game-lib/types/constants';
 import { uciMoveParams } from '../../../libs/engine-lib/helpers/chessHelper';
 import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
+import { UciEngine } from '../../../libs/engine-lib/uciEngine';
 
 @Component({
   selector: 'app-coach-display',
@@ -31,6 +31,7 @@ export class CoachDisplay {
   ChessboardHelper = ChessboardHelper;
   LocalStorageHelper = LocalStorageHelper;
   moveClassificationLabels = moveClassificationLabels;
+  UciEngine = UciEngine;
 
   // --- Required Signal Inputs ---
   boardState = input.required<BoardState>();
