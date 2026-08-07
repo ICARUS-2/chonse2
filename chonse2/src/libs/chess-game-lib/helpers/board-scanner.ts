@@ -45,7 +45,7 @@ export default class BoardScanner
         return o;
     }
 
-    //Simple hanging piece checker (doesn't account for xray tho)
+    //Checks for hanging pieces on the board.
     public static doesSquareHaveHangingPiece(board: IChessGame, squareCoord: string): boolean
     {        
         const { rowIndex, colIndex } = ChessConstants.findIndexFromCoordinate(squareCoord);
@@ -79,12 +79,6 @@ export default class BoardScanner
         const valueOfPieceInSquare = PieceMaterial.getMaterialFromPiece(pieceInSquare);
         const minAttackerValue = Math.min( ...attackers.map( p => PieceMaterial.getMaterialFromPiece(p)) );
         if (minAttackerValue < valueOfPieceInSquare)
-        {
-            return true;
-        }
-
-        //If a piece has more attackers than defenders then it's hanging
-        if (attackers.length > defenders.length)
         {
             return true;
         }
