@@ -81,7 +81,7 @@ export const getMovesClassification = (
       const alternativesCollapseSignificantly = alternativeWinPctChange < winPctChange - ALTERNATIVES_COLLAPSE_SIGNIFICATLY_WIN_PERCENTAGE_CHANGE;
       const hangingPieceCapture = isHangingPieceCapture(fens[index - 1], playedMove);
 
-      // Best: The move played is the engine's top choice, but not necessarily a brilliant move
+      //Best: Not necessarily a "perfect" move or a brilliant sacrifice.
       if (hangingPieceCapture || !alternativesCollapseSignificantly) {
         return {
           ...rawPosition,

@@ -817,7 +817,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const stackPtr = this.boardState().mainStackPointer();
     const moveStack = this.boardState().mainMoveStack();
 
-    for(let i = stackPtr; i > 0; i--)
+    for(let i = stackPtr - 1; i > 0; i--)
     {
       const move: IMoveResult = moveStack[i];
       if (!move)
