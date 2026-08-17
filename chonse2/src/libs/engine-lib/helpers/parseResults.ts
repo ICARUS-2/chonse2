@@ -1,4 +1,3 @@
-import { formatUciPv } from "../helpers/chessHelper";
 import { LineEval, PositionEval } from "../types/eval";
 
 export const parseEvaluationResults = (
@@ -100,5 +99,5 @@ const getResultPv = (result: string, fen: string): string[] | undefined => {
   }
 
   const rawPv = splitResult.slice(pvIndex + 1);
-  return formatUciPv(fen, rawPv);
+  return rawPv;
 };

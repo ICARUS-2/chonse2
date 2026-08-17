@@ -92,37 +92,6 @@ export const uciMoveParams = (
   promotion: uciMove.slice(4, 5) || undefined,
 });
 
-export const formatUciPv = (fen: string, uciMoves: string[]): string[] => {
-  const castlingRights = fen.split(" ")[2];
-
-  let canWhiteCastleKingSide = castlingRights.includes("K");
-  let canWhiteCastleQueenSide = castlingRights.includes("Q");
-  let canBlackCastleKingSide = castlingRights.includes("k");
-  let canBlackCastleQueenSide = castlingRights.includes("q");
-
-  return uciMoves.map((uci) => {
-    if (uci === "e1h1" && canWhiteCastleKingSide) {
-      canWhiteCastleKingSide = false;
-      return "e1g1";
-    }
-    if (uci === "e1a1" && canWhiteCastleQueenSide) {
-      canWhiteCastleQueenSide = false;
-      return "e1c1";
-    }
-
-    if (uci === "e8h8" && canBlackCastleKingSide) {
-      canBlackCastleKingSide = false;
-      return "e8g8";
-    }
-    if (uci === "e8a8" && canBlackCastleQueenSide) {
-      canBlackCastleQueenSide = false;
-      return "e8c8";
-    }
-
-    return uci;
-  });
-};
-
 //Also counting pieces of higher value that can be taken with a lower value piece as hanging
 //e.g. a rook threatened by a pawn is considered hanging
 export const isHangingPieceCapture = (

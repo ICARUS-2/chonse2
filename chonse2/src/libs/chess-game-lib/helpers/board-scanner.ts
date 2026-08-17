@@ -341,24 +341,24 @@ export default class BoardScanner
     static readonly WHITE_KINGSIDE_CASTLE = 
     {
         kingFrom: "e1",
-        kingTo: "g1",
+        kingTo: "h1",
     };
 
     static readonly WHITE_QUEENSIDE_CASTLE = 
     {
         kingFrom: "e1",
-        kingTo: "c1",
+        kingTo: "a1",
     };
 
     //Black castling moves
     static readonly BLACK_KINGSIDE_CASTLE = {
         kingFrom: "e8",
-        kingTo: "g8",
+        kingTo: "h8",
     };
 
     static readonly BLACK_QUEENSIDE_CASTLE = {
         kingFrom: "e8",
-        kingTo: "c8",
+        kingTo: "a8",
     };
 
     //Checks if the kings are in or around the castling position.

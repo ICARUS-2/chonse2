@@ -1,4 +1,5 @@
 
+import BoardScanner from "../chess-game-lib/helpers/board-scanner";
 import IChessGame from "../chess-game-lib/i-chess-game";
 import { CastlingRightsType } from "../chess-game-lib/types/castling-rights-type";
 import { ChessConstants } from "../chess-game-lib/types/constants";
@@ -108,12 +109,12 @@ export class CoachMiscHelpers
             if (shouldMoveKing)
             {
                 //the actual castling moves. 
-                const kingside = whiteToMove ? CASTLING_MOVES.whiteKingside : CASTLING_MOVES.blackKingside;
-                const queenside = whiteToMove ? CASTLING_MOVES.whiteQueenside : CASTLING_MOVES.blackQueenside;
+                const kingside = whiteToMove ? BoardScanner.WHITE_KINGSIDE_CASTLE : BoardScanner.BLACK_KINGSIDE_CASTLE;
+                const queenside = whiteToMove ? BoardScanner.WHITE_QUEENSIDE_CASTLE : BoardScanner.BLACK_QUEENSIDE_CASTLE;
 
                 //Need to check if the next best move is for the opponent to castle. 
-                const shouldOpponentCastleKingside = nextBestMove.from == kingside.fromSquare && nextBestMove.to == kingside.toSquare;
-                const shouldOpponentCastleQueenside = nextBestMove.from == queenside.fromSquare && nextBestMove.to == queenside.toSquare;
+                const shouldOpponentCastleKingside = nextBestMove.from == kingside.kingFrom && nextBestMove.to == kingside.kingTo;
+                const shouldOpponentCastleQueenside = nextBestMove.from == queenside.kingFrom && nextBestMove.to == queenside.kingTo;
 
                 //If the next best move is not to castle, but in the next best state the player does not have castling rights,
                 //the only implication is that they lost the right to castle.  
@@ -178,30 +179,3 @@ export const CENTER_STRIKE_MOVEMENTS =
         {from: "d7", to: "d5"}
     ]
 }
-
-export const CASTLING_MOVES =
-{
-    whiteKingside:
-    {
-        fromSquare: ChessConstants.WHITE_KING_SQUARE,
-        toSquare: ChessConstants.WHITE_KINGSIDE_KNIGHT_SQUARE,
-    },
-
-    whiteQueenside:
-    {
-        fromSquare: ChessConstants.WHITE_KING_SQUARE,
-        toSquare: ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE,
-    },
-
-    blackKingside:
-    {
-        fromSquare: ChessConstants.BLACK_KING_SQUARE,
-        toSquare: ChessConstants.BLACK_KINGSIDE_KNIGHT_SQUARE,
-    },
-
-    blackQueenside:
-    {
-        fromSquare: ChessConstants.BLACK_KING_SQUARE,
-        toSquare: ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE,
-    },
-};

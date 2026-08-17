@@ -238,7 +238,11 @@ export class UciEngine {
     await sendCommandsToWorker(worker, ["uci"], "uciok");
     await sendCommandsToWorker(
       worker,
-      [`setoption name MultiPV value ${this.multiPv}`, "isready"],
+      [
+        `setoption name MultiPV value ${this.multiPv}`,
+        "setoption name UCI_Chess960 value true", 
+        "isready"
+      ],
       "readyok"
     );
     await this.customEngineInit?.(worker);
