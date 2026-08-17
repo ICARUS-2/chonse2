@@ -6,6 +6,9 @@ import { CommonModule } from '@angular/common';
 import ChessboardHelper from '../helpers';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
+import { uciMoveParams } from '../../../libs/engine-lib/helpers/chessHelper';
+import BoardState from '../chessboard/board-state';
+import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
 
 @Component({
   selector: 'app-move-overview',
@@ -19,17 +22,18 @@ export class MoveOverview {
   ChessboardHelper = ChessboardHelper
   MoveClassificationDisplayName = MoveClassificationDisplayName;
 
-  // Inputs (Signals)
-  boardState = input.required<any>(); // Replace 'any' with your BoardState type
+  //Inputs
+  boardState = input.required<BoardState>();
 
-  // Outputs
+  //Outputs
   moveClassificationClicked = output<{ color: PieceColor, classification: MoveClassification }>();
 
-  // Expose Enums/Objects to Template
-  protected readonly MoveClassification = MoveClassification;
-  protected readonly PieceColor = PieceColor;
-  protected readonly Chessboard = Chessboard;
-  protected readonly Object = Object;
+  MoveClassification = MoveClassification;
+  PieceColor = PieceColor;
+  Chessboard = Chessboard;
+  Object = Object;
+  PieceType = PieceType;
+  uciMoveParams = uciMoveParams; 
 
   protected onClassificationClick(color: PieceColor, classification: MoveClassification): void {
     this.moveClassificationClicked.emit({ color, classification });

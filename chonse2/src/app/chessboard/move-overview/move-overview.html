@@ -37,8 +37,20 @@
                         mostRecentEval.moveClassification == MoveClassification.Luminous) 
                         && boardState().getPreviousMostRecentEval(); as previousEval) {   
                         -
+                        
                         <img class="engineLineDisplayIcon" [src]="ChessboardHelper.getIconSourceForMoveClassification(MoveClassification.Best)()">
-                        {{previousEval.bestMove}}                                    
+                        
+                        @if (previousEval.bestMove; as prevBestMove)
+                        {
+                            @if(boardState().getPreviousMostRecentState(); as prevState)
+                            {
+                                @let paramUci = uciMoveParams(previousEval.bestMove);
+                                @let bestMovePiece = prevState.findPieceAtCoordinate(paramUci.from);
+                                @let bestMoveSequence = `${paramUci.from} → ${paramUci.to}${paramUci.promotion ? `=${paramUci.promotion.toUpperCase()}` : ""}`;
+
+                                {{!bestMovePiece.endsWith(PieceType.PAWN) ? bestMovePiece[1] : ""}}{{bestMoveSequence}}
+                            }
+                        }                             
                     }
                 </div>
             } @else {

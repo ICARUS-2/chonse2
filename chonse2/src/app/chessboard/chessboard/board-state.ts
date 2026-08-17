@@ -2,7 +2,7 @@ import { computed, signal, WritableSignal } from "@angular/core";
 import { Arrow } from "./arrow";
 import LocalStorageHelper from "../../../libs/local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
-import { PgnComments, PgnFields, PgnHeaders, SanMove } from "./pgn-misc";
+import { PgnFields, PgnHeaders } from "./pgn-misc";
 import { Quote, Quotes } from "./quotes";
 import { MoveClassification, EngineName } from "../../../libs/engine-lib/types/enums";
 import { PositionEval, GameEval, EvaluateGameParams, EvalSource, LineEval, EvaluatePositionWithUpdateParams } from "../../../libs/engine-lib/types/eval";
@@ -14,9 +14,6 @@ import { getMovesClassification } from "../../../libs/engine-lib/helpers/moveCla
 import { AppInjector } from "../../app-injector";
 import { CoachAudio } from "../../../libs/coach-lib/coach-audio";
 import { ChessConstants } from "../../../libs/chess-game-lib/types/constants";
-import { GameScore } from "../../../libs/chess-game-lib/types/game-state";
-import { PieceColor } from "../../../libs/chess-game-lib/types/piece-color";
-import { PieceType } from "../../../libs/chess-game-lib/types/piece-type";
 import IChessGame from "../../../libs/chess-game-lib/i-chess-game";
 import ChessGameFactory from "../../../libs/chess-game-lib/chess-game-factory";
 

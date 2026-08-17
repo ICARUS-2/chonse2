@@ -7,6 +7,7 @@ import { LineEval, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { getLineWinPercentage, getPositionWinPercentage } from '../../../libs/engine-lib/helpers/winPercentage';
 import { classifyByWinPctChange } from '../../../libs/engine-lib/helpers/moveClassification';
 import ChessboardHelper from '../helpers';
+import { uciMoveParams } from '../../../libs/engine-lib/helpers/chessHelper';
 
 @Component({
   selector: 'app-engine-line-display',
@@ -18,6 +19,7 @@ import ChessboardHelper from '../helpers';
 export class EngineLineDisplay {
 
   ChessboardHelper = ChessboardHelper;
+  uciMoveParams = uciMoveParams;
 
   boardState = input.required<BoardState>();
   getImageSourceForEnginePiece = input.required<(pv: string) => () => string | null>();

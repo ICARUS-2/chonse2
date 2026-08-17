@@ -6,42 +6,45 @@
     @if(boardState().getMostRecentEval(); as ev)
     {
       @for (engineLine of boardState().getMostRecentEval()?.lines; track $index) {
-        <div class="engineLineDisplay d-flex justify-content-center align-items-center">
+        <div class="engineLineDisplay d-flex justify-content-start align-items-center">
           @let moveClassification = getMoveClassification(ev, engineLine);
           @if (moveClassification)
           {
             <img
-              class="engineLineDisplayIcon"
+              class="engineLineDisplayClassificationIcon"
               [src]="ChessboardHelper.getIconSourceForMoveClassification(moveClassification)()"
             >
           }
 
-          <div>
+          <span>
             @if (getImageSourceForEnginePiece()(engineLine.pv[0])(); as pieceImgSrc) {
               @if (!pieceImgSrc.endsWith("/.svg"))
               {
-                <img class="engineLineDisplayIcon" [src]="pieceImgSrc">
+                <img class="engineLineDisplayPieceIcon" [src]="pieceImgSrc">
               }
             }
-            {{ engineLine.pv[0] }}
-          </div>
+            
+            @let paramUci = uciMoveParams(engineLine.pv[0]);
+
+            <span>{{ paramUci.from }} → {{ paramUci.to }}{{paramUci.promotion ? `=${paramUci.promotion?.toUpperCase()}` : ""}}</span>
+          </span>
 
           @if (engineLine.cp; as cp) {
-            →
-            <div
-              class="badge border d-inline-block"
+            &nbsp;
+            <span
+              class="badge border d-inline"
               [ngClass]="{ 'text-bg-light': cp >= 0, 'text-bg-dark': cp < 0 }">
               {{ (engineLine.cp / 100).toFixed(1) }}
-            </div>
+          </span>
           }
 
           @if (engineLine.mate; as mate) {
-            →
-            <div
+            &nbsp;
+            <span
               class="badge border d-inline-block"
               [ngClass]="{ 'text-bg-light': mate >= 0, 'text-bg-dark': mate < 0 }">
               M{{ Math.abs(engineLine.mate) }}
-            </div>
+          </span>
           }
         </div>
       }
