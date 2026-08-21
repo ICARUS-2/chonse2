@@ -113,4 +113,9 @@ export class Homepage {
   {
     window.open("https://icarus-2.github.io", '_blank');
   }
+
+  coffeeButtonClicked()
+  {
+    window.open("https://buymeacoffee.com/icarus2", "_blank");
+  }
 }

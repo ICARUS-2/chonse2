@@ -52,6 +52,9 @@
         </div>
 
         <div class="stackedButtons">
+            <app-icon-button (buttonClick)="coffeeButtonClicked()" extraClasses="" [label]="'home.rightBtns.coffee' | translate" iconClass="bi-cup-hot" overridePrimaryBackgroundColor="rgb(52, 175, 0)" overrideSecondaryBackgroundColor="green"></app-icon-button>
+            <div class="m-3"></div>
+
             @let rightBtns = 
             [
                 {'label': ("home.rightBtns.settings" | translate), 'iconClass': 'bi-gear', 'click': settingsBtnClicked},
