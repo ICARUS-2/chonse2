@@ -20,7 +20,7 @@ import VsAiConfigurationModalHelper from '../../vs-ai/vs-ai-configuration-modal-
 import ThemeService from '../../themes/theme-service';
 import { EvaluationChart } from '../evaluation-chart/evaluation-chart';
 import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
-import { getEvaluationBarValue } from '../../../libs/engine-lib/helpers/chessHelper';
+import { getEvaluationBarValue, uciMoveParams } from '../../../libs/engine-lib/helpers/chessHelper';
 import { EngineName, EngineInformation, EngineType, MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { EvalSource } from '../../../libs/engine-lib/types/eval';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
@@ -474,8 +474,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
     if (bestMove)
     {
-      const from = bestMove[0] + bestMove[1];
-      const to = bestMove[2] + bestMove[3];
+      const {from, to} = uciMoveParams(bestMove);
 
       const arrow = createArrow(from, to, ArrowColors.PAST_BEST_MOVE, ArrowContext.Engine);
 
@@ -485,25 +484,81 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     return null;
   } ) 
 
-  getFutureEngineArrow = computed( (): Arrow | null =>
+  getFutureEngineArrows = computed( (): Array<Arrow> | null =>
   {
     if (this.boardState().isCoachMoveShowing())
     {
       return null;
     }
 
-    const bestMove = this.boardState().getMostRecentEval()?.bestMove;
+    // const bestMove = this.boardState().getMostRecentEval()?.bestMove;
 
-    if (bestMove)
+    // if (bestMove)
+    // {
+    //   const {from, to} = uciMoveParams(bestMove);
+
+    //   const arrow = createArrow(from, to, ArrowColors.FUTURE_BEST_MOVE, ArrowContext.Engine);
+
+    //   return arrow;
+    // }
+
+    //Will need list of engine lines.
+    const lines = this.boardState().getMostRecentEval()?.lines;
+
+    //Do not create arrows for nonexistant lines.
+    if (lines)
     {
-      const from = bestMove[0] + bestMove[1];
-      const to = bestMove[2] + bestMove[3];
+      //Final arr.
+      const arrows: Array<Arrow> = [];
 
-      const arrow = createArrow(from, to, ArrowColors.FUTURE_BEST_MOVE, ArrowContext.Engine);
+      //Check through each line.
+      lines.forEach( (line, idx) => 
+      {
+        //Extract move sequence.
+        const sequence = line.pv;
 
-      return arrow;
+        //Make sure the engine line has at least one move in it.
+        if(sequence.length > 0)
+        {
+
+          //Get color based on what line this is (best/alternative)
+          let arrowColor;
+          switch(idx)
+          {
+
+            case 1: 
+              arrowColor = ArrowColors.FUTURE_SECOND_BEST_MOVE;
+              break;
+
+            case 2:
+              arrowColor = ArrowColors.FUTURE_THIRD_BEST_MOVE;
+              break;
+              
+            default:
+              arrowColor = ArrowColors.FUTURE_BEST_MOVE;
+              break;
+          }
+
+          //Paramaterize move to extract from and to coords.
+          const {from, to} = uciMoveParams(sequence[0]);
+
+          //Create arrow from the data.
+          const arrow = createArrow(from, to, arrowColor, ArrowContext.Engine);
+
+          //Add to arr so it's returned.
+          if (arrow)
+          {
+            arrows.push(arrow);
+          }
+        }
+
+      } )
+
+      //Return value is the list of future arrows.
+      return arrows
     }
 
+    //No lines? Don't return nothin.
     return null;
   } ) 
 

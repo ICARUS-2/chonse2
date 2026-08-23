@@ -74,18 +74,22 @@
                             </ng-container>
                         }
 
-                        @if (getFutureEngineArrow(); as engineArrow)
+                        @let futureEngineArrows = getFutureEngineArrows();
+                        @if (futureEngineArrows)
                         {
-                            <ng-container>
-                                <line
-                                    [attr.x1]="_getArrowCoords(engineArrow).x1"
-                                    [attr.y1]="_getArrowCoords(engineArrow).y1"
-                                    [attr.x2]="_getArrowCoords(engineArrow).x2"
-                                    [attr.y2]="_getArrowCoords(engineArrow).y2"
-                                    [attr.stroke]="engineArrow.color"
-                                    stroke-width="0.13"
-                                    marker-end="url(#arrowhead)" />
-                            </ng-container>
+                            @for(engineArrow of futureEngineArrows; track $index;)
+                            {
+                                <ng-container>
+                                    <line
+                                        [attr.x1]="_getArrowCoords(engineArrow).x1"
+                                        [attr.y1]="_getArrowCoords(engineArrow).y1"
+                                        [attr.x2]="_getArrowCoords(engineArrow).x2"
+                                        [attr.y2]="_getArrowCoords(engineArrow).y2"
+                                        [attr.stroke]="engineArrow.color"
+                                        stroke-width="0.13"
+                                        marker-end="url(#arrowhead)" />
+                                </ng-container>
+                            }
                         }
 
                         <defs>

@@ -20,6 +20,8 @@ export enum ArrowContext
 export class ArrowColors 
 {
   static readonly FUTURE_BEST_MOVE = "rgba(0, 183, 255, 0.6)";
+  static readonly FUTURE_SECOND_BEST_MOVE = "rgba(100, 100, 100, 0.6)";
+  static readonly FUTURE_THIRD_BEST_MOVE = "rgba(100, 100, 100, 0.3)";
   static readonly PAST_BEST_MOVE = "rgba(0,128,0,0.6)";
   static readonly IDEA = "cyan";
   static readonly PLAYER_DRAWN_DEFAULT = "rgba(0,0,255,0.6)"
