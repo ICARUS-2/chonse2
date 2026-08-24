@@ -8,6 +8,7 @@ import { getLineWinPercentage, getPositionWinPercentage } from '../../../libs/en
 import { classifyByWinPctChange } from '../../../libs/engine-lib/helpers/moveClassification';
 import ChessboardHelper from '../helpers';
 import { uciMoveParams } from '../../../libs/engine-lib/helpers/chessHelper';
+import { ArrowColors } from '../chessboard/arrow';
 
 @Component({
   selector: 'app-engine-line-display',
@@ -45,5 +46,20 @@ export class EngineLineDisplay {
     const winPctChange = (lineWinPercentage - currentWinPercentage) * (isWhiteMove ? 1 : -1);
 
     return classifyByWinPctChange(winPctChange);
+  }
+
+  getUnderlineStyle(idx: number): string
+  {
+    switch(idx)
+    {
+      case 1:
+        return ArrowColors.FUTURE_SECOND_BEST_MOVE;
+
+      case 2:
+        return ArrowColors.FUTURE_THIRD_BEST_MOVE;
+
+      default:
+        return ArrowColors.FUTURE_BEST_MOVE
+    }
   }
 }
