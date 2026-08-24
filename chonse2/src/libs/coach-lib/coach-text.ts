@@ -48,7 +48,9 @@ export default class CoachText
                 MoveClassification.Excellent,
                 [
                     new CoachSentence("This is a great move!", `base-sentences/excellent/0/audio.mp3`),
-                    new CoachSentence("Well done, an excellent move.", `base-sentences/excellent/1/audio.mp3`)
+                    new CoachSentence("Well done, an excellent move.", `base-sentences/excellent/1/audio.mp3`),
+                    new CoachSentence("They played one of the top moves in this position.", `base-sentences/excellent/2/audio.mp3`),
+                    new CoachSentence("This is a fine move!", `base-sentences/excellent/3/audio.mp3`)
                 ]
             ],
 
