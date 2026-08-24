@@ -26,7 +26,7 @@
             
             @let paramUci = uciMoveParams(engineLine.pv[0]);
 
-            <span>{{ paramUci.from }} → {{ paramUci.to }}{{paramUci.promotion ? `=${paramUci.promotion?.toUpperCase()}` : ""}}</span>
+            <span class="moveFromToPromotion" [style.text-decoration-color]="getUnderlineStyle($index)">{{ paramUci.from }} → {{ paramUci.to }}{{paramUci.promotion ? `=${paramUci.promotion?.toUpperCase()}` : ""}}</span>
           </span>
 
           @if (engineLine.cp; as cp) {
