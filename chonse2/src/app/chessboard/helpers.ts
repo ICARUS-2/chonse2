@@ -28,7 +28,7 @@ export default class ChessboardHelper
         "staunty"
     ]
 
-    static DEFAULT_PIECE_SET = ChessboardHelper.PIECE_SETS[3];
+    static DEFAULT_PIECE_SET = ChessboardHelper.PIECE_SETS[2];
 
     static getIconSourceForPiece(p: string)
     {

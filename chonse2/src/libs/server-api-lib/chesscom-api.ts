@@ -15,6 +15,12 @@ export class ChessComAPI
 
             const archivesResponse = await fetch(baseEndpoint);
             const archivesData: {archives: Array<string>} = await archivesResponse.json() as {archives: Array<string>};
+
+            if (!archivesData.archives)
+            {
+              return [];
+            }
+
             const mostRecentGamesEndpoint = archivesData.archives[archivesData.archives.length - 1];
 
             const gameDataResponse = await fetch(mostRecentGamesEndpoint);

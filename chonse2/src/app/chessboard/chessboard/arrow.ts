@@ -29,7 +29,7 @@ export class ArrowColors
 
 export function createArrow(fromCoordinate: string, toCoordinate: string, color: string = ArrowColors.PLAYER_DRAWN_DEFAULT, context: ArrowContext = ArrowContext.Player) : Arrow | null
 {
-  //Cannot create an arrow from or to a nonextistant place.
+  //Cannot create an arrow from or to a nonexistant place.
   if (!fromCoordinate || !toCoordinate)
   {
     return null;
