@@ -308,7 +308,8 @@
         "insights": 
         {
             "heading": "Perspectives",
-            "coachAudio": "Audio du Coach"
+            "coachAudio": "Audio du Coach",
+            "showAltLineArrows": "Afficher les flèches de ligne alt."
         },
 
         "board": 

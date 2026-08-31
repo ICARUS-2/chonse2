@@ -49,7 +49,8 @@ export class Settings implements OnInit{
     language: LocalStorageHelper.getString(LocalStorageHelper.LANGUAGE, DEFAULT_LANG) as Languages,
 
     //coach
-    insightsAudio: LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true)
+    insightsAudio: LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true),
+    showAltLineArrow: LocalStorageHelper.getBoolean(LocalStorageHelper.SHOW_ALT_LINE_ARROW, true)
   })
 
   form = form(this.formModel, (schema) => 
@@ -84,6 +85,12 @@ export class Settings implements OnInit{
   coachSoundSwitchPressed(val: boolean)
   {
     LocalStorageHelper.setBoolean(LocalStorageHelper.INSIGHTS_AUDIO, val);
+  }
+
+  //Alt line arrow
+  showAltLineArrowSwitchPressed(val: boolean)
+  {
+    LocalStorageHelper.setBoolean(LocalStorageHelper.SHOW_ALT_LINE_ARROW, val);
   }
 
   //Click to move.
@@ -184,4 +191,5 @@ interface FormModel
 
   //insights
   insightsAudio: boolean;
+  showAltLineArrow: boolean;
 }

@@ -491,17 +491,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return null;
     }
 
-    // const bestMove = this.boardState().getMostRecentEval()?.bestMove;
-
-    // if (bestMove)
-    // {
-    //   const {from, to} = uciMoveParams(bestMove);
-
-    //   const arrow = createArrow(from, to, ArrowColors.FUTURE_BEST_MOVE, ArrowContext.Engine);
-
-    //   return arrow;
-    // }
-
     //Will need list of engine lines.
     const lines = this.boardState().getMostRecentEval()?.lines;
 
@@ -520,6 +509,13 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         //Make sure the engine line has at least one move in it.
         if(sequence.length > 0)
         {
+
+          //Don't show alt lines if the user explicitly toggled them off.
+          const showAlternative = LocalStorageHelper.getBoolean(LocalStorageHelper.SHOW_ALT_LINE_ARROW, true);
+          if (idx > 0 && !showAlternative)
+          {
+            return;
+          }
 
           //Get color based on what line this is (best/alternative)
           let arrowColor;
@@ -1348,18 +1344,17 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const clickToMove = LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE);
 
     return (coord: string): boolean => {
-      // 1. If an animation is running, hide its origin square
+      //1. If an animation is running, hide its origin square
       if (animCoord) {
         return coord !== animCoord;
       }
       
-      // 2. If click-to-move is on, we never hide pieces visually
+      //2. If click-to-move is on, we never hide pieces visually
       if (clickToMove) {
         return true;
       }
 
-      // 3. THE FIX: In drag-and-drop mode, ONLY hide the fromSquare 
-      // if a piece is actively being dragged.
+      //3. if a piece is actively being dragged, don't show its piece on the board.
       if (heldPiece !== "") {
         return coord !== fromSq;
       }

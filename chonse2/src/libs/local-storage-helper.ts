@@ -2,6 +2,7 @@ export default class LocalStorageHelper
 {
     //Settings
     static readonly INSIGHTS_AUDIO = "Chonse2_InsightsAudio";
+    static readonly SHOW_ALT_LINE_ARROW = "Chonse2_ShowAltLineArrow";
     static readonly CLICK_TO_MOVE = "Chonse2_ClickToMove";
     static readonly PIECE_ANIMATIONS = "Chonse2_PieceAnimations";
     static readonly CHESS_PIECES = "Chonse2_ChessPieces";
