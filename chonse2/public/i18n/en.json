@@ -305,7 +305,8 @@
         "insights": 
         {
             "heading": "Insights",
-            "coachAudio": "Coach Audio"
+            "coachAudio": "Coach Audio",
+            "showAltLineArrows": "Show alt. line arrows"
         },
 
         "board": 

@@ -6,23 +6,44 @@
             <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()" class="">{{ 'settings.title' | translate }}</h1>
         </div>
 
+        <!--Insights-->
         <div class="w-50 p-4" [class]="themeService.getThemeInstance().getGlassPanelTheme()">
             <h2 [style.color]="themeService.getThemeInstance().getPrimaryColor()" class="">{{ 'settings.insights.heading' | translate }}</h2>
 
-            <!--Coach audio-->
-            <div class="mb-4">
-                <h4 class="">{{ 'settings.insights.coachAudio' | translate }}</h4>
+            <!--Coach audio + alt line arrow-->
+            <div class="d-flex justify-content-between insightsSection">
+                <!--Coach audio-->
+                <div class="mb-4">
+                    <h4 class="">{{ 'settings.insights.coachAudio' | translate }}</h4>
 
-                <div
-                class="form-check form-switch"
-                [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
-                >
-                <input
-                    class="form-check-input custom-switch"
-                    type="checkbox"
-                    [formField]="form.insightsAudio"
-                    (change)="coachSoundSwitchPressed($event.target.checked)"
-                />
+                    <div
+                    class="form-check form-switch"
+                    [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+                    >
+                    <input
+                        class="form-check-input custom-switch"
+                        type="checkbox"
+                        [formField]="form.insightsAudio"
+                        (change)="coachSoundSwitchPressed($event.target.checked)"
+                    />
+                    </div>
+                </div>
+
+                <!--Alt line arrow-->
+                <div class="mb-4">
+                    <h4 class="">{{ 'settings.insights.showAltLineArrows' | translate }}</h4>
+
+                    <div
+                    class="form-check form-switch"
+                    [style.--switch-color]="themeService.getThemeInstance().getPrimaryColor()"
+                    >
+                    <input
+                        class="form-check-input custom-switch"
+                        type="checkbox"
+                        [formField]="form.showAltLineArrow"
+                        (change)="showAltLineArrowSwitchPressed($event.target.checked)"
+                    />
+                    </div>
                 </div>
             </div>
         </div>

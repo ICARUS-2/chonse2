@@ -11,42 +11,42 @@ export class ChessComAPI
     {
         try 
         {
-            const baseEndpoint = ChessComAPI._getBaseEndpointForUser(username);
+          const baseEndpoint = ChessComAPI._getBaseEndpointForUser(username);
 
-            const archivesResponse = await fetch(baseEndpoint);
-            const archivesData: {archives: Array<string>} = await archivesResponse.json() as {archives: Array<string>};
+          const archivesResponse = await fetch(baseEndpoint);
+          const archivesData: {archives: Array<string>} = await archivesResponse.json() as {archives: Array<string>};
 
-            if (!archivesData.archives)
+          if (!archivesData.archives)
+          {
+            return [];
+          }
+
+          const mostRecentGamesEndpoint = archivesData.archives[archivesData.archives.length - 1];
+
+          const gameDataResponse = await fetch(mostRecentGamesEndpoint);
+
+          let arr: Array<ChessComGame> = [];
+          if (gameDataResponse.status < 400)
+          {
+            const gameData: {games: Array<object>} = await gameDataResponse.json();
+            arr = gameData.games.map( item => new ChessComGame(item) );
+          }
+
+          if (arr.length < 50)
+          {
+            const previousMonthMostRecentGamesEndpoint = archivesData.archives[archivesData.archives.length - 2];
+            
+            if (previousMonthMostRecentGamesEndpoint)
             {
-              return [];
+              const previousMonthResponse = await fetch(previousMonthMostRecentGamesEndpoint);
+              const previousMonthGameData: {games: Array<object>} = await previousMonthResponse.json();
+              const previousMonthArr: Array<ChessComGame> = previousMonthGameData.games.map( item => new ChessComGame(item) );
+
+              arr = [...previousMonthArr, ...arr]
             }
+          }
 
-            const mostRecentGamesEndpoint = archivesData.archives[archivesData.archives.length - 1];
-
-            const gameDataResponse = await fetch(mostRecentGamesEndpoint);
-
-            let arr: Array<ChessComGame> = [];
-            if (gameDataResponse.status < 400)
-            {
-              const gameData: {games: Array<object>} = await gameDataResponse.json();
-              arr = gameData.games.map( item => new ChessComGame(item) );
-            }
-
-            if (arr.length < 50)
-            {
-              const previousMonthMostRecentGamesEndpoint = archivesData.archives[archivesData.archives.length - 2];
-              
-              if (previousMonthMostRecentGamesEndpoint)
-              {
-                const previousMonthResponse = await fetch(previousMonthMostRecentGamesEndpoint);
-                const previousMonthGameData: {games: Array<object>} = await previousMonthResponse.json();
-                const previousMonthArr: Array<ChessComGame> = previousMonthGameData.games.map( item => new ChessComGame(item) );
-
-                arr = [...previousMonthArr, ...arr]
-              }
-            }
-
-            return arr.reverse();
+          return arr.reverse();
         }
         catch(ex)
         {

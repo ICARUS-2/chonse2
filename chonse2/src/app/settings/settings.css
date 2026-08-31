@@ -22,7 +22,7 @@
 
 @media screen and (max-width: 1200px)
 {
-  .boardSection, .appearanceSection
+  .boardSection, .appearanceSection, .insightsSection
   {
     flex-direction: column;
   }
