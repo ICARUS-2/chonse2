@@ -2013,38 +2013,60 @@ export class CoachUtils
 
                         //Determine where the fianchetto square & bishop coord is
                         let fianchettoSquare = "";
+                        let fianchettoCornerSquare = "";
+                        let fianchettoOppositeCornerSquare = "";
                         let bishopSquare = "";
                         if (move.notation.startsWith(ChessConstants.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE))
                         {
-                            fianchettoSquare = "g2";
+                            fianchettoSquare = ChessConstants.WHITE_KINGSIDE_KNIGHT_PAWN_SQUARE;
+                            fianchettoCornerSquare = ChessConstants.WHITE_KINGSIDE_ROOK_SQUARE;
+                            fianchettoOppositeCornerSquare = ChessConstants.BLACK_QUEENSIDE_ROOK_SQUARE;
                             bishopSquare = ChessConstants.WHITE_KINGSIDE_BISHOP_SQUARE;
                         }
 
                         if (move.notation.startsWith(ChessConstants.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE))
                         {
-                            fianchettoSquare = "b2"
+                            fianchettoSquare = ChessConstants.WHITE_QUEENSIDE_KNIGHT_PAWN_SQUARE;
+                            fianchettoCornerSquare = ChessConstants.WHITE_QUEENSIDE_ROOK_SQUARE;
+                            fianchettoOppositeCornerSquare = ChessConstants.BLACK_KINGSIDE_ROOK_SQUARE;
                             bishopSquare = ChessConstants.WHITE_QUEENSIDE_BISHOP_SQUARE;
                         }
 
                         if (move.notation.startsWith(ChessConstants.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE))
                         {
-                            fianchettoSquare = "g7"
+                            fianchettoSquare = ChessConstants.BLACK_KINGSIDE_KNIGHT_PAWN_SQUARE;
+                            fianchettoCornerSquare = ChessConstants.BLACK_KINGSIDE_ROOK_SQUARE;
+                            fianchettoOppositeCornerSquare = ChessConstants.WHITE_QUEENSIDE_ROOK_SQUARE;
                             bishopSquare = ChessConstants.BLACK_KINGSIDE_BISHOP_SQUARE;
                         }
 
                         if (move.notation.startsWith(ChessConstants.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE))
                         {
-                            fianchettoSquare = "b7"
+                            fianchettoSquare = ChessConstants.BLACK_QUEENSIDE_KNIGHT_PAWN_SQUARE;
+                            fianchettoCornerSquare = ChessConstants.BLACK_QUEENSIDE_ROOK_SQUARE;
+                            fianchettoOppositeCornerSquare = ChessConstants.WHITE_KINGSIDE_ROOK_SQUARE;
                             bishopSquare = ChessConstants.BLACK_QUEENSIDE_BISHOP_SQUARE;
                         }
 
                         //then add the idea to the move.
                         const idea = new CoachIdea();
-                        const arrow = createArrow(bishopSquare, fianchettoSquare, ArrowColors.IDEA, ArrowContext.Coach);
+                        const fianchettoArrow = createArrow(bishopSquare, fianchettoSquare, ArrowColors.IDEA, ArrowContext.Coach);
+                        const fianchettoCornerArrow = createArrow(fianchettoSquare, fianchettoCornerSquare, ArrowColors.IDEA, ArrowContext.Coach);
+                        const fianchettoOppositeCornerArrow = createArrow(fianchettoSquare, fianchettoOppositeCornerSquare, ArrowColors.IDEA, ArrowContext.Coach);
 
-                        if (arrow)
+                        if (fianchettoArrow)
                         {
-                            idea.arrows = [arrow];
+                            idea.arrows.push(fianchettoArrow);
+                        }
+
+                        if (fianchettoCornerArrow)
+                        {
+                            idea.arrows.push(fianchettoCornerArrow);
+                        }
+
+                        if (fianchettoOppositeCornerArrow)
+                        {
+                            idea.arrows.push(fianchettoOppositeCornerArrow);
                         }
 
                         idea.highlightedSquares = [fianchettoSquare];
