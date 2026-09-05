@@ -22,6 +22,7 @@ import { GameOverReason } from '../../../libs/chess-game-lib/types/game-state';
 import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
 import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
 import ChessboardHelper from '../../chessboard/helpers';
+import EditorState from '../editor-state/editor-state';
 
 @Component({
   selector: 'app-input-position-board',
@@ -181,7 +182,7 @@ export class InputPositionBoard {
         }
 
         const newState = new InputPositionState();
-        newState.editorState.set(result);
+        newState.editorState.set(EditorState.instantiateFromFen(result));
 
         this.ips.deleteGame(this.stateId());
         this.ips.addGame(this.stateId() ,newState);

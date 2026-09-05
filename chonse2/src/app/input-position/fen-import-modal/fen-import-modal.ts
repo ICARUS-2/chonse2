@@ -4,7 +4,6 @@ import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import { form, FormField } from '@angular/forms/signals';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
 import { TranslatePipe } from '@ngx-translate/core';
-import ChessGameFactory from '../../../libs/chess-game-lib/chess-game-factory';
 
 @Component({
   selector: 'app-fen-import-modal',
@@ -31,7 +30,7 @@ export class FenImportModal
   {
     try 
     {
-      this.activeModal.close(ChessGameFactory.createFromFen(this.form.fen().value()));
+      this.activeModal.close(this.form.fen().value());
     }
     catch(ex)
     {
