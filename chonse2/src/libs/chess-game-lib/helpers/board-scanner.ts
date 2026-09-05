@@ -673,19 +673,21 @@ export default class BoardScanner
                             const materialOfPotentialSecondPiece = PieceMaterial.getMaterialFromPiece(squareInQuestionPiece);
 
                             if (materialOfSkeweredPiece > materialOfPotentialSecondPiece)
-                            {
+                            {                     
+                                //Skewer object to be added.           
                                 const newSkewer = new Skewer();
 
+                                //Set fields.
                                 newSkewer.attackerCoordinate = currentCoord;
                                 newSkewer.highValuePieceCoordinate = highValuePieceCoord;
                                 newSkewer.lowValuePieceBehindCoordinate = ChessConstants.COORDS[rowIndex + currentXOffset][colIndex + currentYOffset];
-                                
-                                //Do not include pawns in skewers
-                                if (!newSkewer.lowValuePieceBehindCoordinate.endsWith(PieceType.PAWN))
-                                {
-                                    candidateSkewers.push(newSkewer);
-                                }
+
+                                //Add to candidate.
+                                candidateSkewers.push(newSkewer);
+
                             }
+
+                            break;
                         }
                     }
                 }
@@ -693,15 +695,11 @@ export default class BoardScanner
         }
         
         //Time to check some additional edge cases
-
         const boardCopy = board.clone();
-
 
         //Now, need to check if the skewered high value piece or the piece behind it cannot just check the king without hanging, or move and defend both.
         candidateSkewers = candidateSkewers.filter( sk => 
             {
-                const attackerPiece = board.findPieceAtCoordinate(sk.attackerCoordinate);
-
                 //Gotta check each legal move for the high value piece.
                 const legalMovesForHighValuePiece = boardCopy.getLegalMoves(sk.highValuePieceCoordinate);
                 const legalMovesForLowValuePiece = boardCopy.getLegalMoves(sk.lowValuePieceBehindCoordinate);
