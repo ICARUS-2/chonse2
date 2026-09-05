@@ -607,7 +607,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   }) 
 
   //#endregion
-  //#endregion
 
   //#region Vs AI
   async playAIMove()
