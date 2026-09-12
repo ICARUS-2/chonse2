@@ -16,6 +16,8 @@ export enum MoveClassification
 }
 
 export enum EngineName {
+  Stockfish19="stockfish_19",
+  Stockfish19Lite="stockfish_19lite",
   Stockfish18="stockfish_18",
   Stockfish18Lite="stockfish_18lite",
   Stockfish11 = "stockfish_11",
@@ -30,6 +32,29 @@ export enum EngineType
 export const EngineInformation: Map<EngineName, EngineInfo> = new Map<EngineName, EngineInfo>
 (
   [
+    //SF19
+    [
+      EngineName.Stockfish19,
+      {
+        displayName: "Stockfish 19",
+        displayNameSmall: "SF19",
+        type: EngineType.NNUE,
+        sizeMb: 95,
+        additionalText: "Strongest",
+      }
+    ],
+
+    //SF19 Lite
+    [EngineName.Stockfish19Lite, 
+      {
+        displayName: "Stockfish 19 Lite", 
+        displayNameSmall: "SF19L",
+        type: EngineType.NNUE, 
+        sizeMb: 7,
+        additionalText: "Default",
+      }
+    ],
+
     //SF18
     [
       EngineName.Stockfish18,
@@ -38,7 +63,7 @@ export const EngineInformation: Map<EngineName, EngineInfo> = new Map<EngineName
         displayNameSmall: "SF18",
         type: EngineType.NNUE,
         sizeMb: 108,
-        additionalText: "Strongest",
+        additionalText: "",
       }
     ],
 
@@ -49,7 +74,7 @@ export const EngineInformation: Map<EngineName, EngineInfo> = new Map<EngineName
         displayNameSmall: "SF18L",
         type: EngineType.NNUE, 
         sizeMb: 7,
-        additionalText: "Default",
+        additionalText: "",
       }
     ],
     

@@ -1,6 +1,7 @@
 import { EngineName } from "../types/enums";
 import { Stockfish11 } from "../engines/stockfish11";
 import { Stockfish18 } from "../engines/stockfish18";
+import { Stockfish19 } from "../engines/stockfish19";
 
 
 export const isWasmSupported = () =>
@@ -16,9 +17,14 @@ export const isMobileDevice = () =>
 
 export const isEngineSupported = (name: EngineName): boolean => {
   switch (name) {
+    case EngineName.Stockfish19:
+    case EngineName.Stockfish19Lite:
+      return Stockfish19.isSupported();
+      
     case EngineName.Stockfish18:
     case EngineName.Stockfish18Lite:
       return Stockfish18.isSupported();
+
     case EngineName.Stockfish11:
       return Stockfish11.isSupported();
   }
