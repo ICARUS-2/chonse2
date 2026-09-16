@@ -50,7 +50,7 @@ export const EngineInformation: Map<EngineName, EngineInfo> = new Map<EngineName
         displayName: "Stockfish 19 Lite", 
         displayNameSmall: "SF19L",
         type: EngineType.NNUE, 
-        sizeMb: 7,
+        sizeMb: 2,
         additionalText: "Default",
       }
     ],
