@@ -1,0 +1,49 @@
+import { GlassPanelTheme, IAppTheme } from "./i-app-theme";
+
+export default class SkyTheme implements IAppTheme
+{
+    getPrimaryColor(): string 
+    {
+        return "rgb(13,110,253)"
+    }
+
+    getHoverColor(): string 
+    {
+        return "rgb(13, 110, 255);"
+    }
+
+    getBackgroundColor(): string 
+    {
+        return "white";
+    }
+
+    getBorderColor(): string 
+    {
+        return "blue";
+    }
+
+    getTextColor(): string 
+    {
+        return "black";
+    }
+
+    getChessboardLightColor(): string 
+    {
+        return "white";
+    }
+
+    getChessboardDarkColor(): string 
+    {
+        return "rgb(85,150,242)";
+    }
+    
+    getBackgroundImgUrl(): string 
+    {
+        return "img/backgrounds/sky-bg.webp"
+    }
+
+    getGlassPanelTheme(): string 
+    {
+        return GlassPanelTheme.Light;   
+    }
+}

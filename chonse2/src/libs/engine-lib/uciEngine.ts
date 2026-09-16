@@ -20,6 +20,7 @@ import { Stockfish11 } from "./engines/stockfish11";
 import { Stockfish18 } from "./engines/stockfish18";
 import { LichessAPI } from "../server-api-lib/lichess-api";
 import { isWasmSupported } from "./helpers/shared";
+import { Stockfish19 } from "./engines/stockfish19";
 
 
 export class UciEngine {
@@ -32,6 +33,10 @@ export class UciEngine {
 
     switch (engineName) 
     {
+      case EngineName.Stockfish19:
+        return Stockfish19.create(false);
+      case EngineName.Stockfish19Lite:
+        return Stockfish19.create(true);
       case EngineName.Stockfish18:
         return Stockfish18.create(false);
       case EngineName.Stockfish18Lite:
@@ -41,7 +46,7 @@ export class UciEngine {
     }
   }
 
-  static readonly DEFAULT_ENGINE: EngineName.Stockfish18Lite;
+  static readonly DEFAULT_ENGINE: EngineName.Stockfish19Lite;
   static readonly MIN_ELO: number = 1320;
   static readonly MAX_ELO: number = 3190;
 
