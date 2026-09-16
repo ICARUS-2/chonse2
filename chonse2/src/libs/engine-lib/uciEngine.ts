@@ -46,7 +46,7 @@ export class UciEngine {
     }
   }
 
-  static readonly DEFAULT_ENGINE: EngineName.Stockfish18Lite;
+  static readonly DEFAULT_ENGINE: EngineName.Stockfish19Lite;
   static readonly MIN_ELO: number = 1320;
   static readonly MAX_ELO: number = 3190;
 
