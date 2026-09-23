@@ -57,7 +57,7 @@ export class Settings implements OnInit{
   {
     //Engine depth
     min(schema.engineDepth, UciEngine.MIN_DEPTH),
-    max(schema.engineDepth, 30),
+    max(schema.engineDepth, 25),
 
     //Engine thread count
     min(schema.engineThreadCount, 1),
