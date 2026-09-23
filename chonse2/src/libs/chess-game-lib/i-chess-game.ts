@@ -46,9 +46,7 @@ export default interface IChessGame
     //#region Game state
     //Gets game state object.
     getGameState(): GameState
-
-    //Triggers game over check from outside if necessary
-    checkIsGameOver(): void
+    
     //#endregion
 
     //#region Moves

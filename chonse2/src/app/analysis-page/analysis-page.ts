@@ -157,8 +157,6 @@ export class AnalysisPage implements OnInit{
       //Reconstruct from fen.
       const restoredPosition = ChessGameFactory.createFromFen(this.inputtedPosition)
 
-      restoredPosition.checkIsGameOver();
-
       //Places it into a valid board state and adds it.
       const boardState = new BoardState([restoredPosition]);
       boardState.isReadOnly.set(true);
@@ -175,7 +173,6 @@ export class AnalysisPage implements OnInit{
       
       //Set positions.
       const restoredPositions = this.vsAiStates.map( fen => ChessGameFactory.createFromFen(fen) );
-      restoredPositions.at(-1)?.checkIsGameOver();
       bs.mainStateStack.set(restoredPositions);
   
       //Set move stack.

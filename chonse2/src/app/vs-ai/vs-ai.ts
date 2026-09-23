@@ -36,7 +36,6 @@ export class VsAi implements OnInit, AfterViewInit{
     if (this.inputtedPosition) 
     {
       const restoredPosition = ChessGameFactory.createFromFen(this.inputtedPosition);
-      restoredPosition.checkIsGameOver();
 
       VsAiConfigurationModalHelper.doModal(
         this.ngbModal,

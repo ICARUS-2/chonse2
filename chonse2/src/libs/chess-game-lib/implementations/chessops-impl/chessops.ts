@@ -510,12 +510,6 @@ export default class ChessopsBoard implements IChessGame
         return state;
     }
 
-    //Triggers game over check from outside if necessary
-    public checkIsGameOver(): void
-    {
-        //pass
-    }
-
     //Verifies if a threefold repetition has taken place.
     private _isThreefoldRepetition(): boolean
     {
