@@ -34,7 +34,7 @@ export default class DarkTheme implements IAppTheme
 
     getChessboardDarkColor(): string 
     {
-        return "black";
+        return "gray";
     }
     
     getBackgroundImgUrl(): string 
