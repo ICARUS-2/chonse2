@@ -5,6 +5,7 @@ import LocalStorageHelper from "../../libs/local-storage-helper";
 import WhiteBlueTheme from "./app-themes/white-blue-theme";
 import BlackRedTheme from "./app-themes/black-red-theme";
 import GalacticTheme from "./app-themes/galactic-theme";
+import DarkTheme from "./app-themes/dark-theme";
 
 @Injectable({ providedIn: 'root' })
 export default class ThemeService 
@@ -26,6 +27,8 @@ export default class ThemeService
         {
             case Themes.WhiteAndBlue:
                 return new WhiteBlueTheme();
+            case Themes.Dark:
+                return new DarkTheme();
             case Themes.BlackAndRed: 
                 return new BlackRedTheme();
             case Themes.Galactic:
