@@ -11,6 +11,7 @@ export default class LocalStorageHelper
     static readonly SAVED_LICHESS_USERNAMES = "Chonse2_SavedLichessUsernames";
     static readonly SELECTED_ENGINE = "Chonse2_SelectedEngine";
     static readonly ENGINE_DEPTH = "Chonse2_EngineDepth";
+    static readonly MANUAL_ENGINE_DEPTH = "Chonse2_ManualEngineDepth";
     static readonly CLOUD_HYBRID_MODE = "Chonse2_CloudHybridMode";
     static readonly ENGINE_THREAD_COUNT = "Chonse2_ThreadCount";
     static readonly SELECTED_THEME = "Chonse2_SelectedTheme";

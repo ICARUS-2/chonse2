@@ -52,6 +52,7 @@ export class UciEngine {
 
   static readonly DEFAULT_DEPTH = 16;
   static readonly MIN_DEPTH = 12;
+  static readonly MAX_DEPTH = 25;
   public readonly name: EngineName;
   private workers: EngineWorker[] = [];
   private workerQueue: WorkerJob[] = [];

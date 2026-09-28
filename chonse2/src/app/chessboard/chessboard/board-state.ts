@@ -326,7 +326,7 @@ export default class BoardState
                 fen: state.getFEN(),
 
                 //if overriding for coach move, go min depth. otherwise, saved depth.
-                depth: overrideForCoachEvals ? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.MIN_DEPTH),
+                depth: overrideForCoachEvals ? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, UciEngine.MIN_DEPTH),
                 
                 //default pv
                 multiPv: eng.multiPv,
