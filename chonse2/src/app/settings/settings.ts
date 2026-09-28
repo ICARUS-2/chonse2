@@ -41,6 +41,7 @@ export class Settings implements OnInit{
     //engine
     selectedEngine: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName,
     engineDepth:  LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
+    manualEngineDepth: LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
     cloudHybridMode: LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, true),
     engineThreadCount: LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1),
 
@@ -57,7 +58,11 @@ export class Settings implements OnInit{
   {
     //Engine depth
     min(schema.engineDepth, UciEngine.MIN_DEPTH),
-    max(schema.engineDepth, 25),
+    max(schema.engineDepth, UciEngine.MAX_DEPTH),
+
+    //Engine depth (manual)
+    min(schema.manualEngineDepth, UciEngine.MIN_DEPTH),
+    max(schema.manualEngineDepth, UciEngine.MAX_DEPTH),
 
     //Engine thread count
     min(schema.engineThreadCount, 1),
@@ -129,6 +134,12 @@ export class Settings implements OnInit{
     LocalStorageHelper.setNumber(LocalStorageHelper.ENGINE_DEPTH, this.form.engineDepth().value());
   }
 
+  //Manual engine depth
+  handleManualEngineDepthChanged()
+  {
+    LocalStorageHelper.setNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, this.form.manualEngineDepth().value());
+  }
+
   //Cloud hybrid
   handleCloudHybridChanged(val: boolean)
   {
@@ -182,6 +193,7 @@ interface FormModel
   //engine
   selectedEngine: EngineName;
   engineDepth: number;
+  manualEngineDepth: number;
   cloudHybridMode: boolean;
   engineThreadCount: number;
 

@@ -334,6 +334,7 @@
                 "tooltip": "Delegate evaluations to Lichess cloud eval wherever possible. Can yield increased depth, faster evaluations and less CPU usage. Intended for devices that cannot take advantage of multithreading."
             },
             "engineDepth": "Engine Depth",
+            "manualEngineDepth": "Engine Depth (Manual moves)",
             "threadCount": "Thread Count",
             "legacyFallbackWarning": "WASM not available. Switching to legacy engine."
         },

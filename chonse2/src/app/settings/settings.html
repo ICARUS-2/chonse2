@@ -214,9 +214,9 @@
 
         <!--Engine depth and thread count-->
 
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between engineDepthAndThreadCount gap-3">
             <!--Engine depth-->
-            <div class="w-50 me-4">
+            <div class="w-100">
                 <h4 class="">{{ 'settings.engine.engineDepth' | translate }}</h4>
                 <div class="d-flex" [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
                     <input (change)="handleEngineDepthChanged()" [formField]="form.engineDepth" type="range" class="form-range custom-range" id="range2">
@@ -224,8 +224,18 @@
                 </div>
             </div>
 
+            <!--Manual move engine depth-->
+            <div class="w-100">
+                <h4 class="">{{ 'settings.engine.manualEngineDepth' | translate }}</h4>
+                <div class="d-flex" [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
+                    <input (change)="handleManualEngineDepthChanged()" [formField]="form.manualEngineDepth" type="range" class="form-range custom-range" id="range2">
+                    <p>{{form.manualEngineDepth().value()}}</p>
+                </div>
+            </div>
+
+
             <!--Thread count-->
-            <div class="w-50 ms-4">
+            <div class="w-100">
                 <h4 class="">{{ 'settings.engine.threadCount' | translate }}</h4>
                 <div class="d-flex" [style.--slider-color]="themeService.getThemeInstance().getPrimaryColor()">
                     <input (change)="handleThreadCountChanged()" [formField]="form.engineThreadCount" type="range" class="form-range custom-range" id="range3">
