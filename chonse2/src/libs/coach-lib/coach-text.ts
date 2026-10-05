@@ -60,7 +60,8 @@ export default class CoachText
                 [
                     new CoachSentence(`Decent move, but ${CoachText.TURN_PLACEHOLDER} had a better one.`, `base-sentences/okay/0/audio_${CoachText.TURN_PLACEHOLDER}.mp3`),
                     new CoachSentence(`This is decent, but not what I would have played.`, `base-sentences/okay/1/audio.mp3`),
-                    new CoachSentence(`Thats playable.`, `base-sentences/okay/2/audio.mp3`)
+                    new CoachSentence(`That's playable.`, `base-sentences/okay/2/audio.mp3`),
+                    new CoachSentence(`That's not a mistake, but they did not find the best move here.`, `base-sentences/okay/3/audio.mp3`)
                 ]
             ],
 
