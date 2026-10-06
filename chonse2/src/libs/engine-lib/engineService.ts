@@ -1,52 +1,44 @@
-import { Service } from "@angular/core";
-import { UciEngine } from "./uciEngine";
-import { EngineName } from "./types/enums";
+import { computed, Service, signal } from "@angular/core";
 import LocalStorageHelper from "../local-storage-helper";
+import { EngineName } from "./types/enums";
+import { UciEngine } from "./uciEngine";
 
 @Service()
 export class EngineService
 {
-    private _engine: UciEngine | null = null;
+    private readonly _engine = signal<UciEngine | null>(null);
     private _enginePromise: Promise<UciEngine> | null = null;
+
+    public readonly name = computed(() => this._engine()?.name ?? null);
+    public readonly isReady = computed(() => this._engine()?.isReady() ?? false);
+    public readonly isCloudHybrid = computed(() => this._engine()?.isCloudHybridMode() ?? false);
 
     public async getEngine(): Promise<UciEngine>
     {
-        //Already initialized
-        if (this._engine !== null)
-        {
-            return this._engine;
-        }
+        const existing = this._engine();
+        if (existing !== null) return existing;
 
-        //Already being initialized
-        if (this._enginePromise !== null)
-        {
-            return this._enginePromise;
-        }
+        if (this._enginePromise !== null) return this._enginePromise;
 
-        const engineType: EngineName =
-            LocalStorageHelper.getString(
-                LocalStorageHelper.SELECTED_ENGINE,
-                EngineName.Stockfish18Lite
-            ) as EngineName;
+        const engineType = LocalStorageHelper.getString(
+            LocalStorageHelper.SELECTED_ENGINE,
+            EngineName.Stockfish18Lite
+        ) as EngineName;
 
-        const cloudHybridMode =
-            LocalStorageHelper.getBoolean(
-                LocalStorageHelper.CLOUD_HYBRID_MODE,
-                true
-            );
+        const cloudHybridMode = LocalStorageHelper.getBoolean(
+            LocalStorageHelper.CLOUD_HYBRID_MODE,
+            true
+        );
 
         this._enginePromise = UciEngine.getEngine(engineType)
             .then(engine =>
             {
-                engine.isCloudHybridMode = cloudHybridMode;
-
-                this._engine = engine;
-
+                engine.setCloudHybridMode(cloudHybridMode);
+                this._engine.set(engine); // set last, so computeds see a fully configured engine
                 return engine;
             })
             .catch(error =>
             {
-                // Important: allow a future retry after failure
                 this._enginePromise = null;
                 throw error;
             });
@@ -54,33 +46,9 @@ export class EngineService
         return this._enginePromise;
     }
 
-    public getName(): EngineName | null
+    public setCloudHybrid(enabled: boolean): void
     {
-        if (this._engine)
-        {
-            return this._engine.name;
-        }
-
-        return null;
-    }
-
-    public isReady(): boolean 
-    {
-        if (this._engine)
-        {
-            return this._engine.getIsReady();
-        }
-
-        return false;
-    }
-
-    public isCloudHybrid(): boolean 
-    {
-        if (this._engine)
-        {
-            return this._engine.isCloudHybridMode;
-        }
-
-        return false;
+        this._engine()?.setCloudHybridMode(enabled);
+        LocalStorageHelper.setBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, enabled); // adjust to your helper's API
     }
 }

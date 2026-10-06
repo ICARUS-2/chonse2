@@ -21,6 +21,7 @@ import { Stockfish18 } from "./engines/stockfish18";
 import { LichessAPI } from "../server-api-lib/lichess-api";
 import { isWasmSupported } from "./helpers/shared";
 import { Stockfish19 } from "./engines/stockfish19";
+import { Signal, signal, WritableSignal } from "@angular/core";
 
 
 export class UciEngine {
@@ -53,10 +54,25 @@ export class UciEngine {
   static readonly DEFAULT_DEPTH = 16;
   static readonly MIN_DEPTH = 12;
   static readonly MAX_DEPTH = 25;
-  public readonly name: EngineName;
   private workers: EngineWorker[] = [];
   private workerQueue: WorkerJob[] = [];
-  private isReady = false;
+
+  //signals
+  private readonly _isReady: WritableSignal<boolean> = signal(false);
+  public readonly isReady: Signal<boolean> = this._isReady.asReadonly();
+
+  private readonly _isCloudHybridMode: WritableSignal<boolean> = signal(false);
+  public readonly isCloudHybridMode: Signal<boolean> = this._isCloudHybridMode.asReadonly();
+
+  public setCloudHybridMode(enabled: boolean): void 
+  {
+    this._isCloudHybridMode.set(enabled);
+  }
+  
+  private readonly _name: WritableSignal<EngineName>;
+  public readonly name: Signal<EngineName>;
+
+
   private enginePath: string;
   private customEngineInit?:
     | ((worker: EngineWorker) => Promise<void>)
@@ -66,14 +82,14 @@ export class UciEngine {
 
   //Lichess cloud eval
   private lastCloudEvalRequest = 0;
-  public isCloudHybridMode = false;
 
   private constructor(
     engineName: EngineName,
     enginePath: string,
     customEngineInit: UciEngine["customEngineInit"]
   ) {
-    this.name = engineName;
+    this._name = signal(engineName);
+    this.name = this._name.asReadonly();
     this.enginePath = enginePath;
     this.customEngineInit = customEngineInit;
   }
@@ -86,7 +102,7 @@ export class UciEngine {
     const engine = new UciEngine(engineName, enginePath, customEngineInit);
 
     await engine.addNewWorker();
-    engine.isReady = true;
+    engine._isReady.set(true);
 
     return engine;
   }
@@ -155,7 +171,7 @@ export class UciEngine {
     this.elo = elo;
   }
 
-  public getIsReady(): boolean {
+  public getIsReady(): Signal<boolean> {
     return this.isReady;
   }
 
@@ -166,7 +182,7 @@ export class UciEngine {
   }
 
   public shutdown(): void {
-    this.isReady = false;
+    this._isReady.set(false);
     this.workerQueue = [];
 
     for (const worker of this.workers) {
@@ -294,7 +310,7 @@ export class UciEngine {
     workersNb = 1,
   }: EvaluateGameParams): Promise<GameEval> {
     this.throwErrorIfNotReady();
-    this.isReady = false;
+    this._isReady.set(false);
     setEvaluationProgress?.(1);
 
     await this.setMultiPv(multiPv);
@@ -312,7 +328,7 @@ export class UciEngine {
     };
 
     //If cloud hybrid (aka also single thread), evaluate sequentially, calling lichess cloud eval API whenever possible.
-    if (this.isCloudHybridMode)
+    if (this.isCloudHybridMode())
     {
       for (let i = 0; i < fens.length; i++) {
         const fen = fens[i];
@@ -360,7 +376,7 @@ export class UciEngine {
     }
 
     await this.setWorkersNb(1);
-    this.isReady = true;
+    this._isReady.set(true);
 
     const positionsWithClassification = getMovesClassification(
       positions,
@@ -379,7 +395,7 @@ export class UciEngine {
       estimatedElo,
       accuracy,
       settings: {
-        engine: this.name,
+        engine: this.name(),
         date: new Date().toISOString(),
         depth,
         multiPv,
@@ -392,7 +408,7 @@ export class UciEngine {
     depth = UciEngine.DEFAULT_DEPTH,
   ): Promise<PositionEval> {
 
-    if (this.isCloudHybridMode)
+    if (this.isCloudHybridMode())
     {
       const now = Date.now();
 

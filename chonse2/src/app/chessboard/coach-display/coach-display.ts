@@ -67,14 +67,14 @@ export class CoachDisplay {
   protected shouldShowEngineInfo = computed(() => this.boardState().doEvaluateGame());
 
   protected engineMetadata = computed(() => {
-    const engineName = this.engineService.getName();
+    const engineName = this.engineService.name();
 
     if (engineName == null)
     {
       return null;
     }
 
-    return EngineInformation.get(engineName);
+    return EngineInformation.get(engineName());
   });
 
   constructor(public themeService: ThemeService, public coachAudio: CoachAudio)

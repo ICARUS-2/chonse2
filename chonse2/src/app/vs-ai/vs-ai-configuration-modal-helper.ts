@@ -51,7 +51,7 @@ export default class VsAiConfigurationModalHelper
                 const engine = await bs.engineService.getEngine();
                 if (engine)
                 {
-                    const engineDisplayName = EngineInformation.get(engine.name as EngineName)?.displayName?.toString() ?? "-";
+                    const engineDisplayName = EngineInformation.get(engine.name() as EngineName)?.displayName?.toString() ?? "-";
 
                     isHumanWhite ? (bs.pgnHeaders().black = engineDisplayName) : (bs.pgnHeaders().white = engineDisplayName)
                     isHumanWhite ? (bs.pgnHeaders().blackElo = engineElo) : (bs.pgnHeaders().whiteElo = engineElo);

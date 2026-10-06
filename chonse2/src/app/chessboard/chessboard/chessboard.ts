@@ -403,7 +403,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     //if (this.boardState().engine)
     {
       const e = await this.engineService.getEngine();
-      const eName = EngineInformation.get(e.name)?.displayName;
+      const eName = EngineInformation.get(e.name())?.displayName;
 
       if (eName)
       {
