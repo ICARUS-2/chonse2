@@ -34,6 +34,7 @@ export default class BoardState
 
     //Eval stuff.
     doEvaluateGame: WritableSignal<boolean> = signal(false);
+    isEvaluationStarted: WritableSignal<boolean> = signal(false);
     eval: WritableSignal<GameEval | undefined> = signal(undefined);
     evalProgress: WritableSignal<number> = signal(0);
     //engine: WritableSignal<UciEngine | undefined> = signal(undefined);
@@ -528,6 +529,11 @@ export default class BoardState
             return;
         }
 
+        if (this.isEvaluationStarted())
+        {
+            return;
+        }
+
         //Will initialize the engine based on user preference.
         //await this.setEngineIfNotExists();
 
@@ -544,6 +550,7 @@ export default class BoardState
         const engine = await this.engineService.getEngine();
         if (engine)
         {
+            this.isEvaluationStarted.set(true);
             const evalResult = await engine.evaluateGame(params);
 
             this.eval.set(evalResult);
