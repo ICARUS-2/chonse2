@@ -384,6 +384,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.boardState().isCoachMoveShowing.set(false);
     this.boardState().isCoachIdeaShowing.set(false);
 
+    this.engineService.terminateEngine();
     const bs: BoardState = new BoardState();
     this.chessBoardService.deleteGame(this.gameId());
     this.chessBoardService.addGame(this.gameId(), bs);

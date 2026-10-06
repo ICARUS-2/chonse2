@@ -51,4 +51,10 @@ export class EngineService
         this._engine()?.setCloudHybridMode(enabled);
         LocalStorageHelper.setBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, enabled); // adjust to your helper's API
     }
+
+    public terminateEngine(): void 
+    {
+        this._engine()?.shutdown();
+        this._engine.set(null);
+    }
 }
