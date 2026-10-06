@@ -654,15 +654,26 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
         this.forcePushState(stateCopy, moveResult);
         Sound.playSoundForMove(moveResult.notation);
+
+        //If the game ends via checkmate, stalemate, etc, tell the board state this.
+        if (stateCopy.getGameState().isGameOver)
+        {
+          this.boardState().isVsAiInProgress.set(false);
+        }
       }, Chessboard.ANIMATION_DURATION_MS);
     }
     else 
     {
-        const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
-        this.forcePushState(stateCopy, moveResult);
-        Sound.playSoundForMove(moveResult.notation);
-    }
+      const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
+      this.forcePushState(stateCopy, moveResult);
+      Sound.playSoundForMove(moveResult.notation);
 
+      //If the game ends via checkmate, stalemate, etc, tell the board state this.
+      if (stateCopy.getGameState().isGameOver)
+      {
+        this.boardState().isVsAiInProgress.set(false);
+      }
+    }
   }
 
   resignVsAiClicked()
