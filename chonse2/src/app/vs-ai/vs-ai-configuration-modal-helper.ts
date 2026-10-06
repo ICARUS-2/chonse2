@@ -60,6 +60,7 @@ export default class VsAiConfigurationModalHelper
                     chessBoardService.deleteGame(BoardNames.VsAi);
                     chessBoardService.addGame(BoardNames.VsAi, bs);
                     componentInstance.boardState.set(chessBoardService.getGame(BoardNames.VsAi));
+                    componentInstance.boardState().isVsAiInProgress.set(true);
 
                     toastr.success(translate.instant("vsAiModal.toastr.startingGame"));
 

@@ -209,12 +209,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   async completeMove(fromSquare: string, toSquare: string)
   {
-    //If the game is vs AI and there is no engine, don't move anything
-    if (this.boardState().isVsAi() /*&& !this.boardState().engine()*/)
-    {
-      return;
-    }
-
     //Can't move if, in AI mode, it isn't the player's turn.
     if (this.boardState().isVsAi())
     {
@@ -673,7 +667,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   resignVsAiClicked()
   {
-    this.boardState().playerDidResign.set(true);
+    this.boardState().isVsAiInProgress.set(false);
     this.toastr.warning(this.translate.instant("chessboard.toastr.resign"));
   }
 
@@ -685,7 +679,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       this.toastr, 
       this.translate, 
       this);
-
   }
 
   analyzeAiGameClicked()
