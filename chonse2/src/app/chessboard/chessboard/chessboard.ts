@@ -45,6 +45,7 @@ import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
 import { GameOverReason } from '../../../libs/chess-game-lib/types/game-state';
 import { IMoveResult } from '../../../libs/chess-game-lib/types/move-result';
 import IChessGame from '../../../libs/chess-game-lib/i-chess-game';
+import { EngineService } from '../../../libs/engine-lib/engineService';
 
 interface PieceAnimationState {
   piece: string;
@@ -149,6 +150,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   )
 
   private translate = inject(TranslateService);
+  private engineService = inject(EngineService);
 
   constructor(
     private modalService: NgbModal, 
@@ -181,7 +183,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
     this.boardState.set(boardState);
 
-    if (this.boardState().doEvaluateGame() && !this.boardState().engine())
+    if (this.boardState().doEvaluateGame() /*&& !this.boardState().engine()*/)
     {
       await this.boardState().evaluateGame();
       this.boardState().divergenceStateStack.set([]);
@@ -208,7 +210,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   async completeMove(fromSquare: string, toSquare: string)
   {
     //If the game is vs AI and there is no engine, don't move anything
-    if (this.boardState().isVsAi() && !this.boardState().engine())
+    if (this.boardState().isVsAi() /*&& !this.boardState().engine()*/)
     {
       return;
     }
@@ -402,11 +404,12 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     return Number(this.boardState().evalProgress().toFixed(2));
   } )
 
-  getEngineDisplayName = computed( (): string => 
+  getEngineDisplayName = computed( async (): Promise<string> => 
   {
-    if (this.boardState().engine)
+    //if (this.boardState().engine)
     {
-      const eName = EngineInformation.get(this.boardState().engine()?.name ?? UciEngine.DEFAULT_ENGINE)?.displayName;
+      const e = await this.engineService.getEngine();
+      const eName = EngineInformation.get(e.name)?.displayName;
 
       if (eName)
       {
@@ -419,8 +422,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   getMoveClassificationForSquare = (coord: string) => computed( (): MoveClassification =>
   {
     const lastEval = this.boardState().getMostRecentEval();
-
-    if (!this.boardState().engine()?.getIsReady())
+    if (!this.engineService.isReady())
     {
       return MoveClassification.None;
     }
@@ -442,8 +444,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   getMoveClassificationIconSourceForCoord = (coord: string) => computed( (): string =>
   {
     const lastEval = this.boardState().getMostRecentEval();
-    
-    if (!this.boardState().engine()?.getIsReady())
+    if (this.engineService.isReady())
     {
       return "";
     }
@@ -616,7 +617,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const engine = this.boardState().engine();
+    const engine = await this.engineService.getEngine();
 
     //Can't play an engine move if there is no engine.
     if (!engine)

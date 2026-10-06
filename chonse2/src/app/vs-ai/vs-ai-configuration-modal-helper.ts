@@ -46,9 +46,9 @@ export default class VsAiConfigurationModalHelper
                     bs.isFlipped.set(true);
                 }
 
-                await bs.setEngineIfNotExists();
+                //await bs.setEngineIfNotExists();
 
-                const engine = bs.engine();
+                const engine = await bs.engineService.getEngine();
                 if (engine)
                 {
                     const engineDisplayName = EngineInformation.get(engine.name as EngineName)?.displayName?.toString() ?? "-";
@@ -75,7 +75,7 @@ export default class VsAiConfigurationModalHelper
                     {
                         if (!isHumanWhite)
                         {
-                            if (componentInstance.boardState().engine())
+                            if (engine)
                             {
                                 componentInstance.playAIMove();
                             }

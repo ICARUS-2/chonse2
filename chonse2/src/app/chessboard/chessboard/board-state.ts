@@ -16,6 +16,7 @@ import { CoachAudio } from "../../../libs/coach-lib/coach-audio";
 import { ChessConstants } from "../../../libs/chess-game-lib/types/constants";
 import IChessGame from "../../../libs/chess-game-lib/i-chess-game";
 import ChessGameFactory from "../../../libs/chess-game-lib/chess-game-factory";
+import { EngineService } from "../../../libs/engine-lib/engineService";
 
 export default class BoardState
 {
@@ -35,11 +36,12 @@ export default class BoardState
     doEvaluateGame: WritableSignal<boolean> = signal(false);
     eval: WritableSignal<GameEval | undefined> = signal(undefined);
     evalProgress: WritableSignal<number> = signal(0);
-    engine: WritableSignal<UciEngine | undefined> = signal(undefined);
+    //engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     evaluationQueue: (() => Promise<void>)[] = [];
     isProcessingQueue: boolean = false;
+    engineService = AppInjector.injector.get(EngineService);
 
     //Coach stuff
     coachButtonsDisabled: WritableSignal<boolean> = signal(false);
@@ -108,7 +110,7 @@ export default class BoardState
             this.divergenceMoveStack.update(stack => [...stack, move]);
 
 
-            if (this.engine() && this.doEvaluateGame())
+            if (/*this.engine() &&*/ this.doEvaluateGame())
             {
                 this.performDivergenceEvaluation(previousState, state, move, previousEval, isCoachMove);
             }
@@ -309,9 +311,10 @@ export default class BoardState
     //Override for coach evals simply tells it to evaluate it at a lower depth (so the eval bar has a value), and make it best move no matter what (since the coach will always play the best move anyway)
     private async performDivergenceEvaluation(previousState: IChessGame, state: IChessGame, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
     {
-        const eng = this.engine();
+        //const eng = this.engine();
+        const eng = await this.engineService.getEngine();
 
-        if (eng != undefined && this.eval())
+        if (eng != null && this.eval())
         {
             //Creates a new eval object where the fields will be set.
             const newEval: PositionEval = { bestMove: "", moveClassification: MoveClassification.None, opening: "", lines: [ {pv: [""], cp: 0} as LineEval ], source: EvalSource.Local, isPartial: true };
@@ -526,7 +529,7 @@ export default class BoardState
         }
 
         //Will initialize the engine based on user preference.
-        await this.setEngineIfNotExists();
+        //await this.setEngineIfNotExists();
 
         //Sets up the ratings and progress setter.
         const params = this.getEvaluateGameParams();
@@ -537,7 +540,8 @@ export default class BoardState
         this.displayedQuote.set(Quotes.getQuote());
 
         //Evaluate the game.
-        const engine = this.engine();
+        //const engine = this.engine();
+        const engine = await this.engineService.getEngine();
         if (engine)
         {
             const evalResult = await engine.evaluateGame(params);
@@ -583,23 +587,23 @@ export default class BoardState
         }
     }
 
-    async setEngineIfNotExists()
-    {
-        if (!this.engine())
-        {
-            //Gets the engine type saved as per the user setting.
-            const engineType: EngineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName;
+    // async setEngineIfNotExists()
+    // {
+    //     if (!this.engine())
+    //     {
+    //         //Gets the engine type saved as per the user setting.
+    //         const engineType: EngineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName;
             
-            const cloudHybridMode: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, true);
+    //         const cloudHybridMode: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, true);
 
-            //Instantiate the engine with the factory.
-            const engine: UciEngine = await UciEngine.getEngine(engineType);
-            engine.isCloudHybridMode = cloudHybridMode;
+    //         //Instantiate the engine with the factory.
+    //         const engine: UciEngine = await UciEngine.getEngine(engineType);
+    //         engine.isCloudHybridMode = cloudHybridMode;
             
-            //Handle on it so it can be used later.
-            this.engine.set(engine);
-        }
-    }
+    //         //Handle on it so it can be used later.
+    //         this.engine.set(engine);
+    //     }
+    // }
 
     static initializeHighlightStatuses(): Array<Array<boolean>>
     {
