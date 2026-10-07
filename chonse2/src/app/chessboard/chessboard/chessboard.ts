@@ -45,6 +45,7 @@ import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
 import { GameOverReason } from '../../../libs/chess-game-lib/types/game-state';
 import { IMoveResult } from '../../../libs/chess-game-lib/types/move-result';
 import IChessGame from '../../../libs/chess-game-lib/i-chess-game';
+import { EngineService } from '../../../libs/engine-lib/engineService';
 
 interface PieceAnimationState {
   piece: string;
@@ -149,6 +150,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   )
 
   private translate = inject(TranslateService);
+  public engineService = inject(EngineService);
 
   constructor(
     private modalService: NgbModal, 
@@ -181,7 +183,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
     this.boardState.set(boardState);
 
-    if (this.boardState().doEvaluateGame() && !this.boardState().engine())
+    if (this.boardState().doEvaluateGame() && !this.boardState().hasEvaluationBeenStarted())
     {
       await this.boardState().evaluateGame();
       this.boardState().divergenceStateStack.set([]);
@@ -207,12 +209,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   async completeMove(fromSquare: string, toSquare: string)
   {
-    //If the game is vs AI and there is no engine, don't move anything
-    if (this.boardState().isVsAi() && !this.boardState().engine())
-    {
-      return;
-    }
-
     //Can't move if, in AI mode, it isn't the player's turn.
     if (this.boardState().isVsAi())
     {
@@ -372,7 +368,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         catch(ex)
         {
           console.log(ex)
-          this.toastr.error(this.translate.instant("chessboard.toastr.error"));
+          this.toastr.error(this.translate.instant("chessboard.toastr.error") + ex);
         }
       }
     )
@@ -388,6 +384,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.boardState().isCoachMoveShowing.set(false);
     this.boardState().isCoachIdeaShowing.set(false);
 
+    this.engineService.terminateEngine();
     const bs: BoardState = new BoardState();
     this.chessBoardService.deleteGame(this.gameId());
     this.chessBoardService.addGame(this.gameId(), bs);
@@ -402,25 +399,27 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     return Number(this.boardState().evalProgress().toFixed(2));
   } )
 
-  getEngineDisplayName = computed( (): string => 
+  getEngineDisplayName = computed( async (): Promise<string> => 
   {
-    if (this.boardState().engine)
+    const e = await this.engineService.name();
+
+    if (e)
     {
-      const eName = EngineInformation.get(this.boardState().engine()?.name ?? UciEngine.DEFAULT_ENGINE)?.displayName;
+      const eName = EngineInformation.get(e)?.displayName;
 
       if (eName)
       {
         return eName;
       }
     }
-    return "what the hell are you analyzing this with then?";
+
+    return "";
   }) 
 
   getMoveClassificationForSquare = (coord: string) => computed( (): MoveClassification =>
   {
     const lastEval = this.boardState().getMostRecentEval();
-
-    if (!this.boardState().engine()?.getIsReady())
+    if (!this.engineService.isReady())
     {
       return MoveClassification.None;
     }
@@ -442,11 +441,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   getMoveClassificationIconSourceForCoord = (coord: string) => computed( (): string =>
   {
     const lastEval = this.boardState().getMostRecentEval();
-    
-    if (!this.boardState().engine()?.getIsReady())
-    {
-      return "";
-    }
 
     if (lastEval)
     {
@@ -616,22 +610,13 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const engine = this.boardState().engine();
-
-    //Can't play an engine move if there is no engine.
-    if (!engine)
-    {
-      this.toastr.error("Error: Engine not initialized.");
-      return;
-    }
-
     //Sets up the params to query the engine.
     const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
     const fen = this.getMostCurrentMainState().getFEN();
     const elo = this.boardState().aiElo();
               
     //Asks the engine for its move.
-    const engineResult = await engine.getEngineNextMove(fen, elo, depth);
+    const engineResult = await this.engineService.getEngineNextMove(fen, elo, depth);
     
     //If the engine couldn't find something, display an error.
     if (!engineResult)
@@ -659,20 +644,31 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
         this.forcePushState(stateCopy, moveResult);
         Sound.playSoundForMove(moveResult.notation);
+
+        //If the game ends via checkmate, stalemate, etc, tell the board state this.
+        if (stateCopy.getGameState().isGameOver)
+        {
+          this.boardState().isVsAiInProgress.set(false);
+        }
       }, Chessboard.ANIMATION_DURATION_MS);
     }
     else 
     {
-        const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
-        this.forcePushState(stateCopy, moveResult);
-        Sound.playSoundForMove(moveResult.notation);
-    }
+      const moveResult = MoveResult.createMoveResultFromInterface(stateCopy.completeMove(fromSquare, toSquare, promotion));
+      this.forcePushState(stateCopy, moveResult);
+      Sound.playSoundForMove(moveResult.notation);
 
+      //If the game ends via checkmate, stalemate, etc, tell the board state this.
+      if (stateCopy.getGameState().isGameOver)
+      {
+        this.boardState().isVsAiInProgress.set(false);
+      }
+    }
   }
 
   resignVsAiClicked()
   {
-    this.boardState().playerDidResign.set(true);
+    this.boardState().isVsAiInProgress.set(false);
     this.toastr.warning(this.translate.instant("chessboard.toastr.resign"));
   }
 
@@ -684,12 +680,10 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       this.toastr, 
       this.translate, 
       this);
-
   }
 
   analyzeAiGameClicked()
   {
-
     const states = this.boardState().mainStateStack().map( s => s.getFEN() );
     const moves = this.boardState().mainMoveStack().map(m => structuredClone(m));
     const pgnHeaders = structuredClone(this.boardState().pgnHeaders());
@@ -913,7 +907,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   onSquareLeftClick = () =>
   {
     this.resetClickedSquares();
-    //this.arrows.set(this.arrows().filter( a => a.context != ArrowContext.Player));
     this.boardState().arrows.set(this.boardState().arrows().filter( a => a.context != ArrowContext.Player));
   }
 

@@ -48,7 +48,7 @@
         "toastr":
         {
             "success": "PGN importé avec succès",
-            "error": "Données PGN invalides",
+            "error": "Erreur d'analyse",
             "resign": "Tu as abandonné."
         },
 
@@ -67,6 +67,7 @@
         {
             "importGame": "Importer la partie",
             "reset": "Réinitialiser",
+            "cancel": "Annuler",
             "analyze": "Analyser",
             "exportGame": "Exporter la partie",
             "saveToDatabase": "Sauvegarder dans la base de données",

@@ -1,9 +1,10 @@
-import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy, inject } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import { IconButton } from '../../ui/icon-button/icon-button';
 import ThemeService from '../../themes/theme-service';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
+import { EngineService } from '../../../libs/engine-lib/engineService';
 
 @Component({
   selector: 'app-board-options',
@@ -19,6 +20,7 @@ export class BoardOptions {
 
   }
   
+  public engineService = inject(EngineService);
 
   boardState = input.required<BoardState>();
  
@@ -31,9 +33,14 @@ export class BoardOptions {
   analyzeAiGameClicked = output<void>();
   saveToDbClicked = output<void>();
   
- 
   get mostCurrentMainState() {
     const stack = this.boardState().mainStateStack();
     return stack[stack.length - 1];
+  }
+
+  cancelClicked()
+  {
+    window.history.replaceState({}, document.title, window.location.href);
+    window.location.reload();
   }
 }

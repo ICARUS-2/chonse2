@@ -21,6 +21,7 @@ export enum EngineName {
   Stockfish18="stockfish_18",
   Stockfish18Lite="stockfish_18lite",
   Stockfish11 = "stockfish_11",
+  None = "-"
 }
 
 export enum EngineType  

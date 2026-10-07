@@ -4,7 +4,7 @@ import LocalStorageHelper from "../../../libs/local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
 import { PgnFields, PgnHeaders } from "./pgn-misc";
 import { Quote, Quotes } from "./quotes";
-import { MoveClassification, EngineName } from "../../../libs/engine-lib/types/enums";
+import { MoveClassification } from "../../../libs/engine-lib/types/enums";
 import { PositionEval, GameEval, EvaluateGameParams, EvalSource, LineEval, EvaluatePositionWithUpdateParams } from "../../../libs/engine-lib/types/eval";
 import { UciEngine } from "../../../libs/engine-lib/uciEngine";
 import MoveResult from "./move-result";
@@ -16,6 +16,7 @@ import { CoachAudio } from "../../../libs/coach-lib/coach-audio";
 import { ChessConstants } from "../../../libs/chess-game-lib/types/constants";
 import IChessGame from "../../../libs/chess-game-lib/i-chess-game";
 import ChessGameFactory from "../../../libs/chess-game-lib/chess-game-factory";
+import { EngineService } from "../../../libs/engine-lib/engineService";
 
 export default class BoardState
 {
@@ -33,13 +34,14 @@ export default class BoardState
 
     //Eval stuff.
     doEvaluateGame: WritableSignal<boolean> = signal(false);
+    hasEvaluationBeenStarted: WritableSignal<boolean> = signal(false); //ensures ng on init won't trigger multiple evals.
     eval: WritableSignal<GameEval | undefined> = signal(undefined);
     evalProgress: WritableSignal<number> = signal(0);
-    engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     evaluationQueue: (() => Promise<void>)[] = [];
     isProcessingQueue: boolean = false;
+    engineService = AppInjector.injector.get(EngineService);
 
     //Coach stuff
     coachButtonsDisabled: WritableSignal<boolean> = signal(false);
@@ -51,10 +53,10 @@ export default class BoardState
 
     //Vs ai stuff
     isVsAi: WritableSignal<boolean> = signal(false);
+    isVsAiInProgress: WritableSignal<boolean> = signal(false);
     humanPlayerIsWhite: WritableSignal<boolean> = signal(true);
     aiElo: WritableSignal<number> = signal(UciEngine.MIN_ELO);
-    playerDidResign: WritableSignal <boolean> = signal(false);
-
+    
     //Cosmetic stuff.
     squareHighlightStatuses: WritableSignal<Array<Array<boolean>>>;
     arrows: WritableSignal<Array<Arrow>>;
@@ -108,7 +110,7 @@ export default class BoardState
             this.divergenceMoveStack.update(stack => [...stack, move]);
 
 
-            if (this.engine() && this.doEvaluateGame())
+            if (this.doEvaluateGame())
             {
                 this.performDivergenceEvaluation(previousState, state, move, previousEval, isCoachMove);
             }
@@ -309,9 +311,7 @@ export default class BoardState
     //Override for coach evals simply tells it to evaluate it at a lower depth (so the eval bar has a value), and make it best move no matter what (since the coach will always play the best move anyway)
     private async performDivergenceEvaluation(previousState: IChessGame, state: IChessGame, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
     {
-        const eng = this.engine();
-
-        if (eng != undefined && this.eval())
+        if (this.eval())
         {
             //Creates a new eval object where the fields will be set.
             const newEval: PositionEval = { bestMove: "", moveClassification: MoveClassification.None, opening: "", lines: [ {pv: [""], cp: 0} as LineEval ], source: EvalSource.Local, isPartial: true };
@@ -329,7 +329,7 @@ export default class BoardState
                 depth: overrideForCoachEvals ? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, UciEngine.MIN_DEPTH),
                 
                 //default pv
-                multiPv: eng.multiPv,
+                multiPv: await this.engineService.getNumberOfLines(),
 
                 //mid-evaluation, move classification can be updated before it gets to the real depth.
                 setPartialEval: ( positionEval: PositionEval ) => 
@@ -400,7 +400,7 @@ export default class BoardState
             //wrap the thing in a task
             const evalTask = async () => 
             {
-                await eng.evaluatePositionWithUpdate(params);
+                await this.engineService.evaluatePositionWithUpdate(params);
             };
 
             //stick it in da queue
@@ -525,8 +525,14 @@ export default class BoardState
             return;
         }
 
-        //Will initialize the engine based on user preference.
-        await this.setEngineIfNotExists();
+        //Prevents evaluation from running multiple times in, say, a component re-initing.
+        if (this.hasEvaluationBeenStarted())
+        {
+            return;
+        }
+
+        //Mark evaluation as started
+        this.hasEvaluationBeenStarted.set(true);
 
         //Sets up the ratings and progress setter.
         const params = this.getEvaluateGameParams();
@@ -537,20 +543,16 @@ export default class BoardState
         this.displayedQuote.set(Quotes.getQuote());
 
         //Evaluate the game.
-        const engine = this.engine();
-        if (engine)
-        {
-            const evalResult = await engine.evaluateGame(params);
-
-            this.eval.set(evalResult);
-        }
+        const evalResult = await this.engineService.evaluateGame(params);
+        this.eval.set(evalResult);
+        
 
         //Computes how many moves of each classification there are
         Object.values(MoveClassification).forEach( v => 
         {
             this.whiteMoveClassificationList.update(list => 
             {
-                list.moves = new Map(list.moves); // copy map
+                list.moves = new Map(list.moves); //copy map
                 list.moves.set(v, { arr: [], ptr: 0 });
                 return list;
             });
@@ -580,24 +582,6 @@ export default class BoardState
         if (ev != undefined)
         {            
             CoachUtils.performCoachAnalysis(this.mainStateStack(), this.mainMoveStack(), ev.positions)
-        }
-    }
-
-    async setEngineIfNotExists()
-    {
-        if (!this.engine())
-        {
-            //Gets the engine type saved as per the user setting.
-            const engineType: EngineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName;
-            
-            const cloudHybridMode: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, true);
-
-            //Instantiate the engine with the factory.
-            const engine: UciEngine = await UciEngine.getEngine(engineType);
-            engine.isCloudHybridMode = cloudHybridMode;
-            
-            //Handle on it so it can be used later.
-            this.engine.set(engine);
         }
     }
 

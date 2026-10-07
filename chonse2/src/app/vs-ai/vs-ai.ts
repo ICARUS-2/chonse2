@@ -9,6 +9,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
+import { EngineService } from '../../libs/engine-lib/engineService';
 
 @Component({
   selector: 'app-vs-ai',

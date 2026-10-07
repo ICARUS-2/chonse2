@@ -48,7 +48,7 @@
         "toastr": 
         {
             "success": "Successfully imported PGN.",
-            "error": "Invalid PGN data.",
+            "error": "Analysis error occurred.",
             "resign": "You resigned."
         },
 
@@ -67,6 +67,7 @@
         {
             "importGame": "Import Game",
             "reset": "Reset",
+            "cancel": "Cancel",
             "analyze": "Analyze",
             "exportGame": "Export Game",
             "saveToDatabase": "Save to Database",

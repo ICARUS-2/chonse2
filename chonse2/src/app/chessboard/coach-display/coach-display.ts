@@ -18,6 +18,7 @@ import { ChessConstants } from '../../../libs/chess-game-lib/types/constants';
 import { uciMoveParams } from '../../../libs/engine-lib/helpers/chessHelper';
 import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
 import { UciEngine } from '../../../libs/engine-lib/uciEngine';
+import { EngineService } from '../../../libs/engine-lib/engineService';
 
 @Component({
   selector: 'app-coach-display',
@@ -43,6 +44,10 @@ export class CoachDisplay {
   piece: string;
 }>();
 
+  //services
+  private translate = inject(TranslateService);
+  public engineService = inject(EngineService);
+
   //coach
   protected root = computed(() => this.boardState().getRootForFollowUp());
   protected progress = computed(() => this.boardState().evalProgress());
@@ -58,16 +63,19 @@ export class CoachDisplay {
   protected readonly EvalSource = EvalSource;
   protected readonly EngineInformation = EngineInformation;
 
-  protected engine = computed(() => this.boardState().engine());
   protected mostRecentEval = computed(() => this.boardState().getMostRecentEval());
   protected shouldShowEngineInfo = computed(() => this.boardState().doEvaluateGame());
 
   protected engineMetadata = computed(() => {
-    const engine = this.engine();
-    return engine ? EngineInformation.get(engine.name) : null;
-  });
+    const engineName = this.engineService.name();
 
-  private translate = inject(TranslateService);
+    if (engineName == null)
+    {
+      return null;
+    }
+
+    return EngineInformation.get(engineName);
+  });
 
   constructor(public themeService: ThemeService, public coachAudio: CoachAudio)
   {
