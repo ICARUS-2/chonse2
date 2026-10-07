@@ -1,7 +1,9 @@
+<!--If the board is in analysis mode.-->
 @if (!boardState().isVsAi()) {
   <div class="iconButtonContainer d-flex flex-wrap w-100 justify-content-around p-1 user-select-none"
   [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()">
 
+    <!--Import button-->
     <app-icon-button
       [label]="'chessboard.boardOptions.importGame' | translate"
       extraClasses="m-1 small"
@@ -9,6 +11,7 @@
       (buttonClick)="importClicked.emit()">
     </app-icon-button>
 
+    <!--Reset-->
     <app-icon-button
       [label]="'chessboard.boardOptions.reset' | translate"
       extraClasses="m-1 small"
@@ -16,6 +19,7 @@
       (buttonClick)="resetClicked.emit()">
     </app-icon-button>
 
+    <!--If the board is not being evaluated and has at least one move, allow them to analyze it.-->
     @if (!boardState().doEvaluateGame() && boardState().mainStateStack().length > 1) {
       <app-icon-button
         [label]="'chessboard.boardOptions.analyze' | translate"
@@ -25,6 +29,7 @@
       </app-icon-button>
     }
 
+    <!--If the board has at least one state, allow them to export/save to db.-->
     @if (boardState().mainStateStack().length > 1) {
       <app-icon-button
         [label]="'chessboard.boardOptions.exportGame' | translate"
@@ -42,10 +47,13 @@
     }
 
   </div>
-} @else {
+}
+<!--If the board is in vs ai mode.--> 
+@else {
   <div class="iconButtonContainer d-flex flex-wrap w-100 justify-content-around p-1 user-select-none" 
   [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()">
 
+    <!--If vs in progress, allow them to resign.-->
     @if (boardState().isVsAiInProgress()) {
       <app-icon-button
         [label]="'chessboard.boardOptions.resign' | translate"
@@ -53,7 +61,11 @@
         extraClasses="m1-1"
         (buttonClick)="resignVsAiClicked.emit()">
       </app-icon-button>
-    } @else {
+    } 
+    <!--If not in progress: -->
+    @else {
+
+      <!--Allow the user to start a new game-->
       <app-icon-button
         [label]="'chessboard.boardOptions.newGame' | translate"
         extraClasses="m-1"
@@ -61,6 +73,7 @@
         (buttonClick)="beginGameVsAiClicked.emit()">
       </app-icon-button>
 
+      <!--And if there was a game played (more than 1 state in the stack), let them analyze it.-->
       @if (boardState().mainStateStack().length > 1) {
         <app-icon-button
           [label]="'chessboard.boardOptions.analyzeGame' | translate"
