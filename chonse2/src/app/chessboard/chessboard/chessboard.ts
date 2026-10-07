@@ -183,7 +183,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
     this.boardState.set(boardState);
 
-    if (this.boardState().doEvaluateGame() /*&& !this.boardState().engine()*/)
+    if (this.boardState().doEvaluateGame() && !this.boardState().hasEvaluationBeenStarted)
     {
       await this.boardState().evaluateGame();
       this.boardState().divergenceStateStack.set([]);

@@ -34,9 +34,9 @@ export default class BoardState
 
     //Eval stuff.
     doEvaluateGame: WritableSignal<boolean> = signal(false);
+    hasEvaluationBeenStarted: WritableSignal<boolean> = signal(false); //ensures ng on init won't trigger multiple evals.
     eval: WritableSignal<GameEval | undefined> = signal(undefined);
     evalProgress: WritableSignal<number> = signal(0);
-    //engine: WritableSignal<UciEngine | undefined> = signal(undefined);
     whiteMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     blackMoveClassificationList: WritableSignal<MoveClassificationList> = signal(new MoveClassificationList());
     evaluationQueue: (() => Promise<void>)[] = [];
@@ -525,7 +525,14 @@ export default class BoardState
             return;
         }
 
-        //Will initialize the engine based on user preference.
+        //Prevents evaluation from running multiple times in, say, a component re-initing.
+        if (this.hasEvaluationBeenStarted())
+        {
+            return;
+        }
+
+        //Mark evaluation as started
+        this.hasEvaluationBeenStarted.set(true);
 
         //Sets up the ratings and progress setter.
         const params = this.getEvaluateGameParams();
