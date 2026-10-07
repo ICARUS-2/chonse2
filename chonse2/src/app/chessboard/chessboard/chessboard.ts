@@ -445,10 +445,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   getMoveClassificationIconSourceForCoord = (coord: string) => computed( (): string =>
   {
     const lastEval = this.boardState().getMostRecentEval();
-    if (this.engineService.isReady())
-    {
-      return "";
-    }
 
     if (lastEval)
     {
