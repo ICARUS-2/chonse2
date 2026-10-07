@@ -141,7 +141,7 @@ export class InputPositionBoard {
 
   submitButtonClicked()
   {
-    if (!this.doesValidationPass())
+    if (!this.areStockfishButtonsEnabled())
     {
       return;
     }
@@ -153,7 +153,7 @@ export class InputPositionBoard {
 
   playVsAiButtonClicked()
   {
-    if (!this.doesValidationPass())
+    if (!this.areStockfishButtonsEnabled())
     {
       return;
     }
@@ -460,7 +460,7 @@ export class InputPositionBoard {
     }
   }
 
-  doesValidationPass(): boolean
+  areStockfishButtonsEnabled(): boolean
   {
     //First, don't allow analysis if analysis already in progress elsewhere
     if (this.engineService.isEvaluatingGame())
