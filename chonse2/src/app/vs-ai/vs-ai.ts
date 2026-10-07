@@ -52,7 +52,6 @@ export class VsAi implements OnInit, AfterViewInit{
   inputtedPosition: string | undefined;
   
   private translate = inject(TranslateService);
-  private engineService = inject(EngineService);
 
   constructor(public gameService: ChessBoardService, private ngbModal: NgbModal, private toastr: ToastrService)
   {

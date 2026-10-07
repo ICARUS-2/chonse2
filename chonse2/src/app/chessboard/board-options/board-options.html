@@ -3,21 +3,36 @@
   <div class="iconButtonContainer d-flex flex-wrap w-100 justify-content-around p-1 user-select-none"
   [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()">
 
-    <!--Import button-->
-    <app-icon-button
-      [label]="'chessboard.boardOptions.importGame' | translate"
-      extraClasses="m-1 small"
-      iconClass="bi-box-arrow-in-down-left"
-      (buttonClick)="importClicked.emit()">
-    </app-icon-button>
+    @if (engineService.isEvaluatingGame())
+    {
+      <!--Cancel mid-eval-->
+      <app-icon-button
+        [label]="'chessboard.boardOptions.cancel' | translate"
+        extraClasses="m-1 small"
+        iconClass="bi-x-circle"
+        (buttonClick)="cancelClicked()"
+        overridePrimaryBackgroundColor="red"
+        overrideSecondaryBackgroundColor="darkred">
+      </app-icon-button>
+    }
+    @else
+    {
+      <!--Import button-->
+      <app-icon-button
+        [label]="'chessboard.boardOptions.importGame' | translate"
+        extraClasses="m-1 small"
+        iconClass="bi-box-arrow-in-down-left"
+        (buttonClick)="importClicked.emit()">
+      </app-icon-button>
 
-    <!--Reset-->
-    <app-icon-button
-      [label]="'chessboard.boardOptions.reset' | translate"
-      extraClasses="m-1 small"
-      iconClass="bi-bootstrap-reboot"
-      (buttonClick)="resetClicked.emit()">
-    </app-icon-button>
+      <!--Reset-->
+      <app-icon-button
+        [label]="'chessboard.boardOptions.reset' | translate"
+        extraClasses="m-1 small"
+        iconClass="bi-bootstrap-reboot"
+        (buttonClick)="resetClicked.emit()">
+      </app-icon-button>
+    }
 
     <!--If the board is not being evaluated and has at least one move, allow them to analyze it.-->
     @if (!boardState().doEvaluateGame() && boardState().mainStateStack().length > 1) {
@@ -74,7 +89,8 @@
       </app-icon-button>
 
       <!--And if there was a game played (more than 1 state in the stack), let them analyze it.-->
-      @if (boardState().mainStateStack().length > 1) {
+      @if (boardState().mainStateStack().length > 1 && !engineService.isEvaluatingGame()) 
+      {
         <app-icon-button
           [label]="'chessboard.boardOptions.analyzeGame' | translate"
           extraClasses="m-1"

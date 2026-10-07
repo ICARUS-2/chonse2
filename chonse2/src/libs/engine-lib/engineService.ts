@@ -14,7 +14,7 @@ export class EngineService
     public readonly isReady = computed(() => this._engine()?.isReady() ?? false);
     public readonly isCloudHybrid = computed(() => this._engine()?.isCloudHybridMode() ?? false);
     
-    public readonly _isEvaluatingGame = signal(false);
+    private readonly _isEvaluatingGame = signal(false);
     public readonly isEvaluatingGame = this._isEvaluatingGame.asReadonly();
 
     private async _getEngine(): Promise<UciEngine>

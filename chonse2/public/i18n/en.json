@@ -67,6 +67,7 @@
         {
             "importGame": "Import Game",
             "reset": "Reset",
+            "cancel": "Cancel",
             "analyze": "Analyze",
             "exportGame": "Export Game",
             "saveToDatabase": "Save to Database",

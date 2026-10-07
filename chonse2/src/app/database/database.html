@@ -43,9 +43,14 @@
 
                     <div class="col-2">
                         <div class="d-flex flex-column gap-2">
-                            <app-icon-button [label]="'database.actions.analyze' | translate" iconClass="bi-cpu" (buttonClick)="handleAnalyzeClicked(item.pgn)">
-                            </app-icon-button>
 
+                            <!--Don't allow numerous game evaluations at the same time-->
+                            @if(!engineService.isEvaluatingGame())
+                            {
+                                <app-icon-button [label]="'database.actions.analyze' | translate" iconClass="bi-cpu" (buttonClick)="handleAnalyzeClicked(item.pgn)">
+                                </app-icon-button>
+                            }
+                            
                             <app-icon-button
                                 overridePrimaryBackgroundColor="gray"
                                 overrideSecondaryBackgroundColor="gray"

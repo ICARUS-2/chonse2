@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { IconButton } from "../ui/icon-button/icon-button";
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { EngineService } from '../../libs/engine-lib/engineService';
 
 @Component({
   selector: 'app-database',
@@ -18,7 +19,8 @@ export class Database {
 
   dbItems: WritableSignal<Array<DatabaseItem>> = signal([]);
 
-  private translate = inject(TranslateService)
+  private translate = inject(TranslateService);
+  public engineService = inject(EngineService);
 
   constructor(
     public themeService: ThemeService, 
