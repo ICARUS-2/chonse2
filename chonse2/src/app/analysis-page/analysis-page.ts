@@ -162,6 +162,7 @@ export class AnalysisPage implements OnInit{
       boardState.isReadOnly.set(true);
       this.gameService.deleteGame(BoardNames.Analysis);
       this.gameService.addGame(BoardNames.Analysis, boardState);
+      
       boardState.doEvaluateGame.set(true);
     }
     else if (this.vsAiMoves && this.vsAiStates && this.vsAiPgnHeaders) //if it was imported from vs ai
