@@ -401,22 +401,18 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   getEngineDisplayName = computed( async (): Promise<string> => 
   {
-    //if (this.boardState().engine)
+    const e = await this.engineService.name();
+
+    if (e)
     {
-      const e = await this.engineService.name();
+      const eName = EngineInformation.get(e)?.displayName;
 
-      if (e)
+      if (eName)
       {
-        const eName = EngineInformation.get(e)?.displayName;
-
-        if (eName)
-        {
-          return eName;
-        }
+        return eName;
       }
-
-
     }
+
     return "";
   }) 
 
@@ -614,15 +610,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // const engine = await this.engineService.getEngine();
-
-    // //Can't play an engine move if there is no engine.
-    // if (!engine)
-    // {
-    //   this.toastr.error("Error: Engine not initialized.");
-    //   return;
-    // }
-
     //Sets up the params to query the engine.
     const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
     const fen = this.getMostCurrentMainState().getFEN();
@@ -697,7 +684,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
 
   analyzeAiGameClicked()
   {
-
     const states = this.boardState().mainStateStack().map( s => s.getFEN() );
     const moves = this.boardState().mainMoveStack().map(m => structuredClone(m));
     const pgnHeaders = structuredClone(this.boardState().pgnHeaders());
@@ -921,7 +907,6 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   onSquareLeftClick = () =>
   {
     this.resetClickedSquares();
-    //this.arrows.set(this.arrows().filter( a => a.context != ArrowContext.Player));
     this.boardState().arrows.set(this.boardState().arrows().filter( a => a.context != ArrowContext.Player));
   }
 

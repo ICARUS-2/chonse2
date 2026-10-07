@@ -4,7 +4,7 @@ import LocalStorageHelper from "../../../libs/local-storage-helper";
 import MoveClassificationList from "./move-classification-list";
 import { PgnFields, PgnHeaders } from "./pgn-misc";
 import { Quote, Quotes } from "./quotes";
-import { MoveClassification, EngineName } from "../../../libs/engine-lib/types/enums";
+import { MoveClassification } from "../../../libs/engine-lib/types/enums";
 import { PositionEval, GameEval, EvaluateGameParams, EvalSource, LineEval, EvaluatePositionWithUpdateParams } from "../../../libs/engine-lib/types/eval";
 import { UciEngine } from "../../../libs/engine-lib/uciEngine";
 import MoveResult from "./move-result";
@@ -110,7 +110,7 @@ export default class BoardState
             this.divergenceMoveStack.update(stack => [...stack, move]);
 
 
-            if (/*this.engine() &&*/ this.doEvaluateGame())
+            if (this.doEvaluateGame())
             {
                 this.performDivergenceEvaluation(previousState, state, move, previousEval, isCoachMove);
             }
@@ -552,7 +552,7 @@ export default class BoardState
         {
             this.whiteMoveClassificationList.update(list => 
             {
-                list.moves = new Map(list.moves); // copy map
+                list.moves = new Map(list.moves); //copy map
                 list.moves.set(v, { arr: [], ptr: 0 });
                 return list;
             });
@@ -584,24 +584,6 @@ export default class BoardState
             CoachUtils.performCoachAnalysis(this.mainStateStack(), this.mainMoveStack(), ev.positions)
         }
     }
-
-    // async setEngineIfNotExists()
-    // {
-    //     if (!this.engine())
-    //     {
-    //         //Gets the engine type saved as per the user setting.
-    //         const engineType: EngineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName;
-            
-    //         const cloudHybridMode: boolean = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, true);
-
-    //         //Instantiate the engine with the factory.
-    //         const engine: UciEngine = await UciEngine.getEngine(engineType);
-    //         engine.isCloudHybridMode = cloudHybridMode;
-            
-    //         //Handle on it so it can be used later.
-    //         this.engine.set(engine);
-    //     }
-    // }
 
     static initializeHighlightStatuses(): Array<Array<boolean>>
     {
