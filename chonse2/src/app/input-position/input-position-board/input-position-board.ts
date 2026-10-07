@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, Input, NgZone, signal, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal, WritableSignal } from '@angular/core';
 import { Square } from '../../chessboard/square/square';
 import { PieceSelector } from "../piece-selector/piece-selector";
 import { FormsModule } from '@angular/forms';
@@ -23,6 +23,7 @@ import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
 import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
 import ChessboardHelper from '../../chessboard/helpers';
 import EditorState from '../editor-state/editor-state';
+import { EngineService } from '../../../libs/engine-lib/engineService';
 
 @Component({
   selector: 'app-input-position-board',
@@ -66,6 +67,7 @@ export class InputPositionBoard {
   private static readonly Y_VECTOR = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
 
   private translate = inject(TranslateService);
+  private engineService = inject(EngineService);
 
   constructor(
     private router: Router, 
@@ -460,6 +462,12 @@ export class InputPositionBoard {
 
   doesValidationPass(): boolean
   {
+    //First, don't allow analysis if analysis already in progress elsewhere
+    if (this.engineService.isEvaluatingGame())
+    {
+      return false;
+    }
+
     const game = this.inputPositionState().editorState;
 
     //One king per side.

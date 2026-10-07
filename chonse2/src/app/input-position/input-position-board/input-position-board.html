@@ -78,8 +78,8 @@
         <div class="d-flex justify-content-between flex-wrap">
             <app-bootstrap-button (buttonClick)="handleResetClicked()" [label]="'inputPosition.board.buttons.reset' | translate"></app-bootstrap-button>
             <app-bootstrap-button (buttonClick)="handleClearClicked()" [label]="'inputPosition.board.buttons.clear' | translate"></app-bootstrap-button>
-            <app-bootstrap-button (buttonClick)="submitButtonClicked()" [label]="'inputPosition.board.buttons.analyze' | translate" [disabled]="!doesValidationPass()"></app-bootstrap-button>
-            <app-bootstrap-button (buttonClick)="playVsAiButtonClicked()" [label]="'inputPosition.board.buttons.playVsAi' | translate" [disabled]="!doesValidationPass()"></app-bootstrap-button>
+            <app-bootstrap-button (buttonClick)="submitButtonClicked()" [label]="'inputPosition.board.buttons.analyze' | translate" [disabled]="!areStockfishButtonsEnabled()"></app-bootstrap-button>
+            <app-bootstrap-button (buttonClick)="playVsAiButtonClicked()" [label]="'inputPosition.board.buttons.playVsAi' | translate" [disabled]="!areStockfishButtonsEnabled()"></app-bootstrap-button>
             <app-bootstrap-button (buttonClick)="flipButtonClicked()" label="↑↓"></app-bootstrap-button>
         </div>
 
