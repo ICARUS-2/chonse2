@@ -48,7 +48,7 @@
         "toastr":
         {
             "success": "PGN importé avec succès",
-            "error": "Données PGN invalides",
+            "error": "Erreur d'analyse",
             "resign": "Tu as abandonné."
         },
 

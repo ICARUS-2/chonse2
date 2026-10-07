@@ -5,9 +5,9 @@ import { ChessBoardService } from "../chessboard/chessboard/chess-board-service"
 import { BoardNames } from "../boards";
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { ToastrService } from "ngx-toastr";
-import { EngineInformation, EngineName } from "../../libs/engine-lib/types/enums";
 import { TranslateService } from "@ngx-translate/core";
 import IChessGame from "../../libs/chess-game-lib/i-chess-game";
+import LocalStorageHelper from "../../libs/local-storage-helper";
 
 export default class VsAiConfigurationModalHelper
 {
@@ -46,46 +46,34 @@ export default class VsAiConfigurationModalHelper
                     bs.isFlipped.set(true);
                 }
 
-                //await bs.setEngineIfNotExists();
+                const engineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE);
+                const engineDisplayName = engineName;
 
-                const engine = await bs.engineService.getEngine();
-                if (engine)
+                isHumanWhite ? (bs.pgnHeaders().black = engineDisplayName) : (bs.pgnHeaders().white = engineDisplayName)
+                isHumanWhite ? (bs.pgnHeaders().blackElo = engineElo) : (bs.pgnHeaders().whiteElo = engineElo);
+                isHumanWhite ? (bs.pgnHeaders().white = translate.instant("vsAiModal.you")) : (bs.pgnHeaders().black = translate.instant("vsAiModal.you"));
+
+                chessBoardService.deleteGame(BoardNames.VsAi);
+                chessBoardService.addGame(BoardNames.VsAi, bs);
+                componentInstance.boardState.set(chessBoardService.getGame(BoardNames.VsAi));
+                componentInstance.boardState().isVsAiInProgress.set(true);
+
+                toastr.success(translate.instant("vsAiModal.toastr.startingGame"));
+
+                //If stockfish is white (or if the board says it's stockfish's color to move), play the first move.
+                if (startingState)
                 {
-                    const engineDisplayName = EngineInformation.get(engine.name() as EngineName)?.displayName?.toString() ?? "-";
-
-                    isHumanWhite ? (bs.pgnHeaders().black = engineDisplayName) : (bs.pgnHeaders().white = engineDisplayName)
-                    isHumanWhite ? (bs.pgnHeaders().blackElo = engineElo) : (bs.pgnHeaders().whiteElo = engineElo);
-                    isHumanWhite ? (bs.pgnHeaders().white = translate.instant("vsAiModal.you")) : (bs.pgnHeaders().black = translate.instant("vsAiModal.you"));
-
-                    chessBoardService.deleteGame(BoardNames.VsAi);
-                    chessBoardService.addGame(BoardNames.VsAi, bs);
-                    componentInstance.boardState.set(chessBoardService.getGame(BoardNames.VsAi));
-                    componentInstance.boardState().isVsAiInProgress.set(true);
-
-                    toastr.success(translate.instant("vsAiModal.toastr.startingGame"));
-
-                    //If stockfish is white (or if the board says it's stockfish's color to move), play the first move.
-                    if (startingState)
+                    if ((!startingState.getTurn() && isHumanWhite) || (startingState.getTurn() && !isHumanWhite))
                     {
-                        if ((!startingState.getTurn() && isHumanWhite) || (startingState.getTurn() && !isHumanWhite))
-                        {
-                            componentInstance.playAIMove();
-                        }
-                    }
-                    else 
-                    {
-                        if (!isHumanWhite)
-                        {
-                            if (engine)
-                            {
-                                componentInstance.playAIMove();
-                            }
-                        }
+                        componentInstance.playAIMove();
                     }
                 }
                 else 
                 {
-                    throw("Engine not initialized");
+                    if (!isHumanWhite)
+                    {
+                        componentInstance.playAIMove();
+                    }
                 }
             }
             catch(ex)
@@ -96,7 +84,7 @@ export default class VsAiConfigurationModalHelper
         )
         .catch(c => 
         {
-        //this.toastr.info("vs AI - Operation cancelled");
+            //this.toastr.info("vs AI - Operation cancelled");
         }
         )
     }

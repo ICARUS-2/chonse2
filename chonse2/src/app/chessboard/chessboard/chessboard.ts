@@ -150,7 +150,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   )
 
   private translate = inject(TranslateService);
-  private engineService = inject(EngineService);
+  public engineService = inject(EngineService);
 
   constructor(
     private modalService: NgbModal, 
@@ -368,7 +368,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         catch(ex)
         {
           console.log(ex)
-          this.toastr.error(this.translate.instant("chessboard.toastr.error"));
+          this.toastr.error(this.translate.instant("chessboard.toastr.error") + ex);
         }
       }
     )
@@ -403,15 +403,21 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     //if (this.boardState().engine)
     {
-      const e = await this.engineService.getEngine();
-      const eName = EngineInformation.get(e.name())?.displayName;
+      const e = await this.engineService.name();
 
-      if (eName)
+      if (e)
       {
-        return eName;
+        const eName = EngineInformation.get(e)?.displayName;
+
+        if (eName)
+        {
+          return eName;
+        }
       }
+
+
     }
-    return "what the hell are you analyzing this with then?";
+    return "";
   }) 
 
   getMoveClassificationForSquare = (coord: string) => computed( (): MoveClassification =>
@@ -612,14 +618,14 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const engine = await this.engineService.getEngine();
+    // const engine = await this.engineService.getEngine();
 
-    //Can't play an engine move if there is no engine.
-    if (!engine)
-    {
-      this.toastr.error("Error: Engine not initialized.");
-      return;
-    }
+    // //Can't play an engine move if there is no engine.
+    // if (!engine)
+    // {
+    //   this.toastr.error("Error: Engine not initialized.");
+    //   return;
+    // }
 
     //Sets up the params to query the engine.
     const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
@@ -627,7 +633,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const elo = this.boardState().aiElo();
               
     //Asks the engine for its move.
-    const engineResult = await engine.getEngineNextMove(fen, elo, depth);
+    const engineResult = await this.engineService.getEngineNextMove(fen, elo, depth);
     
     //If the engine couldn't find something, display an error.
     if (!engineResult)

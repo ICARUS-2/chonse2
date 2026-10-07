@@ -34,7 +34,6 @@ export default class BoardState
 
     //Eval stuff.
     doEvaluateGame: WritableSignal<boolean> = signal(false);
-    isEvaluationStarted: WritableSignal<boolean> = signal(false);
     eval: WritableSignal<GameEval | undefined> = signal(undefined);
     evalProgress: WritableSignal<number> = signal(0);
     //engine: WritableSignal<UciEngine | undefined> = signal(undefined);
@@ -312,10 +311,7 @@ export default class BoardState
     //Override for coach evals simply tells it to evaluate it at a lower depth (so the eval bar has a value), and make it best move no matter what (since the coach will always play the best move anyway)
     private async performDivergenceEvaluation(previousState: IChessGame, state: IChessGame, move: MoveResult, previousEval: PositionEval | undefined, overrideForCoachEvals = false)
     {
-        //const eng = this.engine();
-        const eng = await this.engineService.getEngine();
-
-        if (eng != null && this.eval())
+        if (this.eval())
         {
             //Creates a new eval object where the fields will be set.
             const newEval: PositionEval = { bestMove: "", moveClassification: MoveClassification.None, opening: "", lines: [ {pv: [""], cp: 0} as LineEval ], source: EvalSource.Local, isPartial: true };
@@ -333,7 +329,7 @@ export default class BoardState
                 depth: overrideForCoachEvals ? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, UciEngine.MIN_DEPTH),
                 
                 //default pv
-                multiPv: eng.multiPv,
+                multiPv: await this.engineService.getNumberOfLines(),
 
                 //mid-evaluation, move classification can be updated before it gets to the real depth.
                 setPartialEval: ( positionEval: PositionEval ) => 
@@ -404,7 +400,7 @@ export default class BoardState
             //wrap the thing in a task
             const evalTask = async () => 
             {
-                await eng.evaluatePositionWithUpdate(params);
+                await this.engineService.evaluatePositionWithUpdate(params);
             };
 
             //stick it in da queue
@@ -529,13 +525,7 @@ export default class BoardState
             return;
         }
 
-        if (this.isEvaluationStarted())
-        {
-            return;
-        }
-
         //Will initialize the engine based on user preference.
-        //await this.setEngineIfNotExists();
 
         //Sets up the ratings and progress setter.
         const params = this.getEvaluateGameParams();
@@ -546,15 +536,9 @@ export default class BoardState
         this.displayedQuote.set(Quotes.getQuote());
 
         //Evaluate the game.
-        //const engine = this.engine();
-        const engine = await this.engineService.getEngine();
-        if (engine)
-        {
-            this.isEvaluationStarted.set(true);
-            const evalResult = await engine.evaluateGame(params);
-
-            this.eval.set(evalResult);
-        }
+        const evalResult = await this.engineService.evaluateGame(params);
+        this.eval.set(evalResult);
+        
 
         //Computes how many moves of each classification there are
         Object.values(MoveClassification).forEach( v => 

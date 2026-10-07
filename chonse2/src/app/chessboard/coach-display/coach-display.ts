@@ -74,7 +74,7 @@ export class CoachDisplay {
       return null;
     }
 
-    return EngineInformation.get(engineName());
+    return EngineInformation.get(engineName);
   });
 
   constructor(public themeService: ThemeService, public coachAudio: CoachAudio)

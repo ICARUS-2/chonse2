@@ -27,5 +27,8 @@ export const isEngineSupported = (name: EngineName): boolean => {
 
     case EngineName.Stockfish11:
       return Stockfish11.isSupported();
+
+    case EngineName.None:
+      return true;
   }
 };

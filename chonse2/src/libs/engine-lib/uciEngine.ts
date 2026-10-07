@@ -44,6 +44,8 @@ export class UciEngine {
         return Stockfish18.create(true);
       case EngineName.Stockfish11:
         return Stockfish11.create();
+      case EngineName.None:
+        throw { message: "Invalid engine name" }
     }
   }
 
