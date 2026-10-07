@@ -174,6 +174,8 @@ export class EvaluationChart implements OnInit {
   {
     switch (p.moveClassification) 
     {
+      case MoveClassification.Miss:
+        return "rgb(255, 131, 121)";
       case MoveClassification.Blunder: 
         return 'red';
       case MoveClassification.Mistake: 
