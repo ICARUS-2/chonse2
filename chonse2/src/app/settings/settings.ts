@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import LocalStorageHelper from '../../libs/local-storage-helper';
 import { Themes } from '../themes/themes';
 import ThemeService from '../themes/theme-service';
 import { CommonModule } from '@angular/common';
-import { form, FormField, max, min } from '@angular/forms/signals';
+import { disabled, form, FormField, max, min } from '@angular/forms/signals';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { EngineName, EngineInformation } from '../../libs/engine-lib/types/enums';
 import { UciEngine } from '../../libs/engine-lib/uciEngine';
@@ -13,6 +13,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import ChessboardHelper from '../chessboard/helpers';
 import { isWasmSupported } from '../../libs/engine-lib/helpers/shared';
 import { ToastrService } from 'ngx-toastr';
+import { EngineService } from '../../libs/engine-lib/engineService';
 
 @Component({
   selector: 'app-settings',
@@ -56,6 +57,9 @@ export class Settings implements OnInit{
 
   form = form(this.formModel, (schema) => 
   {
+    //Engine type
+    disabled(schema.selectedEngine, {when: () => { return this.engineDropdownDisabled() }})
+
     //Engine depth
     min(schema.engineDepth, UciEngine.MIN_DEPTH),
     max(schema.engineDepth, UciEngine.MAX_DEPTH),
@@ -70,6 +74,7 @@ export class Settings implements OnInit{
   })
 
   private translate = inject(TranslateService);
+  public engineService = inject(EngineService);
 
   constructor(public themeService: ThemeService, private toastr: ToastrService)
   {
@@ -125,8 +130,24 @@ export class Settings implements OnInit{
   //Pick engine setting
   handleEngineDropdownSelectionChanged()
   {
-    LocalStorageHelper.setString(LocalStorageHelper.SELECTED_ENGINE, this.form.selectedEngine().value());
+    const currentSetting = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, UciEngine.DEFAULT_ENGINE);
+    const dropdownSetting = this.form.selectedEngine().value();
+
+    //If they changed engine, shut down the current one.
+    if (currentSetting != dropdownSetting)
+    {
+      this.engineService.terminateEngine();
+    }
+
+    LocalStorageHelper.setString(LocalStorageHelper.SELECTED_ENGINE, dropdownSetting);
   }
+
+  //Pick engine dropdown enabled
+  engineDropdownDisabled = computed( () => 
+  {
+    //For now, this should only be disabled if there is a game being evaluated.
+    return this.engineService.isEvaluatingGame();
+  } )
 
   //Engine depth.
   handleEngineDepthChanged()
