@@ -4,11 +4,15 @@ import ThemeService from '../../themes/theme-service';
 import { PositionEval } from '../../../libs/engine-lib/types/eval';
 import { CommonModule } from '@angular/common';
 import { FormatTermination } from '../chessboard/pgn-misc';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
+import GameLinkHelper from '../chessboard/game-link-helper';
+import { IconButton } from '../../ui/icon-button/icon-button';
 
 @Component({
   selector: 'app-game-info',
-  imports: [CommonModule],
+  imports: [CommonModule, IconButton, TranslatePipe],
   templateUrl: './game-info.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './game-info.css',
@@ -16,7 +20,9 @@ import { TranslateService } from '@ngx-translate/core';
 export class GameInfo {
   boardState = input.required<BoardState>();
   themeService = inject(ThemeService);
-  private translate = inject(TranslateService);
+  translate = inject(TranslateService);
+  toastrService = inject(ToastrService);
+  router = inject(Router);
 
   constructor()
   {
@@ -74,4 +80,31 @@ export class GameInfo {
     }
     return "-";
   } )
+
+  copyFenClicked()
+  {    
+    try 
+    {
+      navigator.clipboard.writeText(this.boardState().getCurrentState().getFEN());
+      this.toastrService.info(this.translate.instant("chessboard.gameInfo.toastr.copyFenSuccess"));
+    }
+    catch(ex)
+    {
+      this.toastrService.error(this.translate.instant("chessboard.gameInfo.toastr.copyFenError"));
+    }
+  }
+
+  openFenInEditorClicked()
+  {
+    try 
+    {
+      const url = GameLinkHelper.compressStringForUrl(this.boardState().getCurrentState().getFEN());
+      
+      this.router.navigateByUrl(`/fen/${url}`);
+    }
+    catch(ex)
+    {
+      //error occurred with FEN
+    }
+  }
 }

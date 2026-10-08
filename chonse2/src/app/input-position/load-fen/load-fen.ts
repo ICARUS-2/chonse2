@@ -22,8 +22,6 @@ export class LoadFen {
     {
       this.compressedFen.set(params.get(RouteConstants.ROUTE_FEN)!);
       this.decompressedFen.set(GameLinkHelper.decompressStringForUrl(this.compressedFen()));
-
-
     });
   }
 

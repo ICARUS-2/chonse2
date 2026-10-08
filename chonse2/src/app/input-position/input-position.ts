@@ -37,6 +37,7 @@ export class InputPosition implements OnInit {
       {
         const newState = new InputPositionState();
         newState.editorState.set(EditorState.instantiateFromFen(this.fen));
+        this.ips.deleteGame(BoardNames.InputPosition);
         this.ips.addGame(BoardNames.InputPosition, newState);
         this.toastrService.success("Successfully imported position");
       }
