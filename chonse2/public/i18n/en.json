@@ -182,6 +182,7 @@
             "whiteToMove": "White to move",
             "blackToMove": "Black to move",
             "copyFen": "Copy FEN",
+            "openFenInEditor": "Open in Editor",
 
             "toastr": 
             {

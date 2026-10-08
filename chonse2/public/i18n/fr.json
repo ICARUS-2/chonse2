@@ -183,6 +183,7 @@
             "whiteToMove": "Au blanc de jouer",
             "blackToMove": "Au noir de jouer",
             "copyFen": "Copier le FEN",
+            "openFenInEditor": "Ouvrir dans l'éditeur",
             
             "toastr": 
             {

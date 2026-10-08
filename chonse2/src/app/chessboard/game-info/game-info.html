@@ -36,8 +36,10 @@
   <!--FEN display-->
   <div
     [style.color]="themeService.getThemeInstance().getTextColor()"
-    class="d-flex flex-column justify-content-center fenDisplay"
+    class="d-flex flex-column justify-content-center fenDisplay gap-2"
   >
-    <app-bootstrap-button [label]="'chessboard.gameInfo.copyFen' | translate" (buttonClick)="copyFenClicked()"></app-bootstrap-button>
+    @let btnStyle = { 'width': '170px', 'height': '35px', 'font-size' : '15px'};
+    <app-icon-button [extraStyle]="btnStyle" iconClass="bi-clipboard" [label]="'chessboard.gameInfo.copyFen' | translate" (buttonClick)="copyFenClicked()"></app-icon-button>
+    <app-icon-button [extraStyle]="btnStyle" iconClass="bi-arrow-up-right" [label]="'chessboard.gameInfo.openFenInEditor' | translate" (buttonClick)="openFenInEditorClicked()"></app-icon-button>
   </div>
 </div>
