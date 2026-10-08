@@ -180,7 +180,14 @@
         "gameInfo": 
         {
             "whiteToMove": "White to move",
-            "blackToMove": "Black to move"
+            "blackToMove": "Black to move",
+            "copyFen": "Copy FEN",
+
+            "toastr": 
+            {
+                "copyFenSuccess": "Successfully copied FEN",
+                "copyFenError": "Error occurred when copying FEN"
+            }
         },
 
         "importModal":

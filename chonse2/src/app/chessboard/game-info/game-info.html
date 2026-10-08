@@ -6,7 +6,7 @@
   <!--Whose turn it is-->
   <div
     [style.color]="themeService.getThemeInstance().getTextColor()"
-    class="evalTextData d-flex flex-column justify-content-center"
+    class="d-flex flex-column justify-content-center"
   >
     {{  turn }}
   </div>
@@ -16,7 +16,7 @@
   <!--The opening-->
   <div
     [style.color]="themeService.getThemeInstance().getTextColor()"
-    class="evalTextData d-flex flex-column justify-content-center"
+    class="d-flex flex-column justify-content-center"
   >
     {{ getOpeningDisplay() }}
   </div>
@@ -26,8 +26,18 @@
   <!--Game status-->
   <div
     [style.color]="themeService.getThemeInstance().getTextColor()"
-    class="evalTextData d-flex flex-column justify-content-center"
+    class="d-flex flex-column justify-content-center"
   >
     {{  statusText }}
+  </div>
+
+  <hr>
+
+  <!--FEN display-->
+  <div
+    [style.color]="themeService.getThemeInstance().getTextColor()"
+    class="d-flex flex-column justify-content-center fenDisplay"
+  >
+    <app-bootstrap-button [label]="'chessboard.gameInfo.copyFen' | translate" (buttonClick)="copyFenClicked()"></app-bootstrap-button>
   </div>
 </div>
