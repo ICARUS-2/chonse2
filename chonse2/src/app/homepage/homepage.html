@@ -3,17 +3,13 @@
     <h1 [style.color]="themeService.getThemeInstance().getPrimaryColor()">{{ 'home.heading' | translate }}</h1>
     <h4 [style.color]="themeService.getThemeInstance().getTextColor()">{{ 'home.subtitle' | translate }}</h4>
 
-    <h4 class="alert alert-warning" [style.color]="'darkorange'">
-        {{ 'home.960Supported.desc' | translate }}
-        <a routerLink="/pgn/NoUQbgpgdgLgBAIgDIEtJwMIAsIGddwC0mO+AnAGwAMCAugFDADKKMEi2euAdAMYD2AWzqMAIgEM2iAExVpFblQAcigMwjgAJX4BXKABNEhDQHUsrdggCSGAIKaAqkwD60pA4CyARgByAeScNACEAG3FeAGtEJkEdACcAMxQoAHNbXl4dXAg4jU08HRD4BC9CGgZgMwsQEP5ECjIAFmCwyJq6hDIAdi6NEAw-RFEqcsYAFRzBZMkUfihEG3snV3dvfyc4AHc5uB2YFEEIDTGDiAw5mDj+EMRVEY0ANXE4lHFYDlJcSlHmCBgHAAOiC8GgAYiAfIgAI5xCIAIzhUDiUAA9AD0Rj0SilNjcTiAAqEomElEARU0AGkgkEfJpIZs4ABxIIpOFEOBUOAgioYeJxaAwfH8XCsWbzBDSHwAVhRFABERRUoBXgBeJRjXxNK8ivxXgp2LgbOIxE5qnUFROhwAXnNLA4xhg+gMHHEbggsDAYADcAAuFEozaBvifPhCFH8AHQZIpXBknQQaC4Qj48SbKCEPyRqDRwhebj5-RSjT2jASKQSuQKZRqYsOy2WaReH2NKU+1RKDRMGDPGD1mRNlttjsVEAGMsNyuKFRUc2MUf6PsSptS6Q+qVFiqoKBRd2e71+gNB3ghgSCFEpcSHFEhNAQFFeLrSRpkKhSpReLzKET0PNwfSNP8pTgaRuDgII4QAnwsBSCg4FUUDeFUOBxCAxpQKCcQkLhICpVAuEkKCfQujgBQ4AgJCICArp0IgaQ4FJXhYJUOAfH0OiILgMh0LhOiggSWDP1AvwM0NAAPRCuV-IJxIo0T-y5ECwLkgDpPkrx4Po5SWIgAS0Poni4GEwYvFwliUiQ8QAK8Ui+KQnxKK5ai4E0BJeC8Fj9CQrxmM0cTYJ8USDK8LjnIk8RAqQ2RQN8gy4VE8Q6MbaL4ronwUiA6RFKwJCXN4JRgI01SgIC7KAGpgL0lJROypSaukUyKSwXiUgA+R0ISAidOApzNHCOjeAynzxKArBYOkELfLy8rJvyu5kqmpS8rg39WIgAD+LgxTWNgxriLNUCAqW0oqCAA" [style.color]="'darkorange'">{{ 'home.960Supported.link' | translate }}</a>
-    </h4>
-
     <div class="m-5"></div>
 
+    <!--Override button style to make it bigger.-->
+    @let btnStyle = { 'width': '270px', 'height': '60px', 'font-size' : '25px'};
+    
     <div class="middleContainer d-flex justify-content-between align-items-center">
         <div class="stackedButtons d-flex flex-column">
-            
-            @let btnStyle = { 'width': '300px', 'height': '60px', 'font-size' : '25px'};
 
             @let leftBtns = 
             [
@@ -52,20 +48,17 @@
         </div>
 
         <div class="stackedButtons">
-            <app-icon-button (buttonClick)="coffeeButtonClicked()" extraClasses="" [label]="'home.rightBtns.coffee' | translate" iconClass="bi-cup-hot" overridePrimaryBackgroundColor="rgb(52, 175, 0)" overrideSecondaryBackgroundColor="green"></app-icon-button>
-            <div class="m-3"></div>
-
             @let rightBtns = 
             [
+                {'label': ("home.rightBtns.coffee" | translate), 'iconClass': 'bi-cup-hot', 'click': coffeeButtonClicked},
                 {'label': ("home.rightBtns.settings" | translate), 'iconClass': 'bi-gear', 'click': settingsBtnClicked},
-                {'label': ("home.rightBtns.database" | translate), 'iconClass': 'bi-database', 'click': databaseBtnClicked},
                 {'label': ('home.rightBtns.sourceCode' | translate), 'iconClass': 'bi-github', 'click': sourceCodeBtnClicked},
                 {'label': ('home.rightBtns.developerSite' | translate), 'iconClass': 'bi-code-slash', 'click': developerSiteBtnClicked},
             ];
 
             @for(btn of rightBtns; track $index)
             {
-                <app-icon-button (buttonClick)="btn.click.call(this)" extraClasses="" [label]="btn.label" [iconClass]="btn.iconClass"></app-icon-button>
+                <app-icon-button (buttonClick)="btn.click.call(this)" [extraStyle]="btnStyle" [label]="btn.label" [iconClass]="btn.iconClass"></app-icon-button>
             
                 <div class="m-3"></div>
             }
