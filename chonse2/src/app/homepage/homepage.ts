@@ -13,7 +13,7 @@ import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
 
 @Component({
   selector: 'app-homepage',
-  imports: [StaticChessboard, IconButton, NgbTooltip, TranslatePipe, RouterLink],
+  imports: [StaticChessboard, IconButton, NgbTooltip, TranslatePipe],
   templateUrl: './homepage.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './homepage.css',
