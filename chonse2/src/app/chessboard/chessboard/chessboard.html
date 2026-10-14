@@ -1,3 +1,9 @@
+<div class="smallScreenCompactBoardPlayerInfoContainer">
+    <div class="smallScreenCompactBoardPlayerInfo">
+        <app-compact-board-player-info [boardState]="boardState()"></app-compact-board-player-info>
+    </div>
+</div>
+
 <div class="componentContainer pt-1">
     
     @if (boardState().isGameEvaluationInProgress()) 
@@ -15,7 +21,7 @@
         <app-board-player-info [playerName]="boardState().pgnHeaders().white" [playerElo]="boardState().pgnHeaders().whiteElo" for="w" [clock]="getClockForPlayer('w')()" [capturedPieces]="boardState().getCurrentState().getPiecesCapturedByPlayer(PieceColor.WHITE)" [advantage]="boardState().getCurrentState().getMaterialAdvantage()"></app-board-player-info>
     </div>
 
-    <div class="compactBoardPlayerInfoContainer">
+    <div class="mobileCompactBoardPlayerInfo">
         <app-compact-board-player-info [boardState]="boardState()"></app-compact-board-player-info>
     </div>
     
