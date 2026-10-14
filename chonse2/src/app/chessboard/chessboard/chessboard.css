@@ -265,6 +265,7 @@
   .mobileCompactBoardPlayerInfo
   {
     display: block;
+    width: 88vmin;
   }
 
   .boardPlayerInfo
