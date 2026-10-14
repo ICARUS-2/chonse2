@@ -42,6 +42,14 @@
   color: black;
 }
 
+@media screen and (max-height: 900px)
+{
+  .progress-vertical
+  {
+    height: 77vmin;
+  }
+}
+
 @media screen and (max-width: 1200px) 
 {
     .evalLabel
