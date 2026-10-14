@@ -64,6 +64,7 @@
             "cancel": "Cancel",
             "analyze": "Analyze",
             "exportGame": "Export Game",
+            "reanalyze": "Re-analyze",
             "saveToDatabase": "Save to Database",
             "resign": "Resign",
             "newGame": "New game",
