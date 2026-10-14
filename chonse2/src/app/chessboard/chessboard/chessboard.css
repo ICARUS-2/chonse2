@@ -25,6 +25,7 @@
   justify-content: space-between;
   padding-left: 3vmin;
   padding-right: 3vmin;
+  flex-direction: column;
 }
 
 .boardOuterContainer
@@ -219,6 +220,7 @@
   width: 9.6vmin;
 }
 
+/*fullscreen*/
 @media screen and (min-width: 1900px) and (min-height: 1050px)
 {
   .boardRight
@@ -227,7 +229,76 @@
   }
 }
 
-@media screen and (max-width: 1200px) 
+/*small screens (like 900p displays)*/
+@media screen and (max-height: 900px) and (min-width: 1200px)
+{
+  .componentContainer
+  {
+    flex-direction: column;
+  }    
+
+  .compactBoardPlayerInfo
+  {
+    display: block;
+  }
+
+  .boardPlayerInfo
+  {
+    display: none;
+  }
+
+  .boardContainerInner
+  {
+    width: 77vmin;
+    height: 77vmin;
+  }
+
+  .boardEvalBarAndArrows
+  {
+    height: unset;
+    flex-direction: row;
+    margin-bottom: 20px;
+  }
+
+  .coachButtons
+  {
+    flex-direction: column;
+  }
+
+  .boardRight
+  {
+    height: unset;
+  }
+  /*Board Right (underneath on mobile) components*/
+  .coachDisplay, .boardArrowButtons ,.engineLineDisplay, .movesTable, .movesOverview, .evalChart
+  {
+    margin-bottom: 20px;
+  }
+  
+  .movesAndOverview
+  {
+    flex-direction: column;
+  }
+
+  .movesTable, .movesOverview
+  {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .moveClassificationIcon
+  {
+    width: 5vmin;
+  }
+
+  .squareImage
+  {
+    width: 9.8vmin;
+  }
+}
+
+/*Mobile layout*/
+@media screen and (max-width: 1200px)
 {
   .componentContainer
   {
