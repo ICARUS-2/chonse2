@@ -1,19 +1,5 @@
-.compactBoardPlayerInfoContainer
+.cbpiInner
 {
-    display: none;
-}
-
-@media screen and (max-width: 1200px)
-{
-    .compactBoardPlayerInfoContainer
-    {
-        display: block;
-        width: 88vmin;
-    }
-
-    .cbpiInner
-    {
-        display: flex;
-        justify-content: space-between;
-    }
+    display: flex;
+    justify-content: space-between;
 }

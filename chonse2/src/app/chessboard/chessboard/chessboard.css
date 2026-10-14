@@ -14,7 +14,12 @@
   justify-content: space-between;
 }
 
-.compactBoardPlayerInfo
+.mobileCompactBoardPlayerInfo
+{
+  display: none;
+}
+
+.smallScreenCompactBoardPlayerInfo, .smallScreenCompactBoardPlayerInfoContainer
 {
   display: none;
 }
@@ -227,6 +232,29 @@
   }
 }
 
+/*small screen (like 1600x900)*/
+@media screen and (max-height: 900px) and (min-width: 1200px)
+{
+  .boardPlayerInfo
+  {
+    display: none;
+  }
+
+  .smallScreenCompactBoardPlayerInfoContainer
+  {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .smallScreenCompactBoardPlayerInfo
+  {
+    display: block;
+    width: 80vmin;
+  }
+}
+
+/*mobile layout*/
 @media screen and (max-width: 1200px) 
 {
   .componentContainer
@@ -234,7 +262,7 @@
     flex-direction: column;
   }    
 
-  .compactBoardPlayerInfo
+  .mobileCompactBoardPlayerInfo
   {
     display: block;
   }
