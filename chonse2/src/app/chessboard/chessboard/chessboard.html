@@ -19,7 +19,7 @@
         <app-compact-board-player-info [boardState]="boardState()"></app-compact-board-player-info>
     </div>
     
-    <div class="boardEvalBarAndArrows d-flex">
+    <div class="boardEvalBarAndArrows d-flex flex-column">
 
         <div class="boardAndEvalBar d-flex align-items-center">
             @if(this.boardState().doEvaluateGame())
@@ -195,6 +195,7 @@
             (doubleForwardClicked)="handleDoubleForwardButtonClicked()">
         </app-board-arrow-buttons>
     </div>
+
 
     <div class="boardRight">
 
