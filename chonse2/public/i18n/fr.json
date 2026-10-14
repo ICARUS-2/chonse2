@@ -64,6 +64,7 @@
             "cancel": "Annuler",
             "analyze": "Analyser",
             "exportGame": "Exporter la partie",
+            "reanalyze": "Réanalyser",
             "saveToDatabase": "Sauvegarder dans la base de données",
             "resign": "Abandonner",
             "newGame": "Nouvelle partie",

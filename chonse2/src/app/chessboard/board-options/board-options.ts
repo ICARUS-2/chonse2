@@ -26,21 +26,17 @@ export class BoardOptions {
  
   importClicked = output<void>();
   resetClicked = output<void>();
+  reanalyzeClicked = output<void>();
   analyzeClicked = output<void>();
   exportGameClicked = output<void>();
   resignVsAiClicked = output<void>();
   beginGameVsAiClicked = output<void>();
   analyzeAiGameClicked = output<void>();
   saveToDbClicked = output<void>();
+  cancelClicked = output<void>();
   
   get mostCurrentMainState() {
     const stack = this.boardState().mainStateStack();
     return stack[stack.length - 1];
-  }
-
-  cancelClicked()
-  {
-    window.history.replaceState({}, document.title, window.location.href);
-    window.location.reload();
   }
 }

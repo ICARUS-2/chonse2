@@ -256,12 +256,14 @@
             [boardState]="boardState()"
             (importClicked)="handleImportClicked()"
             (resetClicked)="handleResetClicked()"
+            (reanalyzeClicked)="handleReanalyzeClicked()"
+            (cancelClicked)="handleCancelClicked()"
             (analyzeClicked)="handleAnalyzeClicked()"
-            (exportGameClicked)="exportGameClicked()"
-            (resignVsAiClicked)="resignVsAiClicked()"
-            (beginGameVsAiClicked)="beginGameVsAiClicked()"
-            (analyzeAiGameClicked)="analyzeAiGameClicked()"
-            (saveToDbClicked)="saveToDbClicked()">
+            (exportGameClicked)="handleExportGameClicked()"
+            (resignVsAiClicked)="handleResignVsAiClicked()"
+            (beginGameVsAiClicked)="handleBeginGameVsAiClicked()"
+            (analyzeAiGameClicked)="handleAnalyzeAiGameClicked()"
+            (saveToDbClicked)="handleSaveToDbClicked()">
         </app-board-options>
     </div>
 

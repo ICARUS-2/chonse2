@@ -666,13 +666,13 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  resignVsAiClicked()
+  handleResignVsAiClicked()
   {
     this.boardState().isVsAiInProgress.set(false);
     this.toastr.warning(this.translate.instant("chessboard.toastr.resign"));
   }
 
-  beginGameVsAiClicked()
+  handleBeginGameVsAiClicked()
   {
     VsAiConfigurationModalHelper.doModal(
       this.modalService, 
@@ -682,7 +682,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       this);
   }
 
-  analyzeAiGameClicked()
+  handleAnalyzeAiGameClicked()
   {
     const states = this.boardState().mainStateStack().map( s => s.getFEN() );
     const moves = this.boardState().mainMoveStack().map(m => structuredClone(m));
@@ -890,16 +890,30 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     this.boardState().isReadOnly.set(true);
   }
 
-  async exportGameClicked(): Promise<void>
+  async handleExportGameClicked(): Promise<void>
   {
     const modalRef = this.modalService.open(CopyPgnModal);
     modalRef.componentInstance.pgn = this.boardState().exportPGN();
   }
 
-  async saveToDbClicked(): Promise<void>
+  async handleSaveToDbClicked(): Promise<void>
   {
     const modalRef = this.modalService.open(DatabaseModal);
     modalRef.componentInstance.game.set(this.boardState());
+  }
+
+  async handleCancelClicked(): Promise<void>
+  {
+    window.history.replaceState({}, document.title, window.location.href);
+    window.location.reload();
+  }
+
+  async handleReanalyzeClicked(): Promise<void>
+  {
+    const pgn = this.boardState().exportPGN();
+    const compressedPgn = GameLinkHelper.compressStringForUrl(pgn);
+
+    this.router.navigateByUrl("/pgn/"+compressedPgn);
   }
   //#endregion
 

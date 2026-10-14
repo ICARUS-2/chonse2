@@ -10,7 +10,7 @@
         [label]="'chessboard.boardOptions.cancel' | translate"
         extraClasses="m-1 small"
         iconClass="bi-x-circle"
-        (buttonClick)="cancelClicked()"
+        (buttonClick)="cancelClicked.emit()"
         overridePrimaryBackgroundColor="red"
         overrideSecondaryBackgroundColor="darkred">
       </app-icon-button>
@@ -31,6 +31,14 @@
         extraClasses="m-1 small"
         iconClass="bi-bootstrap-reboot"
         (buttonClick)="resetClicked.emit()">
+      </app-icon-button>
+
+      <!--Reanalyze-->
+      <app-icon-button
+        [label]="'chessboard.boardOptions.reanalyze' | translate"
+        extraClasses="m-1 small"
+        iconClass="bi-arrow-repeat"
+        (buttonClick)="reanalyzeClicked.emit()">
       </app-icon-button>
     }
 
