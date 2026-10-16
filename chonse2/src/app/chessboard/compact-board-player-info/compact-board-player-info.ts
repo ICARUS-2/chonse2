@@ -32,7 +32,7 @@ export class CompactBoardPlayerInfo {
       return name;
     }
 
-    return name.substring(0, 7) + "..."
+    return name.substring(0, 5) + "..."
   }
 
   getAdvantage = computed( () =>

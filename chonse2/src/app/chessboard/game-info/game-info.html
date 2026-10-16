@@ -36,7 +36,7 @@
   <!--FEN display-->
   <div
     [style.color]="themeService.getThemeInstance().getTextColor()"
-    class="d-flex flex-column justify-content-center fenDisplay gap-2"
+    class="d-flex justify-content-center fenDisplay gap-2"
   >
     @let btnStyle = { 'width': '170px', 'height': '35px', 'font-size' : '15px'};
     <app-icon-button [extraStyle]="btnStyle" iconClass="bi-clipboard" [label]="'chessboard.gameInfo.copyFen' | translate" (buttonClick)="copyFenClicked()"></app-icon-button>
