@@ -5,7 +5,8 @@
   flex-shrink: 0;
 }
 
-.infoButton {
+.infoButton 
+{
   width: 2.7rem;
   height: 2.7rem;
   min-width: 2.7rem;
