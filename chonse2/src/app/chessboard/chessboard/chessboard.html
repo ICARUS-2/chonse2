@@ -1,6 +1,10 @@
 <div class="smallScreenCompactBoardPlayerInfoContainer">
     <div class="smallScreenCompactBoardPlayerInfo">
-        <app-compact-board-player-info [boardState]="boardState()"></app-compact-board-player-info>
+        <app-compact-board-player-info 
+            [boardState]="boardState()" 
+            [whiteClock]="getClockForPlayer('w')()" 
+            [blackClock]="getClockForPlayer('b')()">
+        </app-compact-board-player-info>
     </div>
 </div>
 
@@ -22,7 +26,11 @@
     </div>
 
     <div class="mobileCompactBoardPlayerInfo">
-        <app-compact-board-player-info [boardState]="boardState()"></app-compact-board-player-info>
+        <app-compact-board-player-info 
+            [boardState]="boardState()"
+            [whiteClock]="getClockForPlayer('w')()" 
+            [blackClock]="getClockForPlayer('b')()"
+        ></app-compact-board-player-info>
     </div>
     
     <div class="boardEvalBarAndArrows d-flex flex-column">

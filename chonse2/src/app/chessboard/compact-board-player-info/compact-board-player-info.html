@@ -1,7 +1,8 @@
-<div class="compactBoardPlayerInfoContainer p-2 mb-2"
-  [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()"
-  [style.color]="themeService.getThemeInstance().getTextColor()">
-    <div class="cbpiInner">
+<div class="compactRow mb-2">
+  <div class="compactBoardPlayerInfoContainer flex-grow-1 p-2"
+    [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()"
+    [style.color]="themeService.getThemeInstance().getTextColor()">
+          <div class="cbpiInner">
 
         @let adv = getAdvantage();
 
@@ -39,4 +40,14 @@
             }
         </div>
     </div>
+
+  </div>
+
+    <app-compact-board-player-info-modal 
+        [boardState]="boardState()"
+        [whiteClock]="whiteClock()" 
+        [blackClock]="blackClock()"
+    ></app-compact-board-player-info-modal>
 </div>
+
+

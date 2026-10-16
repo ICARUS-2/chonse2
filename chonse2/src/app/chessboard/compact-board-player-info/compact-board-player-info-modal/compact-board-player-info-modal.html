@@ -1,0 +1,38 @@
+<button
+  type="button"
+  class="infoButton"
+  [ngClass]="themeService.getThemeInstance().getGlassPanelTheme()"
+  [style.color]="themeService.getThemeInstance().getTextColor()"
+  aria-label="Show game info"
+  (click)="open()">
+  ℹ
+</button>
+
+<ng-template #infoModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Game info</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <app-board-player-info
+      [playerName]="boardState().pgnHeaders().black"
+      [playerElo]="boardState().pgnHeaders().blackElo"
+      [clock]="blackClock()"
+      for="b"
+      [capturedPieces]="boardState().getCurrentState().getPiecesCapturedByPlayer(PieceColor.BLACK)"
+      [advantage]="boardState().getCurrentState().getMaterialAdvantage()">
+    </app-board-player-info>
+
+    <app-game-info [boardState]="boardState()"></app-game-info>
+
+    <app-board-player-info
+      [playerName]="boardState().pgnHeaders().white"
+      [playerElo]="boardState().pgnHeaders().whiteElo"
+      [clock]="whiteClock()"
+      for="w"
+      [capturedPieces]="boardState().getCurrentState().getPiecesCapturedByPlayer(PieceColor.WHITE)"
+      [advantage]="boardState().getCurrentState().getMaterialAdvantage()">
+    </app-board-player-info>
+  </div>
+</ng-template>
