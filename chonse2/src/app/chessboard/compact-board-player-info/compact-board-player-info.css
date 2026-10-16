@@ -1,5 +1,11 @@
 .cbpiInner
 {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
+}
+
+.compactRow {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
 }

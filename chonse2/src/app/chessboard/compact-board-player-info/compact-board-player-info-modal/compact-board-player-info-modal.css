@@ -1,0 +1,19 @@
+:host 
+{
+  display: flex;
+  align-self: stretch; /* match the height of the glass panel next to it */
+  flex-shrink: 0;
+}
+
+.infoButton 
+{
+  width: 2.7rem;
+  height: 2.7rem;
+  min-width: 2.7rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -15,3 +15,23 @@
 {
     display: flex;
 }
+
+/*small screen*/
+@media screen and (min-width: 1200px) and (max-height: 900px)
+{
+    .boardPlayerInfoContainer
+    {
+        height: 25vmin;
+        width: 100%;
+    }
+}
+
+/*mobile*/
+@media screen and (max-width: 1200px)
+{
+    .boardPlayerInfoContainer
+    {
+        height: 45vmin;
+        width: 100%;
+    }
+}

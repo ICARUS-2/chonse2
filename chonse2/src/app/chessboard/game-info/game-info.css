@@ -3,13 +3,36 @@
     width: 30vmin;
 }
 
+.fenDisplay
+{
+    flex-direction: column;
+}
+
+@media screen and (min-width: 1200px) and (max-height: 900px)
+{
+    .gameInfo
+    {
+        height: 35vmin;
+        width: 100%;
+    }
+
+    .fenDisplay
+    {
+        flex-direction: row;
+    }
+}
+
+/*mobile*/
 @media screen and (max-width: 1200px)
 {
     .gameInfo
     {
-        width: 400px;
-        height: 200px;
-        margin-top: 10px;
-        margin-bottom: 10px;
+        height: 60vmin;
+        width: 100%;
+    }
+
+    .fenDisplay
+    {
+        flex-direction: row;
     }
 }

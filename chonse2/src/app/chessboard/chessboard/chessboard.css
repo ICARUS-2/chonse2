@@ -250,7 +250,7 @@
   .smallScreenCompactBoardPlayerInfo
   {
     display: block;
-    width: 80vmin;
+    width: 70vmin;
   }
 }
 
@@ -265,7 +265,7 @@
   .mobileCompactBoardPlayerInfo
   {
     display: block;
-    width: 88vmin;
+    width: 95vmin;
   }
 
   .boardPlayerInfo
