@@ -34,12 +34,15 @@
       </app-icon-button>
 
       <!--Reanalyze-->
-      <app-icon-button
-        [label]="'chessboard.boardOptions.reanalyze' | translate"
-        extraClasses="m-1 small"
-        iconClass="bi-arrow-repeat"
-        (buttonClick)="reanalyzeClicked.emit()">
-      </app-icon-button>
+      @if(boardState().doEvaluateGame())
+      {
+        <app-icon-button
+          [label]="'chessboard.boardOptions.reanalyze' | translate"
+          extraClasses="m-1 small"
+          iconClass="bi-arrow-repeat"
+          (buttonClick)="reanalyzeClicked.emit()">
+        </app-icon-button>
+      }
     }
 
     <!--If the board is not being evaluated and has at least one move, allow them to analyze it.-->
