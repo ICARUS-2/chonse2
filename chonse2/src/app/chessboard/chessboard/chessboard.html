@@ -3,7 +3,8 @@
         <app-compact-board-player-info 
             [boardState]="boardState()" 
             [whiteClock]="getClockForPlayer('w')()" 
-            [blackClock]="getClockForPlayer('b')()">
+            [blackClock]="getClockForPlayer('b')()"
+            [nameLength]="10">
         </app-compact-board-player-info>
     </div>
 </div>
@@ -30,6 +31,7 @@
             [boardState]="boardState()"
             [whiteClock]="getClockForPlayer('w')()" 
             [blackClock]="getClockForPlayer('b')()"
+            [nameLength]="5"
         ></app-compact-board-player-info>
     </div>
     
