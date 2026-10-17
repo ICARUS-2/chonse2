@@ -12,11 +12,11 @@ import { CompactBoardPlayerInfoModal } from './compact-board-player-info-modal/c
   styleUrl: './compact-board-player-info.css',
 })
 export class CompactBoardPlayerInfo {
-  static readonly NAME_LENGTH = 5;
 
   boardState = input.required<BoardState>();
   whiteClock = input<string>("");
   blackClock = input<string>("");
+  nameLength = input<number>(5);
 
   Math = Math;
 
@@ -27,12 +27,12 @@ export class CompactBoardPlayerInfo {
 
   getShortenedName(name: string)
   {
-    if (name.length <= CompactBoardPlayerInfo.NAME_LENGTH)
+    if (name.length <= this.nameLength())
     {
       return name;
     }
 
-    return name.substring(0, 5) + "..."
+    return name.substring(0, this.nameLength()) + "..."
   }
 
   getAdvantage = computed( () =>
