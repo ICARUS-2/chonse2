@@ -13,12 +13,13 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
   styleUrl: './copy-pgn-modal.css',
 })
 export class CopyPgnModal {
+  public themeService = inject(ThemeService);
+  private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
 
   pgn = "";
 
-  private translate = inject(TranslateService);
-
-  constructor(public themeService: ThemeService, public toastr: ToastrService)
+  constructor()
   {
     
   }

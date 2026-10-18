@@ -14,8 +14,9 @@ import { EngineService } from '../../../libs/engine-lib/engineService';
   styleUrl: './board-options.css',
 })
 export class BoardOptions {
+  themeService = inject(ThemeService);
 
-  constructor(public themeService: ThemeService)
+  constructor()
   {
 
   }

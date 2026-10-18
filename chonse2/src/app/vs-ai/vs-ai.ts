@@ -19,6 +19,10 @@ import { EngineService } from '../../libs/engine-lib/engineService';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VsAi implements OnInit, AfterViewInit{
+  public gameService = inject(ChessBoardService);
+  private ngbModal = inject(NgbModal);
+  private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
 
   BoardNames = BoardNames;
 
@@ -50,10 +54,8 @@ export class VsAi implements OnInit, AfterViewInit{
   }
 
   inputtedPosition: string | undefined;
-  
-  private translate = inject(TranslateService);
 
-  constructor(public gameService: ChessBoardService, private ngbModal: NgbModal, private toastr: ToastrService)
+  constructor()
   {
 
   }

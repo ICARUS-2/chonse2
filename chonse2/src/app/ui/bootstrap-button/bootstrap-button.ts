@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, inject } from '@angular/core';
 import { NgClass } from '@angular/common';
 import ThemeService from '../../themes/theme-service';
 
@@ -16,6 +11,7 @@ import ThemeService from '../../themes/theme-service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BootstrapButton {
+  themeService = inject(ThemeService);
 
   label = input<string>('BUTTON_LABEL');
   disabled = input<boolean>(false);
@@ -23,7 +19,7 @@ export class BootstrapButton {
 
   buttonClick = output<PointerEvent>();
 
-  constructor(public themeService: ThemeService) {}
+  constructor() {}
 
   onButtonClicked(event: PointerEvent) {
     this.buttonClick.emit(event);

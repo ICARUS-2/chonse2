@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, inject } from '@angular/core';
 
 import ThemeService from '../../themes/theme-service';
 import { PgnComments } from '../chessboard/pgn-misc';
@@ -14,6 +14,8 @@ import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BoardPlayerInfo {
+  themeService = inject(ThemeService);
+
   ChessboardHelper = ChessboardHelper;
 
   CLOCK = PgnComments.CLOCK;
@@ -25,7 +27,7 @@ export class BoardPlayerInfo {
   playerElo = input<string>('');
   clock = input<string>('');
 
-  constructor(public themeService: ThemeService)
+  constructor()
   {
     
   }

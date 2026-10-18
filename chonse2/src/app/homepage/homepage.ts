@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { StaticChessboard } from '../static-chessboard/static-chessboard';
 import ThemeService from '../themes/theme-service';
@@ -19,13 +19,16 @@ import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
   styleUrl: './homepage.css',
 })
 export class Homepage {
+  public themeService = inject(ThemeService);
+  private router = inject(Router);
+
   BoardState = BoardState;
 
   readonly DEMO_STATE: IChessGame = ChessGameFactory.createFromFen("6k1/5pp1/7p/p1pP4/2P5/5Q1P/P2R1PP1/4r1K1 w - - 0 1");
 
   lastPgnBoardState: BoardState | null = null;
 
-  constructor(public themeService: ThemeService, private router: Router)
+  constructor()
   {
     //get the last PGN analyzed from the local storage if it exists.
     const localStoragePgn = LocalStorageHelper.getString(LocalStorageHelper.LAST_PGN, "");

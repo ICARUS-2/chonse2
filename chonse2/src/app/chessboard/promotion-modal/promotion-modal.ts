@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import ThemeService from '../../themes/theme-service';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -14,6 +14,9 @@ import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PromotionModal {
+  private activeModal = inject(NgbActiveModal);
+  public themeService = inject(ThemeService);
+
   color: string = "";
 
   queenOption: string = PieceType.QUEEN;
@@ -21,7 +24,7 @@ export class PromotionModal {
   bishopOption: string = PieceType.BISHOP;
   knightOption: string = PieceType.KNIGHT;
   
-  constructor(private activeModal: NgbActiveModal, public themeService: ThemeService)
+  constructor()
   {
 
   }

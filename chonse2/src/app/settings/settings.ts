@@ -23,6 +23,12 @@ import { EngineService } from '../../libs/engine-lib/engineService';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Settings implements OnInit{
+  public themeService = inject(ThemeService);
+  private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
+  public engineService = inject(EngineService);
+
+
   LocalStorageHelper = LocalStorageHelper;
   ChessboardHelper = ChessboardHelper;
   EngineName = EngineName;
@@ -73,10 +79,7 @@ export class Settings implements OnInit{
     max(schema.engineThreadCount, 12)
   })
 
-  private translate = inject(TranslateService);
-  public engineService = inject(EngineService);
-
-  constructor(public themeService: ThemeService, private toastr: ToastrService)
+  constructor()
   {
 
   }

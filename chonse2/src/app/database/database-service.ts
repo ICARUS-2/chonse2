@@ -1,11 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import BoardState from '../chessboard/chessboard/board-state';
 import LocalStorageHelper from '../../libs/local-storage-helper';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { GameScore } from '../../libs/chess-game-lib/types/game-state';
-@Injectable({
-  providedIn: 'root',
-})
+
+@Service()
 export class DatabaseService 
 {
   public saveToDatabase(game: BoardState, comment: string = ""): boolean

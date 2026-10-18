@@ -78,6 +78,17 @@ interface PieceAnimationState {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
+  private modalService = inject(NgbModal);
+  private chessBoardService = inject(ChessBoardService);
+  private toastr = inject(ToastrService);
+  private router = inject(Router);
+  public themeService = inject(ThemeService);
+  public coachAudio = inject(CoachAudio);
+  private cdr = inject(ChangeDetectorRef);
+  private translate = inject(TranslateService);
+  public engineService = inject(EngineService);
+
+
   pieceType = PieceType;
   PieceColor = PieceColor;
   GameOverReason = GameOverReason;
@@ -149,17 +160,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     ]
   )
 
-  private translate = inject(TranslateService);
-  public engineService = inject(EngineService);
-
-  constructor(
-    private modalService: NgbModal, 
-    private chessBoardService: ChessBoardService, 
-    private toastr: ToastrService,
-    private router: Router,
-    public themeService: ThemeService,
-    public coachAudio: CoachAudio,
-    public cdr: ChangeDetectorRef)
+  constructor()
   {
     //Board state stored in service to persist across routerlink changes.
     const boardState: BoardState = this.chessBoardService.getGame(this.gameId());

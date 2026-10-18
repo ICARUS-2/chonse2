@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import BoardState from '../chessboard/chessboard/board-state';
@@ -22,6 +22,11 @@ import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AnalysisPage implements OnInit{
+  gameService = inject(ChessBoardService);
+  private toastrService = inject(ToastrService);
+  themeService = inject(ThemeService);
+  private cdr = inject(ChangeDetectorRef);
+
 
   //Import from chess site.
   site: string | undefined;
@@ -46,10 +51,8 @@ export class AnalysisPage implements OnInit{
 
   BoardNames = BoardNames;
 
-  constructor(public gameService: ChessBoardService, 
-    private toastrService: ToastrService, 
-    public themeService: ThemeService,
-    private cdr: ChangeDetectorRef)
+
+  constructor()
   {
 
   }

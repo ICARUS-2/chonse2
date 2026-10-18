@@ -34,6 +34,14 @@ import { EngineService } from '../../../libs/engine-lib/engineService';
 })
 
 export class InputPositionBoard {
+  private router = inject(Router);
+  private ips = inject(InputPositionService);
+  public themeService = inject(ThemeService);
+  private ngbModalService = inject(NgbModal);
+  private toastrService = inject(ToastrService);
+  private translate = inject(TranslateService);
+  private engineService = inject(EngineService);
+
   pieceType = PieceType;
   PieceColor = PieceColor;
   GameOverReason = GameOverReason;
@@ -65,16 +73,8 @@ export class InputPositionBoard {
   
   private static readonly X_VECTOR = [-1, 1, 0, 0, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, -1, 1, 1];
   private static readonly Y_VECTOR = [0, 0, -1, 1, /* <- ROOK MOVEMENTS | BISHOP MOVEMENTS -> */  -1, 1, -1, 1];
-
-  private translate = inject(TranslateService);
-  private engineService = inject(EngineService);
-
-  constructor(
-    private router: Router, 
-    private ips: InputPositionService, 
-    public themeService: ThemeService,
-    private ngbModalService: NgbModal,
-    private toastrService: ToastrService)
+  
+  constructor()
   {
     //Board state stored in service to persist across routerlink changes.
     const boardState: InputPositionState = this.ips.getGame(this.stateId());

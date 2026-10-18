@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, EventEmitter, input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, EventEmitter, input, Output, inject } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import ChessboardHelper from '../helpers';
@@ -13,6 +13,8 @@ import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Square {
+  themeService = inject(ThemeService);
+
 
   MoveClassification = MoveClassification;
   ChessboardHelper = ChessboardHelper;
@@ -74,7 +76,9 @@ export class Square {
     [MoveClassification.None, "None"]
   ]);
 
-  constructor(public themeService: ThemeService) {
+  constructor() {
+    const themeService = this.themeService;
+
     this.lightColor = themeService.getThemeInstance().getChessboardLightColor();
     this.darkColor = themeService.getThemeInstance().getChessboardDarkColor();
   }

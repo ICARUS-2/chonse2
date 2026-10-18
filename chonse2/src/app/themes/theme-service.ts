@@ -1,4 +1,4 @@
-import { Injectable, signal } from "@angular/core";
+import { Service, signal } from "@angular/core";
 import { IAppTheme } from "./app-themes/i-app-theme";
 import { Themes } from "./themes";
 import LocalStorageHelper from "../../libs/local-storage-helper";
@@ -7,7 +7,7 @@ import BlackRedTheme from "./app-themes/black-red-theme";
 import GalacticTheme from "./app-themes/galactic-theme";
 import DarkTheme from "./app-themes/dark-theme";
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export default class ThemeService 
 {
     public static readonly DEFAULT_THEME = Themes.WhiteAndBlue;

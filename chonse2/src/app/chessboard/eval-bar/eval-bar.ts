@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import ThemeService from '../../themes/theme-service';
 
@@ -11,11 +11,12 @@ import ThemeService from '../../themes/theme-service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EvalBar {
+  themeService = inject(ThemeService);
 
   data = input<{ whiteBarPercentage: number; label: string }>({
     whiteBarPercentage: 51,
     label: '0.4'
   });
 
-  constructor(public themeService: ThemeService) {}
+  constructor() {}
 }

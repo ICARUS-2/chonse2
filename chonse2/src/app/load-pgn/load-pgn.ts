@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, WritableSignal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouteConstants } from '../app.routes';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
@@ -11,11 +11,13 @@ import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
   styleUrl: './load-pgn.css',
 })
 export class LoadPgn {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   compressedPgn: WritableSignal<string> = signal("");
   decompressedPgn: WritableSignal<string> = signal("");
 
-  constructor(private route: ActivatedRoute, private router: Router)
+  constructor()
   {
     this.route.paramMap.subscribe(params => 
     {
