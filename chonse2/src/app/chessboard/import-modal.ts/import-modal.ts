@@ -24,6 +24,12 @@ import { GameScore } from '../../../libs/chess-game-lib/types/game-state';
 })
 export class ImportModal implements OnInit
 {
+  private activeModal = inject(NgbActiveModal);
+  private toastr = inject(ToastrService);
+  public themeService = inject(ThemeService);
+  private translate = inject(TranslateService);
+
+
   //To access the options in the if block.
   PgnSources = PgnSources;
   
@@ -52,9 +58,7 @@ export class ImportModal implements OnInit
     //any potential constraints in the future
   })
 
-  private translate = inject(TranslateService);
-
-  constructor(private activeModal: NgbActiveModal, private toastr: ToastrService, public themeService: ThemeService)
+  constructor()
   {
     //LocalStorageHelper.setStringArray(LocalStorageHelper.SAVED_USERNAMES, []);
   }

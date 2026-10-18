@@ -14,14 +14,14 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
   styleUrl: './pgn-link.css',
 })
 export class PgnLink {
+  public themeService = inject(ThemeService);
+  private toastr = inject(ToastrService);
+  private translate = inject(TranslateService)
 
   formModel = signal<FormModel>({pgnText: ""});
-
   form = form(this.formModel);
-
-  private translate = inject(TranslateService)
   
-  constructor(public themeService: ThemeService, private toastr: ToastrService)
+  constructor()
   {
 
   }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import VsAiConfig from '../vs-ai-config';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +17,9 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 
 export class VsAiConfigurationModal {
+  private activeModal = inject(NgbActiveModal);
+  public themeService = inject(ThemeService);
+
   UciEngine = UciEngine;
 
   formModel = signal<FormModel>( 
@@ -30,8 +33,8 @@ export class VsAiConfigurationModal {
     min(schema.elo, UciEngine.MIN_ELO);
     max(schema.elo, UciEngine.MAX_ELO);
   });
-
-  constructor(private activeModal: NgbActiveModal, public themeService: ThemeService)
+  
+  constructor()
   {
 
   }

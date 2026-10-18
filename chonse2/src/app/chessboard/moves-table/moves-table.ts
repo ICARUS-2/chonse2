@@ -1,4 +1,4 @@
-import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy, inject } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { CommonModule } from '@angular/common';
@@ -14,6 +14,8 @@ import ThemeService from '../../themes/theme-service';
   styleUrl: './moves-table.css',
 })
 export class MovesTable {
+  themeService = inject(ThemeService);
+
   ChessboardHelper = ChessboardHelper
 
   //Inputs
@@ -25,7 +27,7 @@ export class MovesTable {
   //Expose enum to template
   protected readonly MoveClassification = MoveClassification;
 
-  constructor(public themeService: ThemeService)
+  constructor()
   {
 
   }

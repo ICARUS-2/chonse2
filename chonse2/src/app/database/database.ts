@@ -16,18 +16,20 @@ import { EngineService } from '../../libs/engine-lib/engineService';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Database {
-
-  dbItems: WritableSignal<Array<DatabaseItem>> = signal([]);
-
+  public themeService = inject(ThemeService);
+  private databaseService = inject(DatabaseService);
+  private toastrService = inject(ToastrService);
+  private router = inject(Router);
   private translate = inject(TranslateService);
   public engineService = inject(EngineService);
 
-  constructor(
-    public themeService: ThemeService, 
-    private databaseService: DatabaseService, 
-    private toastrService: ToastrService,
-    private router: Router)
+  dbItems: WritableSignal<Array<DatabaseItem>> = signal([]);
+
+
+  constructor()
   {
+    const toastrService = this.toastrService;
+
     try 
     {
       this.loadDb();

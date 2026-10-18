@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navbar } from "./navbar/navbar";
 import ThemeService from './themes/theme-service';
@@ -15,10 +15,13 @@ import { Languages } from '../globals/globals';
   styleUrl: './app.css'
 })
 export class App implements OnInit{
+  public themeService = inject(ThemeService);
+  private translate = inject(TranslateService);
+
   protected readonly title = signal('CHONSE2');
   GlassPanelTheme = GlassPanelTheme;
 
-  constructor(public themeService: ThemeService, private translate: TranslateService)
+  constructor()
   {
     
   }

@@ -16,6 +16,12 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatabaseModal {
+  public themeService = inject(ThemeService);
+  private databaseService = inject(DatabaseService);
+  private toastrService = inject(ToastrService);
+  private activeModal = inject(NgbActiveModal);
+  private translate = inject(TranslateService);
+
   game: WritableSignal<BoardState | undefined> = signal(undefined);
 
   formModel = signal<FormModel>(
@@ -26,13 +32,7 @@ export class DatabaseModal {
 
   form = form(this.formModel);
 
-  private translate = inject(TranslateService);
-
-  constructor(
-    public themeService: ThemeService, 
-    private databaseService: DatabaseService, 
-    private toastrService: ToastrService,
-    private activeModal: NgbActiveModal)
+  constructor()
   {
 
   }

@@ -1,4 +1,4 @@
-import { Component, computed, input, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, input, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { PositionEval } from '../../../libs/engine-lib/types/eval';
@@ -13,6 +13,7 @@ import ChessboardHelper from '../helpers';
   styleUrl: './divergence-table-entry.css',
 })
 export class DivergenceTableEntry {
+  themeService = inject(ThemeService);
 
   MoveClassification = MoveClassification;
   ChessboardHelper = ChessboardHelper;
@@ -20,7 +21,7 @@ export class DivergenceTableEntry {
   moveStack = input<Array<MoveResult>>([]);
   evalStack = input<Array<PositionEval | undefined>>([]);
   
-  constructor(public themeService: ThemeService)
+  constructor()
   {
 
   }

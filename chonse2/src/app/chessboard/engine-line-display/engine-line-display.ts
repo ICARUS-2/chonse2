@@ -1,4 +1,4 @@
-import { Component, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy, inject } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import { CommonModule } from '@angular/common';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
@@ -18,6 +18,8 @@ import { ArrowColors } from '../chessboard/arrow';
   styleUrl: './engine-line-display.css',
 })
 export class EngineLineDisplay {
+  themeService = inject(ThemeService);
+
 
   ChessboardHelper = ChessboardHelper;
   uciMoveParams = uciMoveParams;
@@ -28,7 +30,7 @@ export class EngineLineDisplay {
   protected readonly MoveClassification = MoveClassification;
   protected readonly Math = Math;
 
-  constructor(public themeService: ThemeService)
+  constructor()
   {
 
   }

@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { BoardNames } from '../boards';
 import { InputPositionBoard } from "./input-position-board/input-position-board";
 import { InputPositionService } from './input-position-service';
 import InputPositionState from './input-position-state';
 import { RouteConstants } from '../app.routes';
 import { ToastrService } from 'ngx-toastr';
-import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
 import EditorState from './editor-state/editor-state';
 
 @Component({
@@ -16,11 +15,14 @@ import EditorState from './editor-state/editor-state';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InputPosition implements OnInit {
+  ips = inject(InputPositionService);
+  toastrService = inject(ToastrService);
+
   BoardNames = BoardNames;
 
   fen: string = "";
 
-  constructor(public ips: InputPositionService, public toastrService: ToastrService)
+  constructor()
   {
 
   }

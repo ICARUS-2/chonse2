@@ -1,4 +1,4 @@
-import { Component, HostListener, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, HostListener, input, output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import ThemeService from '../../themes/theme-service';
 import { CommonModule } from '@angular/common';
@@ -11,8 +11,9 @@ import { CommonModule } from '@angular/common';
   styleUrl: './board-arrow-buttons.css',
 })
 export class BoardArrowButtons {
+  themeService = inject(ThemeService);
 
-  constructor(public themeService: ThemeService)
+  constructor()
   {
 
   }

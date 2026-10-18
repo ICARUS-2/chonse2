@@ -1,5 +1,6 @@
 import { Injector } from '@angular/core';
 
-export class AppInjector {
+export class AppInjector 
+{
   static injector: Injector;
 }

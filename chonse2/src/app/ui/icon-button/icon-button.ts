@@ -1,4 +1,4 @@
-import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy, inject } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 
 @Component({
@@ -9,8 +9,9 @@ import ThemeService from '../../themes/theme-service';
   styleUrl: './icon-button.css',
 })
 export class IconButton {
+  themeService = inject(ThemeService);
   
-  constructor(public themeService: ThemeService)
+  constructor()
   {
   }
 

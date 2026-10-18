@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import ThemeService from '../themes/theme-service';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -10,7 +10,9 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class Development 
 {
-  constructor(public themeService: ThemeService)
+  public themeService = inject(ThemeService);
+
+  constructor()
   {
 
   }

@@ -1,4 +1,4 @@
-import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy, inject } from '@angular/core';
 import BoardState from '../chessboard/board-state';
 import ThemeService from '../../themes/theme-service';
 import { CommonModule } from '@angular/common';
@@ -12,6 +12,8 @@ import { CompactBoardPlayerInfoModal } from './compact-board-player-info-modal/c
   styleUrl: './compact-board-player-info.css',
 })
 export class CompactBoardPlayerInfo {
+  themeService = inject(ThemeService);
+
 
   boardState = input.required<BoardState>();
   whiteClock = input<string>("");
@@ -20,7 +22,7 @@ export class CompactBoardPlayerInfo {
 
   Math = Math;
 
-  constructor(public themeService: ThemeService)
+  constructor()
   {
     
   }

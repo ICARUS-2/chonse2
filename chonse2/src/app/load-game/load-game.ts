@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouteConstants } from '../app.routes';
 
@@ -10,11 +10,14 @@ import { RouteConstants } from '../app.routes';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoadGame implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
   site!: string;
   username!: string;
   gameId!: string;
 
-  constructor(private route: ActivatedRoute, private router: Router)
+  constructor()
   {
     this.route.paramMap.subscribe(params => 
     {

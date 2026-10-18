@@ -28,6 +28,12 @@ import { EngineService } from '../../../libs/engine-lib/engineService';
   styleUrl: './coach-display.css',
 })
 export class CoachDisplay {
+  //services
+  private translate = inject(TranslateService);
+  public engineService = inject(EngineService);
+  themeService = inject(ThemeService);
+  coachAudio = inject(CoachAudio);
+
   protected readonly MoveClassification = MoveClassification;
   ChessboardHelper = ChessboardHelper;
   LocalStorageHelper = LocalStorageHelper;
@@ -43,10 +49,6 @@ export class CoachDisplay {
   to: string;
   piece: string;
 }>();
-
-  //services
-  private translate = inject(TranslateService);
-  public engineService = inject(EngineService);
 
   //coach
   protected root = computed(() => this.boardState().getRootForFollowUp());
@@ -77,7 +79,7 @@ export class CoachDisplay {
     return EngineInformation.get(engineName);
   });
 
-  constructor(public themeService: ThemeService, public coachAudio: CoachAudio)
+  constructor()
   {
     
   }

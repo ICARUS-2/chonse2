@@ -1,4 +1,4 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import { form, FormField } from '@angular/forms/signals';
@@ -14,6 +14,9 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class FenImportModal 
 {
+  public themeService = inject(ThemeService);
+  private activeModal = inject(NgbActiveModal);
+
   formModel = signal<FormModel>( 
   {
     fen: "",
@@ -21,7 +24,7 @@ export class FenImportModal
 
   form = form(this.formModel);
 
-  constructor(public themeService: ThemeService, private activeModal: NgbActiveModal)
+  constructor()
   {
 
   }

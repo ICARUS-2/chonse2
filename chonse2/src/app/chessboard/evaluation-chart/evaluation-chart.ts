@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { ChartItemData } from './chart-item-data';
 import { BaseChartDirective } from 'ng2-charts';
 import { ActiveElement, Chart, ChartConfiguration, ChartEvent } from 'chart.js';
@@ -15,6 +15,8 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EvaluationChart implements OnInit {
+  themeService = inject(ThemeService);
+
 
   @Input() arr: PositionEval[] = [];
   @Input() selectedIndex = 0;
@@ -119,7 +121,7 @@ export class EvaluationChart implements OnInit {
     }
   };
 
-  constructor(public themeService: ThemeService)
+  constructor()
   {
 
   }
