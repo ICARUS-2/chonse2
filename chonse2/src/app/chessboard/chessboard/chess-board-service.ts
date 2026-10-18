@@ -1,7 +1,7 @@
-import { Injectable } from "@angular/core";
+import { Service } from "@angular/core";
 import BoardState from "./board-state";
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ChessBoardService {
   private games = new Map<string, BoardState>();
 

@@ -1,7 +1,7 @@
-import { Injectable } from "@angular/core";
+import { Service } from "@angular/core";
 import InputPositionState from "./input-position-state";
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class InputPositionService {
   private models = new Map<string, InputPositionState>();
 
