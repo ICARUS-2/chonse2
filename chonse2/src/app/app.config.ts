@@ -8,15 +8,28 @@ import { provideHttpClient } from "@angular/common/http";
 import { provideTranslateHttpLoader } from "@ngx-translate/http-loader";
 import { DEFAULT_LANG, Languages } from '../globals/globals';
 import LocalStorageHelper from '../libs/local-storage-helper';
+import { NotificationService } from './ui/notifications/notification-service';
+import { LegacyToastrNotificationService } from './ui/notifications/legacy-toastr-notification-service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    //Error handling
     provideBrowserGlobalErrorListeners(),
+
+    //Change detection
     provideZonelessChangeDetection(),
+    
+    //Navigation
     provideRouter(routes),
-    provideToastr({progressBar: true, closeButton: true, positionClass: "toast-bottom-left", timeOut: 2000}),
+
+    //Charts (eval graph)
     provideCharts(withDefaultRegisterables()),
     
+    //Notifications
+    { provide: NotificationService, useClass: LegacyToastrNotificationService },
+    provideToastr({progressBar: true, closeButton: true, positionClass: "toast-bottom-left", timeOut: 2000}),
+
+    //For translation
     provideHttpClient(),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
