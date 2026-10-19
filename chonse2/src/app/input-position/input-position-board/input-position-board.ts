@@ -12,7 +12,6 @@ import { InputPositionService } from '../input-position-service';
 import InputPositionState from '../input-position-state';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
 import { FenImportModal } from '../fen-import-modal/fen-import-modal';
-import { ToastrService } from 'ngx-toastr';
 import { IconButton } from "../../ui/icon-button/icon-button";
 import GameLinkHelper from '../../chessboard/chessboard/game-link-helper';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -24,6 +23,7 @@ import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
 import ChessboardHelper from '../../chessboard/helpers';
 import EditorState from '../editor-state/editor-state';
 import { EngineService } from '../../../libs/engine-lib/engineService';
+import { NotificationService } from '../../ui/notifications/notification-service';
 
 @Component({
   selector: 'app-input-position-board',
@@ -38,7 +38,7 @@ export class InputPositionBoard {
   private ips = inject(InputPositionService);
   public themeService = inject(ThemeService);
   private ngbModalService = inject(NgbModal);
-  private toastrService = inject(ToastrService);
+  private notificationService = inject(NotificationService);
   private translate = inject(TranslateService);
   private engineService = inject(EngineService);
 
@@ -179,7 +179,7 @@ export class InputPositionBoard {
       {
         if (result == null)
         {
-          this.toastrService.error(this.translate.instant("inputPosition.board.toastr.importCancelled"));
+          this.notificationService.notify('error', this.translate.instant("inputPosition.board.toastr.importCancelled"));
           return;
         }
 
@@ -190,35 +190,35 @@ export class InputPositionBoard {
         this.ips.addGame(this.stateId() ,newState);
         this.inputPositionState.set(newState);
 
-        this.toastrService.success(this.translate.instant("inputPosition.board.toastr.importSuccess"));
+        this.notificationService.notify('success', this.translate.instant("inputPosition.board.toastr.importSuccess"));
       }
     )
     .catch(() => { /*modal was dismissed, no error*/ })
   }
   
-  copyFenClicked()
+  async copyFenClicked()
   {
     try 
     {
-      navigator.clipboard.writeText(this.inputPositionState().editorState().getFEN());
-      this.toastrService.info(this.translate.instant("inputPosition.board.toastr.copyFenSuccess"));
+      await navigator.clipboard.writeText(this.inputPositionState().editorState().getFEN());
+      this.notificationService.notify('info', this.translate.instant("inputPosition.board.toastr.copyFenSuccess"));
     }
     catch(ex)
     {
-      this.toastrService.error(this.translate.instant("inputPosition.board.toastr.copyFenError"));
+      this.notificationService.notify('error', this.translate.instant("inputPosition.board.toastr.copyFenError"));
     }
   }
 
-  copyFenLinkClicked()
+  async copyFenLinkClicked()
   {
     try 
     {
-      navigator.clipboard.writeText(GameLinkHelper.generateFenLink(this.inputPositionState().editorState().getFEN()));
-      this.toastrService.info(this.translate.instant("inputPosition.board.toastr.copyLinkSuccess"));
+      await navigator.clipboard.writeText(GameLinkHelper.generateFenLink(this.inputPositionState().editorState().getFEN()));
+      this.notificationService.notify('info', this.translate.instant("inputPosition.board.toastr.copyLinkSuccess"));
     }
     catch(ex)
     {
-      this.toastrService.error(this.translate.instant("inputPosition.board.toastr.copyLinkError"));
+      this.notificationService.notify('error', this.translate.instant("inputPosition.board.toastr.copyLinkError"));
     }
   }
   //#endregion

@@ -19,12 +19,6 @@ export class ChessBoardService {
 
     getGame(id: string): BoardState 
     {
-        /*
-        if (!this.games.has(id)) 
-        {
-            this.addGame(id, new BoardState());
-        }*/
-
         return this.games.get(id)!;
     }
 

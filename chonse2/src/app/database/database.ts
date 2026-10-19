@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, Component, inject, signal, WritableSignal } fr
 import ThemeService from '../themes/theme-service';
 import { CommonModule } from '@angular/common';
 import { DatabaseItem, DatabaseService } from './database-service';
-import { ToastrService } from 'ngx-toastr';
 import { IconButton } from "../ui/icon-button/icon-button";
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { EngineService } from '../../libs/engine-lib/engineService';
+import { NotificationService } from '../ui/notifications/notification-service';
 
 @Component({
   selector: 'app-database',
@@ -18,7 +18,7 @@ import { EngineService } from '../../libs/engine-lib/engineService';
 export class Database {
   public themeService = inject(ThemeService);
   private databaseService = inject(DatabaseService);
-  private toastrService = inject(ToastrService);
+  private notificationService = inject(NotificationService);
   private router = inject(Router);
   private translate = inject(TranslateService);
   public engineService = inject(EngineService);
@@ -28,7 +28,7 @@ export class Database {
 
   constructor()
   {
-    const toastrService = this.toastrService;
+    const notificationService = this.notificationService;
 
     try 
     {
@@ -36,7 +36,7 @@ export class Database {
     }
     catch(ex)
     {
-      toastrService.error(this.translate.instant("database.messages.loadError") + ex)
+      notificationService.notify("error", this.translate.instant("database.messages.loadError") + ex)
     }
   }
 
@@ -58,7 +58,7 @@ export class Database {
 
     if (deleteSuccessful)
     {
-      this.toastrService.success(this.translate.instant("database.messages.deleteSuccess"));
+      this.notificationService.notify("success", this.translate.instant("database.messages.deleteSuccess"));
       this.loadDb();
     }
   }

@@ -11,7 +11,6 @@ import {Arrow, ArrowColors, ArrowContext, createArrow } from './arrow';
 import BoardState from './board-state';
 import Sound from './sound';
 import { ImportModal } from '../import-modal.ts/import-modal';
-import { ToastrService } from 'ngx-toastr';
 import { PgnComments } from './pgn-misc';
 import { EvalBar } from '../eval-bar/eval-bar';
 import MoveClassificationList from './move-classification-list';
@@ -46,6 +45,7 @@ import { GameOverReason } from '../../../libs/chess-game-lib/types/game-state';
 import { IMoveResult } from '../../../libs/chess-game-lib/types/move-result';
 import IChessGame from '../../../libs/chess-game-lib/i-chess-game';
 import { EngineService } from '../../../libs/engine-lib/engineService';
+import { NotificationService } from '../../ui/notifications/notification-service';
 
 interface PieceAnimationState {
   piece: string;
@@ -80,7 +80,7 @@ interface PieceAnimationState {
 export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   private modalService = inject(NgbModal);
   private chessBoardService = inject(ChessBoardService);
-  private toastr = inject(ToastrService);
+  private notificationService = inject(NotificationService);
   private router = inject(Router);
   public themeService = inject(ThemeService);
   public coachAudio = inject(CoachAudio);
@@ -356,7 +356,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
           this.boardState.set(this.chessBoardService.getGame(this.gameId()));
 
           //User feedback
-          this.toastr.success(this.translate.instant("chessboard.toastr.success"));
+          this.notificationService.notify("success", this.translate.instant("chessboard.toastr.success"));
 
           await this.boardState().evaluateGame();
 
@@ -369,13 +369,13 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         catch(ex)
         {
           console.log(ex)
-          this.toastr.error(this.translate.instant("chessboard.toastr.error") + ex);
+          this.notificationService.notify("error", this.translate.instant("chessboard.toastr.error") + ex)
         }
       }
     )
     .catch(err => 
       {
-        //this.toastr.warning("Operation cancelled.");
+        //op cancelled
       }
     )
   }
@@ -622,7 +622,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     //If the engine couldn't find something, display an error.
     if (!engineResult)
     {
-      this.toastr.error("Error: Engine move not found.");
+      this.notificationService.notify("error", "Error: Engine move not found.")
       return;
     }
 
@@ -670,7 +670,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   handleResignVsAiClicked()
   {
     this.boardState().isVsAiInProgress.set(false);
-    this.toastr.warning(this.translate.instant("chessboard.toastr.resign"));
+    this.notificationService.notify("warning", this.translate.instant("chessboard.toastr.resign"));
   }
 
   handleBeginGameVsAiClicked()
@@ -678,7 +678,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     VsAiConfigurationModalHelper.doModal(
       this.modalService, 
       this.chessBoardService, 
-      this.toastr, 
+      this.notificationService, 
       this.translate, 
       this);
   }

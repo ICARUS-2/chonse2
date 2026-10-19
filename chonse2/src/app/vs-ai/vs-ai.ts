@@ -6,10 +6,9 @@ import BoardState from '../chessboard/chessboard/board-state';
 import { RouteConstants } from '../app.routes';
 import VsAiConfigurationModalHelper from './vs-ai-configuration-modal-helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
-import { EngineService } from '../../libs/engine-lib/engineService';
+import { NotificationService } from '../ui/notifications/notification-service';
 
 @Component({
   selector: 'app-vs-ai',
@@ -21,7 +20,7 @@ import { EngineService } from '../../libs/engine-lib/engineService';
 export class VsAi implements OnInit, AfterViewInit{
   public gameService = inject(ChessBoardService);
   private ngbModal = inject(NgbModal);
-  private toastr = inject(ToastrService);
+  private notificationService = inject(NotificationService);
   private translate = inject(TranslateService);
 
   BoardNames = BoardNames;
@@ -45,7 +44,7 @@ export class VsAi implements OnInit, AfterViewInit{
       VsAiConfigurationModalHelper.doModal(
         this.ngbModal,
         this.gameService,
-        this.toastr,
+        this.notificationService,
         this.translate,
         board,
         restoredPosition

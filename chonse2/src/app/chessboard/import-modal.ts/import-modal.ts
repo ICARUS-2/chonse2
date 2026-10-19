@@ -6,7 +6,6 @@ import LocalStorageHelper from '../../../libs/local-storage-helper';
 import {ChessComAPI, ChessComGame} from '../../../libs/server-api-lib/chesscom-api';;
 import { CommonModule } from '@angular/common';
 import GameLinkHelper from '../chessboard/game-link-helper';
-import { ToastrService } from 'ngx-toastr';
 import { LichessAPI, LichessGame } from '../../../libs/server-api-lib/lichess-api';
 import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from "../../ui/bootstrap-button/bootstrap-button";
@@ -14,6 +13,7 @@ import { form, FormField } from '@angular/forms/signals';
 import { IconButton } from "../../ui/icon-button/icon-button";
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { GameScore } from '../../../libs/chess-game-lib/types/game-state';
+import { NotificationService } from '../../ui/notifications/notification-service';
 
 @Component({
   selector: 'app-import-modal',
@@ -25,7 +25,7 @@ import { GameScore } from '../../../libs/chess-game-lib/types/game-state';
 export class ImportModal implements OnInit
 {
   private activeModal = inject(NgbActiveModal);
-  private toastr = inject(ToastrService);
+  private notificationService = inject(NotificationService);
   public themeService = inject(ThemeService);
   private translate = inject(TranslateService);
 
@@ -176,11 +176,11 @@ export class ImportModal implements OnInit
     try 
     {
       await navigator.clipboard.writeText(GameLinkHelper.generateChessSiteGameUrl(GameLinkHelper.CHESSCOM_SOURCE, gameId, this.form.siteUsername().value()));
-      this.toastr.info(`${this.translate.instant("chessboard.importModal.toastr.successfullyCopied")} ${this.form.siteUsername().value()}.`);
+      this.notificationService.notify('info', `${this.translate.instant("chessboard.importModal.toastr.successfullyCopied")} ${this.form.siteUsername().value()}.`);
     }
     catch(ex)
     {
-      this.toastr.error(this.translate.instant("chessboard.importModal.toastr.failed"));
+      this.notificationService.notify('error', this.translate.instant("chessboard.importModal.toastr.failed"));
     }
   }
   
@@ -231,11 +231,11 @@ export class ImportModal implements OnInit
     try 
     {
       await navigator.clipboard.writeText(GameLinkHelper.generateChessSiteGameUrl(GameLinkHelper.LICHESS_SOURCE, game.id, this.form.siteUsername().value()));
-      this.toastr.info(`${this.translate.instant("chessboard.importModal.toastr.successfullyCopied")}  ${this.form.siteUsername().value()}.`);
+      this.notificationService.notify('info', `${this.translate.instant("chessboard.importModal.toastr.successfullyCopied")} ${this.form.siteUsername().value()}.`);
     }
     catch(ex)
     {
-      this.toastr.error(this.translate.instant("chessboard.importModal.toastr.failed"));
+      this.notificationService.notify('error', this.translate.instant("chessboard.importModal.toastr.failed"));
     }
   }
 

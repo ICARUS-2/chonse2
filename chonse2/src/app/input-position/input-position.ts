@@ -4,8 +4,8 @@ import { InputPositionBoard } from "./input-position-board/input-position-board"
 import { InputPositionService } from './input-position-service';
 import InputPositionState from './input-position-state';
 import { RouteConstants } from '../app.routes';
-import { ToastrService } from 'ngx-toastr';
 import EditorState from './editor-state/editor-state';
+import { NotificationService } from '../ui/notifications/notification-service';
 
 @Component({
   selector: 'app-input-position',
@@ -16,7 +16,7 @@ import EditorState from './editor-state/editor-state';
 })
 export class InputPosition implements OnInit {
   ips = inject(InputPositionService);
-  toastrService = inject(ToastrService);
+  private notificationService = inject(NotificationService);
 
   BoardNames = BoardNames;
 
@@ -41,11 +41,11 @@ export class InputPosition implements OnInit {
         newState.editorState.set(EditorState.instantiateFromFen(this.fen));
         this.ips.deleteGame(BoardNames.InputPosition);
         this.ips.addGame(BoardNames.InputPosition, newState);
-        this.toastrService.success("Successfully imported position");
+        this.notificationService.notify('success', "Successfully imported position");
       }
       catch(ex)
       {
-        this.toastrService.error("Invalid FEN, loading default editor state. ");
+        this.notificationService.notify('error', "Invalid FEN, loading default editor state. ");
         this.setDefaultEditorState();
       }
     }

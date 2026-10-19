@@ -5,10 +5,10 @@ import { PositionEval } from '../../../libs/engine-lib/types/eval';
 import { CommonModule } from '@angular/common';
 import { FormatTermination } from '../chessboard/pgn-misc';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import GameLinkHelper from '../chessboard/game-link-helper';
 import { IconButton } from '../../ui/icon-button/icon-button';
+import { NotificationService } from '../../ui/notifications/notification-service';
 
 @Component({
   selector: 'app-game-info',
@@ -21,7 +21,7 @@ export class GameInfo {
   boardState = input.required<BoardState>();
   themeService = inject(ThemeService);
   translate = inject(TranslateService);
-  toastrService = inject(ToastrService);
+  notificationService = inject(NotificationService)
   router = inject(Router);
 
   constructor()
@@ -86,11 +86,11 @@ export class GameInfo {
     try 
     {
       navigator.clipboard.writeText(this.boardState().getCurrentState().getFEN());
-      this.toastrService.info(this.translate.instant("chessboard.gameInfo.toastr.copyFenSuccess"));
+      this.notificationService.notify('info', this.translate.instant("chessboard.gameInfo.toastr.copyFenSuccess"));
     }
     catch(ex)
     {
-      this.toastrService.error(this.translate.instant("chessboard.gameInfo.toastr.copyFenError"));
+      this.notificationService.notify('error', this.translate.instant("chessboard.gameInfo.toastr.copyFenError"));
     }
   }
 
