@@ -4,17 +4,17 @@ import BoardState from "../chessboard/chessboard/board-state";
 import { ChessBoardService } from "../chessboard/chessboard/chess-board-service";
 import { BoardNames } from "../boards";
 import { Chessboard } from "../chessboard/chessboard/chessboard";
-import { ToastrService } from "ngx-toastr";
 import { TranslateService } from "@ngx-translate/core";
 import IChessGame from "../../libs/chess-game-lib/i-chess-game";
 import LocalStorageHelper from "../../libs/local-storage-helper";
+import { NotificationService } from "../ui/notifications/notification-service";
 
 export default class VsAiConfigurationModalHelper
 {
     static doModal = async (
         modalService: NgbModal, 
         chessBoardService: ChessBoardService, 
-        toastr: ToastrService, 
+        notificationService: NotificationService, 
         translate: TranslateService,
         componentInstance: Chessboard,
         startingState: IChessGame | undefined = undefined) =>
@@ -58,7 +58,7 @@ export default class VsAiConfigurationModalHelper
                 componentInstance.boardState.set(chessBoardService.getGame(BoardNames.VsAi));
                 componentInstance.boardState().isVsAiInProgress.set(true);
 
-                toastr.success(translate.instant("vsAiModal.toastr.startingGame"));
+                notificationService.notify("success", translate.instant("vsAiModal.toastr.startingGame"));
 
                 //If stockfish is white (or if the board says it's stockfish's color to move), play the first move.
                 if (startingState)
@@ -78,13 +78,13 @@ export default class VsAiConfigurationModalHelper
             }
             catch(ex)
             {
-                toastr.error(translate.instant("vsAiModal.toastr.error") + ex)
+                notificationService.notify("error", translate.instant("vsAiModal.toastr.error") + ex)
             }
         }
         )
         .catch(c => 
         {
-            //this.toastr.info("vs AI - Operation cancelled");
+            //op cancelled
         }
         )
     }

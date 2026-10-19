@@ -4,9 +4,9 @@ import { form, FormField } from '@angular/forms/signals';
 import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';
 import { DatabaseService } from '../../database/database-service';
-import { ToastrService } from 'ngx-toastr';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { NotificationService } from '../../ui/notifications/notification-service';
 
 @Component({
   selector: 'app-database-modal',
@@ -18,7 +18,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 export class DatabaseModal {
   public themeService = inject(ThemeService);
   private databaseService = inject(DatabaseService);
-  private toastrService = inject(ToastrService);
+  private notificationService = inject(NotificationService);
   private activeModal = inject(NgbActiveModal);
   private translate = inject(TranslateService);
 
@@ -45,16 +45,16 @@ export class DatabaseModal {
       if (g != undefined)
       {
         this.databaseService.saveToDatabase(g, this.form.comment().value());
-        this.toastrService.success(this.translate.instant('chessboard.databaseModal.toastr.success'))
+        this.notificationService.notify("success", this.translate.instant('chessboard.databaseModal.toastr.success'))
       }
       else 
       {
-        this.toastrService.warning(this.translate.instant('chessboard.databaseModal.toastr.gameNotFound'));
+        this.notificationService.notify("warning", this.translate.instant('chessboard.databaseModal.toastr.gameNotFound'));
       }
     }
     catch(ex)
     {
-      this.toastrService.error(this.translate.instant('chessboard.databaseModal.toastr.saveFailed') + " " + ex)
+      this.notificationService.notify("error", this.translate.instant('chessboard.databaseModal.toastr.saveFailed') + " " + ex)
     }
 
     this.activeModal.close();

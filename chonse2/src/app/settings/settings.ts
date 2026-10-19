@@ -12,8 +12,8 @@ import { DEFAULT_LANG, Languages } from '../../globals/globals';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import ChessboardHelper from '../chessboard/helpers';
 import { isWasmSupported } from '../../libs/engine-lib/helpers/shared';
-import { ToastrService } from 'ngx-toastr';
 import { EngineService } from '../../libs/engine-lib/engineService';
+import { NotificationService } from '../ui/notifications/notification-service';
 
 @Component({
   selector: 'app-settings',
@@ -24,9 +24,9 @@ import { EngineService } from '../../libs/engine-lib/engineService';
 })
 export class Settings implements OnInit{
   public themeService = inject(ThemeService);
-  private toastr = inject(ToastrService);
   private translate = inject(TranslateService);
   public engineService = inject(EngineService);
+  private notificationService = inject(NotificationService);
 
 
   LocalStorageHelper = LocalStorageHelper;
@@ -90,7 +90,7 @@ export class Settings implements OnInit{
     {
       this.form.selectedEngine().value.set(EngineName.Stockfish11);
       this.handleEngineDropdownSelectionChanged();
-      this.toastr.warning(this.translate.instant("settings.engine.legacyFallbackWarning"));
+      this.notificationService.notify('warning', this.translate.instant("settings.engine.legacyFallbackWarning"));
     }
   }
 

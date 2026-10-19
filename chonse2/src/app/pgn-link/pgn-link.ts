@@ -3,8 +3,8 @@ import ThemeService from '../themes/theme-service';
 import { form, FormField } from '@angular/forms/signals';
 import { BootstrapButton } from "../ui/bootstrap-button/bootstrap-button";
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
-import { ToastrService } from 'ngx-toastr';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { NotificationService } from '../ui/notifications/notification-service';
 
 @Component({
   selector: 'app-pgn-link',
@@ -15,7 +15,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 })
 export class PgnLink {
   public themeService = inject(ThemeService);
-  private toastr = inject(ToastrService);
+  private notificationService = inject(NotificationService)
   private translate = inject(TranslateService)
 
   formModel = signal<FormModel>({pgnText: ""});
@@ -26,18 +26,18 @@ export class PgnLink {
 
   }
 
-  onBtnClicked()
+  async onBtnClicked()
   {
     try 
     {
       const link = GameLinkHelper.generatePgnGameLink(this.form.pgnText().value());
-      navigator.clipboard.writeText(link);
+      await navigator.clipboard.writeText(link);
 
-      this.toastr.info(this.translate.instant("pgnLink.toastr.success"));
+      this.notificationService.notify('info', this.translate.instant("pgnLink.toastr.success"));
     }
     catch(ex)
     {
-      this.toastr.error(this.translate.instant("pgnLink.toastr.error") + ex);
+      this.notificationService.notify('error', this.translate.instant("pgnLink.toastr.error") + ex);
     }
   }
 }

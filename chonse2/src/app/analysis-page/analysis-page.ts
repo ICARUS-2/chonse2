@@ -5,7 +5,6 @@ import BoardState from '../chessboard/chessboard/board-state';
 import { BoardNames } from '../boards';
 import { ChessComAPI }from '../../libs/server-api-lib/chesscom-api';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
-import { ToastrService } from 'ngx-toastr';
 import { RouteConstants } from '../app.routes';
 import { PgnHeaders } from '../chessboard/chessboard/pgn-misc';
 import { LichessAPI } from '../../libs/server-api-lib/lichess-api';
@@ -13,6 +12,7 @@ import ThemeService from '../themes/theme-service';
 import MoveResult from '../chessboard/chessboard/move-result';
 import LocalStorageHelper from '../../libs/local-storage-helper';
 import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
+import { NotificationService } from '../ui/notifications/notification-service';
 
 @Component({
   selector: 'app-analysis-page',
@@ -23,7 +23,7 @@ import ChessGameFactory from '../../libs/chess-game-lib/chess-game-factory';
 })
 export class AnalysisPage implements OnInit{
   gameService = inject(ChessBoardService);
-  private toastrService = inject(ToastrService);
+  private notificationService = inject(NotificationService);
   themeService = inject(ThemeService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -95,20 +95,20 @@ export class AnalysisPage implements OnInit{
             }
 
             this.cdr.markForCheck();
-            this.toastrService.success("Game import successful.");
+            this.notificationService.notify('success', "Game import successful.");
 
             //save as the most recent pgn analyzed
             LocalStorageHelper.setString(LocalStorageHelper.LAST_PGN, GameLinkHelper.compressStringForUrl(game.pgn));
           }
           catch(ex) //If PGN parse failed.
           {
-            this.toastrService.error("Import failed - PGN parse failed.")
+            this.notificationService.notify('error', "Import failed - PGN parse failed.");
             this.setDefaultBoard();
           }
         }
         else //If the game was not found.
         {
-          this.toastrService.error("Import failed - Game not found.")
+          this.notificationService.notify('error', "Import failed - Game not found.");
           this.setDefaultBoard();
         }
       }
@@ -132,26 +132,26 @@ export class AnalysisPage implements OnInit{
 
 
             this.cdr.markForCheck();
-            this.toastrService.success("Game import successful.");
+            this.notificationService.notify('success', "Game import successful.");
 
             //save as the most recent pgn analyzed
             LocalStorageHelper.setString(LocalStorageHelper.LAST_PGN, GameLinkHelper.compressStringForUrl(game.pgn));
           }
           catch(ex) //If PGN parse failed.
           {
-            this.toastrService.error("Import failed - PGN parse failed.")
+            this.notificationService.notify('error', "Import failed - PGN parse failed.");
             this.setDefaultBoard();
           }
         }
         else //If the game was not found.
         {
-          this.toastrService.error("Import failed - Game not found.")
+          this.notificationService.notify('error', "Import failed - Game not found.");
           this.setDefaultBoard();
         }
       }
       else //If the site source is not valid
       {
-        this.toastrService.error("Import failed - Invalid source.");
+        this.notificationService.notify('error', "Import failed - Invalid source.");
         this.setDefaultBoard();
       }
     }
@@ -199,14 +199,14 @@ export class AnalysisPage implements OnInit{
         this.gameService.deleteGame(BoardNames.Analysis);
         this.gameService.addGame(BoardNames.Analysis, boardState);
         this.cdr.markForCheck();
-        this.toastrService.success("Game import successful.");
+        this.notificationService.notify('success', "Game import successful.");
 
         //save as the most recent pgn analyzed
         LocalStorageHelper.setString(LocalStorageHelper.LAST_PGN, GameLinkHelper.compressStringForUrl(this.pgnFromLink));
       }
       catch(ex) //If PGN parse failed.
       {
-        this.toastrService.error("Import failed - PGN parse failed.")
+        this.notificationService.notify('error', "Import failed - PGN parse failed.");
         this.setDefaultBoard();
       }
     }
