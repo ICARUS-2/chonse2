@@ -1,9 +1,9 @@
 import { inject, Service } from "@angular/core";
 import { NotificationService, NotificationType } from "./notification-service";
-import { ToastrService } from "ngx-toastr";
+import { ToastrService } from "@openng/ngx-toastr";
 
 @Service()
-export class LegacyToastrNotificationService extends NotificationService 
+export class OpenNGToastrNotificationService extends NotificationService 
 {
     private toastrService = inject(ToastrService);
 

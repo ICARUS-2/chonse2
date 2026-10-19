@@ -1,7 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { provideToastr } from 'ngx-toastr';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { provideTranslateService } from "@ngx-translate/core";
 import { provideHttpClient } from "@angular/common/http";
@@ -9,7 +8,8 @@ import { provideTranslateHttpLoader } from "@ngx-translate/http-loader";
 import { DEFAULT_LANG, Languages } from '../globals/globals';
 import LocalStorageHelper from '../libs/local-storage-helper';
 import { NotificationService } from './ui/notifications/notification-service';
-import { LegacyToastrNotificationService } from './ui/notifications/legacy-toastr-notification-service';
+import { provideToastr } from '@openng/ngx-toastr';
+import { OpenNGToastrNotificationService } from './ui/notifications/openng-toastr-notification-service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,7 +26,7 @@ export const appConfig: ApplicationConfig = {
     provideCharts(withDefaultRegisterables()),
     
     //Notifications
-    { provide: NotificationService, useClass: LegacyToastrNotificationService },
+    { provide: NotificationService, useClass: OpenNGToastrNotificationService },
     provideToastr({progressBar: true, closeButton: true, positionClass: "toast-bottom-left", timeOut: 2000}),
 
     //For translation
