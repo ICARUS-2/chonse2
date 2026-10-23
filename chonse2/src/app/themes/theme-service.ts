@@ -7,6 +7,7 @@ import BlackRedTheme from "./app-themes/black-red-theme";
 import GalacticTheme from "./app-themes/galactic-theme";
 import DarkTheme from "./app-themes/dark-theme";
 import FrutigerAeroTheme from "./app-themes/frutiger-aero-theme";
+import DarkBlueTheme from "./app-themes/dark-blue-theme";
 
 @Service()
 export default class ThemeService 
@@ -30,6 +31,8 @@ export default class ThemeService
                 return new WhiteBlueTheme();
             case Themes.Dark:
                 return new DarkTheme();
+            case Themes.DarkBlue:
+                return new DarkBlueTheme();
             case Themes.BlackAndRed: 
                 return new BlackRedTheme();
             case Themes.Galactic:
