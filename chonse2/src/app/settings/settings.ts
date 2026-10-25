@@ -8,7 +8,7 @@ import { disabled, form, FormField, max, min } from '@angular/forms/signals';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { EngineName, EngineInformation } from '../../libs/engine-lib/types/enums';
 import { AngularUCIEngine } from '../../libs/engine-lib/angularUciEngine';
-import { DEFAULT_LANG, Languages } from '../../globals/globals';
+import { Languages } from '../../globals/globals';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import ChessboardHelper from '../chessboard/helpers';
 import { isWasmSupported } from '../../libs/engine-lib/helpers/shared';

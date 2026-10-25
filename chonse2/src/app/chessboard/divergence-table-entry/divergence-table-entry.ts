@@ -1,4 +1,4 @@
-import { Component, computed, input, signal, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy, inject } from '@angular/core';
 import ThemeService from '../../themes/theme-service';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { PositionEval } from '../../../libs/engine-lib/types/eval';

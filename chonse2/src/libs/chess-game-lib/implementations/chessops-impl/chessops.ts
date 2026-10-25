@@ -422,13 +422,6 @@ export default class ChessopsBoard implements IChessGame
         }
     }
 
-    //Creaetes a new chessops from fen.
-    private _instantiateFromFen(fen: string)
-    {
-        const setup = parseFen(fen).unwrap();
-        this._inst = Chess.fromSetup(setup).unwrap();
-    }
-
     //Reinitializes subfields.
     private _resetInternal()
     {
@@ -1063,8 +1056,6 @@ export default class ChessopsBoard implements IChessGame
         san: string
     ): MoveResult
     {
-        const result = new MoveResult();
-
         //Get all legal moves.
         const legalMoves = board._inst.allDests();
 

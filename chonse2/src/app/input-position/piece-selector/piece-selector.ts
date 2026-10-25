@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, input, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, input, Output } from '@angular/core';
 import { Square } from "../../chessboard/square/square";
 import { CommonModule } from '@angular/common';
 import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';

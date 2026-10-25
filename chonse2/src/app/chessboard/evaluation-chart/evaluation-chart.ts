@@ -60,12 +60,7 @@ export class EvaluationChart implements OnInit {
           label: (tooltipItem) => 
           {
             //tooltipItem.datasetIndex and tooltipItem.dataIndex give the index
-            const dataset = tooltipItem.dataset;
             const dataIndex = tooltipItem.dataIndex!;
-            
-            //Access chart data
-            const chartData = dataset.data as number[];
-            const value = chartData[dataIndex];
             
             //Access custom properties
             const chartItem = this.getChartData().datasets[0].data[dataIndex] as any;
@@ -74,7 +69,6 @@ export class EvaluationChart implements OnInit {
             const cp = chartItem.cp ?? '';
             const mate = chartItem.mate ?? '';
             const moveClass = chartItem.moveClassification ?? '';
-            const y = chartItem.y;
             const val = mate ? ("M"+mate) : (cp / 100).toFixed(1);
 
             return `${val} - ${moveClass}`;

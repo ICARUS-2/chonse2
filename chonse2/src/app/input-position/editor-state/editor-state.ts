@@ -634,37 +634,6 @@ export default class EditorState
       return legalMoves;
   }
 
-  //Boolean checks if the passed player has any legal moves.
-  private _playerHasLegalMoves(turn: boolean): boolean
-  {
-    const color: string = turn ? PieceColor.WHITE : PieceColor.BLACK;
-    const pieceCoords: Array<string> = [];
-    const legalMoves: Array<string> = [];
-    
-    //Loop through each of these to get the coordinates of the pieces.
-    for(let i = 0; i < ChessConstants.COORDS.length; i++)
-    {
-      for(let j = 0; j < ChessConstants.COORDS[i].length; j++)
-      {
-        const piece = this._pieceState[i][j];
-
-        if ( piece.startsWith(color))
-        {
-          pieceCoords.push(ChessConstants.COORDS[i][j]);
-        }
-      }
-    }
-
-    pieceCoords.forEach( pieceCoord =>
-    {
-      const result = this.getLegalMoves(pieceCoord)
-      legalMoves.push(...result);
-    }
-    )
-
-    return legalMoves.length != 0;
-  }
-
   //Dummy move which is used for check verification (to make sure someone isn't putting themselves in check).
   private static _playDummyMove(inst: EditorState, fromCoordinate: string, toCoordinate: string)
   {

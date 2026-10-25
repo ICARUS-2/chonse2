@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, inject, input, Input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, ElementRef, inject, input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Square } from '../square/square';
 import { BoardPlayerInfo } from "../board-player-info/board-player-info";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -22,7 +22,6 @@ import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
 import { getEvaluationBarValue, uciMoveParams } from '../../../libs/engine-lib/helpers/chessHelper';
 import { EngineName, EngineInformation, EngineType, MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { EvalSource } from '../../../libs/engine-lib/types/eval';
-import { AngularUCIEngine } from '../../../libs/engine-lib/angularUciEngine';
 import MoveResult from './move-result';
 import { BoardArrowButtons } from '../board-arrow-buttons/board-arrow-buttons';
 import { BoardOptions } from '../board-options/board-options';

@@ -792,7 +792,6 @@ export class CoachUtils
                         
                             let developmentPieceInQuestion = "";
                             let didPlayerMissDevelopment = false;
-                            let didPlayerDevelopRightPieceButToWrongSquare = false;
 
                             //kingside knight
                             if (
@@ -805,10 +804,7 @@ export class CoachUtils
                                 {
                                     didPlayerMissDevelopment = true;
                                 }
-                                else //If they did indeed move the knight, they did it to the wrong square. 
-                                {
-                                    didPlayerDevelopRightPieceButToWrongSquare = true;
-                                }
+                                //Else if they did indeed move the knight, they did it to the wrong square. 
 
                                 developmentPieceInQuestion = PieceType.KNIGHT;
                             }
@@ -822,10 +818,6 @@ export class CoachUtils
                                 if (move.fromCoord != kingsideBishopSquare)
                                 {
                                     didPlayerMissDevelopment = true;
-                                }
-                                else
-                                {
-                                    didPlayerDevelopRightPieceButToWrongSquare = true;
                                 }
 
                                 developmentPieceInQuestion = PieceType.BISHOP;
@@ -841,10 +833,6 @@ export class CoachUtils
                                 {
                                     didPlayerMissDevelopment = true;
                                 }
-                                else
-                                {
-                                    didPlayerDevelopRightPieceButToWrongSquare = true;
-                                }
 
                                 developmentPieceInQuestion = PieceType.KNIGHT;
                             }
@@ -858,10 +846,6 @@ export class CoachUtils
                                 if (move.fromCoord != queensideBishopSquare)
                                 {
                                     didPlayerMissDevelopment = true;
-                                }
-                                else
-                                {
-                                    didPlayerDevelopRightPieceButToWrongSquare = true;
                                 }
 
                                 developmentPieceInQuestion = PieceType.BISHOP;
