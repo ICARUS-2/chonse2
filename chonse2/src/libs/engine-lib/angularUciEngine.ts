@@ -24,7 +24,7 @@ import { Stockfish19 } from "./engines/stockfish19";
 import { Signal, signal, WritableSignal } from "@angular/core";
 
 
-export class UciEngine {
+export class AngularUCIEngine {
   static getEngine(engineName: EngineName)
   {
     if (!isWasmSupported())
@@ -49,7 +49,7 @@ export class UciEngine {
     }
   }
 
-  static readonly DEFAULT_ENGINE: EngineName.Stockfish19Lite;
+  static readonly DEFAULT_ENGINE: EngineName = EngineName.Stockfish19Lite;
   static readonly MIN_ELO: number = 1320;
   static readonly MAX_ELO: number = 3190;
 
@@ -88,7 +88,7 @@ export class UciEngine {
   private constructor(
     engineName: EngineName,
     enginePath: string,
-    customEngineInit: UciEngine["customEngineInit"]
+    customEngineInit: AngularUCIEngine["customEngineInit"]
   ) {
     this._name = signal(engineName);
     this.name = this._name.asReadonly();
@@ -99,9 +99,9 @@ export class UciEngine {
   public static async create(
     engineName: EngineName,
     enginePath: string,
-    customEngineInit?: UciEngine["customEngineInit"]
-  ): Promise<UciEngine> {
-    const engine = new UciEngine(engineName, enginePath, customEngineInit);
+    customEngineInit?: AngularUCIEngine["customEngineInit"]
+  ): Promise<AngularUCIEngine> {
+    const engine = new AngularUCIEngine(engineName, enginePath, customEngineInit);
 
     await engine.addNewWorker();
     engine._isReady.set(true);
@@ -156,7 +156,7 @@ export class UciEngine {
   private async setElo(elo: number) {
     if (elo === this.elo) return;
 
-    if (elo < UciEngine.MIN_ELO || elo > UciEngine.MAX_ELO) {
+    if (elo < AngularUCIEngine.MIN_ELO || elo > AngularUCIEngine.MAX_ELO) {
       throw new Error(`Invalid Elo value : ${elo}`);
     }
 
@@ -305,7 +305,7 @@ export class UciEngine {
   public async evaluateGame({
     fens,
     uciMoves,
-    depth = UciEngine.DEFAULT_DEPTH,
+    depth = AngularUCIEngine.DEFAULT_DEPTH,
     multiPv = this.multiPv,
     setEvaluationProgress,
     playersRatings,
@@ -407,7 +407,7 @@ export class UciEngine {
 
   private async evaluatePosition(
     fen: string,
-    depth = UciEngine.DEFAULT_DEPTH,
+    depth = AngularUCIEngine.DEFAULT_DEPTH,
   ): Promise<PositionEval> {
 
     if (this.isCloudHybridMode())
@@ -437,7 +437,7 @@ export class UciEngine {
 
   public async evaluatePositionWithUpdate({
     fen,
-    depth = UciEngine.DEFAULT_DEPTH,
+    depth = AngularUCIEngine.DEFAULT_DEPTH,
     multiPv = this.multiPv,
     setPartialEval,
     setCompletedEval,
@@ -496,7 +496,7 @@ export class UciEngine {
   public async getEngineNextMove(
     fen: string,
     elo: number,
-    depth = UciEngine.DEFAULT_DEPTH
+    depth = AngularUCIEngine.DEFAULT_DEPTH
   ): Promise<string | undefined> {
     this.throwErrorIfNotReady();
 

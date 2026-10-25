@@ -8,6 +8,7 @@ import { TranslateService } from "@ngx-translate/core";
 import IChessGame from "../../libs/chess-game-lib/i-chess-game";
 import LocalStorageHelper from "../../libs/local-storage-helper";
 import { NotificationService } from "../ui/notifications/notification-service";
+import DefaultSettings from "../settings/default-settings";
 
 export default class VsAiConfigurationModalHelper
 {
@@ -46,7 +47,7 @@ export default class VsAiConfigurationModalHelper
                     bs.isFlipped.set(true);
                 }
 
-                const engineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE);
+                const engineName = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, DefaultSettings.SELECTED_ENGINE);
                 const engineDisplayName = engineName;
 
                 isHumanWhite ? (bs.pgnHeaders().black = engineDisplayName) : (bs.pgnHeaders().white = engineDisplayName)

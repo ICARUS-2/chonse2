@@ -1,6 +1,7 @@
 import { Service } from '@angular/core';
 import { FormattedCoachSentence } from './coach-types';
 import LocalStorageHelper from '../local-storage-helper';
+import DefaultSettings from '../../app/settings/default-settings';
 
 @Service()
 export class CoachAudio 
@@ -14,7 +15,7 @@ export class CoachAudio
     //it's stopped immediately and this new one starts right away.
     public playSentences(sentences: Array<FormattedCoachSentence>): void
     {
-        if (!LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true))
+        if (!LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, DefaultSettings.INSIGHTS_AUDIO))
         {
             return;
         }
@@ -34,7 +35,7 @@ export class CoachAudio
     private playFrom(sentences: Array<FormattedCoachSentence>, index: number, playbackId: number): void
     {
         //A newer call to playSentences() or stop() has already superseded this run.
-        if (playbackId !== this.currentPlaybackId || index >= sentences.length || !LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true))
+        if (playbackId !== this.currentPlaybackId || index >= sentences.length || !LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, DefaultSettings.INSIGHTS_AUDIO))
         {
             return;
         }

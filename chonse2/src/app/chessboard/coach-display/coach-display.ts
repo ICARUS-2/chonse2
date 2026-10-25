@@ -17,8 +17,9 @@ import { CoachAudio } from '../../../libs/coach-lib/coach-audio';
 import { ChessConstants } from '../../../libs/chess-game-lib/types/constants';
 import { uciMoveParams } from '../../../libs/engine-lib/helpers/chessHelper';
 import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
-import { UciEngine } from '../../../libs/engine-lib/uciEngine';
+import { AngularUCIEngine } from '../../../libs/engine-lib/angularUciEngine';
 import { EngineService } from '../../../libs/engine-lib/engineService';
+import DefaultSettings from '../../settings/default-settings';
 
 @Component({
   selector: 'app-coach-display',
@@ -38,7 +39,8 @@ export class CoachDisplay {
   ChessboardHelper = ChessboardHelper;
   LocalStorageHelper = LocalStorageHelper;
   moveClassificationLabels = moveClassificationLabels;
-  UciEngine = UciEngine;
+  UciEngine = AngularUCIEngine;
+  DefaultSettings = DefaultSettings;
 
   // --- Required Signal Inputs ---
   boardState = input.required<BoardState>();
@@ -189,7 +191,7 @@ export class CoachDisplay {
             const piece = currentState.getPieceState()[rawPieceIndex.rowIndex][rawPieceIndex.colIndex];
 
             
-            if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
+            if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, DefaultSettings.PIECE_ANIMATIONS))
             {
               //First, do the animation
               this.animateMove.emit({
@@ -530,7 +532,7 @@ export class CoachDisplay {
   //#region Settings 
   handleAudioClicked()
   {
-    const audioEnabled = LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true);
+    const audioEnabled = LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, DefaultSettings.INSIGHTS_AUDIO);
 
     if (audioEnabled)
     {

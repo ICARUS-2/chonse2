@@ -2,6 +2,7 @@ import { computed } from "@angular/core";
 import { MoveClassification } from "../../libs/engine-lib/types/enums";
 import LocalStorageHelper from "../../libs/local-storage-helper";
 import { IMoveResult } from "../../libs/chess-game-lib/types/move-result";
+import DefaultSettings from "../settings/default-settings";
 
 export default class ChessboardHelper 
 {
@@ -32,7 +33,7 @@ export default class ChessboardHelper
 
     static getIconSourceForPiece(p: string)
     {
-        const selectedType = LocalStorageHelper.getString(LocalStorageHelper.CHESS_PIECES, ChessboardHelper.DEFAULT_PIECE_SET);
+        const selectedType = LocalStorageHelper.getString(LocalStorageHelper.CHESS_PIECES, DefaultSettings.CHESS_PIECES);
 
         if (!this.PIECE_SETS.includes(selectedType))
         {
@@ -44,7 +45,7 @@ export default class ChessboardHelper
 
     static getNotation(moveResult: IMoveResult): string
     {
-        const isVerbose = LocalStorageHelper.getBoolean(LocalStorageHelper.VERBOSE_NOTATION, false);
+        const isVerbose = LocalStorageHelper.getBoolean(LocalStorageHelper.VERBOSE_NOTATION, DefaultSettings.VERBOSE_NOTATION);
 
         if (isVerbose)
         {
