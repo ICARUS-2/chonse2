@@ -17,7 +17,7 @@ import { CoachAudio } from '../../../libs/coach-lib/coach-audio';
 import { ChessConstants } from '../../../libs/chess-game-lib/types/constants';
 import { uciMoveParams } from '../../../libs/engine-lib/helpers/chessHelper';
 import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
-import { UciEngine } from '../../../libs/engine-lib/uciEngine';
+import { AngularUCIEngine } from '../../../libs/engine-lib/angularUciEngine';
 import { EngineService } from '../../../libs/engine-lib/engineService';
 import DefaultSettings from '../../settings/default-settings';
 
@@ -39,7 +39,7 @@ export class CoachDisplay {
   ChessboardHelper = ChessboardHelper;
   LocalStorageHelper = LocalStorageHelper;
   moveClassificationLabels = moveClassificationLabels;
-  UciEngine = UciEngine;
+  UciEngine = AngularUCIEngine;
   DefaultSettings = DefaultSettings;
 
   // --- Required Signal Inputs ---

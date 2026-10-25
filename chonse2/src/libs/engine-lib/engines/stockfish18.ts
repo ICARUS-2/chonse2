@@ -1,11 +1,11 @@
 import { EngineName } from "../types/enums";
-import { UciEngine } from "../uciEngine";
+import { AngularUCIEngine } from "../angularUciEngine";
 import { isWasmSupported } from "../helpers/shared";
 import { BASE_PATH } from "../../../globals/globals";
 
 
 export class Stockfish18 {
-  public static async create(lite?: boolean): Promise<UciEngine> {
+  public static async create(lite?: boolean): Promise<AngularUCIEngine> {
     if (!Stockfish18.isSupported()) {
       throw new Error("Stockfish 18 is not supported");
     }
@@ -18,7 +18,7 @@ export class Stockfish18 {
       ? EngineName.Stockfish18Lite
       : EngineName.Stockfish18;
 
-    return UciEngine.create(engineName, enginePath);
+    return AngularUCIEngine.create(engineName, enginePath);
   }
 
   public static isSupported() {

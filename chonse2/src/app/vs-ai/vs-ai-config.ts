@@ -1,4 +1,4 @@
-import { UciEngine } from "../../libs/engine-lib/uciEngine";
+import { AngularUCIEngine } from "../../libs/engine-lib/angularUciEngine";
 
 
 export default class VsAiConfig 
@@ -8,9 +8,9 @@ export default class VsAiConfig
     
     constructor(elo: number, humanPlayerIsWhite: boolean)
     {
-        if (elo > UciEngine.MAX_ELO || elo < UciEngine.MIN_ELO)
+        if (elo > AngularUCIEngine.MAX_ELO || elo < AngularUCIEngine.MIN_ELO)
         {
-            throw (`ELO was out of range${UciEngine.MIN_ELO} - ${UciEngine.MAX_ELO}`)
+            throw (`ELO was out of range${AngularUCIEngine.MIN_ELO} - ${AngularUCIEngine.MAX_ELO}`)
         }
 
         this._elo = elo;

@@ -6,7 +6,7 @@ import { PgnFields, PgnHeaders } from "./pgn-misc";
 import { Quote, Quotes } from "./quotes";
 import { MoveClassification } from "../../../libs/engine-lib/types/enums";
 import { PositionEval, GameEval, EvaluateGameParams, EvalSource, LineEval, EvaluatePositionWithUpdateParams } from "../../../libs/engine-lib/types/eval";
-import { UciEngine } from "../../../libs/engine-lib/uciEngine";
+import { AngularUCIEngine } from "../../../libs/engine-lib/angularUciEngine";
 import MoveResult from "./move-result";
 import { CoachUtils } from "../../../libs/coach-lib/coach-utils";
 import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
@@ -56,7 +56,7 @@ export default class BoardState
     isVsAi: WritableSignal<boolean> = signal(false);
     isVsAiInProgress: WritableSignal<boolean> = signal(false);
     humanPlayerIsWhite: WritableSignal<boolean> = signal(true);
-    aiElo: WritableSignal<number> = signal(UciEngine.MIN_ELO);
+    aiElo: WritableSignal<number> = signal(AngularUCIEngine.MIN_ELO);
     
     //Cosmetic stuff.
     squareHighlightStatuses: WritableSignal<Array<Array<boolean>>>;
@@ -327,7 +327,7 @@ export default class BoardState
                 fen: state.getFEN(),
 
                 //if overriding for coach move, go min depth. otherwise, saved depth.
-                depth: overrideForCoachEvals ? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, DefaultSettings.MANUAL_ENGINE_DEPTH),
+                depth: overrideForCoachEvals ? AngularUCIEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, DefaultSettings.MANUAL_ENGINE_DEPTH),
                 
                 //default pv
                 multiPv: await this.engineService.getNumberOfLines(),

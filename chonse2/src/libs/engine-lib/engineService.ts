@@ -1,7 +1,7 @@
 import { computed, Service, signal } from "@angular/core";
 import LocalStorageHelper from "../local-storage-helper";
 import { EngineName } from "./types/enums";
-import { UciEngine } from "./uciEngine";
+import { AngularUCIEngine } from "./angularUciEngine";
 import { EvaluateGameParams, EvaluatePositionWithUpdateParams, GameEval, PositionEval } from "./types/eval";
 import DefaultSettings from "../../app/settings/default-settings";
 
@@ -9,8 +9,8 @@ import DefaultSettings from "../../app/settings/default-settings";
 export class EngineService
 {
     //The stored engine instance
-    private readonly _engine = signal<UciEngine | null>(null);
-    private _enginePromise: Promise<UciEngine> | null = null;
+    private readonly _engine = signal<AngularUCIEngine | null>(null);
+    private _enginePromise: Promise<AngularUCIEngine> | null = null;
 
     //Engine data for lookup.
     public readonly name = computed(() => this._engine()?.name() ?? EngineName.None);
@@ -26,7 +26,7 @@ export class EngineService
     public readonly isEvaluatingGame = this._isEvaluatingGame.asReadonly();
 
     //Ensures any internal callers will always get the engine instance (singleton).
-    private async _getEngine(): Promise<UciEngine>
+    private async _getEngine(): Promise<AngularUCIEngine>
     {
         //If the engine was already instantiated just return the thing.
         const existing = this._engine();
@@ -48,7 +48,7 @@ export class EngineService
         const cloudHybridMode = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, DefaultSettings.CLOUD_HYBRID_MODE);
 
         //Get engine from internal factory.
-        this._enginePromise = UciEngine.getEngine(engineType)
+        this._enginePromise = AngularUCIEngine.getEngine(engineType)
             .then(engine =>
             {
                 //Ensure cloud hybrid set.

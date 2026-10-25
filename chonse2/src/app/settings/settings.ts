@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import { disabled, form, FormField, max, min } from '@angular/forms/signals';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { EngineName, EngineInformation } from '../../libs/engine-lib/types/enums';
-import { UciEngine } from '../../libs/engine-lib/uciEngine';
+import { AngularUCIEngine } from '../../libs/engine-lib/angularUciEngine';
 import { DEFAULT_LANG, Languages } from '../../globals/globals';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import ChessboardHelper from '../chessboard/helpers';
@@ -107,12 +107,12 @@ export class Settings implements OnInit{
     disabled(schema.selectedEngine, {when: () => { return this.engineDropdownDisabled() }})
 
     //Engine depth
-    min(schema.engineDepth, UciEngine.MIN_DEPTH),
-    max(schema.engineDepth, UciEngine.MAX_DEPTH),
+    min(schema.engineDepth, AngularUCIEngine.MIN_DEPTH),
+    max(schema.engineDepth, AngularUCIEngine.MAX_DEPTH),
 
     //Engine depth (manual)
-    min(schema.manualEngineDepth, UciEngine.MIN_DEPTH),
-    max(schema.manualEngineDepth, UciEngine.MAX_DEPTH),
+    min(schema.manualEngineDepth, AngularUCIEngine.MIN_DEPTH),
+    max(schema.manualEngineDepth, AngularUCIEngine.MAX_DEPTH),
 
     //Engine thread count
     min(schema.engineThreadCount, 1),

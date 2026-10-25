@@ -1,7 +1,5 @@
-import { EngineName } from '../../libs/engine-lib/types/enums';
-import { UciEngine } from '../../libs/engine-lib/uciEngine';
+import { AngularUCIEngine } from '../../libs/engine-lib/angularUciEngine';
 import ChessboardHelper from '../chessboard/helpers';
-import ThemeService from '../themes/theme-service';
 import { DEFAULT_LANG } from '../../globals/globals';
 import { Themes } from '../themes/themes';
 
@@ -14,9 +12,9 @@ export default class DefaultSettings
     static readonly VERBOSE_NOTATION = false;
 
     //Engine
-    static readonly SELECTED_ENGINE = UciEngine.DEFAULT_ENGINE;
-    static readonly ENGINE_DEPTH = UciEngine.DEFAULT_DEPTH;
-    static readonly MANUAL_ENGINE_DEPTH = UciEngine.DEFAULT_DEPTH;
+    static readonly SELECTED_ENGINE = AngularUCIEngine.DEFAULT_ENGINE;
+    static readonly ENGINE_DEPTH = AngularUCIEngine.DEFAULT_DEPTH;
+    static readonly MANUAL_ENGINE_DEPTH = AngularUCIEngine.DEFAULT_DEPTH;
     static readonly CLOUD_HYBRID_MODE = true;
     static readonly ENGINE_THREAD_COUNT = 1;
 

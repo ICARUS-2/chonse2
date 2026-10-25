@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from "../../ui/bootstrap-button/bootstrap-button";
 import { form, FormField, max, min } from '@angular/forms/signals';
-import { UciEngine } from '../../../libs/engine-lib/uciEngine';
+import { AngularUCIEngine } from '../../../libs/engine-lib/angularUciEngine';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -20,18 +20,18 @@ export class VsAiConfigurationModal {
   private activeModal = inject(NgbActiveModal);
   public themeService = inject(ThemeService);
 
-  UciEngine = UciEngine;
+  UciEngine = AngularUCIEngine;
 
   formModel = signal<FormModel>( 
   {
-    elo: UciEngine.MIN_ELO,
+    elo: AngularUCIEngine.MIN_ELO,
     isHumanPlayerWhite: true
   })
 
   form = form(this.formModel, ( schema ) => 
   {
-    min(schema.elo, UciEngine.MIN_ELO);
-    max(schema.elo, UciEngine.MAX_ELO);
+    min(schema.elo, AngularUCIEngine.MIN_ELO);
+    max(schema.elo, AngularUCIEngine.MAX_ELO);
   });
   
   constructor()

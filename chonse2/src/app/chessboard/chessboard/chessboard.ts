@@ -22,7 +22,7 @@ import { CopyPgnModal } from '../copy-pgn-modal/copy-pgn-modal';
 import { getEvaluationBarValue, uciMoveParams } from '../../../libs/engine-lib/helpers/chessHelper';
 import { EngineName, EngineInformation, EngineType, MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { EvalSource } from '../../../libs/engine-lib/types/eval';
-import { UciEngine } from '../../../libs/engine-lib/uciEngine';
+import { AngularUCIEngine } from '../../../libs/engine-lib/angularUciEngine';
 import MoveResult from './move-result';
 import { BoardArrowButtons } from '../board-arrow-buttons/board-arrow-buttons';
 import { BoardOptions } from '../board-options/board-options';

@@ -1,12 +1,12 @@
 import { EngineName } from "../types/enums";
-import { UciEngine } from "../uciEngine";
+import { AngularUCIEngine } from "../angularUciEngine";
 import { BASE_PATH } from "../../../globals/globals";
 
 export class Stockfish11 {
-  public static async create(): Promise<UciEngine> {
+  public static async create(): Promise<AngularUCIEngine> {
     const enginePath = `${BASE_PATH}/engines/stockfish-11/stockfish-11.js`;
 
-    return UciEngine.create(EngineName.Stockfish11, enginePath);
+    return AngularUCIEngine.create(EngineName.Stockfish11, enginePath);
   }
 
   public static isSupported() {
