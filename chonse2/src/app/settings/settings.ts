@@ -14,6 +14,7 @@ import ChessboardHelper from '../chessboard/helpers';
 import { isWasmSupported } from '../../libs/engine-lib/helpers/shared';
 import { EngineService } from '../../libs/engine-lib/engineService';
 import { NotificationService } from '../ui/notifications/notification-service';
+import DefaultSettings from './default-settings';
 
 @Component({
   selector: 'app-settings',
@@ -39,27 +40,66 @@ export class Settings implements OnInit{
 
   formModel = signal<FormModel>(
   {
-    //board
-    clickToMove:  LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, false),
-    animatedPieces: LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true),
-    chessPieces: LocalStorageHelper.getString(LocalStorageHelper.CHESS_PIECES, ChessboardHelper.DEFAULT_PIECE_SET),
-    verboseNotation: LocalStorageHelper.getBoolean(LocalStorageHelper.VERBOSE_NOTATION, false),
-    
-    //engine
-    selectedEngine: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, EngineName.Stockfish18Lite) as EngineName,
-    engineDepth:  LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
-    manualEngineDepth: LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH),
-    cloudHybridMode: LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, true),
-    engineThreadCount: LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1),
+      //Board
+      clickToMove: LocalStorageHelper.getBoolean(
+          LocalStorageHelper.CLICK_TO_MOVE,
+          DefaultSettings.CLICK_TO_MOVE
+      ),
+      animatedPieces: LocalStorageHelper.getBoolean(
+          LocalStorageHelper.PIECE_ANIMATIONS,
+          DefaultSettings.PIECE_ANIMATIONS
+      ),
+      chessPieces: LocalStorageHelper.getString(
+          LocalStorageHelper.CHESS_PIECES,
+          DefaultSettings.CHESS_PIECES
+      ),
+      verboseNotation: LocalStorageHelper.getBoolean(
+          LocalStorageHelper.VERBOSE_NOTATION,
+          DefaultSettings.VERBOSE_NOTATION
+      ),
 
-    //appearance
-    selectedTheme: LocalStorageHelper.getString(LocalStorageHelper.SELECTED_THEME, ThemeService.DEFAULT_THEME) as Themes,
-    language: LocalStorageHelper.getString(LocalStorageHelper.LANGUAGE, DEFAULT_LANG) as Languages,
+      //Engine
+      selectedEngine: LocalStorageHelper.getString(
+          LocalStorageHelper.SELECTED_ENGINE,
+          DefaultSettings.SELECTED_ENGINE
+      ) as EngineName,
+      engineDepth: LocalStorageHelper.getNumber(
+          LocalStorageHelper.ENGINE_DEPTH,
+          DefaultSettings.ENGINE_DEPTH
+      ),
+      manualEngineDepth: LocalStorageHelper.getNumber(
+          LocalStorageHelper.MANUAL_ENGINE_DEPTH,
+          DefaultSettings.MANUAL_ENGINE_DEPTH
+      ),
+      cloudHybridMode: LocalStorageHelper.getBoolean(
+          LocalStorageHelper.CLOUD_HYBRID_MODE,
+          DefaultSettings.CLOUD_HYBRID_MODE
+      ),
+      engineThreadCount: LocalStorageHelper.getNumber(
+          LocalStorageHelper.ENGINE_THREAD_COUNT,
+          DefaultSettings.ENGINE_THREAD_COUNT
+      ),
 
-    //coach
-    insightsAudio: LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true),
-    showAltLineArrow: LocalStorageHelper.getBoolean(LocalStorageHelper.SHOW_ALT_LINE_ARROW, true)
-  })
+      //Appearance
+      selectedTheme: LocalStorageHelper.getString(
+          LocalStorageHelper.SELECTED_THEME,
+          DefaultSettings.SELECTED_THEME
+      ) as Themes,
+      language: LocalStorageHelper.getString(
+          LocalStorageHelper.LANGUAGE,
+          DefaultSettings.LANGUAGE
+      ) as Languages,
+
+      //Coach
+      insightsAudio: LocalStorageHelper.getBoolean(
+          LocalStorageHelper.INSIGHTS_AUDIO,
+          DefaultSettings.INSIGHTS_AUDIO
+      ),
+      showAltLineArrow: LocalStorageHelper.getBoolean(
+          LocalStorageHelper.SHOW_ALT_LINE_ARROW,
+          DefaultSettings.SHOW_ALT_LINE_ARROW
+      )
+  });
 
   form = form(this.formModel, (schema) => 
   {
