@@ -46,6 +46,7 @@ import { IMoveResult } from '../../../libs/chess-game-lib/types/move-result';
 import IChessGame from '../../../libs/chess-game-lib/i-chess-game';
 import { EngineService } from '../../../libs/engine-lib/engineService';
 import { NotificationService } from '../../ui/notifications/notification-service';
+import DefaultSettings from '../../settings/default-settings';
 
 interface PieceAnimationState {
   piece: string;
@@ -223,7 +224,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
-    const isClickToMove = LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, false);
+    const isClickToMove = LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, DefaultSettings.CLICK_TO_MOVE);
     
     let piece = "";
 
@@ -506,7 +507,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
         {
 
           //Don't show alt lines if the user explicitly toggled them off.
-          const showAlternative = LocalStorageHelper.getBoolean(LocalStorageHelper.SHOW_ALT_LINE_ARROW, true);
+          const showAlternative = LocalStorageHelper.getBoolean(LocalStorageHelper.SHOW_ALT_LINE_ARROW, DefaultSettings.SHOW_ALT_LINE_ARROW);
           if (idx > 0 && !showAlternative)
           {
             return;
@@ -612,7 +613,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     }
 
     //Sets up the params to query the engine.
-    const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
+    const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, DefaultSettings.ENGINE_DEPTH);
     const fen = this.getMostCurrentMainState().getFEN();
     const elo = this.boardState().aiElo();
               
@@ -637,7 +638,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     const fromIdx = ChessConstants.findIndexFromCoordinate(fromSquare);
     const pieceToAnimate = this.getMostCurrentMainState().getPieceState()[fromIdx.rowIndex][fromIdx.colIndex];
     
-    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, DefaultSettings.PIECE_ANIMATIONS))
     {
       this.animateMove(fromSquare, toSquare, pieceToAnimate);
       setTimeout( () => 
@@ -723,7 +724,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const mostRecentMove = this.boardState().getMostRecentMove();
 
-    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, DefaultSettings.PIECE_ANIMATIONS))
     {
       this.animateMove(mostRecentMove.toCoord, mostRecentMove.fromCoord, mostRecentMove.piece);
 
@@ -747,7 +748,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
   {
     const mostRecentMove = this.boardState().getFutureMove();
 
-    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, true))
+    if (LocalStorageHelper.getBoolean(LocalStorageHelper.PIECE_ANIMATIONS, DefaultSettings.PIECE_ANIMATIONS))
     {
       this.animateMove(mostRecentMove.fromCoord, mostRecentMove.toCoord, mostRecentMove.piece);
       setTimeout( () =>
@@ -936,7 +937,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     if (event.mouse.button == 0)
     {
       //Mouse down doesn't matter if the user is clicking to move.
-      if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE))
+      if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, DefaultSettings.CLICK_TO_MOVE))
       {
         return;
       }
@@ -973,7 +974,7 @@ export class Chessboard implements OnInit, AfterViewInit, OnDestroy {
     if (event.mouse.button == 0)
     {
       //If this is click to move mode
-      if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE))
+      if (LocalStorageHelper.getBoolean(LocalStorageHelper.CLICK_TO_MOVE, DefaultSettings.CLICK_TO_MOVE))
       {
         //If the fromsquare has not been selected, we should set it and compute its legal moves.
         if (this.fromSquare() == "")

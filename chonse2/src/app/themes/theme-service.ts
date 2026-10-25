@@ -8,13 +8,12 @@ import GalacticTheme from "./app-themes/galactic-theme";
 import DarkTheme from "./app-themes/dark-theme";
 import FrutigerAeroTheme from "./app-themes/frutiger-aero-theme";
 import DarkBlueTheme from "./app-themes/dark-blue-theme";
+import DefaultSettings from "../settings/default-settings";
 
 @Service()
 export default class ThemeService 
 {
-    public static readonly DEFAULT_THEME = Themes.WhiteAndBlue;
-
-    private _themeInstance = signal<IAppTheme>(this._createThemeInstance(LocalStorageHelper.getString( LocalStorageHelper.SELECTED_THEME, ThemeService.DEFAULT_THEME )));
+    private _themeInstance = signal<IAppTheme>(this._createThemeInstance(LocalStorageHelper.getString( LocalStorageHelper.SELECTED_THEME, DefaultSettings.SELECTED_THEME )));
 
     private theme = this._themeInstance.asReadonly();
 

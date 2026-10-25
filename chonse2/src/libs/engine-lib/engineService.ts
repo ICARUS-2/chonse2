@@ -3,6 +3,7 @@ import LocalStorageHelper from "../local-storage-helper";
 import { EngineName } from "./types/enums";
 import { UciEngine } from "./uciEngine";
 import { EvaluateGameParams, EvaluatePositionWithUpdateParams, GameEval, PositionEval } from "./types/eval";
+import DefaultSettings from "../../app/settings/default-settings";
 
 @Service()
 export class EngineService
@@ -43,8 +44,8 @@ export class EngineService
         //If we got this far: Engine has not been instantiated, nor has it started to be.
 
         //Engine and cloud hybrid status stored in local.
-        const engineType = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, UciEngine.DEFAULT_ENGINE) as EngineName;
-        const cloudHybridMode = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, true);
+        const engineType = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, DefaultSettings.SELECTED_ENGINE) as EngineName;
+        const cloudHybridMode = LocalStorageHelper.getBoolean(LocalStorageHelper.CLOUD_HYBRID_MODE, DefaultSettings.CLOUD_HYBRID_MODE);
 
         //Get engine from internal factory.
         this._enginePromise = UciEngine.getEngine(engineType)

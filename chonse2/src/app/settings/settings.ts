@@ -173,7 +173,7 @@ export class Settings implements OnInit{
   //Pick engine setting
   handleEngineDropdownSelectionChanged()
   {
-    const currentSetting = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, UciEngine.DEFAULT_ENGINE);
+    const currentSetting = LocalStorageHelper.getString(LocalStorageHelper.SELECTED_ENGINE, DefaultSettings.SELECTED_ENGINE);
     const dropdownSetting = this.form.selectedEngine().value();
 
     //If they changed engine, shut down the current one.

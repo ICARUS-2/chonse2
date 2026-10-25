@@ -12,7 +12,7 @@
             <i class="bi bi-info-circle me-2"></i>
             <span class="me-3">{{ 'chessboard.coachDisplay.luminousInsights' | translate }}</span>
           
-            @let audioEnabled = LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, true);
+            @let audioEnabled = LocalStorageHelper.getBoolean(LocalStorageHelper.INSIGHTS_AUDIO, DefaultSettings.INSIGHTS_AUDIO);
 
             @if (audioEnabled) {
               <i (click)="handleAudioClicked()" class="bi bi-volume-up-fill volumeIcon"></i>
@@ -42,7 +42,7 @@
 
                   @if (evalData.isPartial)
                   {
-                    / {{LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH)}}
+                    / {{LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, DefaultSettings.MANUAL_ENGINE_DEPTH)}}
                   }
 
                   @if (evalData.source === EvalSource.Cloud) {

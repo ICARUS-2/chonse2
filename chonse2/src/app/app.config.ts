@@ -5,11 +5,12 @@ import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { provideTranslateService } from "@ngx-translate/core";
 import { provideHttpClient } from "@angular/common/http";
 import { provideTranslateHttpLoader } from "@ngx-translate/http-loader";
-import { DEFAULT_LANG, Languages } from '../globals/globals';
+import { Languages } from '../globals/globals';
 import LocalStorageHelper from '../libs/local-storage-helper';
 import { NotificationService } from './ui/notifications/notification-service';
 import { provideToastr } from '@openng/ngx-toastr';
 import { OpenNGToastrNotificationService } from './ui/notifications/openng-toastr-notification-service';
+import DefaultSettings from './settings/default-settings';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -37,7 +38,7 @@ export const appConfig: ApplicationConfig = {
         suffix: '.json'
       }),
       fallbackLang: Languages.English,
-      lang: LocalStorageHelper.getString(LocalStorageHelper.LANGUAGE, DEFAULT_LANG)
+      lang: LocalStorageHelper.getString(LocalStorageHelper.LANGUAGE, DefaultSettings.LANGUAGE)
     })
   ]
 };

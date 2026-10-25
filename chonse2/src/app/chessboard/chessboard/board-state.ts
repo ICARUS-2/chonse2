@@ -17,6 +17,7 @@ import { ChessConstants } from "../../../libs/chess-game-lib/types/constants";
 import IChessGame from "../../../libs/chess-game-lib/i-chess-game";
 import ChessGameFactory from "../../../libs/chess-game-lib/chess-game-factory";
 import { EngineService } from "../../../libs/engine-lib/engineService";
+import DefaultSettings from "../../settings/default-settings";
 
 export default class BoardState
 {
@@ -326,7 +327,7 @@ export default class BoardState
                 fen: state.getFEN(),
 
                 //if overriding for coach move, go min depth. otherwise, saved depth.
-                depth: overrideForCoachEvals ? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, UciEngine.MIN_DEPTH),
+                depth: overrideForCoachEvals ? UciEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, DefaultSettings.MANUAL_ENGINE_DEPTH),
                 
                 //default pv
                 multiPv: await this.engineService.getNumberOfLines(),
@@ -606,8 +607,8 @@ export default class BoardState
     {
         const fens: string[] = this.mainStateStack().map( c2 => c2.getFEN() );
         const uciMoves: string[] = this.mainMoveStack().map(m => m.getUci());
-        const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, UciEngine.DEFAULT_DEPTH);
-        const workersNb = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, 1);
+        const depth = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, DefaultSettings.ENGINE_DEPTH);
+        const workersNb = LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, DefaultSettings.ENGINE_THREAD_COUNT);
 
         return {fens, uciMoves, depth, workersNb};
     }
