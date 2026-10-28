@@ -104,7 +104,10 @@ export class Settings implements OnInit{
   form = form(this.formModel, (schema) => 
   {
     //Engine type
-    disabled(schema.selectedEngine, {when: () => { return this.engineDropdownDisabled() }})
+    disabled(schema.selectedEngine, {when: () => { return this.isEvaluatingGame() }})
+
+    //Thread count
+    disabled(schema.engineThreadCount, {when: () => { return this.isEvaluatingGame() }})
 
     //Engine depth
     min(schema.engineDepth, AngularUCIEngine.MIN_DEPTH),
@@ -133,6 +136,12 @@ export class Settings implements OnInit{
       this.notificationService.notify('warning', this.translate.instant("settings.engine.legacyFallbackWarning"));
     }
   }
+
+  //If the engine service is evaluating game (can be used to disable options)
+  isEvaluatingGame = computed( () => 
+  {
+    return this.engineService.isEvaluatingGame();
+  } )
 
   //Coach sound
   coachSoundSwitchPressed(val: boolean)
@@ -184,13 +193,6 @@ export class Settings implements OnInit{
 
     LocalStorageHelper.setString(LocalStorageHelper.SELECTED_ENGINE, dropdownSetting);
   }
-
-  //Pick engine dropdown enabled
-  engineDropdownDisabled = computed( () => 
-  {
-    //For now, this should only be disabled if there is a game being evaluated.
-    return this.engineService.isEvaluatingGame();
-  } )
 
   //Engine depth.
   handleEngineDepthChanged()

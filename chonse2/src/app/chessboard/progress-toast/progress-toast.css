@@ -2,7 +2,7 @@
   position: fixed;
   top: 70px;
   right: 50px;
-  width: 260px;
+  width: 300px;
   background-color: #212529;   /* dark charcoal */
   border-radius: 6px;
   overflow: hidden;             /* clips the progress bar to rounded corners */
@@ -14,6 +14,7 @@
 .toast-body {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
   padding: 10px 36px 10px 14px; /* right padding leaves room for × */
   color: #fff;
