@@ -1,10 +1,29 @@
 <div class="progress-toast" #toast>
     <div class="toast-body">
+
+        <!--info icon-->
         <span class="toast-icon">
         <i class="bi bi-info-circle-fill"></i>
         </span>
+
+         <!--depth/threads-->
         <span class="">{{"chessboard.progressToast.analyzing" | translate}} {{boardState().evalProgress().toFixed(1)}}%</span>
-        <span>(<span class="bi bi-diagram-3-fill"></span> {{LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, DefaultSettings.ENGINE_DEPTH)}})</span>
+        <span>
+            <!--depth icon-->
+            <span class="bi bi-diagram-3-fill"></span> 
+
+            <!--depth amount-->
+            {{LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_DEPTH, DefaultSettings.ENGINE_DEPTH)}}
+
+            <!--divider-->
+            <span>&nbsp;|&nbsp;&nbsp;</span>
+
+            <!--thread count icon-->
+            <span class="bi bi-cpu"></span> 
+
+            <!--thread count-->
+            {{LocalStorageHelper.getNumber(LocalStorageHelper.ENGINE_THREAD_COUNT, DefaultSettings.ENGINE_THREAD_COUNT)}}
+        </span>
     </div>
 
     <ngb-progressbar
