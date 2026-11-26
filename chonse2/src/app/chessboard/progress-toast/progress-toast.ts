@@ -1,6 +1,6 @@
 import { Component, ElementRef, input, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { NgbProgressbar } from '@ng-bootstrap/ng-bootstrap';
-import BoardState from '../chessboard/board-state';
+import BoardState from '../chessboard/board-state/board-state';
 import { TranslatePipe } from '@ngx-translate/core';
 import LocalStorageHelper from '../../../libs/local-storage-helper';
 import DefaultSettings from '../../settings/default-settings';

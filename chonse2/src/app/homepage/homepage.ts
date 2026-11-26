@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { StaticChessboard } from '../static-chessboard/static-chessboard';
 import ThemeService from '../themes/theme-service';
 import { IconButton } from "../ui/icon-button/icon-button";
-import BoardState from '../chessboard/chessboard/board-state';
+import BoardState from '../chessboard/chessboard/board-state/board-state';
 import LocalStorageHelper from '../../libs/local-storage-helper';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';

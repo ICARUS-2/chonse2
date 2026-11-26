@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { Chessboard } from "../chessboard/chessboard/chessboard";
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
-import BoardState from '../chessboard/chessboard/board-state';
+import BoardState from '../chessboard/chessboard/board-state/board-state';
 import { BoardNames } from '../boards';
 import { ChessComAPI }from '../../libs/server-api-lib/chesscom-api';
 import GameLinkHelper from '../chessboard/chessboard/game-link-helper';

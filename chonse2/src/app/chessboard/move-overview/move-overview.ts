@@ -7,7 +7,7 @@ import ChessboardHelper from '../helpers';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PieceColor } from '../../../libs/chess-game-lib/types/piece-color';
 import { uciMoveParams } from '../../../libs/engine-lib/helpers/chessHelper';
-import BoardState from '../chessboard/board-state';
+import BoardState from '../chessboard/board-state/board-state';
 import { PieceType } from '../../../libs/chess-game-lib/types/piece-type';
 
 @Component({

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal, WritableSignal } from '@angular/core';
-import BoardState from '../chessboard/board-state';
+import BoardState from '../chessboard/board-state/board-state';
 import { form, FormField } from '@angular/forms/signals';
 import ThemeService from '../../themes/theme-service';
 import { BootstrapButton } from '../../ui/bootstrap-button/bootstrap-button';

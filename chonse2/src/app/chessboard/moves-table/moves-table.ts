@@ -1,5 +1,5 @@
 import { Component, input, output, ChangeDetectionStrategy, inject } from '@angular/core';
-import BoardState from '../chessboard/board-state';
+import BoardState from '../chessboard/board-state/board-state';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { CommonModule } from '@angular/common';
 import { DivergenceTableEntry } from '../divergence-table-entry/divergence-table-entry';

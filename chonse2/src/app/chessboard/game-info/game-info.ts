@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, ChangeDetectionStrategy } from '@angular/core';
-import BoardState from '../chessboard/board-state';
+import BoardState from '../chessboard/board-state/board-state';
 import ThemeService from '../../themes/theme-service';
 import { PositionEval } from '../../../libs/engine-lib/types/eval';
 import { CommonModule } from '@angular/common';

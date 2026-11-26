@@ -1,23 +1,24 @@
 import { computed, signal, WritableSignal } from "@angular/core";
-import { Arrow } from "./arrow";
-import LocalStorageHelper from "../../../libs/local-storage-helper";
-import MoveClassificationList from "./move-classification-list";
-import { PgnFields, PgnHeaders } from "./pgn-misc";
-import { Quote, Quotes } from "./quotes";
-import { MoveClassification } from "../../../libs/engine-lib/types/enums";
-import { PositionEval, GameEval, EvaluateGameParams, EvalSource, LineEval, EvaluatePositionWithUpdateParams } from "../../../libs/engine-lib/types/eval";
-import { AngularUCIEngine } from "../../../libs/engine-lib/angularUciEngine";
-import MoveResult from "./move-result";
-import { CoachUtils } from "../../../libs/coach-lib/coach-utils";
-import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
-import { getMovesClassification } from "../../../libs/engine-lib/helpers/moveClassification";
-import { AppInjector } from "../../app-injector";
-import { CoachAudio } from "../../../libs/coach-lib/coach-audio";
-import { ChessConstants } from "../../../libs/chess-game-lib/types/constants";
-import IChessGame from "../../../libs/chess-game-lib/i-chess-game";
-import ChessGameFactory from "../../../libs/chess-game-lib/chess-game-factory";
-import { EngineService } from "../../../libs/engine-lib/engineService";
-import DefaultSettings from "../../settings/default-settings";
+import { Arrow } from "../arrow";
+import LocalStorageHelper from "../../../../libs/local-storage-helper";
+import MoveClassificationList from "../move-classification-list";
+import { PgnFields, PgnHeaders } from "../pgn-misc";
+import { Quote, Quotes } from "../quotes";
+import { MoveClassification } from "../../../../libs/engine-lib/types/enums";
+import { PositionEval, GameEval, EvaluateGameParams, EvalSource, LineEval, EvaluatePositionWithUpdateParams } from "../../../../libs/engine-lib/types/eval";
+import { AngularUCIEngine } from "../../../../libs/engine-lib/angularUciEngine";
+import MoveResult from "../move-result";
+import { CoachUtils } from "../../../../libs/coach-lib/coach-utils";
+import { CoachMoveSequenceType } from "../../../../libs/coach-lib/coach-types";
+import { getMovesClassification } from "../../../../libs/engine-lib/helpers/moveClassification";
+import { AppInjector } from "../../../app-injector";
+import { CoachAudio } from "../../../../libs/coach-lib/coach-audio";
+import { ChessConstants } from "../../../../libs/chess-game-lib/types/constants";
+import IChessGame from "../../../../libs/chess-game-lib/i-chess-game";
+import ChessGameFactory from "../../../../libs/chess-game-lib/chess-game-factory";
+import { EngineService } from "../../../../libs/engine-lib/engineService";
+import DefaultSettings from "../../../settings/default-settings";
+import EvalCacheHelper from "./eval-cache-helper";
 
 export default class BoardState
 {
@@ -43,6 +44,7 @@ export default class BoardState
     evaluationQueue: (() => Promise<void>)[] = [];
     isProcessingQueue: boolean = false;
     engineService = AppInjector.injector.get(EngineService);
+    evalCache: Map<string, PositionEval> = new Map<string, PositionEval>();
 
     //Coach stuff
     coachButtonsDisabled: WritableSignal<boolean> = signal(false);
@@ -547,6 +549,16 @@ export default class BoardState
         const evalResult = await this.engineService.evaluateGame(params);
         this.eval.set(evalResult);
         
+        //Add all of the positions to eval cache.
+        evalResult.positions.forEach( (posEval, idx) => 
+        {
+            const fen = params.fens[idx];
+            const cacheKey = EvalCacheHelper.getEvalCacheKey(fen);
+            
+            this.evalCache.set(cacheKey, posEval);
+        })
+
+        console.log(this.evalCache);
 
         //Computes how many moves of each classification there are
         Object.values(MoveClassification).forEach( v => 

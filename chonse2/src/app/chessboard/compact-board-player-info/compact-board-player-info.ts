@@ -1,5 +1,5 @@
 import { Component, computed, input, ChangeDetectionStrategy, inject } from '@angular/core';
-import BoardState from '../chessboard/board-state';
+import BoardState from '../chessboard/board-state/board-state';
 import ThemeService from '../../themes/theme-service';
 import { CommonModule } from '@angular/common';
 import { CompactBoardPlayerInfoModal } from './compact-board-player-info-modal/compact-board-player-info-modal';
