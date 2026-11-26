@@ -4,7 +4,7 @@ export default class EvalCacheHelper
 
     //Used to get the piece state, turn, castling and en passant square from the FEN, removing the turn counts.
     //Cache can be queried by key in order to eliminate redundant evaluation from the engine.
-    public static getEvalCacheKey(fen: string)
+    public static getEvalCacheKeyFromFen(fen: string)
     {
         //Split the FEN using spaces.
         const fenSplit: string[] = fen.split(" ");

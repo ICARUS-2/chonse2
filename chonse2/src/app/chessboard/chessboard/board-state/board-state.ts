@@ -316,9 +316,23 @@ export default class BoardState
     {
         if (this.eval())
         {
-            //Creates a new eval object where the fields will be set.
-            const newEval: PositionEval = { bestMove: "", moveClassification: MoveClassification.None, opening: "", lines: [ {pv: [""], cp: 0} as LineEval ], source: EvalSource.Local, isPartial: true };
+            //Must first check inside the eval cache.
+            const fen = state.getFEN();
+            const cacheKey = EvalCacheHelper.getEvalCacheKeyFromFen(fen);
+            const cachedEval: PositionEval | undefined = this.evalCache.get(cacheKey);
             
+            //Creates a new eval object where the fields will be set.
+            let newEval: PositionEval = { bestMove: "", moveClassification: MoveClassification.None, opening: "", lines: [ {pv: [""], cp: 0} as LineEval ], source: EvalSource.Local, isPartial: true };
+            
+            //If the eval was cached, use it.
+            //TODO: Skip the eval if cached.
+            //TODO: Make divergence eval cache itself upon completion.
+            if (cachedEval != undefined)
+            {
+                newEval = cachedEval;
+            }
+
+
             //Register change detection.
             this.divergenceEvalStack.update( d => [...d, newEval] );
 
@@ -553,7 +567,7 @@ export default class BoardState
         evalResult.positions.forEach( (posEval, idx) => 
         {
             const fen = params.fens[idx];
-            const cacheKey = EvalCacheHelper.getEvalCacheKey(fen);
+            const cacheKey = EvalCacheHelper.getEvalCacheKeyFromFen(fen);
             
             this.evalCache.set(cacheKey, posEval);
         })
