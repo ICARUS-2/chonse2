@@ -578,8 +578,6 @@ export default class BoardState
             this.evalCache.set(cacheKey, posEval);
         })
 
-        console.log(this.evalCache);
-
         //Computes how many moves of each classification there are
         Object.values(MoveClassification).forEach( v => 
         {
