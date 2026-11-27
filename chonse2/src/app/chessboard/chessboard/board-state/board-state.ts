@@ -325,8 +325,6 @@ export default class BoardState
             let newEval: PositionEval = { bestMove: "", moveClassification: MoveClassification.None, opening: "", lines: [ {pv: [""], cp: 0} as LineEval ], source: EvalSource.Local, isPartial: true };
             
             //If the eval was cached, use it.
-            //TODO: Skip the eval if cached.
-            //TODO: Make divergence eval cache itself upon completion.
             if (cachedEval != undefined)
             {
                 newEval = cachedEval;
@@ -337,11 +335,13 @@ export default class BoardState
 
             if (cachedEval == undefined)
             {
+                const currentFen = state.getFEN();
+
                 //Define what will be used to evaluate the position.
                 const params: EvaluatePositionWithUpdateParams = 
                 {
                     //current fen
-                    fen: state.getFEN(),
+                    fen: currentFen,
 
                     //if overriding for coach move, go min depth. otherwise, saved depth.
                     depth: overrideForCoachEvals ? AngularUCIEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, DefaultSettings.MANUAL_ENGINE_DEPTH),
@@ -384,7 +384,7 @@ export default class BoardState
                             const classificationEval = getMovesClassification(
                                 [prevEval, positionEval], //pos 
                                 [move.getUci()], //move 
-                                [previousState.getFEN(), state.getFEN()] //fens
+                                [previousState.getFEN(), currentFen] //fens
                             )
 
                             //if it succeeds, copy its fields.
@@ -410,6 +410,9 @@ export default class BoardState
 
                                 //then trigger cd
                                 this.divergenceEvalStack.update(stack => [...stack]);
+
+                                //add it to cache for future reuse.
+                                this.evalCache.set(EvalCacheHelper.getEvalCacheKeyFromFen(currentFen), newEval);
                             }
                         }
                     }
