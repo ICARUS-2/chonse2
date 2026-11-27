@@ -1,5 +1,5 @@
 import { Service } from "@angular/core";
-import BoardState from "./board-state";
+import BoardState from "./board-state/board-state";
 
 @Service()
 export class ChessBoardService {

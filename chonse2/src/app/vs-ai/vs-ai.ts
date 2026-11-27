@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, inject, OnInit, View
 import { ChessBoardService } from '../chessboard/chessboard/chess-board-service';
 import { BoardNames } from '../boards';
 import { Chessboard } from '../chessboard/chessboard/chessboard';
-import BoardState from '../chessboard/chessboard/board-state';
+import BoardState from '../chessboard/chessboard/board-state/board-state';
 import { RouteConstants } from '../app.routes';
 import VsAiConfigurationModalHelper from './vs-ai-configuration-modal-helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';

@@ -1,5 +1,5 @@
 import { Component, input, output, ChangeDetectionStrategy, inject } from '@angular/core';
-import BoardState from '../chessboard/board-state';
+import BoardState from '../chessboard/board-state/board-state';
 import { IconButton } from '../../ui/icon-button/icon-button';
 import ThemeService from '../../themes/theme-service';
 import { CommonModule } from '@angular/common';

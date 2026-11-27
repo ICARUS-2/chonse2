@@ -1,6 +1,6 @@
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { VsAiConfigurationModal } from "./vs-ai-configuration-modal/vs-ai-configuration-modal";
-import BoardState from "../chessboard/chessboard/board-state";
+import BoardState from "../chessboard/chessboard/board-state/board-state";
 import { ChessBoardService } from "../chessboard/chessboard/chess-board-service";
 import { BoardNames } from "../boards";
 import { Chessboard } from "../chessboard/chessboard/chessboard";

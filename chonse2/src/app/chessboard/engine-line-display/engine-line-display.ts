@@ -1,5 +1,5 @@
 import { Component, input, ChangeDetectionStrategy, inject } from '@angular/core';
-import BoardState from '../chessboard/board-state';
+import BoardState from '../chessboard/board-state/board-state';
 import { CommonModule } from '@angular/common';
 import { MoveClassification } from '../../../libs/engine-lib/types/enums';
 import ThemeService from '../../themes/theme-service';

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PieceColor } from '../../../../libs/chess-game-lib/types/piece-color';
 import { BoardPlayerInfo } from '../../board-player-info/board-player-info';
-import BoardState from '../../chessboard/board-state';
+import BoardState from '../../chessboard/board-state/board-state';
 import { GameInfo } from '../../game-info/game-info';
 import ThemeService from '../../../themes/theme-service';
 

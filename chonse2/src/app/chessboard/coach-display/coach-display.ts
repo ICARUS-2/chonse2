@@ -1,7 +1,7 @@
 import { Component, computed, input, output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { EngineInformation, EngineType, MoveClassification } from '../../../libs/engine-lib/types/enums';
 import { IconButton } from '../../ui/icon-button/icon-button';
-import BoardState from '../chessboard/board-state';
+import BoardState from '../chessboard/board-state/board-state';
 import MoveResult from '../chessboard/move-result';
 import { EvalSource, LineEval, PositionEval } from '../../../libs/engine-lib/types/eval';
 import { ArrowContext } from '../chessboard/arrow';

@@ -8,7 +8,7 @@ import LocalStorageHelper from '../../../libs/local-storage-helper';
 import { FormsModule } from '@angular/forms';
 import { ChessBoardService as ChessBoardService } from './chess-board-service';
 import {Arrow, ArrowColors, ArrowContext, createArrow } from './arrow';
-import BoardState from './board-state';
+import BoardState from './board-state/board-state';
 import Sound from './sound';
 import { ImportModal } from '../import-modal.ts/import-modal';
 import { PgnComments } from './pgn-misc';

@@ -1,23 +1,24 @@
 import { computed, signal, WritableSignal } from "@angular/core";
-import { Arrow } from "./arrow";
-import LocalStorageHelper from "../../../libs/local-storage-helper";
-import MoveClassificationList from "./move-classification-list";
-import { PgnFields, PgnHeaders } from "./pgn-misc";
-import { Quote, Quotes } from "./quotes";
-import { MoveClassification } from "../../../libs/engine-lib/types/enums";
-import { PositionEval, GameEval, EvaluateGameParams, EvalSource, LineEval, EvaluatePositionWithUpdateParams } from "../../../libs/engine-lib/types/eval";
-import { AngularUCIEngine } from "../../../libs/engine-lib/angularUciEngine";
-import MoveResult from "./move-result";
-import { CoachUtils } from "../../../libs/coach-lib/coach-utils";
-import { CoachMoveSequenceType } from "../../../libs/coach-lib/coach-types";
-import { getMovesClassification } from "../../../libs/engine-lib/helpers/moveClassification";
-import { AppInjector } from "../../app-injector";
-import { CoachAudio } from "../../../libs/coach-lib/coach-audio";
-import { ChessConstants } from "../../../libs/chess-game-lib/types/constants";
-import IChessGame from "../../../libs/chess-game-lib/i-chess-game";
-import ChessGameFactory from "../../../libs/chess-game-lib/chess-game-factory";
-import { EngineService } from "../../../libs/engine-lib/engineService";
-import DefaultSettings from "../../settings/default-settings";
+import { Arrow } from "../arrow";
+import LocalStorageHelper from "../../../../libs/local-storage-helper";
+import MoveClassificationList from "../move-classification-list";
+import { PgnFields, PgnHeaders } from "../pgn-misc";
+import { Quote, Quotes } from "../quotes";
+import { MoveClassification } from "../../../../libs/engine-lib/types/enums";
+import { PositionEval, GameEval, EvaluateGameParams, EvalSource, LineEval, EvaluatePositionWithUpdateParams } from "../../../../libs/engine-lib/types/eval";
+import { AngularUCIEngine } from "../../../../libs/engine-lib/angularUciEngine";
+import MoveResult from "../move-result";
+import { CoachUtils } from "../../../../libs/coach-lib/coach-utils";
+import { CoachMoveSequenceType } from "../../../../libs/coach-lib/coach-types";
+import { getMovesClassification } from "../../../../libs/engine-lib/helpers/moveClassification";
+import { AppInjector } from "../../../app-injector";
+import { CoachAudio } from "../../../../libs/coach-lib/coach-audio";
+import { ChessConstants } from "../../../../libs/chess-game-lib/types/constants";
+import IChessGame from "../../../../libs/chess-game-lib/i-chess-game";
+import ChessGameFactory from "../../../../libs/chess-game-lib/chess-game-factory";
+import { EngineService } from "../../../../libs/engine-lib/engineService";
+import DefaultSettings from "../../../settings/default-settings";
+import EvalCacheHelper from "./eval-cache-helper";
 
 export default class BoardState
 {
@@ -43,6 +44,7 @@ export default class BoardState
     evaluationQueue: (() => Promise<void>)[] = [];
     isProcessingQueue: boolean = false;
     engineService = AppInjector.injector.get(EngineService);
+    evalCache: Map<string, PositionEval> = new Map<string, PositionEval>();
 
     //Coach stuff
     coachButtonsDisabled: WritableSignal<boolean> = signal(false);
@@ -314,101 +316,121 @@ export default class BoardState
     {
         if (this.eval())
         {
-            //Creates a new eval object where the fields will be set.
-            const newEval: PositionEval = { bestMove: "", moveClassification: MoveClassification.None, opening: "", lines: [ {pv: [""], cp: 0} as LineEval ], source: EvalSource.Local, isPartial: true };
+            //Must first check inside the eval cache.
+            const fen = state.getFEN();
+            const cacheKey = EvalCacheHelper.getEvalCacheKeyFromFen(fen);
+            const cachedEval: PositionEval | undefined = this.evalCache.get(cacheKey);
             
+            //Creates a new eval object where the fields will be set.
+            let newEval: PositionEval = { bestMove: "", moveClassification: MoveClassification.None, opening: "", lines: [ {pv: [""], cp: 0} as LineEval ], source: EvalSource.Local, isPartial: true };
+            
+            //If the eval was cached, use it.
+            if (cachedEval != undefined)
+            {
+                newEval = cachedEval;
+            }
+
             //Register change detection.
             this.divergenceEvalStack.update( d => [...d, newEval] );
 
-            //Define what will be used to evaluate the position.
-            const params: EvaluatePositionWithUpdateParams = 
+            if (cachedEval == undefined)
             {
-                //current fen
-                fen: state.getFEN(),
+                const currentFen = state.getFEN();
 
-                //if overriding for coach move, go min depth. otherwise, saved depth.
-                depth: overrideForCoachEvals ? AngularUCIEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, DefaultSettings.MANUAL_ENGINE_DEPTH),
-                
-                //default pv
-                multiPv: await this.engineService.getNumberOfLines(),
-
-                //mid-evaluation, move classification can be updated before it gets to the real depth.
-                setPartialEval: ( positionEval: PositionEval ) => 
+                //Define what will be used to evaluate the position.
+                const params: EvaluatePositionWithUpdateParams = 
                 {
-                    //Put the fields in the newobject while keeping its reference the same (accounting for multiple additions to the stack).
-                    this.copyPosEvalFields(positionEval, newEval);
+                    //current fen
+                    fen: currentFen,
 
-                    //Want to have it show the best thing to do so far.
-                    const bestLineSoFar = newEval.lines[0];
-                    if (bestLineSoFar)
+                    //if overriding for coach move, go min depth. otherwise, saved depth.
+                    depth: overrideForCoachEvals ? AngularUCIEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, DefaultSettings.MANUAL_ENGINE_DEPTH),
+                    
+                    //default pv
+                    multiPv: await this.engineService.getNumberOfLines(),
+
+                    //mid-evaluation, move classification can be updated before it gets to the real depth.
+                    setPartialEval: ( positionEval: PositionEval ) => 
                     {
-                        const pv = bestLineSoFar.pv;
+                        //Put the fields in the newobject while keeping its reference the same (accounting for multiple additions to the stack).
+                        this.copyPosEvalFields(positionEval, newEval);
 
-                        if (pv)
+                        //Want to have it show the best thing to do so far.
+                        const bestLineSoFar = newEval.lines[0];
+                        if (bestLineSoFar)
                         {
-                            if (pv.length > 0)
+                            const pv = bestLineSoFar.pv;
+
+                            if (pv)
                             {
-                                newEval.bestMove = pv[0];
-                            }
-                        }
-                    }
-
-                    //trigger cd
-                    this.divergenceEvalStack.update(stack => [...stack]);
-                },
-
-                //once eval is complete, get move classification and everything.
-                setCompletedEval: ( positionEval: PositionEval ) => 
-                {
-                    const prevEval = this.getPreviousMostRecentEval();
-                    if (prevEval)
-                    {
-                        //only once the full eval is done should we get the move classification for that move.
-                        const classificationEval = getMovesClassification(
-                            [prevEval, positionEval], //pos 
-                            [move.getUci()], //move 
-                            [previousState.getFEN(), state.getFEN()] //fens
-                        )
-
-                        //if it succeeds, copy its fields.
-                        if (classificationEval[1])
-                        {
-                            //we are using a lower depth value for the coach evals since they are always the best move.
-                            if (overrideForCoachEvals)
-                            {
-                                if (classificationEval[1].moveClassification != MoveClassification.Opening)
+                                if (pv.length > 0)
                                 {
-                                    classificationEval[1].moveClassification = MoveClassification.Best;
+                                    newEval.bestMove = pv[0];
                                 }
                             }
-                            //copy fields first
-                            this.copyPosEvalFields(classificationEval[1], newEval);
-                            newEval.isPartial = false;
-                            
-                            if (previousEval && !overrideForCoachEvals)
-                            {
-                                CoachUtils.performCoachAnalysis([previousState, state], [move], [previousEval, newEval]);
-                                this.audioService.playSentences(move.coachSentences);
-                            }
+                        }
 
-                            //then trigger cd
-                            this.divergenceEvalStack.update(stack => [...stack]);
+                        //trigger cd
+                        this.divergenceEvalStack.update(stack => [...stack]);
+                    },
+
+                    //once eval is complete, get move classification and everything.
+                    setCompletedEval: ( positionEval: PositionEval ) => 
+                    {
+                        const prevEval = this.getPreviousMostRecentEval();
+                        if (prevEval)
+                        {
+                            //only once the full eval is done should we get the move classification for that move.
+                            const classificationEval = getMovesClassification(
+                                [prevEval, positionEval], //pos 
+                                [move.getUci()], //move 
+                                [previousState.getFEN(), currentFen] //fens
+                            )
+
+                            //if it succeeds, copy its fields.
+                            if (classificationEval[1])
+                            {
+                                //we are using a lower depth value for the coach evals since they are always the best move.
+                                if (overrideForCoachEvals)
+                                {
+                                    if (classificationEval[1].moveClassification != MoveClassification.Opening)
+                                    {
+                                        classificationEval[1].moveClassification = MoveClassification.Best;
+                                    }
+                                }
+                                //copy fields first
+                                this.copyPosEvalFields(classificationEval[1], newEval);
+                                newEval.isPartial = false;
+                                
+                                if (previousEval && !overrideForCoachEvals)
+                                {
+                                    CoachUtils.performCoachAnalysis([previousState, state], [move], [previousEval, newEval]);
+                                    this.audioService.playSentences(move.coachSentences);
+                                }
+
+                                //then trigger cd
+                                this.divergenceEvalStack.update(stack => [...stack]);
+
+                                //add it to cache for future reuse.
+                                this.evalCache.set(EvalCacheHelper.getEvalCacheKeyFromFen(currentFen), newEval);
+                            }
                         }
                     }
                 }
+
+                //wrap the thing in a task
+                const evalTask = async () => 
+                {
+                    await this.engineService.evaluatePositionWithUpdate(params);
+                };
+
+                //stick it in da queue
+                this.evaluationQueue.push(evalTask);
+
+                //process da queue
+                this.processEvaluationQueue();
             }
 
-            //wrap the thing in a task
-            const evalTask = async () => 
-            {
-                await this.engineService.evaluatePositionWithUpdate(params);
-            };
-
-            //stick it in da queue
-            this.evaluationQueue.push(evalTask);
-
-            //process da queue
-            this.processEvaluationQueue();
         }
     }
 
@@ -547,6 +569,14 @@ export default class BoardState
         const evalResult = await this.engineService.evaluateGame(params);
         this.eval.set(evalResult);
         
+        //Add all of the positions to eval cache.
+        evalResult.positions.forEach( (posEval, idx) => 
+        {
+            const fen = params.fens[idx];
+            const cacheKey = EvalCacheHelper.getEvalCacheKeyFromFen(fen);
+            
+            this.evalCache.set(cacheKey, posEval);
+        })
 
         //Computes how many moves of each classification there are
         Object.values(MoveClassification).forEach( v => 
