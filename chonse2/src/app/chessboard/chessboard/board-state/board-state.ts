@@ -332,99 +332,102 @@ export default class BoardState
                 newEval = cachedEval;
             }
 
-
             //Register change detection.
             this.divergenceEvalStack.update( d => [...d, newEval] );
 
-            //Define what will be used to evaluate the position.
-            const params: EvaluatePositionWithUpdateParams = 
+            if (cachedEval == undefined)
             {
-                //current fen
-                fen: state.getFEN(),
-
-                //if overriding for coach move, go min depth. otherwise, saved depth.
-                depth: overrideForCoachEvals ? AngularUCIEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, DefaultSettings.MANUAL_ENGINE_DEPTH),
-                
-                //default pv
-                multiPv: await this.engineService.getNumberOfLines(),
-
-                //mid-evaluation, move classification can be updated before it gets to the real depth.
-                setPartialEval: ( positionEval: PositionEval ) => 
+                //Define what will be used to evaluate the position.
+                const params: EvaluatePositionWithUpdateParams = 
                 {
-                    //Put the fields in the newobject while keeping its reference the same (accounting for multiple additions to the stack).
-                    this.copyPosEvalFields(positionEval, newEval);
+                    //current fen
+                    fen: state.getFEN(),
 
-                    //Want to have it show the best thing to do so far.
-                    const bestLineSoFar = newEval.lines[0];
-                    if (bestLineSoFar)
+                    //if overriding for coach move, go min depth. otherwise, saved depth.
+                    depth: overrideForCoachEvals ? AngularUCIEngine.MIN_DEPTH : LocalStorageHelper.getNumber(LocalStorageHelper.MANUAL_ENGINE_DEPTH, DefaultSettings.MANUAL_ENGINE_DEPTH),
+                    
+                    //default pv
+                    multiPv: await this.engineService.getNumberOfLines(),
+
+                    //mid-evaluation, move classification can be updated before it gets to the real depth.
+                    setPartialEval: ( positionEval: PositionEval ) => 
                     {
-                        const pv = bestLineSoFar.pv;
+                        //Put the fields in the newobject while keeping its reference the same (accounting for multiple additions to the stack).
+                        this.copyPosEvalFields(positionEval, newEval);
 
-                        if (pv)
+                        //Want to have it show the best thing to do so far.
+                        const bestLineSoFar = newEval.lines[0];
+                        if (bestLineSoFar)
                         {
-                            if (pv.length > 0)
+                            const pv = bestLineSoFar.pv;
+
+                            if (pv)
                             {
-                                newEval.bestMove = pv[0];
-                            }
-                        }
-                    }
-
-                    //trigger cd
-                    this.divergenceEvalStack.update(stack => [...stack]);
-                },
-
-                //once eval is complete, get move classification and everything.
-                setCompletedEval: ( positionEval: PositionEval ) => 
-                {
-                    const prevEval = this.getPreviousMostRecentEval();
-                    if (prevEval)
-                    {
-                        //only once the full eval is done should we get the move classification for that move.
-                        const classificationEval = getMovesClassification(
-                            [prevEval, positionEval], //pos 
-                            [move.getUci()], //move 
-                            [previousState.getFEN(), state.getFEN()] //fens
-                        )
-
-                        //if it succeeds, copy its fields.
-                        if (classificationEval[1])
-                        {
-                            //we are using a lower depth value for the coach evals since they are always the best move.
-                            if (overrideForCoachEvals)
-                            {
-                                if (classificationEval[1].moveClassification != MoveClassification.Opening)
+                                if (pv.length > 0)
                                 {
-                                    classificationEval[1].moveClassification = MoveClassification.Best;
+                                    newEval.bestMove = pv[0];
                                 }
                             }
-                            //copy fields first
-                            this.copyPosEvalFields(classificationEval[1], newEval);
-                            newEval.isPartial = false;
-                            
-                            if (previousEval && !overrideForCoachEvals)
-                            {
-                                CoachUtils.performCoachAnalysis([previousState, state], [move], [previousEval, newEval]);
-                                this.audioService.playSentences(move.coachSentences);
-                            }
+                        }
 
-                            //then trigger cd
-                            this.divergenceEvalStack.update(stack => [...stack]);
+                        //trigger cd
+                        this.divergenceEvalStack.update(stack => [...stack]);
+                    },
+
+                    //once eval is complete, get move classification and everything.
+                    setCompletedEval: ( positionEval: PositionEval ) => 
+                    {
+                        const prevEval = this.getPreviousMostRecentEval();
+                        if (prevEval)
+                        {
+                            //only once the full eval is done should we get the move classification for that move.
+                            const classificationEval = getMovesClassification(
+                                [prevEval, positionEval], //pos 
+                                [move.getUci()], //move 
+                                [previousState.getFEN(), state.getFEN()] //fens
+                            )
+
+                            //if it succeeds, copy its fields.
+                            if (classificationEval[1])
+                            {
+                                //we are using a lower depth value for the coach evals since they are always the best move.
+                                if (overrideForCoachEvals)
+                                {
+                                    if (classificationEval[1].moveClassification != MoveClassification.Opening)
+                                    {
+                                        classificationEval[1].moveClassification = MoveClassification.Best;
+                                    }
+                                }
+                                //copy fields first
+                                this.copyPosEvalFields(classificationEval[1], newEval);
+                                newEval.isPartial = false;
+                                
+                                if (previousEval && !overrideForCoachEvals)
+                                {
+                                    CoachUtils.performCoachAnalysis([previousState, state], [move], [previousEval, newEval]);
+                                    this.audioService.playSentences(move.coachSentences);
+                                }
+
+                                //then trigger cd
+                                this.divergenceEvalStack.update(stack => [...stack]);
+                            }
                         }
                     }
                 }
+
+                //wrap the thing in a task
+                const evalTask = async () => 
+                {
+                    await this.engineService.evaluatePositionWithUpdate(params);
+                };
+
+                //stick it in da queue
+                this.evaluationQueue.push(evalTask);
+
+                //process da queue
+                this.processEvaluationQueue();
             }
 
-            //wrap the thing in a task
-            const evalTask = async () => 
-            {
-                await this.engineService.evaluatePositionWithUpdate(params);
-            };
-
-            //stick it in da queue
-            this.evaluationQueue.push(evalTask);
-
-            //process da queue
-            this.processEvaluationQueue();
         }
     }
 
